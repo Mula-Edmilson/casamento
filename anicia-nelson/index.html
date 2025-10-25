@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Convite de Casamento — Anícia & Nelson</title>
+  
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+
+  <meta property="og:title" content="Convite de Casamento — Anícia & Nelson">
+  <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
+  <meta property="og:type" content="lirandzo.com">
+  <meta property="og:image" content="https://i.postimg.cc/9fJcwZRS/2T2A4974.jpg"> <meta property="og:url" content="edmilsonmula.info">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Great+Vibes&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="loading cover-page"> 
+  
+  <audio id="backgroundMusic" loop src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
+  
+  <div class="cover-container">
+    <h1 class="names">Anícia & Nelson</h1>
+    <p class="cover-subtitle">Com Carinho, o Nosso Casamento</p>
+    
+    <div class="couple-photo" style="background-image: url('https://i.postimg.cc/cC4jqmT6/2T2A4882.jpg')">
+    </div>
+    
+    <button class="btn btn-primary btn-cover" id="openInviteBtn">Abrir Convite</button>
+  </div>
+
+  <script>
+    const music = document.getElementById('backgroundMusic');
+    const openInviteBtn = document.getElementById('openInviteBtn');
+    const body = document.body;
+
+    // NOVO: 1. Transição de Carregamento Suave (Capa)
+    window.onload = () => {
+        body.classList.remove('loading');
+        body.classList.add('loaded');
+    };
+    // Garante que o loaded é aplicado rapidamente em caso de carregamento muito rápido
+    setTimeout(() => {
+        if (body.classList.contains('loading')) {
+            body.classList.remove('loading');
+            body.classList.add('loaded');
+        }
+    }, 500);
+
+    openInviteBtn.addEventListener('click', function() {
+      // Tenta tocar a música. A interação do utilizador é necessária na maioria dos navegadores.
+      music.play().catch(function(error) {
+        console.warn("Autoplay falhou, o usuário precisa interagir com a página.");
+      });
+      // Navega para o convite
+      window.location.href = 'convite.html';
+    });
+  </script>
+</body>
+
+</html>
+
