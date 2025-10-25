@@ -96,10 +96,6 @@ p:last-child { margin-bottom: 0; }
   border-radius: 8px;
   overflow: hidden;
 }
-/* AJUSTE: O layout principal da index.html não usa .invite-wrap,
-   mas usa .section. As secções não devem ter margem superior 
-   quando estão dentro do .invite-wrap, mas devem ter na index.html.
-   A remoção da margem do .invite-wrap torna isto mais flexível. */
 main > .section:first-child,
 .invite-wrap > .section:first-child {
   /* Remove padding do topo da primeira secção se for a seguir ao hero */
@@ -124,7 +120,6 @@ main > .section:first-child,
   background-image: url('https://i.postimg.cc/qMGTpKqp/Whats-App-Image-2025-10-24-at-10-47-48-AM-2.jpg');
   background-size: cover;
   background-position: center 30%;
-  /* Remove a margem do .invite-wrap para o hero */
   margin-bottom: 0; 
 }
 .hero::before {
@@ -168,7 +163,7 @@ main > .section:first-child,
 
 .couple-details {
   display: flex;
-  flex-wrap: wrap; /* ✨ RESPONSIVO */
+  flex-wrap: wrap; 
   align-items: center;
   justify-content: center;
   gap: 32px;
@@ -176,11 +171,10 @@ main > .section:first-child,
   margin: 48px 0;
 }
 .couple-details h3 { font-family: var(--font-script); font-size: 3rem; color: var(--accent); margin-bottom: 8px; }
-.decorative-ampersand { font-family: var(--font-heading); font-size: 3rem; color: var(--border-color); user-select: none; /* ✨ UX */ }
+.decorative-ampersand { font-family: var(--font-heading); font-size: 3rem; color: var(--border-color); user-select: none; }
 
 .history-grid img { width: 100%; height: auto; display: block; border-radius: 8px; }
 
-/* ... (Estilos da agenda, galeria, guia, etc. do seu ficheiro original) ... */
 /* --- ESTILOS DA AGENDA (Design Centralizado) --- */
 .agenda-centered { text-align: center; max-width: 550px; margin: 0 auto; }
 .agenda-header { margin-bottom: 60px; }
@@ -211,7 +205,7 @@ main > .section:first-child,
 
 .footer {
   text-align: center;
-  padding: 60px 24px; /* ✨ RESPONSIVO */
+  padding: 60px 24px; 
   background: var(--section-bg);
 }
 .footer .names { font-size: 3rem; color: var(--accent); }
@@ -219,10 +213,10 @@ main > .section:first-child,
   margin-top: 24px;
   font-size: 0.9rem;
   opacity: 0.7;
-  display: flex; /* ✨ CSS MODERNO com gap */
+  display: flex; 
   flex-wrap: wrap;
   justify-content: center;
-  gap: 16px; /* (Substitui a margem no span) */
+  gap: 16px; 
 }
 
 /* --- 6. BOTÕES E UI FIXA --- */
@@ -246,7 +240,7 @@ main > .section:first-child,
   transform: translateX(-50%);
   z-index: 100;
   display: flex;
-  flex-direction: row; /* Alterado para horizontal */
+  flex-direction: row; 
   align-items: center;
   gap: 12px;
   background: rgba(255,255,255,0.8);
@@ -315,7 +309,7 @@ textarea { min-height: 80px; }
   transform: translateY(0) scale(1);
 }
 
-/* --- 9. RESPONSIVIDADE --- */
+/* --- 9. RESPONSIVIDADE (BASE) --- */
 @media (max-width: 768px) {
   body { font-size: 15px; }
   .section { padding: 60px 24px; }
@@ -334,13 +328,9 @@ textarea { min-height: 80px; }
 
 
 /* ==========================================================================
-   NOVOS ESTILOS PARA A PÁGINA INDEX.HTML (ADICIONAR AO SEU CSS)
-==========================================================================
-*/
+   10. ESTILOS DE SCROLL HORIZONTAL (MODELOS, ETC.)
+========================================================================== */
 
-/* --- 10. ESTILOS DA LANDING PAGE (INDEX.HTML) --- */
-
-/* Subtítulo da Hero Section */
 .hero .landing-subtitle {
   font-size: 1.1rem;
   font-family: var(--font-body);
@@ -349,29 +339,25 @@ textarea { min-height: 80px; }
   line-height: 1.6;
 }
 
-/* Container de Scroll Horizontal (Secção Modelos) */
-.horizontal-scroll-container {
+/* Container de Scroll Automático */
+.auto-scroll-container {
   display: flex;
-  overflow-x: auto; /* Permite o scroll horizontal */
+  overflow-x: auto; 
   gap: 24px;
-  padding: 24px; /* Adiciona padding para as sombras */
-  margin: 0 -24px; /* Compensa o padding da secção */
-  
-  /* Melhora o "arrastar" em mobile */
+  padding: 24px; 
+  margin: 0 -24px; 
   -webkit-overflow-scrolling: touch; 
-  
-  /* Esconde a barra de scroll (Cross-browser) */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE 10+ */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
 }
-.horizontal-scroll-container::-webkit-scrollbar { 
-    display: none; /* Chrome, Safari, Opera */
+.auto-scroll-container::-webkit-scrollbar { 
+    display: none; 
 }
 
-/* Cartão de Template */
+/* Cartão de Template (Modelo) */
 .template-card {
-  flex-shrink: 0; /* Impede que os cartões encolham */
-  width: 300px; /* Largura fixa para cada cartão */
+  flex-shrink: 0; 
+  width: 300px; 
   background: var(--card);
   border-radius: 8px;
   border: 1px solid var(--border-color);
@@ -386,7 +372,7 @@ textarea { min-height: 80px; }
 }
 .template-card img {
   width: 100%;
-  height: 250px; /* Altura fixa para a imagem */
+  height: 250px; 
   object-fit: cover;
   display: block;
   border-bottom: 1px solid var(--border-color);
@@ -396,7 +382,7 @@ textarea { min-height: 80px; }
   text-align: left;
 }
 .template-info h4 {
-  font-size: 1.5rem; /* Reutiliza o estilo .guide-item h4 */
+  font-size: 1.5rem; 
   margin-bottom: 8px;
 }
 .template-info p {
@@ -405,10 +391,10 @@ textarea { min-height: 80px; }
   margin-bottom: 0;
 }
 
-/* Grelha da Secção de Contacto */
+/* Secção de Contacto (Mantém-se igual) */
 .contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1.2fr; /* Coluna do formulário ligeiramente maior */
+  grid-template-columns: 1fr 1.2fr; 
   gap: 48px;
   text-align: left;
   max-width: 900px;
@@ -424,21 +410,17 @@ textarea { min-height: 80px; }
   margin-bottom: 24px;
 }
 .contact-form .info-block {
-    /* Reutiliza o info-block mas sem margem */
     margin-bottom: 0;
 }
 .form-actions-full {
     margin-top: 24px;
 }
 .form-actions-full .btn {
-    width: 100%; /* Botão de largura total */
+    width: 100%; 
 }
-
-
-/* Rodapé da Landing Page */
 .footer-logo {
   width: 100%;
-  max-width: 120px; /* Tamanho do logo */
+  max-width: 120px; 
   height: auto;
   margin-bottom: 16px;
   opacity: 0.8;
@@ -449,29 +431,166 @@ textarea { min-height: 80px; }
   margin-top: 24px;
 }
 
-/* --- 11. AJUSTES RESPONSIVOS PARA LANDING PAGE --- */
+/* ==========================================================================
+   11. NOVAS SECÇÕES (COMO FUNCIONA / TESTEMUNHOS) - EM SCROLL
+========================================================================== */
+
+/* --- 11.B "COMO FUNCIONA?" (Estilos de Cartão) --- */
+.process-step {
+  flex-shrink: 0;
+  width: 320px; /* Largura fixa para o cartão de processo */
+  height: 100%; /* Garante que todos têm a mesma altura no flex */
+  
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--card);
+  text-align: left;
+}
+.process-number {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.process-step h4 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
+.process-step p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* --- 11.C "TESTEMUNHOS" (Estilos de Cartão) --- */
+.testimonial-card {
+  flex-shrink: 0;
+  width: 350px; /* Largura fixa para o cartão de testemunho */
+  height: 100%; /* Garante que todos têm a mesma altura no flex */
+
+  background: var(--card);
+  padding: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+.testimonial-quote {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin-bottom: 16px;
+  position: relative;
+  padding-left: 20px;
+}
+.testimonial-quote::before {
+  content: '“';
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  font-family: var(--font-heading);
+  font-size: 4rem;
+  color: var(--accent);
+  opacity: 0.2;
+}
+.testimonial-author {
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* --- AJUSTES RESPONSIVOS (NOVAS SECÇÕES) --- */
 @media (max-width: 768px) {
-  /* Ajusta o padding das secções na landing page */
   main > .section {
     padding-left: 24px;
     padding-right: 24px;
   }
-  
-  /* Ajusta o scroll horizontal para começar na borda */
-  .horizontal-scroll-container {
+  .auto-scroll-container {
     padding-left: 24px;
     padding-right: 24px;
     margin: 0 -24px;
   }
-
-  /* Coloca a grelha de contacto numa só coluna */
   .contact-grid {
     grid-template-columns: 1fr;
-    gap: 60px; /* Aumenta o espaço em mobile */
+    gap: 60px; 
   }
-  
   .contact-details h3,
   .contact-form h3 {
     text-align: center;
+  }
+}
+
+/* ==========================================================================
+   12. ESTILOS DO MODAL DE DETALHES DO MODELO
+========================================================================== */
+
+.modal-card-details {
+  text-align: left;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+.modal-header h3 {
+  font-size: 2rem;
+  margin-bottom: 0;
+}
+.modal-price {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap; 
+  margin-left: 16px;
+}
+.modal-features-title {
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+}
+.modal-features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.modal-features-list li {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+.modal-features-list li svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  fill: none;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .modal-price {
+    margin-left: 0;
+    margin-top: 8px;
+    font-size: 1.25rem;
+  }
+  .modal-features-list {
+    grid-template-columns: 1fr;
   }
 }
