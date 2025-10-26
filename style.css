@@ -1,4 +1,4 @@
-/* style.css (Design Elegante - Final V2) */
+/* style.css (Design Elegante - Final V6 - Parallax Removido) */
 
 /* --- 1. FUNDAMENTOS E VARIÁVEIS --- */
 :root {
@@ -135,7 +135,7 @@ main > .section:first-child,
     inset: -5%; 
     width: 110%;
     height: 110%;
-    background-image: url('https://i.postimg.cc/qMGTpKqp/Whats-App-Image-2025-10-24-at-10-47-48-AM-2.jpg');
+    background-image: url('https://i.postimg.cc/rFjHZBQV/Period-on-wedding-night.jpg');
     background-size: cover;
     background-position: center;
     z-index: 0; 
@@ -150,6 +150,8 @@ main > .section:first-child,
   z-index: 2; 
   background: rgba(0,0,0,0.2);
   padding: 32px 48px; border-radius: 8px; backdrop-filter: blur(5px);
+  /* Adicionada transição para suavizar a mudança de padding no mobile */
+  transition: padding var(--transition-fast);
 }
 .hero .lead {
   font-family: var(--font-body); font-weight: 400; text-transform: uppercase;
@@ -233,17 +235,56 @@ main > .section:first-child,
 .btn-ghost { background: transparent; color: var(--text-light); border-color: transparent; }
 .btn-ghost:hover { background: var(--section-bg); }
 
-/* UI FIXA (Botões Flutuantes) */
-.fixed-ui-container {
-  /* Estilos mantêm-se */
+
+/* ==========================================================================
+   NOVO: BARRA DE NAVEGAÇÃO FLUTUANTE (MOBILE-ONLY)
+   ========================================================================== */
+.floating-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: var(--card);
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    display: none; /* Escondido por defeito, aparece no media query */
+    gap: 12px;
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
 }
-#musicControl, .fab-item {
-  /* Estilos mantêm-se */
+.fab-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+    color: var(--text-light);
+    font-size: 0.7rem; /* Texto pequeno */
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: var(--transition-fast);
+    width: 70px; /* Largura fixa para alinhamento */
+    text-align: center;
 }
-#musicControl:hover, .fab-item:hover { transform: scale(1.1) rotate(10deg); background: var(--accent); color: white; } /* Pequena rotação no hover */
-#musicControl svg, .fab-item svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
-#musicControl.playing svg { animation: spin 3s linear infinite; }
-@keyframes spin { 100% { transform: rotate(360deg); } }
+.fab-link svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--text-dark); /* Cor do ícone */
+    transition: var(--transition-fast);
+}
+.fab-link:hover {
+    color: var(--accent);
+    background: var(--section-bg);
+}
+.fab-link:hover svg {
+    stroke: var(--accent);
+}
+
 
 /* --- 7. MODAIS --- */
 .modal {
@@ -257,6 +298,8 @@ main > .section:first-child,
   max-height: 90vh; overflow-y: auto; text-align: center; transform: scale(0.95) translateY(10px); /* Efeito de entrada */
   transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.2), opacity 0.4s ease; /* Efeito bounce */
   opacity: 0;
+  position: relative; /* Para o z-index funcionar corretamente contra os botões */
+  z-index: 205; 
 }
 .modal.open .modal-card { transform: scale(1) translateY(0); opacity: 1; }
 #lightboxModal .modal-card { background: transparent; max-width: 90vw; padding: 0; cursor: zoom-out; }
@@ -271,7 +314,80 @@ input, textarea, select { width: 100%; padding: 12px; border-radius: 8px; border
 textarea { min-height: 80px; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
 .form-actions .btn { flex-grow: 1; }
-/* (Estilos de .dresscode-grid, .tab-buttons, .tab-content, .info-block permanecem) */
+
+/* NOVO: Estilos para o conteúdo do Modal de Contacto */
+.contact-details-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+    margin-top: 24px;
+}
+.info-block {
+    background: var(--section-bg);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.info-block p {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+.info-block p strong {
+    color: var(--text-dark);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* ==========================================================================
+   NOVO: Botões de Navegação do Modal de Detalhes
+   ========================================================================== */
+.modal-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 210; /* Acima do card */
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    color: var(--text-dark);
+}
+.modal-nav-btn:hover {
+    background: var(--card);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    color: var(--accent);
+}
+.modal-nav-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+}
+.modal-nav-btn.prev { 
+    /* Ajusta a posição para fora do card; 'calc' pode precisar de ajuste */
+    left: calc(50% - 250px - 40px); /* 50% - (metade da largura do card) - (espaço) */
+}
+.modal-nav-btn.next { 
+    right: calc(50% - 250px - 40px); 
+}
+.modal-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: translateY(-50%) scale(1);
+    box-shadow: none;
+    pointer-events: none;
+}
+
 
 /* --- 8. ANIMAÇÕES DE SCROLL --- */
 .fade-in-section {
@@ -284,18 +400,6 @@ textarea { min-height: 80px; }
   opacity: 1;
   transform: translateY(0) scale(1);
 }
-
-/* --- 9. RESPONSIVIDADE (BASE) --- */
-@media (max-width: 768px) {
-  body { font-size: 15px; }
-  .section { padding: 60px 24px; }
-  .cover-container { padding: 32px; width: 90%; }
-  .cover-container .names { font-size: 3rem; }
-  .hero .names { font-size: 4rem; }
-  #countdown span { font-size: 2rem; }
-  /* (Outros estilos responsivos permanecem) */
-}
-
 
 /* ==========================================================================
    10. ESTILOS DE SCROLL HORIZONTAL (MODELOS, ETC.)
@@ -335,13 +439,8 @@ textarea { min-height: 80px; }
 .template-info h4 { font-size: 1.5rem; margin-bottom: 8px; }
 .template-info p { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0; }
 
-/* Contact Grid & Footer (sem grandes alterações) */
-.contact-grid {
-  display: grid; grid-template-columns: 1fr 1.2fr; 
-  gap: 48px; text-align: left; max-width: 900px; margin: 0 auto;
-  position: relative; z-index: 1; /* Acima do parallax */
-}
-/* (Restante do .contact-grid e footer styles) */
+/* Contact Grid & Footer (REMOVIDO) */
+/* .contact-grid { ... } */
 .footer-logo { max-width: 120px; height: auto; margin-bottom: 16px; opacity: 0.8; }
 .footer-copyright { font-size: 0.8rem; opacity: 0.7; margin-top: 24px; }
 
@@ -381,45 +480,11 @@ textarea { min-height: 80px; }
 .quiz-result h4 { font-size: 1.5rem; margin-bottom: 16px; }
 #recommendation h4 { font-size: 1.8rem; color: var(--accent); margin-top: 8px; }
 
-/* --- 11.B "UM CONVITE VIVO" (SECÇÃO INTERATIVA) --- */
-.interactive-demo-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 48px; align-items: center; max-width: 1000px; margin: 0 auto;
-  position: relative; z-index: 1; /* Acima do parallax */
-}
-.feature-list { display: flex; flex-direction: column; gap: 16px; }
-.feature-btn {
-  background: transparent; border: 1px solid var(--border-color);
-  border-radius: 8px; padding: 20px; text-align: left;
-  cursor: pointer; transition: var(--transition-smooth); width: 100%;
-}
-.feature-btn h4 { font-size: 1.3rem; color: var(--text-dark); margin-bottom: 4px; }
-.feature-btn p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 0; line-height: 1.5; }
-.feature-btn:hover { background-color: var(--section-bg); transform: translateY(-3px) scale(1.01); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-.feature-btn.active {
-  background-color: var(--card); border-color: var(--accent);
-  box-shadow: 0 10px 20px rgba(176, 137, 104, 0.1); transform: translateY(-3px) scale(1.01);
-}
-.phone-mockup {
-  position: relative; width: 100%; max-width: 300px; 
-  aspect-ratio: 390 / 844; margin: 0 auto; 
-  background-image: url('https://www.transparentpng.com/thumb/iphone-x/k4Q4Jw-iphone-x-device-frame-png-image.png'); 
-  background-size: contain; background-repeat: no-repeat; background-position: center;
-}
-#mockupImage {
-  position: absolute; top: 11px; left: 11px;
-  width: calc(100% - 22px); height: calc(100% - 22px);
-  object-fit: cover; object-position: top center; 
-  display: block; border-radius: 28px; 
-  overflow: hidden; 
-  transition: opacity 0.3s ease-out; /* Transição suave */
-}
 
-
-/* --- 11.C TESTEMUNHOS (Cartões em Scroll + PARALLAX) --- */
+/* --- 11.C TESTEMUNHOS (SECÇÃO COM FUNDO DE IMAGEM) --- */
 .parallax-bg {
-    background-image: url('https://i.postimg.cc/9fJcwZRS/2T2A4974.jpg'); /* Imagem de fundo para parallax */
-    background-attachment: fixed; /* Chave do parallax */
+    background-image: url('https://i.postimg.cc/Lsvbb4wL/10467.jpg'); /* Imagem de fundo para parallax */
+    /* background-attachment: fixed; <-- REMOVIDO PARA DESATIVAR PARALLAX */
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -438,12 +503,18 @@ textarea { min-height: 80px; }
     z-index: 1;
 }
 
-.testimonial-card {
-  flex-shrink: 0; width: 350px; height: 100%; 
-  background: var(--card); padding: 32px;
-  border-radius: 8px; border: 1px solid var(--border-color); text-align: left;
+/* NOVO ESTILO PARA SCREENSHOTS DE TESTEMUNHOS */
+.testimonial-screenshot {
+    flex-shrink: 0;
+    width: 280px; /* Largura similar aos placeholders */
+    height: auto; /* Altura adapta-se à proporção */
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    background: var(--card); /* Fundo caso a imagem demore a carregar */
+    display: block; /* Para imagens */
 }
-/* (Estilos .testimonial-quote e .testimonial-author mantêm-se) */
+
 
 /* --- 11.D EFEITO DE FOCO NO CARROSSEL --- */
 .focusable-card {
@@ -451,32 +522,83 @@ textarea { min-height: 80px; }
                 opacity 0.4s ease, /* Transição de opacidade mais suave */
                 box-shadow 0.3s ease;
 }
-.auto-scroll-container:hover .focusable-card {
-    opacity: 0.6; /* Esbate mais */
-    transform: scale(0.98); /* Encolhe ligeiramente */
-}
-.auto-scroll-container:hover .focusable-card:hover {
-    opacity: 1;
-    transform: scale(1.03);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+/* Remove o efeito de foco em dispositivos de toque, pois não há "hover" */
+@media (hover: hover) {
+    .auto-scroll-container:hover .focusable-card {
+        opacity: 0.6; /* Esbate mais */
+        transform: scale(0.98); /* Encolhe ligeiramente */
+    }
+    .auto-scroll-container:hover .focusable-card:hover {
+        opacity: 1;
+        transform: scale(1.03);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
 }
 
 
 /* --- 11.E RESPONSIVIDADE (NOVAS SECÇÕES) --- */
 @media (max-width: 768px) {
+  
+  /* Adiciona padding ao fundo para a barra flutuante não tapar conteúdo */
+  body {
+      padding-bottom: 100px;
+  }
+  
+  .section { padding: 60px 24px; }
+  
+  .section-title { font-size: 2.25rem; } 
+
+  .cover-container { padding: 32px; width: 90%; }
+  .cover-container .names { font-size: 3rem; }
+  
+  .hero-content { padding: 24px; } 
+  .hero .names { font-size: 4rem; }
+  #countdown span { font-size: 2rem; }
+  
   main > .section { padding-left: 24px; padding-right: 24px; }
   .auto-scroll-container { padding-left: 24px; padding-right: 24px; margin: 0 -24px; }
-  .contact-grid { grid-template-columns: 1fr; gap: 60px; }
-  .contact-details h3, .contact-form h3 { text-align: center; }
+  
+  .template-card { width: 280px; } 
+
+  /* Mostra a barra de navegação flutuante */
+  .floating-nav {
+      display: flex;
+  }
+  
+  /* Esconde botões de navegação do modal em mobile (muito clutter) */
+  .modal-nav-btn {
+      display: none;
+  }
   
   /* Quiz em coluna única */
   .quiz-options { grid-template-columns: 1fr; }
 
-  /* Secção interativa "Convite Vivo" em stack */
-  .interactive-demo-grid { grid-template-columns: 1fr; gap: 40px; }
-  .phone-mockup { order: -1; max-width: 280px; margin: 0 auto; }
-  #mockupImage { border-radius: 24px; }
+  /* Modal Header e Features empilhados */
+  .modal-header { flex-direction: column; align-items: flex-start; }
+  .modal-price { margin-left: 0; margin-top: 8px; font-size: 1.25rem; }
+  .modal-features-list { grid-template-columns: 1fr; }
+  
+  
+  /* CORREÇÃO PARALLAX MOBILE (REMOVIDA) */
+  
+  
+  /* Reduz o padding do modal em ecrãs muito pequenos */
+  .modal-card {
+      padding: 32px 24px;
+  }
+
 }
+
+/* Media query para ecrãs muito largos, para afastar os botões de navegação */
+@media (min-width: 1200px) {
+    .modal-nav-btn.prev { 
+        left: calc(50% - 250px - 80px); /* Mais espaço */
+    }
+    .modal-nav-btn.next { 
+        right: calc(50% - 250px - 80px); 
+    }
+}
+
 
 /* ==========================================================================
    12. ESTILOS DO MODAL DE DETALHES DO MODELO
@@ -505,6 +627,7 @@ textarea { min-height: 80px; }
   color: var(--text-light);
   /* Estilos para animação de entrada */
   opacity: 0; transform: translateX(-10px);
+  /* Transição é aplicada diretamente no CSS */
   transition: opacity 0.4s ease-out, transform 0.4s ease-out;
 }
 /* Estado visível para a animação */
@@ -512,22 +635,18 @@ textarea { min-height: 80px; }
     opacity: 1;
     transform: translateX(0);
 }
-/* Animação com delay escalonado */
-.modal-features-list li:nth-child(2) { transition-delay: 0.05s; }
-.modal-features-list li:nth-child(3) { transition-delay: 0.1s; }
-.modal-features-list li:nth-child(4) { transition-delay: 0.15s; }
-.modal-features-list li:nth-child(5) { transition-delay: 0.2s; }
-.modal-features-list li:nth-child(6) { transition-delay: 0.25s; }
-.modal-features-list li:nth-child(7) { transition-delay: 0.3s; }
-.modal-features-list li:nth-child(8) { transition-delay: 0.35s; }
+/* O delay da animação agora é feito via JS (setTimeout)
+   para garantir que re-dispara em cada navegação.
+*/
+.modal-features-list li:nth-child(2) { }
+.modal-features-list li:nth-child(3) { }
+.modal-features-list li:nth-child(4) { }
+.modal-features-list li:nth-child(5) { }
+.modal-features-list li:nth-child(6) { }
+.modal-features-list li:nth-child(7) { }
+.modal-features-list li:nth-child(8) { }
 
 .modal-features-list li svg {
   width: 18px; height: 18px; stroke: var(--accent);
   stroke-width: 2.5; fill: none; margin-right: 8px; flex-shrink: 0;
-}
-
-@media (max-width: 768px) {
-  .modal-header { flex-direction: column; align-items: flex-start; }
-  .modal-price { margin-left: 0; margin-top: 8px; font-size: 1.25rem; }
-  .modal-features-list { grid-template-columns: 1fr; }
 }
