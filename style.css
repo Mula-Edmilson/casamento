@@ -1,17 +1,23 @@
-/* style.css (Design Elegante - Final V6 - Parallax Removido) */
+/* style.css (Design Elegante - Final V7 - Tema Escuro) */
 
-/* --- 1. FUNDAMENTOS E VARIÁVEIS --- */
+/* --- 1. FUNDAMENTOS E VARIÁVEIS (TEMA ESCURO) --- */
 :root {
-  --bg: #FDFBFA;
-  --accent: #B08968;
-  --text-dark: #3a3a3a;
-  --text-light: #5a5a5a;
-  --card: #FFFFFF;
-  --section-bg: #F8F5F2;
-  --border-color: #EAE0D5;
+  /* Paleta Escura */
+  --bg: #2B2623;            /* Fundo principal: castanho-escuro */
+  --bg-rgb: 43, 38, 35;     /* Versão RGB do --bg para o overlay */
+  --accent: #B08968;        /* Cor de destaque (mantém-se bem) */
+  --text-dark: #F5EFEA;      /* Texto principal (títulos): bege claro */
+  --text-light: #C8C0B9;     /* Texto secundário (corpo): bege mais escuro */
+  --card: #352F2C;            /* Fundo dos cartões: castanho-médio */
+  --section-bg: #302A27;    /* Fundo das secções: castanho mais escuro */
+  --border-color: #4D4641;  /* Cor das bordas */
+
+  /* Tipografia (sem alteração) */
   --font-heading: 'Cormorant Garamond', serif;
   --font-body: 'Inter', sans-serif;
   --font-script: 'Parisienne', cursive;
+  
+  /* Transições (sem alteração) */
   --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   --transition-fast: all 0.2s ease-out; /* Para micro-animações */
 }
@@ -33,6 +39,7 @@ body.loading { opacity: 0; }
 body.loaded { opacity: 1; }
 
 /* --- 1.A PÁGINA DE CAPA (index.html) --- */
+/* (Sem alteração, já usa um fundo de imagem) */
 body.cover-page {
   display: flex;
   align-items: center;
@@ -44,7 +51,7 @@ body.cover-page {
   background-position: center;
 }
 .cover-container {
-  background: var(--card);
+  background: var(--card); /* Agora usa o cartão escuro */
   padding: 48px;
   border-radius: 8px;
   text-align: center;
@@ -64,7 +71,7 @@ body.cover-page {
   font-family: var(--font-heading);
   font-size: 1.25rem;
   margin-bottom: 32px;
-  color: var(--text-dark);
+  color: var(--text-dark); /* Agora é claro */
 }
 .cover-container .btn {
   animation: pulse 2s infinite ease-out;
@@ -78,7 +85,7 @@ body.cover-page {
 /* --- 2. TIPOGRAFIA --- */
 h1, h2, h3, h4 {
   font-family: var(--font-heading);
-  color: var(--text-dark);
+  color: var(--text-dark); /* Agora é claro */
   font-weight: 600;
   line-height: 1.2;
 }
@@ -108,6 +115,7 @@ main > .section:first-child,
 /* ==========================================================================
    4. HERO SECTION (COM EFEITO KEN BURNS)
 ========================================================================== */
+/* (Sem alteração, já é escuro por design) */
 .hero {
   position: relative;
   display: flex;
@@ -135,7 +143,7 @@ main > .section:first-child,
     inset: -5%; 
     width: 110%;
     height: 110%;
-    background-image: url('https://i.postimg.cc/rFjHZBQV/Period-on-wedding-night.jpg');
+    background-image: url('https://i.postimg.cc/qMGTpKqp/Whats-App-Image-2025-10-24-at-10-47-48-AM-2.jpg');
     background-size: cover;
     background-position: center;
     z-index: 0; 
@@ -179,13 +187,12 @@ main > .section:first-child,
 }
 
 /* --- 5. COMPONENTES --- */
-/* (Estilos de .verse, .couple-details, .history-grid, .gallery-grid, .guide-grid, etc. permanecem aqui) */
 .footer {
   text-align: center;
   padding: 60px 24px; 
-  background: var(--section-bg);
-  position: relative; /* Para links */
-  z-index: 1; /* Para garantir que fica acima do parallax se aplicável */
+  background: var(--section-bg); /* Agora é escuro */
+  position: relative; 
+  z-index: 1; 
 }
 .footer .names { font-size: 3rem; color: var(--accent); }
 .footer-contact {
@@ -199,7 +206,7 @@ main > .section:first-child,
 }
 /* Estilo para links no footer */
 .footer-link {
-    color: var(--text-light);
+    color: var(--text-light); /* Agora é claro */
     text-decoration: none;
     transition: color var(--transition-fast);
 }
@@ -221,7 +228,7 @@ main > .section:first-child,
     position: absolute;
     top: 0; left: 0;
     width: 0; height: 100%;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.2); /* Efeito de brilho claro */
     transition: width 0.3s ease-out;
     z-index: -1;
 }
@@ -229,9 +236,9 @@ main > .section:first-child,
     width: 100%;
 }
 .btn-primary { background-color: var(--accent); color: white; border-color: var(--accent); }
-.btn-primary:hover { background-color: #9A6F50; border-color: #9A6F50; transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 20px rgba(176, 137, 104, 0.3); } /* Hover mais pronunciado */
+.btn-primary:hover { background-color: #9A6F50; border-color: #9A6F50; transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 20px rgba(176, 137, 104, 0.3); }
 .btn-outline { background-color: transparent; color: var(--accent); border-color: var(--accent); }
-.btn-outline:hover { background-color: var(--accent); color: white; transform: translateY(-3px) scale(1.02); } /* Hover mais pronunciado */
+.btn-outline:hover { background-color: var(--accent); color: white; transform: translateY(-3px) scale(1.02); }
 .btn-ghost { background: transparent; color: var(--text-light); border-color: transparent; }
 .btn-ghost:hover { background: var(--section-bg); }
 
@@ -245,7 +252,7 @@ main > .section:first-child,
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
-    background: var(--card);
+    background: var(--card); /* Agora é escuro */
     border-radius: 50px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     display: none; /* Escondido por defeito, aparece no media query */
@@ -259,7 +266,7 @@ main > .section:first-child,
     align-items: center;
     gap: 2px;
     text-decoration: none;
-    color: var(--text-light);
+    color: var(--text-light); /* Agora é claro */
     font-size: 0.7rem; /* Texto pequeno */
     font-weight: 500;
     background: transparent;
@@ -274,7 +281,7 @@ main > .section:first-child,
 .fab-link svg {
     width: 22px;
     height: 22px;
-    stroke: var(--text-dark); /* Cor do ícone */
+    stroke: var(--text-dark); /* Agora é claro */
     transition: var(--transition-fast);
 }
 .fab-link:hover {
@@ -288,13 +295,15 @@ main > .section:first-child,
 
 /* --- 7. MODAIS --- */
 .modal {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(40, 40, 40, 0.8);
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+  background: rgba(0, 0, 0, 0.8); /* Alterado para preto (mais limpo) */
   backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 200;
   opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
 }
 .modal.open { opacity: 1; visibility: visible; }
 .modal-card {
-  background: var(--card); padding: 40px; border-radius: 8px; width: 90%; max-width: 500px;
+  background: var(--card); /* Agora é escuro */
+  padding: 40px; border-radius: 8px; width: 90%; max-width: 500px;
   max-height: 90vh; overflow-y: auto; text-align: center; transform: scale(0.95) translateY(10px); /* Efeito de entrada */
   transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.2), opacity 0.4s ease; /* Efeito bounce */
   opacity: 0;
@@ -310,7 +319,12 @@ form div { margin-bottom: 16px; text-align: left; }
 .form-row { display: flex; gap: 16px; }
 .form-row > div { flex: 1; }
 label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 500; }
-input, textarea, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1rem; font-family: var(--font-body); }
+input, textarea, select { 
+  width: 100%; padding: 12px; border-radius: 8px; 
+  border: 1px solid var(--border-color); font-size: 1rem; font-family: var(--font-body);
+  background-color: var(--bg); /* Fundo escuro para inputs */
+  color: var(--text-dark); /* Texto claro para inputs */
+}
 textarea { min-height: 80px; }
 .form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
 .form-actions .btn { flex-grow: 1; }
@@ -324,7 +338,7 @@ textarea { min-height: 80px; }
     margin-top: 24px;
 }
 .info-block {
-    background: var(--section-bg);
+    background: var(--section-bg); /* Agora é escuro */
     padding: 16px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
@@ -350,7 +364,7 @@ textarea { min-height: 80px; }
     top: 50%;
     transform: translateY(-50%);
     z-index: 210; /* Acima do card */
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--card); /* Alterado para var(--card) */
     border: 1px solid var(--border-color);
     border-radius: 50%;
     width: 44px;
@@ -360,13 +374,14 @@ textarea { min-height: 80px; }
     justify-content: center;
     cursor: pointer;
     transition: var(--transition-fast);
-    color: var(--text-dark);
+    color: var(--text-dark); /* Agora é claro */
 }
 .modal-nav-btn:hover {
-    background: var(--card);
+    background: var(--accent); /* Fica acentuado no hover */
     transform: translateY(-50%) scale(1.1);
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    color: var(--accent);
+    color: white; /* Texto branco no botão acentuado */
+    border-color: var(--accent);
 }
 .modal-nav-btn svg {
     width: 28px;
@@ -422,7 +437,7 @@ textarea { min-height: 80px; }
 .template-card {
   flex-shrink: 0; 
   width: 300px; 
-  background: var(--card);
+  background: var(--card); /* Agora é escuro */
   border-radius: 8px;
   border: 1px solid var(--border-color);
   box-shadow: 0 5px 20px rgba(0,0,0,0.05);
@@ -452,7 +467,7 @@ textarea { min-height: 80px; }
 .quiz-container {
     max-width: 600px;
     margin: 40px auto 0 auto;
-    background: var(--card);
+    background: var(--card); /* Agora é escuro */
     padding: 32px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
@@ -474,6 +489,7 @@ textarea { min-height: 80px; }
     cursor: pointer;
     transition: var(--transition-fast);
     text-align: center;
+    color: var(--text-light); /* Texto claro */
 }
 .quiz-option:hover { background-color: var(--section-bg); border-color: var(--accent); }
 .quiz-result { display: none; text-align: center; animation: fadeIn 0.5s ease-out; }
@@ -483,8 +499,8 @@ textarea { min-height: 80px; }
 
 /* --- 11.C TESTEMUNHOS (SECÇÃO COM FUNDO DE IMAGEM) --- */
 .parallax-bg {
-    background-image: url('https://i.postimg.cc/Lsvbb4wL/10467.jpg'); /* Imagem de fundo para parallax */
-    /* background-attachment: fixed; <-- REMOVIDO PARA DESATIVAR PARALLAX */
+    background-image: url('https://i.postimg.cc/9fJcwZRS/2T2A4974.jpg'); /* Imagem de fundo para parallax */
+    /* background-attachment: fixed; <-- REMOVIDO */
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -494,7 +510,7 @@ textarea { min-height: 80px; }
     content: '';
     position: absolute;
     inset: 0;
-    background-color: rgba(var(--bg-rgb, 253, 251, 250), 0.8); /* Usa a cor de fundo com transparência */
+    background-color: rgba(var(--bg-rgb), 0.8); /* Alterado para usar o RGB do fundo escuro */
     z-index: 0;
 }
 /* Garante que o container de scroll fica acima do overlay */
@@ -577,9 +593,6 @@ textarea { min-height: 80px; }
   .modal-header { flex-direction: column; align-items: flex-start; }
   .modal-price { margin-left: 0; margin-top: 8px; font-size: 1.25rem; }
   .modal-features-list { grid-template-columns: 1fr; }
-  
-  
-  /* CORREÇÃO PARALLAX MOBILE (REMOVIDA) */
   
   
   /* Reduz o padding do modal em ecrãs muito pequenos */
