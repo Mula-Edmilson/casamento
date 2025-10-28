@@ -1,4 +1,4 @@
-/* style.css (Design Elegante - Final V7 - Tema Escuro) */
+/* style.css (Design Elegante - Final V7 - Tema Escuro - Comparativo Móvel v3) */
 
 /* --- 1. FUNDAMENTOS E VARIÁVEIS (TEMA ESCURO) --- */
 :root {
@@ -228,7 +228,7 @@ main > .section:first-child,
 
 
 /* ==========================================================================
-   NOVO: BARRA DE NAVEGAÇÃO FLUTUANTE (MOBILE-ONLY)
+   BARRA DE NAVEGAÇÃO FLUTUANTE (MOBILE-ONLY)
    ========================================================================== */
 .floating-nav {
     position: fixed;
@@ -341,7 +341,7 @@ textarea { min-height: 80px; }
 }
 
 /* ==========================================================================
-   NOVO: Botões de Navegação do Modal de Detalhes
+   BOTÕES DE NAVEGAÇÃO DO MODAL DE DETALHES
    ========================================================================== */
 .modal-nav-btn {
     position: absolute;
@@ -528,141 +528,6 @@ textarea { min-height: 80px; }
         opacity: 1;
         transform: scale(1.03);
         box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-    }
-}
-
-
-/* ==========================================================================
-   11.E RESPONSIVIDADE (SECÇÕES EXISTENTES)
-   ========================================================================== */
-@media (max-width: 768px) {
-  
-  /* Adiciona padding ao fundo para a barra flutuante não tapar conteúdo */
-  body {
-      padding-bottom: 100px;
-  }
-  
-  .section { padding: 60px 24px; }
-  
-  .section-title { font-size: 2.25rem; } 
-
-  .cover-container { padding: 32px; width: 90%; }
-  .cover-container .names { font-size: 3rem; }
-  
-  .hero-content { padding: 24px; } 
-  .hero .names { font-size: 4rem; }
-  #countdown span { font-size: 2rem; }
-  
-  main > .section { padding-left: 24px; padding-right: 24px; }
-  .auto-scroll-container { padding-left: 24px; padding-right: 24px; margin: 0 -24px; }
-  
-  .template-card { width: 280px; } 
-
-  /* Mostra a barra de navegação flutuante */
-  .floating-nav {
-      display: flex;
-  }
-  
-  /* Esconde botões de navegação do modal em mobile (muito clutter) */
-  .modal-nav-btn {
-      display: none;
-  }
-  
-  /* Quiz em coluna única */
-  .quiz-options { grid-template-columns: 1fr; }
-
-  /* Modal Header e Features empilhados */
-  .modal-header { flex-direction: column; align-items: flex-start; }
-  .modal-price { margin-left: 0; margin-top: 8px; font-size: 1.25rem; }
-  .modal-features-list { grid-template-columns: 1fr; }
-  
-  
-  /* Reduz o padding do modal em ecrãs muito pequenos */
-  .modal-card {
-      padding: 32px 24px;
-  }
-
-  /* --- 13.D AJUSTES RESPONSIVOS PARA NOVAS SECÇÕES (FAQ E FOOTER) --- */
-  .faq-question {
-      font-size: 1.15rem;
-      padding: 20px 0;
-  }
-  .faq-answer {
-      font-size: 0.9rem;
-  }
-
-  .footer-complete {
-      padding: 60px 24px;
-      text-align: center; /* Centra tudo no mobile */
-  }
-  .footer-layout {
-      flex-direction: column; /* Empilha as colunas */
-      gap: 40px;
-  }
-  .footer-col-main p {
-      margin-left: auto;
-      margin-right: auto;
-  }
-  .social-links {
-      justify-content: center; /* Centra os ícones */
-  }
-  
-  /* --- NOVOS AJUSTES RESPONSIVOS (VANTAGENS, PROCESSO, SOBRE) --- */
-  
-  /* ESTA É A CORREÇÃO para "Mais que um Convite" */
-  .vantagens-grid {
-      grid-template-columns: 1fr; /* Coluna única */
-  }
-  
-  .processo-container {
-      flex-direction: column; /* Empilha os passos */
-      align-items: center;
-      gap: 32px;
-  }
-  .processo-passo {
-      max-width: 350px;
-  }
-  /* Remove as linhas conectoras no mobile */
-  .processo-passo::after {
-      display: none;
-  }
-  
-  .sobre-container {
-      flex-direction: column; /* Empilha a imagem e o texto */
-      gap: 32px;
-  }
-  .sobre-texto {
-      padding-left: 0;
-      text-align: center;
-  }
-  .sobre-texto .section-title {
-      text-align: center;
-  }
-
-  /* Ajustes para a secção de vídeo demo */
-  .phone-mockup {
-      /* Reduz a escala para caber em ecrãs pequenos */
-      transform: scale(0.9);
-      /* A altura precisa de ser ajustada para menos */
-      height: 580px; 
-  }
-  
-  @media (max-width: 360px) {
-      .phone-mockup {
-          transform: scale(0.85);
-          height: 550px;
-      }
-  }
-
-}
-
-/* Media query para ecrãs muito largos, para afastar os botões de navegação */
-@media (min-width: 1200px) {
-    .modal-nav-btn.prev { 
-        left: calc(50% - 250px - 80px); /* Mais espaço */
-    }
-    .modal-nav-btn.next { 
-        right: calc(50% - 250px - 80px); 
     }
 }
 
@@ -900,7 +765,7 @@ textarea { min-height: 80px; }
 }
 
 /* ==========================================================================
-   14. NOVA SECÇÃO: VANTAGENS
+   14. NOVA SECÇÃO: VANTAGENS (desktop)
    ========================================================================== */
 .vantagens-grid {
     display: grid;
@@ -943,15 +808,13 @@ textarea { min-height: 80px; }
 }
 
 /* ==========================================================================
-   15. NOVA SECÇÃO: TABELA DE PREÇOS
+   15. NOVA SECÇÃO: TABELA DE PREÇOS (desktop)
    ========================================================================== */
-
-/* ESTA É A CORREÇÃO para a Tabela Comparativa */
 .tabela-container {
     max-width: 1100px;
     margin: 0 auto;
-    overflow-x: auto; /* Permite scroll horizontal em ecrãs pequenos */
-    -webkit-overflow-scrolling: touch;
+    overflow-x: auto; /* Esta regra permite o scroll horizontal */
+    -webkit-overflow-scrolling: touch; /* Melhora o scroll em iOS */
     border: 1px solid var(--border-color);
     border-radius: 8px;
     position: relative;
@@ -959,7 +822,7 @@ textarea { min-height: 80px; }
 }
 .tabela-precos {
     width: 100%;
-    min-width: 800px; /* Força o scroll em ecrãs menores */
+    min-width: 800px; /* Força o scroll em ecrãs menores que 800px */
     border-collapse: collapse;
     background: var(--card);
 }
@@ -1004,6 +867,66 @@ textarea { min-height: 80px; }
     font-family: var(--font-heading);
     font-size: 1.5rem;
     color: var(--text-dark);
+}
+
+/* ==========================================================================
+   15.B NOVA ESTRUTURA: COMPARATIVO MÓVEL (escondido por defeito)
+   ========================================================================== */
+.comparativo-mobile {
+    display: none; /* Escondido em desktop */
+    max-width: 500px; /* Limita a largura no centro */
+    margin: 0 auto;
+    gap: 24px; /* Espaço entre os cartões */
+}
+.pacote-card {
+    background: var(--card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: left;
+}
+.pacote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+.pacote-header h4 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+.pacote-price {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    margin-left: 16px;
+}
+.pacote-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+}
+.pacote-features li {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+.pacote-features li span { /* Para os ícones check/dash */
+    margin-right: 10px;
+    font-size: 1.2rem;
+    line-height: 1;
+    width: 20px; /* Alinha os ícones */
+    text-align: center;
+}
+.pacote-features li span.check { color: var(--accent); }
+.pacote-features li span.dash { color: var(--border-color); }
+.pacote-card .btn {
+    width: 100%; /* Botão ocupa a largura total */
 }
 
 /* ==========================================================================
@@ -1180,4 +1103,154 @@ textarea { min-height: 80px; }
     background: var(--card); /* Mesma cor da moldura */
     border-radius: 0 0 10px 10px;
     z-index: 10; /* Acima do ecrã */
+}
+
+
+/* ==========================================================================
+   BLOCO DE RESPONSIVIDADE COMPLETO E CORRIGIDO
+   ========================================================================== */
+@media (max-width: 768px) {
+  
+  /* Adiciona padding ao fundo para a barra flutuante não tapar conteúdo */
+  body {
+      padding-bottom: 100px;
+  }
+  
+  .section { padding: 60px 24px; }
+  
+  .section-title { font-size: 2.25rem; } 
+
+  .cover-container { padding: 32px; width: 90%; }
+  .cover-container .names { font-size: 3rem; }
+  
+  .hero-content { padding: 24px; } 
+  .hero .names { font-size: 4rem; }
+  #countdown span { font-size: 2rem; }
+  
+  main > .section { padding-left: 24px; padding-right: 24px; }
+  .auto-scroll-container { padding-left: 24px; padding-right: 24px; margin: 0 -24px; }
+  
+  .template-card { width: 280px; } 
+
+  /* Mostra a barra de navegação flutuante */
+  .floating-nav {
+      display: flex;
+  }
+  
+  /* Esconde botões de navegação do modal em mobile (muito clutter) */
+  .modal-nav-btn {
+      display: none;
+  }
+  
+  /* Quiz em coluna única */
+  .quiz-options { grid-template-columns: 1fr; }
+
+  /* Modal Header e Features empilhados */
+  .modal-header { flex-direction: column; align-items: flex-start; }
+  .modal-price { margin-left: 0; margin-top: 8px; font-size: 1.25rem; }
+  .modal-features-list { grid-template-columns: 1fr; }
+  
+  
+  /* Reduz o padding do modal em ecrãs muito pequenos */
+  .modal-card {
+      padding: 32px 24px;
+  }
+
+  /* --- AJUSTES RESPONSIVOS PARA FAQ E FOOTER --- */
+  .faq-question {
+      font-size: 1.15rem;
+      padding: 20px 0;
+  }
+  .faq-answer {
+      font-size: 0.9rem;
+  }
+
+  .footer-complete {
+      padding: 60px 24px;
+      text-align: center; /* Centra tudo no mobile */
+  }
+  .footer-layout {
+      flex-direction: column; /* Empilha as colunas */
+      gap: 40px;
+  }
+  .footer-col-main p {
+      margin-left: auto;
+      margin-right: auto;
+  }
+  .social-links {
+      justify-content: center; /* Centra os ícones */
+  }
+  
+  /* --- AJUSTES RESPONSIVOS (VANTAGENS, PROCESSO, SOBRE) --- */
+  
+  /* Garante que as vantagens ficam em coluna única */
+  .vantagens-grid {
+      grid-template-columns: 1fr; /* Coluna única */
+  }
+  
+  .processo-container {
+      flex-direction: column; /* Empilha os passos */
+      align-items: center;
+      gap: 32px;
+  }
+  .processo-passo {
+      max-width: 350px;
+  }
+  /* Remove as linhas conectoras no mobile */
+  .processo-passo::after {
+      display: none;
+  }
+  
+  .sobre-container {
+      flex-direction: column; /* Empilha a imagem e o texto */
+      gap: 32px;
+  }
+  .sobre-texto {
+      padding-left: 0;
+      text-align: center;
+  }
+  .sobre-texto .section-title {
+      text-align: center;
+  }
+
+  /* Ajustes para a secção de vídeo demo */
+  .phone-mockup {
+      /* Reduz a escala para caber em ecrãs pequenos */
+      transform: scale(0.9);
+      /* A altura precisa de ser ajustada para menos */
+      height: 580px; 
+  }
+  
+  /* Ajuste de escala para ecrãs ainda mais pequenos */
+  @media (max-width: 360px) {
+      .phone-mockup {
+          transform: scale(0.85);
+          height: 550px;
+      }
+  }
+
+  /* ==========================================================
+     ALTERAÇÃO PRINCIPAL: Esconder Tabela, Mostrar Cartões Móveis
+     ========================================================== */
+  .tabela-container {
+      display: none; /* Esconde a tabela em mobile */
+  }
+  .comparativo-mobile {
+      display: grid; /* Mostra os cartões e organiza-os */
+      grid-template-columns: 1fr; /* Garante que é coluna única */
+  }
+  /* ========================================================== */
+
+
+} /* <-- FIM DO BLOCO @media (max-width: 768px) */
+
+
+/* Media query para ecrãs muito largos, para afastar os botões de navegação */
+@media (min-width: 1200px) {
+    .modal-nav-btn.prev { 
+        left: calc(50% - 250px - 80px); /* Mais espaço */
+    }
+    .modal-nav-btn.next { 
+        right: calc(50% - 250px - 80px); 
+    }
 }
