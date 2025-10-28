@@ -63,7 +63,22 @@
         </div>
     </section>
 
-    <section class="section section-highlight fade-in-section" id="quiz">
+    <section class="section section-highlight fade-in-section" id="demo-video">
+        <h2 class="section-title">Veja a Magia em Ação</h2>
+        <p class="section-subtitle">Um convite digital é mais do que texto. É uma experiência. Veja como o seu convidado irá interagir.</p>
+        
+        <div class="phone-mockup">
+            <div class="phone-screen">
+                
+                <img src="https://i.postimg.cc/m244xjLT/Whats-App-Image-2025-10-24-at-10-47-47-AM.jpg" 
+                     alt="Demonstração do convite digital em telemóvel" 
+                     class="video-placeholder-image">
+                
+            </div>
+        </div>
+    </section>
+
+    <section class="section fade-in-section" id="quiz">
         <h2 class="section-title">Descubra o Seu Estilo</h2>
         <p class="section-subtitle">Não tem a certeza por onde começar? Responda a 3 perguntas rápidas e encontre o convite perfeito!</p>
         
@@ -253,7 +268,8 @@
                         <td><button type="button" class="btn btn-outline btn-small open-modal-from-table" data-index="2">Escolher</button></td>
                         <td><button type="button" class="btn btn-outline btn-small open-modal-from-table" data-index="3">Escolher</button></td>
                     </tr>
-                    </tbody>
+
+                </tbody>
             </table>
         </div>
     </section>
@@ -346,7 +362,7 @@
     <section class="section fade-in-section" id="sobre-nos">
         <div class="sobre-container">
             <div class="sobre-imagem">
-                <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Equipa Lirandzo a trabalhar em designs">
+                <img src="https://i.postimg.cc/9fJcwZRS/2T2A4974.jpg" alt="Equipa Lirandzo a trabalhar em designs">
             </div>
             <div class="sobre-texto">
                 <h2 class="section-title" style="text-align: left; margin-bottom: 24px;">Sobre a Lirandzo</h2>
@@ -736,6 +752,7 @@
       setupFAQAccordion();
 
       
+      // LÓGICA PARA ABRIR MODAL PELA TABELA DE PREÇOS
       function setupTableModalButtons() {
           const tableButtons = document.querySelectorAll('.open-modal-from-table');
           

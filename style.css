@@ -608,6 +608,8 @@ textarea { min-height: 80px; }
   }
   
   /* --- NOVOS AJUSTES RESPONSIVOS (VANTAGENS, PROCESSO, SOBRE) --- */
+  
+  /* ESTA É A CORREÇÃO para "Mais que um Convite" */
   .vantagens-grid {
       grid-template-columns: 1fr; /* Coluna única */
   }
@@ -635,6 +637,21 @@ textarea { min-height: 80px; }
   }
   .sobre-texto .section-title {
       text-align: center;
+  }
+
+  /* Ajustes para a secção de vídeo demo */
+  .phone-mockup {
+      /* Reduz a escala para caber em ecrãs pequenos */
+      transform: scale(0.9);
+      /* A altura precisa de ser ajustada para menos */
+      height: 580px; 
+  }
+  
+  @media (max-width: 360px) {
+      .phone-mockup {
+          transform: scale(0.85);
+          height: 550px;
+      }
   }
 
 }
@@ -928,6 +945,8 @@ textarea { min-height: 80px; }
 /* ==========================================================================
    15. NOVA SECÇÃO: TABELA DE PREÇOS
    ========================================================================== */
+
+/* ESTA É A CORREÇÃO para a Tabela Comparativa */
 .tabela-container {
     max-width: 1100px;
     margin: 0 auto;
@@ -1112,4 +1131,53 @@ textarea { min-height: 80px; }
 .legal-page-wrap ul {
     list-style-position: inside;
     padding-left: 8px;
+}
+
+/* ==========================================================================
+   19. NOVA SECÇÃO: VÍDEO DEMO
+   ========================================================================== */
+.phone-mockup {
+    position: relative;
+    max-width: 320px; /* Largura de um telemóvel */
+    height: 640px; /* Proporção de telemóvel */
+    margin: 40px auto 0 auto;
+    border: 12px solid var(--card); /* Moldura do telemóvel */
+    border-radius: 40px; /* Cantos arredondados do telemóvel */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    background: var(--bg); /* Cor de fundo "desligado" */
+    z-index: 1; /* Para ficar acima do parallax se houver */
+}
+
+.phone-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    border-radius: 28px; /* Cantos arredondados do ecrã (inferior à moldura) */
+    background: #000; /* Fundo preto para o ecrã */
+}
+
+/* Estilo para o vídeo ou a imagem de placeholder */
+.phone-screen video,
+.phone-screen .video-placeholder-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que preenche o ecrã sem distorcer */
+    display: block;
+}
+
+/* Adicionar um 'notch' (entalhe) falso para realismo */
+.phone-mockup::before {
+    content: '';
+    position: absolute;
+    top: 10px; /* Posição do entalhe */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px; /* Largura do entalhe */
+    height: 8px; /* Altura do entalhe */
+    background: var(--card); /* Mesma cor da moldura */
+    border-radius: 0 0 10px 10px;
+    z-index: 10; /* Acima do ecrã */
 }
