@@ -1,4 +1,4 @@
-/* style.css (Design Elegante - Final V7 - Tema Escuro - Comparativo Móvel v3) */
+/* style.css (Design Elegante - Final V7 - Tema Escuro - Comparativo Móvel v3 - Refinamentos v4) */
 
 /* --- 1. FUNDAMENTOS E VARIÁVEIS (TEMA ESCURO) --- */
 :root {
@@ -226,6 +226,48 @@ main > .section:first-child,
     font-size: 0.8rem;
 }
 
+/* ==========================================================
+   ACessibilidade: Estilo de Foco Visível
+   ========================================================== */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+.quiz-option:focus,
+.template-card:focus, /* Adicionado para navegação por teclado nos cards */
+[tabindex]:focus {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px; /* Opcional: suaviza o outline */
+    transition: outline-offset 0.1s ease-out; /* Pequena transição */
+}
+/* Remove outline padrão em favor do personalizado */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+.quiz-option:focus:not(:focus-visible),
+.template-card:focus:not(:focus-visible),
+[tabindex]:focus:not(:focus-visible) {
+    outline: none;
+}
+/* Estilo específico para :focus-visible se necessário (navegação por teclado) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.quiz-option:focus-visible,
+.template-card:focus-visible,
+[tabindex]:focus-visible {
+   outline: 3px solid var(--accent);
+   outline-offset: 3px;
+   border-radius: 4px;
+   transition: outline-offset 0.1s ease-out;
+}
+
 
 /* ==========================================================================
    BARRA DE NAVEGAÇÃO FLUTUANTE (MOBILE-ONLY)
@@ -428,6 +470,8 @@ textarea { min-height: 80px; }
   overflow: hidden;
   transition: var(--transition-smooth);
   cursor: pointer;
+  /* Adicionado tabindex para permitir foco via teclado */
+  tabindex="0"; 
 }
 .template-card img {
   width: 100%; height: 250px; 
@@ -627,8 +671,9 @@ textarea { min-height: 80px; }
     /* Magia do accordion */
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
-                padding 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* Transição um pouco mais rápida */
+    transition: max-height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                padding 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     
     /* Estilo do texto */
     padding-left: 16px; /* Adiciona um leve recuo */
@@ -785,9 +830,10 @@ textarea { min-height: 80px; }
     text-align: center;
     transition: var(--transition-smooth);
 }
+/* Micro-animação no hover */
 .vantagem-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
 }
 
 .vantagem-icon {
@@ -1103,6 +1149,55 @@ textarea { min-height: 80px; }
     background: var(--card); /* Mesma cor da moldura */
     border-radius: 0 0 10px 10px;
     z-index: 10; /* Acima do ecrã */
+}
+
+/* ==========================================================================
+   20. NOVO: BOTÃO "VOLTAR AO TOPO"
+   ========================================================================== */
+#backToTopBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99; /* Abaixo da nav flutuante, acima do resto */
+    
+    /* Aparência */
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    
+    /* Ícone */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Remove padding padrão */
+
+    /* Animação */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+#backToTopBtn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+#backToTopBtn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2.5; /* Linha mais grossa */
+}
+/* Ajuste no mobile para não colidir com a nav flutuante */
+@media (max-width: 768px) {
+    #backToTopBtn {
+        bottom: 90px; /* Sobe o botão */
+    }
 }
 
 
