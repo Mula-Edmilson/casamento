@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Convite de Casamento — Maria & João</title>
+  
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+
+  <meta property="og:title" content="Convite de Casamento — Maria & João">
+  <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://i.postimg.cc/9fJcwZRS/2T2A4974.jpg">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="loading">
+  
+  <audio id="backgroundMusic" loop src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
+
+  <div class="fixed-ui-container">
+      <button id="fabRsvpBtn" class="fab-item" aria-label="Confirmar presença">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"/></svg>
+      </button>
+      <button id="fabGiftsBtn" class="fab-item" aria-label="Opções de presente">
+          <svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+      </button>
+      <button id="fabMapBtn" class="fab-item" aria-label="Ver mapa do local">
+          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      </button>
+      <button id="musicControl" aria-label="Controlar música">
+          <svg id="musicIcon" width="20" height="20" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
+      </button>
+  </div>
+  
+  <main class="invite-wrap" role="main" aria-labelledby="inviteTitle">
+    
+    <header class="hero">
+      <div class="hero-content">
+        <p class="lead">Celebre connosco o nosso casamento</p>
+        <h1 id="inviteTitle" class="names">Maria & João</h1>
+        <div class="pill">Sábado, 10 de Janeiro de 2026</div> 
+        <div id="countdown">
+            <div><span id="days">00</span><small>Dias</small></div>
+            <div><span id="hours">00</span><small>Horas</small></div>
+            <div><span id="minutes">00</span><small>Minutos</small></div>
+            <div><span id="seconds">00</span><small>Segundos</small></div>
+        </div>
+      </div>
+      <a href="#nossa-historia" class="scroll-down-indicator" aria-label="Ver detalhes do evento">
+        <svg viewBox="0 0 24 24"><path d="M12 19.5l-7-7 1.5-1.5L12 16.5l5.5-5.5L19 12.5z"/></svg>
+      </a>
+    </header>
+
+    <section class="section fade-in-section" id="nossa-historia">
+        <p class="verse">"Para que todos vejam, e saibam, e considerem, e juntamente entendam que a mão do Senhor fez isso."</p>
+        <p class="verse-reference">Isaías 41:20</p>
+        
+        <h2 class="section-title">Os Noivos</h2>
+        
+        <div class="couple-details">
+            <div>
+                <h3>Maria</h3>
+                <p>Filha de <strong>Mateus João</strong> (em memória)<br>e de <strong>Melba Joana</strong></p>
+            </div>
+            <div class="decorative-ampersand">♡</div>
+                <h3>João</h3>
+                <p>Filho de <strong>Manuel Gorge</strong><br>e de <strong>Maria Joaquina</strong></p>
+            </div>
+        </div>
+        
+        <div class="history-grid">
+            <img src="https://i.postimg.cc/m244xjLT/Whats-App-Image-2025-10-24-at-10-47-47-AM.jpg" alt="Foto dos noivos, Maria e João">
+        </div>
+    </section>
+      
+    <section class="section section-highlight fade-in-section" id="agenda-evento">
+  
+  <div class="agenda-centered">
+
+    <div class="agenda-header">
+      <div class="agenda-icon-divider">
+        <span class="divider"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+        </svg>
+        <span class="divider"></span>
+      </div>
+      <h2 class="section-title">O Grande Dia</h2>
+      <p class="section-subtitle">Temos a honra de convidá-lo(a) a celebrar connosco cada momento.</p>
+      <div class="agenda-icon-small">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="agenda-event">
+      <h3 class="event-title">Cerimónia Religiosa</h3>
+      <p class="event-time">09:00</p>
+      <div class="agenda-icon-divider">
+        <span class="divider"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+        </svg>
+        <span class="divider"></span>
+      </div>
+      <h4 class="event-location">Igreja Presbiteriana, Paróquia de Guava</h4>
+      <a href="#" class="map-link-button" id="mapBtnReligiosa" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+        </svg>
+        Ver no Mapa
+      </a>
+    </div>
+
+    <div class="agenda-event">
+      <h3 class="event-title">Cerimónia Civil & Recepção</h3>
+      <p class="event-time">13:30</p>
+      <div class="agenda-icon-divider">
+        <span class="divider"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A3 3 0 0 1 15 7.875v3.375c0 .621-.504 1.125-1.125 1.125H10.125c-.621 0-1.125-.504-1.125-1.125V7.875A3 3 0 0 1 12 4.875Z" />
+        </svg>
+        <span class="divider"></span>
+      </div>
+      <h4 class="event-location">Chakara Do Amor Eventos, Zimpeto</h4>
+      <a href="#" class="map-link-button" id="mapBtnCivil" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+        </svg>
+        Ver no Mapa
+      </a>
+    </div>
+
+    <div class="agenda-event">
+      <h3 class="event-title">Sessão de Fotos</h3>
+      <p class="event-time">14:30</p>
+      <div class="agenda-icon-divider">
+        <span class="divider"></span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574v5.852a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.04l-.821 1.316Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+        </svg>
+        <span class="divider"></span>
+      </div>
+      <p class="event-description">Junte-se a nós para registar memórias.</p>
+    </div>
+
+    <div class="agenda-event">
+      <h3 class="event-title">Copo de Água</h3>
+      <p class="event-time">15:30</p>
+      <div class="agenda-icon-divider">
+        <span class="divider"></span>
+         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A3 3 0 0 1 15 7.875v3.375c0 .621-.504 1.125-1.125 1.125H10.125c-.621 0-1.125-.504-1.125-1.125V7.875A3 3 0 0 1 12 4.875Z" />
+        </svg>
+        <span class="divider"></span>
+      </div>
+      <p class="event-description">Celebração e festa no local da recepção.</p>
+    </div>
+
+  </div> </section>
+    
+    <section class="section fade-in-section" id="galeria">
+      <h2 class="section-title">Momentos</h2>
+      <div class="gallery-grid">
+            <div class="gallery-image-container">
+                <img src="https://i.postimg.cc/KvbbXfGc/Whats-App-Image-2025-10-24-at-10-47-46-AM.jpg" alt="Momentos especiais do casal" data-src="https://i.postimg.cc/KvbbXfGc/Whats-App-Image-2025-10-24-at-10-47-46-AM.jpg">
+            </div>
+            <div class="gallery-image-container">
+                <img src="https://i.postimg.cc/7Y44v9HY/Whats-App-Image-2025-10-24-at-10-47-48-AM-1.jpg" alt="Foto do pedido de noivado" data-src="https://i.postimg.cc/7Y44v9HY/Whats-App-Image-2025-10-24-at-10-47-48-AM-1.jpg">
+            </div>
+		  <div class="gallery-image-container">
+                <img src="https://i.postimg.cc/rFTT6jVM/Whats-App-Image-2025-10-24-at-10-47-46-AM-1.jpg" alt="Foto do pedido de noivado" data-src="https://i.postimg.cc/rFTT6jVM/Whats-App-Image-2025-10-24-at-10-47-46-AM-1.jpg">
+            </div>
+      </div>
+    </section>
+
+    <section class="section section-highlight fade-in-section" id="guia-evento">
+        <h2 class="section-title">Guia do Evento</h2>
+        <p class="section-subtitle">Tudo o que precisa de saber para celebrar connosco.</p>
+    
+        <div class="guide-grid">
+            <div class="guide-item">
+                <h4>Confirme a Sua Presença</h4>
+                <p>Por favor, informe-nos se poderemos contar consigo até 30 de Novembro de 2025.</p>
+                <button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
+            </div>
+            <div class="guide-item">
+                <h4>Inspiração de Vestuário</h4>
+                <p>O código de vestimenta é casual elegante. Sugerimos tons pastel e neutros para a harmonia do evento.</p>
+                <button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
+            </div>
+            <div class="guide-item">
+                <h4>Presentes e Mimos</h4>
+                <p>A sua presença é o nosso maior presente! Se desejar, pode contribuir para o nosso futuro.</p>
+                <button class="btn btn-outline" id="giftsCombinedBtn">Ver Opções de Presente</button>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="footer fade-in-section">
+        <h3 class="names">Maria & João</h3>
+        <p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
+        <div class="footer-contact">
+          <span>Tem dúvidas?</span>
+          <span>+258 84 123 4567 | +258 84 000 0000</span>
+        </div>
+    </footer>
+
+  </main>
+
+  <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
+    <div class="modal-card">
+      <h3 id="rsvpTitle">Confirmar Presença</h3>
+      <p>Preencha os dados e escolha como enviar a confirmação.</p>
+      <form id="rsvpForm">
+        <div><label for="nome">Nome completo</label><input type="text" id="nome" required placeholder="O seu nome"></div>
+        <div class="form-row">
+          <div><label for="guests">Nº de convidados</label><select id="guests"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5+">5+</option></select></div>
+          <div><label for="phone">Telefone (opcional)</label><input id="phone" placeholder="+258 84X XXX XXX"></div>
+        </div>
+        <div><label for="message">Mensagem (opcional)</label><textarea id="message" placeholder="Deixe uma mensagem para os noivos..."></textarea></div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Enviar por Email</button>
+          <button type="button" class="btn btn-outline" id="sendWhatsapp">Enviar por WhatsApp</button>
+          <button type="button" class="btn btn-ghost" data-close-modal>Fechar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="dressCodeModal" role="dialog" aria-modal="true" aria-labelledby="dressCodeTitle">
+    <div class="modal-card">
+        <h3 id="dressCodeTitle">Inspiração: Casual Elegante</h3>
+        <p>O objetivo é o conforto sofisticado. Tons pastel e neutros são bem-vindos.</p>
+        <div class="dresscode-grid">
+            <img src="https://i.postimg.cc/VsSvKHNd/0b4101a4c5556ae927ef69348194c870.jpg" alt="Homem com blazer bege e camisa branca.">
+            <img src="https://i.postimg.cc/ZY9nwDqf/f93df53647dc07cb00ab458e4b8c4c20.jpg" alt="Mulher com vestido floral midi.">
+        </div>
+        <button type="button" class="btn btn-ghost" data-close-modal>Entendi</button>
+    </div>
+  </div>
+
+  <div class="modal" id="giftsCombinedModal" role="dialog" aria-modal="true" aria-labelledby="giftsCombinedTitle">
+    <div class="modal-card">
+        <h3 id="giftsCombinedTitle">Presentes e Contribuições</h3>
+        <p>A sua presença é o maior presente! Se desejar contribuir, temos algumas opções:</p>
+        
+        <div class="tab-buttons">
+            <button class="tab-btn active" data-tab="monetaryContent">Contribuição Monetária</button>
+            <button class="tab-btn" data-tab="loicasContent">Lista de Presentes</button>
+        </div>
+        
+        <div id="monetaryContent" class="tab-content active">
+            <h4>Um Mimo para o Futuro</h4>
+            <div class="info-block"><p><strong>Conta Bancária (BIM)</strong></p><p>Titular: Maria João<br>Nº da Conta: 12345678910 | NIB: 000000000000000000000</p></div>
+            <div class="info-block"><p><strong>M-Pesa / e-Mola</strong></p><p>+258 84 123 4567 (João George)<br>+258 87 123 4567 (Maria João)</p></div>
+        </div>
+        
+        <div id="loicasContent" class="tab-content">
+            <h4>Lista de Casamento</h4>
+            <p>A nossa lista está disponível em qualquer loja <strong>Casa das Loiças</strong> sob o nome "Maria & João - Casamento 2026".</p>
+            <div class="form-actions">
+                <a href="#" class="btn btn-primary" id="mapBtnCasaLoicasCombined" target="_blank" rel="noopener noreferrer">Ver Loja Principal</a>
+            </div>
+        </div>
+        <button type="button" class="btn btn-ghost" data-close-modal>Fechar</button>
+    </div>
+  </div>
+  
+  <div class="modal" id="lightboxModal" role="dialog" aria-modal="true">
+    <div class="modal-card" data-close-modal>
+        <img id="lightboxImage" src="" alt="Imagem em destaque da galeria">
+    </div>
+  </div>
+
+  <script>
+    // O Javascript permanece o mesmo da versão anterior, funcionando perfeitamente.
+    document.addEventListener('DOMContentLoaded', () => {
+      const HOST_WHATSAPP_NUMBER = '+258878061697';
+      const ADDRESS_RELIGIOSA = 'Igreja Presbiteriana, Paróquia de Guava, Marracuene';
+      const ADDRESS_CIVIL_COPO_DE_AGUA = 'Chakara Do Amor Eventos, Zimpeto, Maputo'; 
+      const EVENT_DATE = "2026-01-10T09:00:00"; 
+      const RSVP_EMAIL = "Maria&Joao.casamento@gmail.com";
+      const ADDRESS_CASA_LOICAS = 'Casa das Loiças, 1230A Av. Karl Marx, Maputo';
+      const body = document.body;
+      const music = document.getElementById('backgroundMusic');
+      const musicControl = document.getElementById('musicControl');
+      const fabRsvpBtn = document.getElementById('fabRsvpBtn');
+      const fabGiftsBtn = document.getElementById('fabGiftsBtn');
+      const fabMapBtn = document.getElementById('fabMapBtn'); 
+      const rsvpBtn = document.getElementById('rsvpBtn');
+      const dressCodeBtn = document.getElementById('dressCodeBtn');
+      const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
+      const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
+      const mapBtnCivil = document.getElementById('mapBtnCivil');
+      const mapBtnCasaLoicas = document.getElementById('mapBtnCasaLoicasCombined');
+      const galleryImages = document.querySelectorAll('.gallery-grid img');
+      const lightboxModal = document.getElementById('lightboxModal');
+      const lightboxImage = document.getElementById('lightboxImage');
+      const createMapLink = (address, isDirections = false) => {
+        const baseUrl = 'https://www.google.com/maps';
+        const encodedAddress = encodeURIComponent(address);
+        if (isDirections) {
+          return `${baseUrl}/dir/?api=1&destination=${encodedAddress}`;
+        }
+        return `${baseUrl}/search/?api=1&query=${encodedAddress}`;
+      };
+      const openModal = (modalId) => {
+        const modal = document.getElementById(modalId);
+        if(modal) modal.classList.add('open');
+      };
+      window.onload = () => {
+          body.classList.remove('loading');
+          setTimeout(() => body.classList.add('loaded'), 100);
+      };
+      const updateMusicIcon = () => {
+        if (!musicControl) return;
+        musicControl.innerHTML = music.paused 
+            ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>`
+            : `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>`;
+        musicControl.classList.toggle('playing', !music.paused);
+      };
+      const tryAutoplay = music.play();
+      if (tryAutoplay !== undefined) {
+        tryAutoplay.catch(() => {
+          const playOnFirstInteraction = () => {
+            music.play().then(() => {
+              updateMusicIcon();
+              document.removeEventListener('click', playOnFirstInteraction, { once: true });
+              document.removeEventListener('touchstart', playOnFirstInteraction, { once: true });
+            });
+          };
+          document.addEventListener('click', playOnFirstInteraction, { once: true });
+          document.addEventListener('touchstart', playOnFirstInteraction, { once: true });
+        });
+      }
+      if(musicControl) {
+        musicControl.addEventListener('click', () => {
+            music.paused ? music.play() : music.pause();
+            updateMusicIcon();
+        });
+      }
+      updateMusicIcon();
+      if (mapBtnReligiosa) mapBtnReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true); 
+      if (mapBtnCivil) mapBtnCivil.href = createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true); 
+      if (mapBtnCasaLoicas) mapBtnCasaLoicas.href = createMapLink(ADDRESS_CASA_LOICAS, true);
+      [fabRsvpBtn, rsvpBtn].forEach(btn => btn?.addEventListener('click', () => openModal('rsvpModal')));
+      [fabGiftsBtn, giftsCombinedBtn].forEach(btn => btn?.addEventListener('click', () => openModal('giftsCombinedModal')));
+      dressCodeBtn?.addEventListener('click', () => openModal('dressCodeModal'));
+      fabMapBtn?.addEventListener('click', () => window.open(createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true), '_blank'));
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal || e.target.closest('[data-close-modal]')) {
+            modal.classList.remove('open');
+          }
+        });
+      });
+      const countdownInterval = setInterval(() => {
+        const countdownElem = document.getElementById("countdown");
+        if (!countdownElem) { clearInterval(countdownInterval); return; }
+        const distance = new Date(EVENT_DATE).getTime() - new Date().getTime();
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          countdownElem.style.display = "none";
+          return;
+        }
+        const format = (num) => String(num).padStart(2, '0');
+        document.getElementById("days").innerText = format(Math.floor(distance / (1000 * 60 * 60 * 24)));
+        document.getElementById("hours").innerText = format(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        document.getElementById("minutes").innerText = format(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+        document.getElementById("seconds").innerText = format(Math.floor((distance % (1000 * 60)) / 1000));
+      }, 1000);
+      const giftsModal = document.getElementById('giftsCombinedModal');
+      if (giftsModal) {
+          const tabButtons = giftsModal.querySelectorAll('.tab-btn');
+          const tabContents = giftsModal.querySelectorAll('.tab-content');
+          tabButtons.forEach(button => {
+              button.addEventListener('click', () => {
+                  tabButtons.forEach(btn => btn.classList.remove('active'));
+                  button.classList.add('active');
+                  const tabId = button.getAttribute('data-tab');
+                  tabContents.forEach(content => {
+                      content.classList.toggle('active', content.id === tabId);
+                  });
+              });
+          });
+      }
+      const rsvpForm = document.getElementById('rsvpForm');
+      if (rsvpForm) {
+        const getRsvpData = () => ({
+          nome: rsvpForm.querySelector('#nome').value.trim(),
+          guests: rsvpForm.querySelector('#guests').value,
+          phone: rsvpForm.querySelector('#phone').value.trim(),
+          message: rsvpForm.querySelector('#message').value.trim()
+        });
+        rsvpForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const data = getRsvpData();
+          if (!data.nome) { alert('Por favor, preencha o seu nome completo.'); return; }
+          const subject = encodeURIComponent('RSVP — Confirmação de Presença Maria & João');
+          const body = `Nome: ${data.nome}%0D%0AConvidados: ${data.guests}%0D%0ATelefone: ${data.phone}%0D%0AMensagem: ${data.message}`;
+          window.location.href = `mailto:${RSVP_EMAIL}?subject=${subject}&body=${body}`;
+          document.getElementById('rsvpModal').classList.remove('open');
+        });
+        rsvpForm.querySelector('#sendWhatsapp').addEventListener('click', () => {
+          const data = getRsvpData();
+          if (!data.nome) { alert('Por favor, preencha o seu nome completo.'); return; }
+          const text = `RSVP - Olá! Confirmo a minha presença. Nome: ${data.nome}, Convidados: ${data.guests}. Mensagem: ${data.message}`;
+          window.open(`https://wa.me/${HOST_WHATSAPP_NUMBER.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`, '_blank');
+          document.getElementById('rsvpModal').classList.remove('open');
+        });
+      }
+      galleryImages.forEach(img => {
+          img.addEventListener('click', () => {
+              lightboxImage.src = img.getAttribute('data-src');
+              lightboxModal.classList.add('open');
+          });
+      });
+      const animatedSections = document.querySelectorAll('.fade-in-section');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      animatedSections.forEach(section => observer.observe(section));
+    });
+  </script>
+</body>
+</html>

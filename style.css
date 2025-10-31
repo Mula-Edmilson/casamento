@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* style.css (Design Elegante - Final) */
 
 /* --- 1. FUNDAMENTOS E VARIÁVEIS --- */
@@ -712,4 +713,1356 @@ input[type="file"]::file-selector-button:hover {
 /* Remova o CSS antigo do .map-link simples se ele conflitar */
 .map-link {
    display: none; /* Esconde o link antigo, se ainda existir */
+=======
+/* style.css (Design Elegante - Final V7 - Tema Escuro - Comparativo Móvel v3 - Refinamentos v4) */
+
+/* --- 1. FUNDAMENTOS E VARIÁVEIS (TEMA ESCURO) --- */
+:root {
+  /* Paleta Escura */
+  --bg: #2B2623;            /* Fundo principal: castanho-escuro */
+  --bg-rgb: 43, 38, 35;     /* Versão RGB do --bg para o overlay */
+  --accent: #B08968;        /* Cor de destaque (mantém-se bem) */
+  --text-dark: #F5EFEA;      /* Texto principal (títulos): bege claro */
+  --text-light: #C8C0B9;     /* Texto secundário (corpo): bege mais escuro */
+  --card: #352F2C;            /* Fundo dos cartões: castanho-médio */
+  --section-bg: #302A27;    /* Fundo das secções: castanho mais escuro */
+  --border-color: #4D4641;  /* Cor das bordas */
+
+  /* Tipografia (sem alteração) */
+  --font-heading: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-script: 'Parisienne', cursive;
+  
+  /* Transições (sem alteração) */
+  --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-fast: all 0.2s ease-out; /* Para micro-animações */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background-color: var(--bg);
+  font-family: var(--font-body);
+  color: var(--text-light);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+body.loading { opacity: 0; }
+body.loaded { opacity: 1; }
+
+/* --- 1.A PÁGINA DE CAPA (index.html) --- */
+/* (Sem alteração, já usa um fundo de imagem) */
+body.cover-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://i.postimg.cc/15KQyFX5/Whats-App-Image-2025-10-24-at-10-47-48-AM.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.cover-container {
+  background: var(--card); /* Agora usa o cartão escuro */
+  padding: 48px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  max-width: 500px;
+}
+.cover-container .names {
+  font-size: 4rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.cover-subtitle {
+  margin: 8px 0 24px 0;
+  font-size: 1rem;
+}
+.cover-date {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  margin-bottom: 32px;
+  color: var(--text-dark); /* Agora é claro */
+}
+.cover-container .btn {
+  animation: pulse 2s infinite ease-out;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* --- 2. TIPOGRAFIA --- */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  color: var(--text-dark); /* Agora é claro */
+  font-weight: 600;
+  line-height: 1.2;
+}
+.names { font-family: var(--font-script); font-weight: 400; }
+p { margin-bottom: 1em; }
+p:last-child { margin-bottom: 0; }
+
+/* --- 3. LAYOUT PRINCIPAL --- */
+.invite-wrap { /* Para páginas de convite */
+  width: 100%;
+  max-width: 800px;
+  margin: 48px auto;
+  background: var(--card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+main > .section:first-child,
+.invite-wrap > .section:first-child { }
+
+.section { padding: 80px 60px; text-align: center; position: relative; overflow: hidden; } /* Added position relative & overflow hidden */
+.section-highlight { background-color: var(--section-bg); }
+.section-title { font-size: 3rem; letter-spacing: 0.5px; margin-bottom: 16px; position: relative; z-index: 1;} /* Ensure title is above parallax */
+.section-subtitle { font-size: 1.1rem; max-width: 500px; margin: 0 auto 48px auto; position: relative; z-index: 1;} /* Ensure subtitle is above parallax */
+
+/* ==========================================================================
+   4. HERO SECTION (COM EFEITO KEN BURNS)
+========================================================================== */
+/* (Sem alteração, já é escuro por design) */
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 48px;
+  text-align: center;
+  color: white;
+  background-color: #333; 
+  overflow: hidden; 
+  margin-bottom: 0; 
+}
+.hero::before { /* Overlay */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.2)); /* Darker overlay */
+  z-index: 1; 
+}
+.hero::after { /* Animated Background Image */
+    content: '';
+    position: absolute;
+    inset: -5%; 
+    width: 110%;
+    height: 110%;
+    background-image: url('https://i.postimg.cc/rFjHZBQV/Period-on-wedding-night.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: 0; 
+    animation: ken-burns 45s infinite alternate ease-in-out; /* Slower animation */
+}
+@keyframes ken-burns {
+    0% { transform: scale(1) translate(0, 0) rotate(0.001deg); /* Added rotate to fix potential pixelation */ }
+    100% { transform: scale(1.15) translate(-4%, 4%) rotate(0.001deg); /* Increased zoom/pan slightly */ }
+}
+.hero-content { /* Content above overlay and background */
+  position: relative; 
+  z-index: 2; 
+  background: rgba(0,0,0,0.2);
+  padding: 32px 48px; border-radius: 8px; backdrop-filter: blur(5px);
+  /* Adicionada transição para suavizar a mudança de padding no mobile */
+  transition: padding var(--transition-fast);
+}
+.hero .lead {
+  font-family: var(--font-body); font-weight: 400; text-transform: uppercase;
+  letter-spacing: 4px; font-size: 0.8rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 16px;
+}
+.hero .names { font-size: 6rem; color: white; line-height: 1; text-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+.hero .pill {
+  display: inline-block; font-family: var(--font-body); background: transparent;
+  border: 1px solid rgba(255,255,255,0.4); color: white; padding: 8px 16px;
+  border-radius: 50px; font-size: 0.9rem; margin-top: 24px;
+}
+#countdown { display: flex; justify-content: center; gap: 24px; margin-top: 32px; }
+#countdown > div { text-align: center; }
+#countdown span { font-family: var(--font-heading); font-size: 2.5rem; font-weight: 600; display: block; }
+#countdown small { font-family: var(--font-body); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+.scroll-down-indicator {
+  position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 2;
+  color: white; animation: bounce 2s infinite;
+}
+.scroll-down-indicator svg { width: 32px; height: 32px; fill: currentColor; }
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+  40% { transform: translate(-50%, -15px); }
+  60% { transform: translate(-50%, -5px); }
+}
+
+/* --- 5. COMPONENTES --- */
+/* O .footer foi substituído pelo .footer-complete */
+.footer-logo { max-width: 120px; height: auto; margin-bottom: 16px; opacity: 0.8; }
+.footer-copyright { font-size: 0.8rem; opacity: 0.7; margin-top: 24px; }
+
+
+/* --- 6. BOTÕES E UI FIXA --- */
+.btn {
+  display: inline-block; font-family: var(--font-body); padding: 12px 28px;
+  border-radius: 50px; text-decoration: none; font-weight: 500; cursor: pointer;
+  border: 1px solid transparent; font-size: 0.9rem; transition: var(--transition-smooth); text-align: center;
+  position: relative; /* Para micro-animações */
+  overflow: hidden; /* Para micro-animações */
+  z-index: 1; /* Para micro-animações */
+}
+.btn::before { /* Elemento para animação de hover */
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 100%;
+    background-color: rgba(255, 255, 255, 0.2); /* Efeito de brilho claro */
+    transition: width 0.3s ease-out;
+    z-index: -1;
+}
+.btn-animated:hover::before { /* Efeito de brilho no hover */
+    width: 100%;
+}
+.btn-primary { background-color: var(--accent); color: white; border-color: var(--accent); }
+.btn-primary:hover { background-color: #9A6F50; border-color: #9A6F50; transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 20px rgba(176, 137, 104, 0.3); }
+.btn-outline { background-color: transparent; color: var(--accent); border-color: var(--accent); }
+.btn-outline:hover { background-color: var(--accent); color: white; transform: translateY(-3px) scale(1.02); }
+.btn-ghost { background: transparent; color: var(--text-light); border-color: transparent; }
+.btn-ghost:hover { background: var(--section-bg); }
+
+/* Adicionado para a tabela de preços */
+.btn-small {
+    padding: 8px 20px;
+    font-size: 0.8rem;
+}
+
+/* ==========================================================
+   ACessibilidade: Estilo de Foco Visível
+   ========================================================== */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+.quiz-option:focus,
+.template-card:focus, /* Adicionado para navegação por teclado nos cards */
+[tabindex]:focus {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px; /* Opcional: suaviza o outline */
+    transition: outline-offset 0.1s ease-out; /* Pequena transição */
+}
+/* Remove outline padrão em favor do personalizado */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+.quiz-option:focus:not(:focus-visible),
+.template-card:focus:not(:focus-visible),
+[tabindex]:focus:not(:focus-visible) {
+    outline: none;
+}
+/* Estilo específico para :focus-visible se necessário (navegação por teclado) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.quiz-option:focus-visible,
+.template-card:focus-visible,
+[tabindex]:focus-visible {
+   outline: 3px solid var(--accent);
+   outline-offset: 3px;
+   border-radius: 4px;
+   transition: outline-offset 0.1s ease-out;
+}
+
+
+/* ==========================================================================
+   BARRA DE NAVEGAÇÃO FLUTUANTE (MOBILE-ONLY)
+   ========================================================================== */
+.floating-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background: var(--card); /* Agora é escuro */
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    display: none; /* Escondido por defeito, aparece no media query */
+    gap: 12px;
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
+}
+.fab-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-decoration: none;
+    color: var(--text-light); /* Agora é claro */
+    font-size: 0.7rem; /* Texto pequeno */
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: var(--transition-fast);
+    width: 70px; /* Largura fixa para alinhamento */
+    text-align: center;
+}
+.fab-link svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--text-dark); /* Agora é claro */
+    transition: var(--transition-fast);
+}
+.fab-link:hover {
+    color: var(--accent);
+    background: var(--section-bg);
+}
+.fab-link:hover svg {
+    stroke: var(--accent);
+}
+
+
+/* --- 7. MODAIS --- */
+.modal {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+  background: rgba(0, 0, 0, 0.8); /* Alterado para preto (mais limpo) */
+  backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 200;
+  opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.modal.open { opacity: 1; visibility: visible; }
+.modal-card {
+  background: var(--card); /* Agora é escuro */
+  padding: 40px; border-radius: 8px; width: 90%; max-width: 500px;
+  max-height: 90vh; overflow-y: auto; text-align: center; transform: scale(0.95) translateY(10px); /* Efeito de entrada */
+  transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.2), opacity 0.4s ease; /* Efeito bounce */
+  opacity: 0;
+  position: relative; /* Para o z-index funcionar corretamente contra os botões */
+  z-index: 205; 
+}
+.modal.open .modal-card { transform: scale(1) translateY(0); opacity: 1; }
+#lightboxModal .modal-card { background: transparent; max-width: 90vw; padding: 0; cursor: zoom-out; }
+#lightboxModal img { max-width: 100%; max-height: 85vh; border-radius: 8px; }
+.modal-card h3 { font-size: 2rem; margin-bottom: 8px; }
+.modal-card p { font-size: 1rem; margin-bottom: 24px; }
+form div { margin-bottom: 16px; text-align: left; }
+.form-row { display: flex; gap: 16px; }
+.form-row > div { flex: 1; }
+label { display: block; margin-bottom: 6px; font-size: 0.8rem; font-weight: 500; }
+input, textarea, select { 
+  width: 100%; padding: 12px; border-radius: 8px; 
+  border: 1px solid var(--border-color); font-size: 1rem; font-family: var(--font-body);
+  background-color: var(--bg); /* Fundo escuro para inputs */
+  color: var(--text-dark); /* Texto claro para inputs */
+}
+textarea { min-height: 80px; }
+.form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.form-actions .btn { flex-grow: 1; }
+
+/* NOVO: Estilos para o conteúdo do Modal de Contacto */
+.contact-details-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+    margin-top: 24px;
+}
+.info-block {
+    background: var(--section-bg); /* Agora é escuro */
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.info-block p {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+.info-block p strong {
+    color: var(--text-dark);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* ==========================================================================
+   BOTÕES DE NAVEGAÇÃO DO MODAL DE DETALHES
+   ========================================================================== */
+.modal-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 210; /* Acima do card */
+    background: var(--card); /* Alterado para var(--card) */
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    color: var(--text-dark); /* Agora é claro */
+}
+.modal-nav-btn:hover {
+    background: var(--accent); /* Fica acentuado no hover */
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    color: white; /* Texto branco no botão acentuado */
+    border-color: var(--accent);
+}
+.modal-nav-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+}
+.modal-nav-btn.prev { 
+    /* Ajusta a posição para fora do card; 'calc' pode precisar de ajuste */
+    left: calc(50% - 250px - 40px); /* 50% - (metade da largura do card) - (espaço) */
+}
+.modal-nav-btn.next { 
+    right: calc(50% - 250px - 40px); 
+}
+.modal-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: translateY(-50%) scale(1);
+    box-shadow: none;
+    pointer-events: none;
+}
+
+
+/* --- 8. ANIMAÇÕES DE SCROLL --- */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(100px) scale(0.9); /* Inicia mais abaixo e menor */
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Duração maior */
+}
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ==========================================================================
+   10. ESTILOS DE SCROLL HORIZONTAL (MODELOS, ETC.)
+========================================================================== */
+
+.auto-scroll-container {
+  display: flex;
+  overflow-x: auto; 
+  gap: 24px;
+  padding: 24px; 
+  margin: 0 -24px; /* Ajuste para compensar padding da .section */
+  -webkit-overflow-scrolling: touch; 
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
+  position: relative; /* Para garantir que o conteúdo está acima do parallax */
+  z-index: 1;
+}
+.auto-scroll-container::-webkit-scrollbar { display: none; }
+
+.template-card {
+  flex-shrink: 0; 
+  width: 300px; 
+  background: var(--card); /* Agora é escuro */
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  overflow: hidden;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  /* Adicionado tabindex para permitir foco via teclado */
+  tabindex="0"; 
+}
+.template-card img {
+  width: 100%; height: 250px; 
+  object-fit: cover; display: block;
+  border-bottom: 1px solid var(--border-color);
+}
+.template-info { padding: 24px; text-align: left; }
+.template-info h4 { font-size: 1.5rem; margin-bottom: 8px; }
+.template-info p { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0; }
+
+
+/* ==========================================================================
+   11. SECÇÕES (QUIZ / TESTEMUNHOS / PARALLAX)
+========================================================================== */
+
+/* --- 11.A "QUIZ DE ESTILO" --- */
+.quiz-container {
+    max-width: 600px;
+    margin: 40px auto 0 auto;
+    background: var(--card); /* Agora é escuro */
+    padding: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    position: relative; /* Para garantir que fica acima do parallax */
+    z-index: 1;
+}
+.quiz-step { display: none; animation: fadeIn 0.5s ease-out; }
+.quiz-step.active { display: block; }
+.quiz-step h4 { font-size: 1.5rem; margin-bottom: 24px; text-align: center; }
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.quiz-option {
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-align: center;
+    color: var(--text-light); /* Texto claro */
+}
+.quiz-option:hover { background-color: var(--section-bg); border-color: var(--accent); }
+.quiz-result { display: none; text-align: center; animation: fadeIn 0.5s ease-out; }
+.quiz-result h4 { font-size: 1.5rem; margin-bottom: 16px; }
+#recommendation h4 { font-size: 1.8rem; color: var(--accent); margin-top: 8px; }
+
+
+/* --- 11.C TESTEMUNHOS (SECÇÃO COM FUNDO DE IMAGEM) --- */
+.parallax-bg {
+    background-image: url('https://i.postimg.cc/Lsvbb4wL/10467.jpg'); /* Imagem de fundo para parallax */
+    /* background-attachment: fixed; <-- REMOVIDO */
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+/* Overlay escuro para legibilidade */
+.parallax-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgba(var(--bg-rgb), 0.8); /* Alterado para usar o RGB do fundo escuro */
+    z-index: 0;
+}
+/* Garante que o container de scroll fica acima do overlay */
+.parallax-bg .auto-scroll-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* NOVO ESTILO PARA SCREENSHOTS DE TESTEMUNHOS */
+.testimonial-screenshot {
+    flex-shrink: 0;
+    width: 280px; /* Largura similar aos placeholders */
+    height: auto; /* Altura adapta-se à proporção */
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    background: var(--card); /* Fundo caso a imagem demore a carregar */
+    display: block; /* Para imagens */
+}
+
+
+/* --- 11.D EFEITO DE FOCO NO CARROSSEL --- */
+.focusable-card {
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                opacity 0.4s ease, /* Transição de opacidade mais suave */
+                box-shadow 0.3s ease;
+}
+/* Remove o efeito de foco em dispositivos de toque, pois não há "hover" */
+@media (hover: hover) {
+    .auto-scroll-container:hover .focusable-card {
+        opacity: 0.6; /* Esbate mais */
+        transform: scale(0.98); /* Encolhe ligeiramente */
+    }
+    .auto-scroll-container:hover .focusable-card:hover {
+        opacity: 1;
+        transform: scale(1.03);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+}
+
+
+/* ==========================================================================
+   12. ESTILOS DO MODAL DE DETALHES DO MODELO
+========================================================================== */
+
+.modal-card-details { text-align: left; }
+.modal-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 24px;
+}
+.modal-header h3 { font-size: 2rem; margin-bottom: 0; }
+.modal-price {
+  font-family: var(--font-heading); font-size: 1.5rem; font-weight: 600;
+  color: var(--accent); white-space: nowrap; margin-left: 16px;
+}
+.modal-features-title {
+  font-family: var(--font-body); font-weight: 500;
+  color: var(--text-dark); margin-bottom: 16px;
+}
+.modal-features-list {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.modal-features-list li {
+  display: flex; align-items: center; font-size: 0.9rem;
+  color: var(--text-light);
+  /* Estilos para animação de entrada */
+  opacity: 0; transform: translateX(-10px);
+  /* Transição é aplicada diretamente no CSS */
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+/* Estado visível para a animação */
+.modal-features-list li.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+.modal-features-list li svg {
+  width: 18px; height: 18px; stroke: var(--accent);
+  stroke-width: 2.5; fill: none; margin-right: 8px; flex-shrink: 0;
+}
+
+
+/* ==========================================================================
+   13. SECÇÃO DE FAQ (ACCORDION)
+   ========================================================================== */
+.faq-container {
+    max-width: 800px;
+    margin: 40px auto 0 auto;
+    border-top: 1px solid var(--border-color);
+    position: relative;
+    z-index: 1; /* Acima do parallax se houver */
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    
+    /* Estilo do texto */
+    font-family: var(--font-heading);
+    color: var(--text-dark);
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.faq-question span {
+    padding-right: 16px;
+}
+
+.faq-icon {
+    width: 20px;
+    height: 20px;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(45deg);
+}
+
+.faq-answer {
+    /* Magia do accordion */
+    max-height: 0;
+    overflow: hidden;
+    /* Transição um pouco mais rápida */
+    transition: max-height 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                padding 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    /* Estilo do texto */
+    padding-left: 16px; /* Adiciona um leve recuo */
+    padding-right: 16px;
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.faq-answer p {
+    margin-bottom: 1.5em;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 400px; /* Altura máxima de segurança */
+    padding-bottom: 24px;
+}
+
+
+/* --- 13.C RODAPÉ COMPLETO --- */
+.footer {
+    padding: 0; 
+    background: transparent;
+}
+
+.footer-complete {
+    background: var(--bg); /* Fundo mais escuro que o --section-bg */
+    padding: 80px 60px;
+    text-align: left;
+    color: var(--text-light);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-layout {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 48px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 48px;
+    margin-bottom: 32px;
+}
+
+.footer-col {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-col-main {
+    flex-basis: 300px; /* Ocupa mais espaço */
+    flex-grow: 2;
+}
+.footer-col-main .footer-logo {
+    max-width: 120px; 
+    height: auto; 
+    margin-bottom: 16px; 
+    opacity: 0.8;
+}
+.footer-col-main p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    max-width: 300px;
+}
+
+.footer-col h4 {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-col ul li {
+    margin-bottom: 12px;
+}
+
+.footer-col ul li a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color var(--transition-fast);
+}
+
+.footer-col ul li a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.social-links {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    color: var(--text-light);
+    transition: var(--transition-smooth);
+}
+.social-link svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+}
+
+.social-link:hover {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    transform: scale(1.05) translateY(-2px);
+}
+
+.footer-copyright { 
+    font-size: 0.8rem; 
+    opacity: 0.7; 
+    text-align: center;
+}
+
+/* ==========================================================================
+   14. NOVA SECÇÃO: VANTAGENS (desktop)
+   ========================================================================== */
+.vantagens-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.vantagem-item {
+    background: var(--card);
+    padding: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    transition: var(--transition-smooth);
+}
+/* Micro-animação no hover */
+.vantagem-item:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.vantagem-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px auto;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+}
+
+.vantagem-item h4 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+}
+.vantagem-item p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   15. NOVA SECÇÃO: TABELA DE PREÇOS (desktop)
+   ========================================================================== */
+.tabela-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    overflow-x: auto; /* Esta regra permite o scroll horizontal */
+    -webkit-overflow-scrolling: touch; /* Melhora o scroll em iOS */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    position: relative;
+    z-index: 1;
+}
+.tabela-precos {
+    width: 100%;
+    min-width: 800px; /* Força o scroll em ecrãs menores que 800px */
+    border-collapse: collapse;
+    background: var(--card);
+}
+.tabela-precos th,
+.tabela-precos td {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+.tabela-precos th:first-child,
+.tabela-precos td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-dark);
+    position: sticky; /* Cola a primeira coluna no scroll horizontal */
+    left: 0;
+    background: var(--card);
+    border-right: 1px solid var(--border-color);
+}
+.tabela-precos thead th {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: var(--text-dark);
+    background: var(--section-bg);
+}
+.tabela-precos tbody tr:last-child td {
+    border-bottom: none;
+}
+.tabela-precos td.check {
+    color: var(--accent);
+    font-size: 1.5rem;
+    line-height: 1;
+}
+.tabela-precos td.dash {
+    color: var(--border-color);
+    font-size: 1.5rem;
+    line-height: 1;
+}
+.tabela-precos td strong {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--text-dark);
+}
+
+/* ==========================================================================
+   15.B NOVA ESTRUTURA: COMPARATIVO MÓVEL (escondido por defeito)
+   ========================================================================== */
+.comparativo-mobile {
+    display: none; /* Escondido em desktop */
+    max-width: 500px; /* Limita a largura no centro */
+    margin: 0 auto;
+    gap: 24px; /* Espaço entre os cartões */
+}
+.pacote-card {
+    background: var(--card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: left;
+}
+.pacote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+.pacote-header h4 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+.pacote-price {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    margin-left: 16px;
+}
+.pacote-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 24px 0;
+}
+.pacote-features li {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+.pacote-features li span { /* Para os ícones check/dash */
+    margin-right: 10px;
+    font-size: 1.2rem;
+    line-height: 1;
+    width: 20px; /* Alinha os ícones */
+    text-align: center;
+}
+.pacote-features li span.check { color: var(--accent); }
+.pacote-features li span.dash { color: var(--border-color); }
+.pacote-card .btn {
+    width: 100%; /* Botão ocupa a largura total */
+}
+
+/* ==========================================================================
+   16. NOVA SECÇÃO: COMO FUNCIONA
+   ========================================================================== */
+.processo-container {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+.processo-passo {
+    flex: 1;
+    max-width: 300px;
+    text-align: center;
+    position: relative;
+}
+.passo-numero {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px auto;
+    border: 4px solid var(--card);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+.processo-passo h4 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+}
+.processo-passo p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+/* Linha conectora */
+.processo-passo:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 30px; /* Alinha com o centro do círculo */
+    left: calc(50% + 100px); /* Começa depois do passo */
+    width: calc(100% - 150px); /* Ajusta para não sobrepor */
+    height: 1px;
+    border-top: 2px dashed var(--border-color);
+    opacity: 0.7;
+}
+
+/* ==========================================================================
+   17. NOVA SECÇÃO: SOBRE NÓS
+   ========================================================================== */
+.sobre-container {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+}
+.sobre-imagem {
+    flex: 1;
+    max-width: 400px;
+}
+.sobre-imagem img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.sobre-texto {
+    flex: 1.5;
+    padding-left: 32px;
+}
+
+/* ==========================================================================
+   18. NOVAS PÁGINAS: LEGAIS (TERMOS, PRIVACIDADE)
+   ========================================================================== */
+.legal-page-header {
+    padding: 40px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--section-bg);
+}
+.legal-page-header img {
+    max-width: 120px;
+    opacity: 0.8;
+}
+
+.legal-page-wrap {
+    width: 100%;
+    max-width: 800px;
+    margin: 48px auto;
+    padding: 48px;
+    background: var(--card);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    text-align: left;
+}
+.legal-page-wrap h1 {
+    font-size: 3rem;
+    margin-bottom: 24px;
+}
+.legal-page-wrap h2 {
+    font-size: 1.8rem;
+    margin-top: 40px;
+    margin-bottom: 16px;
+    color: var(--accent);
+}
+.legal-page-wrap p,
+.legal-page-wrap li {
+    font-size: 1rem;
+    line-height: 1.8;
+}
+.legal-page-wrap ul {
+    list-style-position: inside;
+    padding-left: 8px;
+}
+
+/* ==========================================================================
+   19. NOVA SECÇÃO: VÍDEO DEMO
+   ========================================================================== */
+.phone-mockup {
+    position: relative;
+    max-width: 320px; /* Largura de um telemóvel */
+    height: 640px; /* Proporção de telemóvel */
+    margin: 40px auto 0 auto;
+    border: 12px solid var(--card); /* Moldura do telemóvel */
+    border-radius: 40px; /* Cantos arredondados do telemóvel */
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    background: var(--bg); /* Cor de fundo "desligado" */
+    z-index: 1; /* Para ficar acima do parallax se houver */
+}
+
+.phone-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    border-radius: 28px; /* Cantos arredondados do ecrã (inferior à moldura) */
+    background: #000; /* Fundo preto para o ecrã */
+}
+
+/* Estilo para o vídeo ou a imagem de placeholder */
+.phone-screen video,
+.phone-screen .video-placeholder-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que preenche o ecrã sem distorcer */
+    display: block;
+}
+
+/* Adicionar um 'notch' (entalhe) falso para realismo */
+.phone-mockup::before {
+    content: '';
+    position: absolute;
+    top: 10px; /* Posição do entalhe */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px; /* Largura do entalhe */
+    height: 8px; /* Altura do entalhe */
+    background: var(--card); /* Mesma cor da moldura */
+    border-radius: 0 0 10px 10px;
+    z-index: 10; /* Acima do ecrã */
+}
+
+/* ==========================================================================
+   20. NOVO: BOTÃO "VOLTAR AO TOPO"
+   ========================================================================== */
+#backToTopBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99; /* Abaixo da nav flutuante, acima do resto */
+    
+    /* Aparência */
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    
+    /* Ícone */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Remove padding padrão */
+
+    /* Animação */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+#backToTopBtn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+#backToTopBtn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2.5; /* Linha mais grossa */
+}
+/* Ajuste no mobile para não colidir com a nav flutuante */
+@media (max-width: 768px) {
+    #backToTopBtn {
+        bottom: 90px; /* Sobe o botão */
+    }
+}
+
+
+/* ==========================================================================
+   BLOCO DE RESPONSIVIDADE COMPLETO E CORRIGIDO
+   ========================================================================== */
+@media (max-width: 768px) {
+  
+  /* Adiciona padding ao fundo para a barra flutuante não tapar conteúdo */
+  body {
+      padding-bottom: 100px;
+  }
+  
+  .section { padding: 60px 24px; }
+  
+  .section-title { font-size: 2.25rem; } 
+
+  .cover-container { padding: 32px; width: 90%; }
+  .cover-container .names { font-size: 3rem; }
+  
+  .hero-content { padding: 24px; } 
+  .hero .names { font-size: 4rem; }
+  #countdown span { font-size: 2rem; }
+  
+  main > .section { padding-left: 24px; padding-right: 24px; }
+  .auto-scroll-container { padding-left: 24px; padding-right: 24px; margin: 0 -24px; }
+  
+  .template-card { width: 280px; } 
+
+  /* Mostra a barra de navegação flutuante */
+  .floating-nav {
+      display: flex;
+  }
+  
+  /* Esconde botões de navegação do modal em mobile (muito clutter) */
+  .modal-nav-btn {
+      display: none;
+  }
+  
+  /* Quiz em coluna única */
+  .quiz-options { grid-template-columns: 1fr; }
+
+  /* Modal Header e Features empilhados */
+  .modal-header { flex-direction: column; align-items: flex-start; }
+  .modal-price { margin-left: 0; margin-top: 8px; font-size: 1.25rem; }
+  .modal-features-list { grid-template-columns: 1fr; }
+  
+  
+  /* Reduz o padding do modal em ecrãs muito pequenos */
+  .modal-card {
+      padding: 32px 24px;
+  }
+
+  /* --- AJUSTES RESPONSIVOS PARA FAQ E FOOTER --- */
+  .faq-question {
+      font-size: 1.15rem;
+      padding: 20px 0;
+  }
+  .faq-answer {
+      font-size: 0.9rem;
+  }
+
+  .footer-complete {
+      padding: 60px 24px;
+      text-align: center; /* Centra tudo no mobile */
+  }
+  .footer-layout {
+      flex-direction: column; /* Empilha as colunas */
+      gap: 40px;
+  }
+  .footer-col-main p {
+      margin-left: auto;
+      margin-right: auto;
+  }
+  .social-links {
+      justify-content: center; /* Centra os ícones */
+  }
+  
+  /* --- AJUSTES RESPONSIVOS (VANTAGENS, PROCESSO, SOBRE) --- */
+  
+  /* Garante que as vantagens ficam em coluna única */
+  .vantagens-grid {
+      grid-template-columns: 1fr; /* Coluna única */
+  }
+  
+  .processo-container {
+      flex-direction: column; /* Empilha os passos */
+      align-items: center;
+      gap: 32px;
+  }
+  .processo-passo {
+      max-width: 350px;
+  }
+  /* Remove as linhas conectoras no mobile */
+  .processo-passo::after {
+      display: none;
+  }
+  
+  .sobre-container {
+      flex-direction: column; /* Empilha a imagem e o texto */
+      gap: 32px;
+  }
+  .sobre-texto {
+      padding-left: 0;
+      text-align: center;
+  }
+  .sobre-texto .section-title {
+      text-align: center;
+  }
+
+  /* Ajustes para a secção de vídeo demo */
+  .phone-mockup {
+      /* Reduz a escala para caber em ecrãs pequenos */
+      transform: scale(0.9);
+      /* A altura precisa de ser ajustada para menos */
+      height: 580px; 
+  }
+  
+  /* Ajuste de escala para ecrãs ainda mais pequenos */
+  @media (max-width: 360px) {
+      .phone-mockup {
+          transform: scale(0.85);
+          height: 550px;
+      }
+  }
+
+  /* ==========================================================
+     ALTERAÇÃO PRINCIPAL: Esconder Tabela, Mostrar Cartões Móveis
+     ========================================================== */
+  .tabela-container {
+      display: none; /* Esconde a tabela em mobile */
+  }
+  .comparativo-mobile {
+      display: grid; /* Mostra os cartões e organiza-os */
+      grid-template-columns: 1fr; /* Garante que é coluna única */
+  }
+  /* ========================================================== */
+
+
+} /* <-- FIM DO BLOCO @media (max-width: 768px) */
+
+
+/* Media query para ecrãs muito largos, para afastar os botões de navegação */
+@media (min-width: 1200px) {
+    .modal-nav-btn.prev { 
+        left: calc(50% - 250px - 80px); /* Mais espaço */
+    }
+    .modal-nav-btn.next { 
+        right: calc(50% - 250px - 80px); 
+    }
+>>>>>>> c255559c1ff558776fd2f6bf72ccb82bd0cdff08
 }
