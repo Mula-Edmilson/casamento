@@ -2,19 +2,21 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
-const multer = require('multer'); // Ferramenta para uploads
-const mongoose = require('mongoose'); // <-- NOVO: Para o MongoDB
-require('dotenv').config(); // <-- NOVO: Para carregar o .env
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+// --- MUDANÇA: Ferramentas de Upload ---
+const multer = require('multer'); 
+const { CloudinaryStorage } = require('multer-storage-cloudinary'); // <-- NOVO
+const cloudinary = require('cloudinary').v2; // <-- NOVO
 
 // 2. Configurar o servidor
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static(__dirname));
-const PORT = process.env.PORT || 3000; // <-- MODIFICADO: Para hospedagem
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; // <-- MODIFICADO: Do .env
-
-// --- NOVO: Lógica do Banco de Dados (Mongoose) ---
+app.use(express.static(__dirname)); // Serve o index.html, convite.html, etc.
+const PORT = process.env.PORT || 3000;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // 3. Conectar ao MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI)
@@ -22,16 +24,13 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.error("Erro ao conectar ao MongoDB:", err));
 
 // 4. Definir os "Modelos" (Schemas)
-// Isso diz ao MongoDB como os dados devem ser estruturados.
-// Substitui os arquivos .json
-
 const GuestSchema = new mongoose.Schema({
   Nome: String,
-  ChaveUnica: String, // Você não está usando, mas estava no JSON
+  ChaveUnica: String,
   Status: String,
   deviceToken: String
 });
-const Guest = mongoose.model('Guest', GuestSchema); // 'Guest' vira a coleção 'guests'
+const Guest = mongoose.model('Guest', GuestSchema);
 
 const RsvpSchema = new mongoose.Schema({
   timestamp: Date,
@@ -45,49 +44,53 @@ const Rsvp = mongoose.model('Rsvp', RsvpSchema);
 const GiftSchema = new mongoose.Schema({
   timestamp: Date,
   nome: String,
-  gifts: [String] // Um array de strings
+  gifts: [String]
 });
 const Gift = mongoose.model('Gift', GiftSchema);
 
+// --- MUDANÇA: O Schema de Comprovativo agora guarda um URL ---
 const ComprovativoSchema = new mongoose.Schema({
   timestamp: Date,
   nome: String,
   canal: String,
-  fileName: String,
-  originalName: String
+  fileName: String, // <-- MUDANÇA: Agora será o URL seguro do Cloudinary
+  originalName: String,
+  public_id: String // <-- MUDANÇA: Para podermos apagar do Cloudinary se necessário
 });
 const Comprovativo = mongoose.model('Comprovativo', ComprovativoSchema);
 
-// 5. Configurar o Multer (Sem alteração na lógica, mas veja o AVISO no final)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = 'uploads/';
-    // ... (lógica do fs.existsSync ainda é necessária aqui)
-    // AVISO: Isso NÃO funcionará bem em hospedagem (veja nota final)
-    cb(null, uploadDir); 
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
+
+// 5. --- MUDANÇA: Configurar o Cloudinary e o Multer ---
+
+// Configura o SDK do Cloudinary com as suas senhas (lidas do .env)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configura o *novo* armazenamento (storage)
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'comprovativos-casamento', // Uma pasta no Cloudinary para organizar
+    format: async (req, file) => 'jpg', // Converte tudo para JPG
+    public_id: (req, file) => `${Date.now()}-${file.originalname.split('.')[0]}` // Nome do ficheiro
   }
 });
+
+// Substitui o multer antigo pelo novo
 const upload = multer({ storage: storage });
 
-/*
-  FUNÇÕES UTILITÁRIAS (NÃO SÃO MAIS NECESSÁRIAS)
-  As funções readDb e writeDb foram removidas.
-*/
 
 /*
-  ROTAS DA API (MODIFICADAS PARA ASYNC)
+  ROTAS DA API
 */
 
 // Rota dos Convidados (JSON)
-// Adicionamos 'async' pois vamos esperar o banco de dados
 app.post('/api', async (req, res) => {
   const data = req.body;
   try {
-    // MODIFICADO: As funções agora são 'async'
     if (data.action === "login") return await handleLogin(req, res);
     if (data.action === "rsvp") return await handleRsvp(req, res);
     if (data.action === "save_gifts") return await handleSaveGifts(req, res);
@@ -97,42 +100,39 @@ app.post('/api', async (req, res) => {
   }
 });
 
-// Rota de Upload de Comprovativos (Form-Data)
-// Adicionamos 'async'
+// --- MUDANÇA: Rota de Upload de Comprovativos ---
 app.post('/api/upload_comprovativo', upload.single('comprovativoFile'), async (req, res) => {
   try {
     const { nome, canal } = req.body;
-    const file = req.file;
+    const file = req.file; // 'file' agora vem do Cloudinary
 
     if (!file) {
       return res.status(400).json({ status: "error", message: "Ficheiro não recebido." });
     }
 
-    // REMOVIDO: readDb(COMPROVATIVOS_DB_PATH);
-
+    // 'file' agora contém 'path' (o URL) e 'filename' (o public_id)
     const newEntry = {
       timestamp: new Date(),
       nome: nome,
       canal: canal,
-      fileName: file.filename,
-      originalName: file.originalname
+      fileName: file.path, // <-- MUDANÇA: Guardamos o URL seguro (ex: http://res.cloudinary.com/...)
+      originalName: file.originalname,
+      public_id: file.filename // <-- MUDANÇA: O ID para gestão
     };
 
-    // NOVO: Salva no MongoDB
+    // Salva a entrada com o URL no MongoDB
     await Comprovativo.create(newEntry);
-
-    // REMOVIDO: writeDb(COMPROVATIVOS_DB_PATH, allComprovativos);
 
     return res.status(200).json({ status: "success", message: "Comprovativo enviado!" });
 
   } catch (error) {
+    console.error("Erro no upload:", error);
     res.status(500).json({ status: "error", message: "Erro no servidor ao processar o upload: " + error.message });
   }
 });
 
 
 // Rota do Admin (Painel de Gestão)
-// Adicionamos 'async'
 app.post('/admin-api', async (req, res) => {
   const data = req.body;
 
@@ -142,19 +142,16 @@ app.post('/admin-api', async (req, res) => {
 
   try {
     if (data.action === "get_rsvps") {
-      // NOVO: Busca no MongoDB e ordena
       const rsvps = await Rsvp.find().sort({ timestamp: -1 });
       return res.status(200).json({ status: "success", data: rsvps });
     }
     
     if (data.action === "get_gifts") {
-      // NOVO: Busca no MongoDB e ordena
       const gifts = await Gift.find().sort({ timestamp: -1 });
       return res.status(200).json({ status: "success", data: gifts });
     }
     
     if (data.action === "get_comprovativos") {
-      // NOVO: Busca no MongoDB e ordena
       const comprovativos = await Comprovativo.find().sort({ timestamp: -1 });
       return res.status(200).json({ status: "success", data: comprovativos });
     }
@@ -168,7 +165,7 @@ app.post('/admin-api', async (req, res) => {
 
 
 /*
-  FUNÇÕES DE LÓGICA (Handlers) - TOTALMENTE REESCRITAS
+  FUNÇÕES DE LÓGICA (Handlers) - Sem mudanças
 */
 
 // --- Função de Login (MODIFICADA PARA MONGODB) ---
@@ -179,25 +176,17 @@ async function handleLogin(req, res) {
     return res.status(400).json({ status: "error", message: "Dados incompletos." });
   }
 
-  // NOVO: Procura o convidado no MongoDB
-  // Usamos uma RegEx para 'i' (case-insensitive) e trim
   const foundGuest = await Guest.findOne({ 
     Nome: { $regex: new RegExp(`^${name.trim()}$`, 'i') } 
   });
   
   if (!foundGuest) {
-    // Convidado não encontrado
     return res.status(401).json({ status: "error", message: "Nome não encontrado na lista." });
   }
-
-  // Convidado encontrado, verificar o token
   
-  // CASO 1: Primeiro login (deviceToken está null)
   if (!foundGuest.deviceToken || foundGuest.deviceToken === null) {
     foundGuest.deviceToken = loginToken;
     foundGuest.Status = "Convite Aberto";
-    
-    // NOVO: Salva as alterações no banco de dados
     await foundGuest.save();
 
     return res.status(200).json({ 
@@ -207,7 +196,6 @@ async function handleLogin(req, res) {
     });
   }
   
-  // CASO 2: Login subsequente (deviceToken já existe)
   if (foundGuest.deviceToken === loginToken) {
     return res.status(200).json({ 
       status: "success", 
@@ -216,7 +204,6 @@ async function handleLogin(req, res) {
     });
   }
 
-  // CASO 3: Dispositivo diferente
   return res.status(403).json({ 
     status: "error",
     message: "Este convite já foi aberto noutro dispositivo." 
@@ -235,11 +222,9 @@ async function handleRsvp(req, res) {
     message: data.message
   };
 
-  // NOVO: Cria a entrada no MongoDB
   await Rsvp.create(newRow);
 
   try {
-    // Atualiza o status em convidados.json para "Confirmado (X)"
     await updateGuestStatus(data.nome, `Confirmado (${data.guests})`);
   } catch (e) {
     console.error("Falha ao atualizar status do convidado:", e.message);
@@ -251,12 +236,10 @@ async function handleRsvp(req, res) {
 async function updateGuestStatus(name, status) {
   const filter = { 
     Nome: { $regex: new RegExp(`^${name.trim()}$`, 'i') },
-    // Só actualiza se o status for "Pendente" ou "Convite Aberto"
-    // ou se o novo status for "Confirmado" (permitindo atualizações)
     $or: [
       { Status: 'Pendente' },
       { Status: 'Convite Aberto' },
-      { Status: { $regex: /^Confirmado/ } } // Permite re-confirmar
+      { Status: { $regex: /^Confirmado/ } }
     ]
   };
 
@@ -264,8 +247,6 @@ async function updateGuestStatus(name, status) {
     $set: { Status: status }
   };
 
-  // NOVO: Busca e atualiza o convidado no MongoDB
-  // findOneAndUpdate é uma operação atômica
   await Guest.findOneAndUpdate(filter, update);
 }
 
@@ -283,13 +264,11 @@ async function handleSaveGifts(req, res) {
   const update = {
     $set: {
       timestamp: new Date(),
-      nome: nome, // Garante a capitalização correta
+      nome: nome,
       gifts: selectedGifts
     }
   };
 
-  // NOVO: Busca e atualiza (ou cria se não existir = upsert)
-  // Isso substitui a lógica de "findIndex"
   await Gift.findOneAndUpdate(filter, update, { upsert: true, new: true });
 
   return res.status(200).json({ status: "success", message: "Presentes registados!" });
@@ -300,8 +279,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Rota para servir os uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// --- MUDANÇA: A Rota de Uploads FOI REMOVIDA ---
+// A linha 'app.use('/uploads', ...)' foi apagada porque já não é necessária.
 
 // 4. Iniciar o servidor
 app.listen(PORT, () => {
