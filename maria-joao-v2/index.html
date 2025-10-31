@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bem-vindo — Maria & João</title>
+  
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400&family=Parisienne&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page loading">
+
+  <div class="login-container">
+    <h1 class="names">Maria & João</h1>
+    <p class="login-subtitle">Por favor, identifique-se para ver o convite</p>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="name">O seu nome completo</label>
+        <input type"text" id="name" placeholder="Nome (como está na lista)" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Entrar</button>
+      <p id="loginError" class="login-error-message"></p>
+    </form>
+  </div>
+
+  <script>
+    // URL do seu servidor
+    const API_ENDPOINT = "http://localhost:3000/api";
+    // const API_ENDPOINT = "https://url-do-seu-servidor.com/api"; 
+
+    // --- NOVO: Função para criar/obter o token do dispositivo ---
+    function getOrCreateLoginToken() {
+      let token = localStorage.getItem('loginToken');
+      if (!token) {
+        // Cria um token aleatório simples
+        token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+        localStorage.setItem('loginToken', token);
+      }
+      return token;
+    }
+
+    window.onload = () => {
+      document.body.classList.remove('loading');
+      setTimeout(() => document.body.classList.add('loaded'), 100);
+      
+      localStorage.removeItem('guestName');
+      localStorage.removeItem('guestStatus');
+    };
+
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loginError.textContent = ''; // Limpa erros antigos
+      
+      const name = document.getElementById('name').value;
+      const loginToken = getOrCreateLoginToken(); // <-- NOVO: Obtém o token
+      const button = e.target.querySelector('button');
+      button.disabled = true;
+      button.textContent = "A verificar...";
+
+      fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: "login",
+          name: name,
+          loginToken: loginToken // <-- NOVO: Envia o token em vez da chave
+        })
+      })
+      .then(res => {
+        // --- LÓGICA DE RESPOSTA MODIFICADA ---
+        if (res.status === 403) { // 403 - Forbidden (Já aberto)
+          // Se o convite já foi aberto, redireciona
+          window.location.href = 'ja-aberto.html'; 
+          return Promise.reject(new Error("Convite já aberto")); // Pára a execução
+        }
+        if (res.status === 401) { // 401 - Unauthorized (Nome errado)
+            return res.json().then(data => Promise.reject(data));
+        }
+        if (!res.ok) { // Outros erros
+            return res.json().then(data => Promise.reject(data));
+        }
+        return res.json(); // Sucesso (200 OK)
+      })
+      .then(data => {
+        if (data.status === "success") {
+          // SUCESSO!
+          localStorage.setItem('guestName', data.guestName);
+          localStorage.setItem('guestStatus', data.guestStatus);
+          window.location.href = 'convite.html';
+        } else {
+          // Erro inesperado (não devia acontecer, mas por segurança)
+          loginError.textContent = data.message || "Ocorreu um erro.";
+          button.disabled = false;
+          button.textContent = "Entrar";
+        }
+      })
+      .catch(err => {
+        // Se o erro for "Convite já aberto", não fazemos nada pois já redirecionou
+        if (err.message === "Convite já aberto") {
+          return; 
+        }
+        
+        // Trata outros erros (ex: Nome não encontrado, erro de servidor)
+        loginError.textContent = err.message || "Erro de ligação. Tente novamente.";
+        button.disabled = false;
+        button.textContent = "Entrar";
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+[
+  {
+    "Nome": "João da Silva",
+    "ChaveUnica": "chave123",
+    "Status": "Pendente",
+    "deviceToken": null
+  },
+  {
+    "Nome": "Maria Oliveira",
+    "ChaveUnica": "segredo456",
+    "Status": "Pendente",
+    "deviceToken": null
+  },
+  {
+    "Nome": "Carlos Manuel",
+    "ChaveUnica": "teste789",
+    "Status": "Confirmado (2)",
+    "deviceToken": "ndx7ku7epkemh7zho19"
+  },
+  {
+    "Nome": "Ana Joaquina",
+    "ChaveUnica": "abc111",
+    "Status": "Pendente",
+    "deviceToken": null
+  }
+]
