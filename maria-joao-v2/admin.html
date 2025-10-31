@@ -117,7 +117,9 @@
   </div>
 
   <script>
-    const ADMIN_API_ENDPOINT = "http://localhost:3000/admin-api";
+    // ================== MUDANÇA FEITA AQUI ==================
+    const ADMIN_API_ENDPOINT = "https://api-casamento-mj.onrender.com/admin-api";
+    // ========================================================
     let adminPassword = ""; // Guardará a senha após o login
 
     const adminLoginForm = document.getElementById('adminLoginForm');
@@ -270,7 +272,10 @@
 
       comprovativos.forEach(entry => {
         // O link aponta para a pasta /uploads/ que o server.js está a servir
-        const fileLink = `uploads/${escape(entry.fileName)}`;
+        // ================== MUDANÇA IMPORTANTE AQUI ==================
+        // Em vez de 'uploads/', usamos o URL completo do servidor
+        const fileLink = `https://api-casamento-mj.onrender.com/uploads/${escape(entry.fileName)}`;
+        // ============================================================
         
         const row = `
           <tr>
