@@ -320,25 +320,22 @@
   </div>
 
   <script>
-    // URL do servidor (deve ser igual ao do index.html)
-    // ================== MUDANÇA FEITA AQUI ==================
-    const API_ENDPOINT = "https://api-casamento-mj.onrender.com/api";
+    // ================== MUDANÇA IMPORTANTE AQUI ==================
+    // Definimos o URL base do seu servidor
+    const API_BASE_URL = "https://api-casamento-mj.onrender.com";
     // ========================================================
     
     document.addEventListener('DOMContentLoaded', () => {
       
-      // --- CÓDIGO DE AUTENTICAÇÃO E PERSONALIZAÇÃO (MODIFICADO) ---
       const guestName = localStorage.getItem('guestName');
       const guestStatus = localStorage.getItem('guestStatus'); 
-      const loginToken = localStorage.getItem('loginToken'); // <-- NOVO
+      const loginToken = localStorage.getItem('loginToken');
       
-      // Verifica se o guestName OU o loginToken estão em falta
       if (!guestName || !loginToken) {
           alert("Por favor, faça o login para aceder ao convite.");
           window.location.href = 'index.html';
           return; 
       }
-      // --- FIM DA MODIFICAÇÃO ---
 
       // 1. Injeta a mensagem de boas-vindas
       const heroContent = document.querySelector('.hero-content');
@@ -371,12 +368,8 @@
                 guestsSelect.value = confirmedGuests;
               }
             }
-            if (rsvpTitle) {
-              rsvpTitle.textContent = "Atualizar Presença";
-            }
-            if (rsvpSubmitBtn) {
-              rsvpSubmitBtn.textContent = "Atualizar Confirmação";
-            }
+            if (rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
+            if (rsvpSubmitBtn) rsvpSubmitBtn.textContent = "Atualizar Confirmação";
           }
       }
 
@@ -405,9 +398,7 @@
       const createMapLink = (address, isDirections = false) => {
         const baseUrl = 'https://www.google.com/maps'; 
         const encodedAddress = encodeURIComponent(address);
-        if (isDirections) {
-          return `${baseUrl}/dir/?api=1&destination=${encodedAddress}`;
-        }
+        if (isDirections) return `${baseUrl}/dir/?api=1&destination=${encodedAddress}`;
         return `${baseUrl}/search/?api=1&query=${encodedAddress}`;
       };
       
@@ -521,7 +512,8 @@
           submitButton.textContent = "A enviar...";
           rsvpStatus.textContent = "";
 
-          fetch(API_ENDPOINT, {
+          // --- MUDANÇA AQUI: Usa o novo URL ---
+          fetch(`${API_BASE_URL}/api`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -530,26 +522,20 @@
           .then(result => {
             if (result.status === "success") {
               localStorage.setItem('guestStatus', `Confirmado (${data.guests})`);
-              
               rsvpStatus.style.color = "green";
               rsvpStatus.textContent = "Confirmação recebida com sucesso! Obrigado.";
               submitButton.textContent = "Atualizado!";
-              
               setTimeout(() => {
                 document.getElementById('rsvpModal').classList.remove('open');
                 submitButton.disabled = false;
                 submitButton.textContent = "Atualizar Confirmação";
                 if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
               }, 2000);
-            } else {
-              throw new Error(result.message);
-            }
+            } else { throw new Error(result.message); }
           })
           .catch(err => {
             rsvpStatus.style.color = "#D93025";
-            // --- CORRECÇÃO AQUI ---
             rsvpStatus.textContent = "Erro: " + err.message + ". Tente enviar por WhatsApp.";
-            // --- FIM DA CORRECÇÃO ---
             submitButton.disabled = false;
             submitButton.textContent = originalButtonText; 
           });
@@ -579,7 +565,6 @@
 
         giftListForm.addEventListener('submit', (e) => {
           e.preventDefault();
-          
           const selectedCheckboxes = giftListForm.querySelectorAll('input[name="gift"]:checked');
           const selectedGifts = Array.from(selectedCheckboxes).map(cb => cb.value);
 
@@ -588,7 +573,6 @@
             giftStatus.textContent = "Por favor, selecione pelo menos um item.";
             return;
           }
-
           submitButton.disabled = true;
           submitButton.textContent = "A registar...";
           giftStatus.textContent = "";
@@ -599,7 +583,8 @@
             selectedGifts: selectedGifts
           };
 
-          fetch(API_ENDPOINT, {
+          // --- MUDANÇA AQUI: Usa o novo URL ---
+          fetch(`${API_BASE_URL}/api`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
@@ -610,7 +595,6 @@
               giftStatus.style.color = "green";
               giftStatus.textContent = "Presentes registados com sucesso! Obrigado.";
               submitButton.textContent = "Registado!";
-              
               setTimeout(() => {
                 document.getElementById('giftsCombinedModal').classList.remove('open');
                 submitButton.disabled = false;
@@ -618,10 +602,7 @@
                 giftStatus.textContent = "";
                 selectedCheckboxes.forEach(cb => cb.checked = false);
               }, 2500);
-
-            } else {
-              throw new Error(result.message);
-            }
+            } else { throw new Error(result.message); }
           })
           .catch(err => {
             giftStatus.style.color = "#D93025";
@@ -660,8 +641,8 @@
               submitButton.textContent = "A enviar...";
               comprovativoStatus.textContent = "";
 
-              // O endpoint de upload é ligeiramente diferente
-              const UPLOAD_ENDPOINT = API_ENDPOINT.replace('/api', '/api/upload_comprovativo');
+              // --- MUDANÇA AQUI: Usa o novo URL de upload ---
+              const UPLOAD_ENDPOINT = `${API_BASE_URL}/api/upload_comprovativo`;
 
               fetch(UPLOAD_ENDPOINT, {
                   method: 'POST',
@@ -674,15 +655,12 @@
                       comprovativoStatus.textContent = "Comprovativo enviado com sucesso!";
                       submitButton.textContent = "Enviado!";
                       comprovativoForm.reset(); // Limpa o formulário
-
                       setTimeout(() => {
                           submitButton.disabled = false;
                           submitButton.textContent = "Enviar Comprovativo";
                           comprovativoStatus.textContent = "";
                       }, 3000);
-                  } else {
-                      throw new Error(result.message);
-                  }
+                  } else { throw new Error(result.message); }
               })
               .catch(err => {
                   comprovativoStatus.style.color = "#D93025";
