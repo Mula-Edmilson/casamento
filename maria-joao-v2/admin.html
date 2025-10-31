@@ -105,7 +105,7 @@
               <th>Data</th>
               <th>Nome</th>
               <th>Canal</th>
-              <th>Comprovativo (FicheIRO)</th>
+              <th>Comprovativo (Ficheiro)</th>
             </tr>
           </thead>
           <tbody id="comprovativoTableBody">
@@ -113,11 +113,29 @@
         </table>
       </div>
 
-    </div>
+      <hr style="margin: 40px 0;">
+
+      <h3>Mural de Felicitações</h3>
+      <p id="messageSectionP">A carregar mensagens...</p>
+      <div id="messageTableContainer" style="overflow-x: auto; border: 1px solid var(--border-color); border-radius: 8px; margin-top: 16px; display: none;">
+        <table id="messageTable">
+          <thead>
+            <tr>
+              <th style="width: 15%;">Data</th>
+              <th style="width: 20%;">Nome</th>
+              <th style="width: 65%;">Mensagem</th>
+            </tr>
+          </thead>
+          <tbody id="messageTableBody">
+            </tbody>
+        </table>
+      </div>
+      </div>
   </div>
 
   <script>
-    const ADMIN_API_ENDPOINT = "https://api-casamento-mj.onrender.com/admin-api";
+    // ================== JAVASCRIPT ATUALIZADO ==================
+    const API_BASE_URL = "https://api-casamento-mj.onrender.com";
     let adminPassword = ""; // Guardará a senha após o login
 
     const adminLoginForm = document.getElementById('adminLoginForm');
@@ -127,7 +145,7 @@
     // Função para escapar HTML e evitar XSS
     const escape = (str) => str ? String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : '-';
 
-    // Ação de Login (AGORA BUSCA 3 TIPOS DE DADOS)
+    // Ação de Login (MODIFICADA para buscar 4 coisas)
     adminLoginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       adminLoginError.textContent = "";
@@ -136,18 +154,22 @@
       button.disabled = true;
       button.textContent = "A aceder...";
       
+      // Busca RSVPs, Presentes, Comprovativos e Mensagens
       Promise.all([
         fetchData("get_rsvps"),
         fetchData("get_gifts"),
-        fetchData("get_comprovativos")
+        fetchData("get_comprovativos"),
+        fetchData("get_messages") // <-- ADICIONADO
       ])
-      .then(([rsvpData, giftData, comprovativoData]) => {
+      .then(([rsvpData, giftData, comprovativoData, messageData]) => { // <-- ADICIONADO
+          // Sucesso! Esconde login, mostra dashboard
           document.getElementById('adminLogin').style.display = 'none';
           document.getElementById('dashboard').style.display = 'block';
           
           populateRsvpTable(rsvpData.data);
           populateGiftTable(giftData.data); 
           populateComprovativoTable(comprovativoData.data);
+          populateMessageTable(messageData.data); // <-- ADICIONADO
       })
       .catch(err => {
           adminLoginError.textContent = err.message || "Senha incorreta.";
@@ -156,7 +178,7 @@
       });
     });
     
-    // Ação de Atualizar (AGORA BUSCA 3 TIPOS DE DADOS)
+    // Ação de Atualizar (MODIFICADA para buscar 4 coisas)
     refreshBtn.addEventListener('click', () => {
         refreshBtn.disabled = true;
         refreshBtn.textContent = "A atualizar...";
@@ -164,12 +186,15 @@
         Promise.all([
           fetchData("get_rsvps"),
           fetchData("get_gifts"),
-          fetchData("get_comprovativos")
+          fetchData("get_comprovativos"),
+          fetchData("get_messages") // <-- ADICIONADO
         ])
-        .then(([rsvpData, giftData, comprovativoData]) => {
+        .then(([rsvpData, giftData, comprovativoData, messageData]) => { // <-- ADICIONADO
             populateRsvpTable(rsvpData.data);
             populateGiftTable(giftData.data); 
             populateComprovativoTable(comprovativoData.data);
+            populateMessageTable(messageData.data); // <-- ADICIONADO
+            
             refreshBtn.disabled = false;
             refreshBtn.textContent = "Atualizar Listas";
         })
@@ -250,7 +275,7 @@
       });
     }
 
-    // --- MUDANÇA: FUNÇÃO PARA PREENCHER A TABELA DE COMPROVATIVOS ---
+    // Função para preencher a tabela de Comprovativos
     function populateComprovativoTable(comprovativos) {
       const tableContainer = document.getElementById('comprovativoTableContainer');
       const tableBody = document.getElementById('comprovativoTableBody');
@@ -282,9 +307,38 @@
       });
     }
 
+    // ================== NOVA FUNÇÃO: Preencher Tabela de Mensagens ==================
+    function populateMessageTable(messages) {
+      const tableContainer = document.getElementById('messageTableContainer');
+      const tableBody = document.getElementById('messageTableBody');
+      const messageSectionP = document.getElementById('messageSectionP');
+      tableBody.innerHTML = '';
+
+      if (!messages || messages.length === 0) {
+        messageSectionP.textContent = "Nenhuma mensagem de felicitação foi enviada ainda.";
+        tableContainer.style.display = 'none';
+        return;
+      }
+
+      messageSectionP.textContent = "Abaixo estão as mensagens de felicitação dos convidados.";
+      tableContainer.style.display = 'block';
+
+      messages.forEach(entry => {
+        const row = `
+          <tr>
+            <td style="white-space: nowrap;">${new Date(entry.timestamp).toLocaleString('pt-PT', {dateStyle: 'short', timeStyle: 'short'})}</td>
+            <td style="font-weight: 500;">${escape(entry.nome)}</td>
+            <td>${escape(entry.message)}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    }
+    // ===============================================================================
+
     // Função genérica para chamar a API de Admin
     function fetchData(action, payload = {}) {
-      return fetch(ADMIN_API_ENDPOINT, {
+      return fetch(`${API_BASE_URL}/admin-api`, { // URL ATUALIZADO
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -308,6 +362,7 @@
         return response;
       });
     }
+    // ==========================================================
   </script>
 
 </body>
