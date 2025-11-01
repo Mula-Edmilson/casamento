@@ -31,9 +31,7 @@
 
   <script>
     // URL do seu servidor
-    // ================== MUDANÇA FEITA AQUI ==================
     const API_ENDPOINT = "https://api-casamento-mj.onrender.com/api";
-    // ========================================================
 
     // --- NOVO: Função para criar/obter o token do dispositivo ---
     function getOrCreateLoginToken() {
@@ -52,7 +50,7 @@
       
       localStorage.removeItem('guestName');
       localStorage.removeItem('guestStatus');
-      localStorage.removeItem('guestMesa'); // <-- ADICIONADO: Limpa a mesa antiga ao carregar
+      localStorage.removeItem('guestMesa'); // Limpa a mesa antiga ao carregar
     };
 
     const loginForm = document.getElementById('loginForm');
@@ -63,7 +61,7 @@
       loginError.textContent = ''; // Limpa erros antigos
       
       const name = document.getElementById('name').value;
-      const loginToken = getOrCreateLoginToken(); // <-- NOVO: Obtém o token
+      const loginToken = getOrCreateLoginToken(); // Obtém o token
       const button = e.target.querySelector('button');
       button.disabled = true;
       button.textContent = "A verificar...";
@@ -76,13 +74,12 @@
         body: JSON.stringify({
           action: "login",
           name: name,
-          loginToken: loginToken // <-- NOVO: Envia o token em vez da chave
+          loginToken: loginToken // Envia o token
         })
       })
       .then(res => {
         // --- LÓGICA DE RESPOSTA MODIFICADA ---
         if (res.status === 403) { // 403 - Forbidden (Já aberto)
-          // Se o convite já foi aberto, redireciona
           window.location.href = 'ja-aberto.html'; 
           return Promise.reject(new Error("Convite já aberto")); // Pára a execução
         }
@@ -99,22 +96,25 @@
           // SUCESSO!
           localStorage.setItem('guestName', data.guestName);
           localStorage.setItem('guestStatus', data.guestStatus);
-          localStorage.setItem('guestMesa', data.guestMesa); // <-- NOVA LINHA ADICIONADA
+          
+          // ======================= ESTA É A LINHA CORRIGIDA =======================
+          localStorage.setItem('guestMesa', data.Mesa); // <-- Mudado de data.guestMesa para data.Mesa
+          // ========================================================================
+
           window.location.href = 'convite.html';
         } else {
-          // Erro inesperado (não devia acontecer, mas por segurança)
+          // Erro inesperado
           loginError.textContent = data.message || "Ocorreu um erro.";
           button.disabled = false;
           button.textContent = "Entrar";
         }
       })
       .catch(err => {
-        // Se o erro for "Convite já aberto", não fazemos nada pois já redirecionou
         if (err.message === "Convite já aberto") {
           return; 
         }
         
-        // Trata outros erros (ex: Nome não encontrado, erro de servidor)
+        // Trata outros erros
         loginError.textContent = err.message || "Erro de ligação. Tente novamente.";
         button.disabled = false;
         button.textContent = "Entrar";
