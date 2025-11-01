@@ -78,7 +78,7 @@
       font-family: 'Inter', sans-serif;
       color: #333;
       line-height: 1.6;
-      /* Remove o estilo de 'p' do seu CSS principal se necessário */
+      white-space: pre-wrap; /* Preserva quebras de linha nas mensagens */
     }
   </style>
   </head>
@@ -316,7 +316,7 @@
           <input type="text" id="nome" required placeholder="O seu nome" disabled>
         </div>
         <div class="form-row">
-          <div><label for="guests">Nº de convidados</label><select id="guests"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5+">5+</option></select></div>
+          <div><label for="guests">Nº de convidados</label><select id="guests"><option value="1">1</option><option value="2">2</option><option value_3">3</option><option value="4">4</option><option value="5+">5+</option></select></div>
           <div><label for="phone">Telefone (opcional)</label><input id="phone" placeholder="+258 84X XXX XXX"></div>
         </div>
         <div><label for="message">Mensagem (opcional)</label><textarea id="message" placeholder="Deixe uma mensagem para os noivos..."></textarea></div>
@@ -433,8 +433,12 @@
     // (Função de segurança para evitar XSS)
     function escapeHTML(str) {
       if (!str) return '';
-      // ======================= ESTA É A LINHA CORRIGIDA =======================
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      // ======================= ESTA É A FUNÇÃO CORRIGIDA (SINTAXE E LÓGICA) =======================
+      return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
     }
     
     document.addEventListener('DOMContentLoaded', () => {
@@ -497,10 +501,14 @@
               infoNameEl.textContent = guestName;
           }
           if (infoMesaEl) {
-              // Verifica se a mesa está definida e não é "A definir"
-              if (guestMesa && guestMesa !== "A definir" && guestMesa.trim() !== "") {
+              
+              // ======================= CORREÇÃO PARA "UNDEFINED" =======================
+              // Verifica se a mesa está definida, não é "A definir" E não é a string "undefined"
+              if (guestMesa && guestMesa !== "A definir" && guestMesa !== "undefined" && guestMesa.trim() !== "") {
                   infoMesaEl.textContent = guestMesa;
               } else {
+              // ========================================================================
+                  
                   // Mensagem padrão se a mesa não estiver definida
                   infoMesaEl.textContent = "A sua mesa será indicada à entrada.";
                   infoMesaEl.style.color = "var(--text-light)"; // Estilo mais suave
@@ -899,8 +907,12 @@
                       messageText.value = ""; // Limpa o campo
                       
                       // Adiciona a nova mensagem ao topo do feed
-                      guestbookFeed.prepend(renderMessage(result.data));
-                      if(feedLoading) feedLoading.style.display = 'none'; // Esconde "A carregar..."
+                      const newEntry = renderMessage(result.data);
+                      if (feedLoading) {
+                          feedLoading.style.display = 'none';
+                          guestbookFeed.innerHTML = ''; // Limpa o "Seja o primeiro"
+                      }
+                      guestbookFeed.prepend(newEntry);
 
                       setTimeout(() => { messageStatus.textContent = ""; }, 3000);
                   } else {
