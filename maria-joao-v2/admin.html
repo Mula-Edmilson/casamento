@@ -34,6 +34,12 @@
     td a:hover {
         text-decoration: underline;
     }
+    
+    /* Estilo para a coluna da Mesa (para dar destaque) */
+    .mesa-cell {
+        font-weight: 500;
+        color: var(--accent);
+    }
   </style>
 </head>
 <body>
@@ -67,14 +73,14 @@
               <th>Data</th>
               <th>Nome</th>
               <th>Convidados</th>
-              <th>Telefone</th>
+              <th>Mesa</th> <th>Telefone</th>
               <th>Mensagem</th>
             </tr>
           </thead>
           <tbody id="rsvpTableBody">
             </tbody>
         </table>
-      </div>
+        </div>
       
       <hr style="margin: 40px 0;">
       
@@ -205,7 +211,7 @@
         });
     });
 
-    // Função para preencher a tabela de RSVPs
+    // ======================= FUNÇÃO DE TABELA RSVP ATUALIZADA =======================
     function populateRsvpTable(rsvps) {
       const tableBody = document.getElementById('rsvpTableBody');
       const countEl = document.getElementById('rsvpCount');
@@ -216,7 +222,8 @@
       if (!rsvps || rsvps.length === 0) {
         countEl.textContent = 0;
         guestTotalEl.textContent = 0; 
-        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px;">Nenhuma confirmação recebida ainda.</td></tr>';
+        // Atualiza o colspan para 6 colunas
+        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px;">Nenhuma confirmação recebida ainda.</td></tr>';
         return;
       }
       
@@ -233,12 +240,14 @@
           totalGuests += guestsCount;
         }
         
+        // Adiciona a célula da mesa (rsvp.mesa)
+        // Assumindo que a sua API agora retorna 'mesa' no objeto rsvp
         const row = `
           <tr>
             <td style="white-space: nowrap;">${new Date(rsvp.timestamp).toLocaleString('pt-PT', {dateStyle: 'short', timeStyle: 'short'})}</td>
             <td style="font-weight: 500;">${escape(rsvp.nome)}</td>
             <td>${escape(rsvp.guests)}</td>
-            <td>${escape(rsvp.phone)}</td>
+            <td class="mesa-cell">${escape(rsvp.mesa)}</td> <td>${escape(rsvp.phone)}</td>
             <td>${escape(rsvp.message)}</td>
           </tr>
         `;
@@ -246,6 +255,7 @@
       });
       guestTotalEl.textContent = totalGuests; 
     }
+    // ===============================================================================
 
     // Função para preencher a tabela de Presentes (Lista)
     function populateGiftTable(gifts) {

@@ -52,6 +52,7 @@
       
       localStorage.removeItem('guestName');
       localStorage.removeItem('guestStatus');
+      localStorage.removeItem('guestMesa'); // <-- ADICIONADO: Limpa a mesa antiga ao carregar
     };
 
     const loginForm = document.getElementById('loginForm');
@@ -98,6 +99,7 @@
           // SUCESSO!
           localStorage.setItem('guestName', data.guestName);
           localStorage.setItem('guestStatus', data.guestStatus);
+          localStorage.setItem('guestMesa', data.guestMesa); // <-- NOVA LINHA ADICIONADA
           window.location.href = 'convite.html';
         } else {
           // Erro inesperado (não devia acontecer, mas por segurança)

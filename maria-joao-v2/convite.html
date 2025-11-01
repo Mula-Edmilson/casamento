@@ -93,6 +93,11 @@
       <button id="fabGiftsBtn" class="fab-item" aria-label="Opções de presente">
           <svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
       </button>
+      
+      <button id="fabGuestInfoBtn" class="fab-item" aria-label="Ver a sua mesa">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </button>
+      
       <button id="fabMapBtn" class="fab-item" aria-label="Ver mapa do local">
           <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
       </button>
@@ -100,7 +105,6 @@
           <svg id="musicIcon" width="20" height="20" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
       </button>
   </div>
-  
   <main class="invite-wrap" role="main" aria-labelledby="inviteTitle">
     
     <header class="hero">
@@ -403,6 +407,25 @@
     </div>
   </div>
 
+  <div class="modal" id="guestInfoModal" role="dialog" aria-modal="true" aria-labelledby="guestInfoTitle">
+    <div class="modal-card" style="text-align: left;">
+      <h3 id="guestInfoTitle" style="text-align: center;">O Seu Lugar</h3>
+      <p style="text-align: center; margin-bottom: 32px;">Informação para o dia da receção.</p>
+      
+      <div class="info-block">
+        <p><strong>Convidado:</strong></p>
+        <p id="guestInfoName" style="font-size: 1.1rem; color: var(--text-dark);">A carregar...</p>
+      </div>
+      <div class="info-block">
+        <p><strong>Mesa:</strong></p>
+        <p id="guestInfoMesa" style="font-size: 1.1rem; color: var(--accent); font-weight: 600;">A carregar...</p>
+      </div>
+      
+      <div class="form-actions" style="margin-top: 32px;">
+        <button type="button" class="btn btn-primary" data-close-modal style="width: 100%;">Fechar</button>
+      </div>
+    </div>
+  </div>
   <script>
     // Definimos o URL base do seu servidor
     const API_BASE_URL = "https://api-casamento-mj.onrender.com";
@@ -410,7 +433,8 @@
     // (Função de segurança para evitar XSS)
     function escapeHTML(str) {
       if (!str) return '';
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+      // ======================= ESTA É A LINHA CORRIGIDA =======================
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
     
     document.addEventListener('DOMContentLoaded', () => {
@@ -418,6 +442,7 @@
       // --- CÓDIGO DE AUTENTICAÇÃO E PERSONALIZAÇÃO ---
       const guestName = localStorage.getItem('guestName');
       const guestStatus = localStorage.getItem('guestStatus'); 
+      const guestMesa = localStorage.getItem('guestMesa'); // <-- NOVO: Obtém a mesa
       const loginToken = localStorage.getItem('loginToken');
       
       if (!guestName || !loginToken) {
@@ -462,6 +487,28 @@
           }
       }
 
+      // 3. NOVO: Preenche o modal de Informação do Convidado
+      const guestInfoModal = document.getElementById('guestInfoModal');
+      if (guestInfoModal) {
+          const infoNameEl = document.getElementById('guestInfoName');
+          const infoMesaEl = document.getElementById('guestInfoMesa');
+          
+          if (infoNameEl) {
+              infoNameEl.textContent = guestName;
+          }
+          if (infoMesaEl) {
+              // Verifica se a mesa está definida e não é "A definir"
+              if (guestMesa && guestMesa !== "A definir" && guestMesa.trim() !== "") {
+                  infoMesaEl.textContent = guestMesa;
+              } else {
+                  // Mensagem padrão se a mesa não estiver definida
+                  infoMesaEl.textContent = "A sua mesa será indicada à entrada.";
+                  infoMesaEl.style.color = "var(--text-light)"; // Estilo mais suave
+                  infoMesaEl.style.fontWeight = "400";
+              }
+          }
+      }
+
       // --- CÓDIGO ORIGINAL DO CONVITE (Música, Mapas, etc.) ---
       const HOST_WHATSAPP_NUMBER = '+258878061697';
       const ADDRESS_RELIGIOSA = 'Igreja Presbiteriana, Paróquia de Guava, Marracuene';
@@ -471,9 +518,13 @@
       const body = document.body;
       const music = document.getElementById('backgroundMusic');
       const musicControl = document.getElementById('musicControl');
+      
+      // Declaração dos botões flutuantes
       const fabRsvpBtn = document.getElementById('fabRsvpBtn');
       const fabGiftsBtn = document.getElementById('fabGiftsBtn');
+      const fabGuestInfoBtn = document.getElementById('fabGuestInfoBtn'); // <-- NOVO: Botão de Info
       const fabMapBtn = document.getElementById('fabMapBtn'); 
+      
       const rsvpBtn = document.getElementById('rsvpBtn');
       const dressCodeBtn = document.getElementById('dressCodeBtn');
       const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
@@ -534,8 +585,10 @@
       if (mapBtnCivil) mapBtnCivil.href = createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true); 
       if (mapBtnCasaLoicas) mapBtnCasaLoicas.href = createMapLink(ADDRESS_CASA_LOICAS, true);
       
+      // Event Listeners dos Botões
       [fabRsvpBtn, rsvpBtn].forEach(btn => btn?.addEventListener('click', () => openModal('rsvpModal')));
       [fabGiftsBtn, giftsCombinedBtn].forEach(btn => btn?.addEventListener('click', () => openModal('giftsCombinedModal')));
+      fabGuestInfoBtn?.addEventListener('click', () => openModal('guestInfoModal')); // <-- NOVO: Abre o modal de info
       dressCodeBtn?.addEventListener('click', () => openModal('dressCodeModal'));
       fabMapBtn?.addEventListener('click', () => window.open(createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true), '_blank'));
       
