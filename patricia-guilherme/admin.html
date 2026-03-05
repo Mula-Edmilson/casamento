@@ -23,41 +23,40 @@
 
     :root {
       /* Cores idênticas ao style.css (tema escuro) */
-      --bg: #2B2623;            /* Fundo principal: castanho-escuro */
-      --bg-rgb: 43, 38, 35;     /* Versão RGB do --bg */
-      --accent: #B08968;        /* Cor de destaque */
+      --bg: #2B2623;
+      --bg-rgb: 43, 38, 35;
+      --accent: #B08968;
       --accent-gradient: linear-gradient(135deg, #B08968, #9A6F50);
-      --text-dark: #F5EFEA;      /* Texto principal (títulos): bege claro */
-      --text-light: #C8C0B9;     /* Texto secundário (corpo): bege mais escuro */
-      --text-muted: #A69B94;     /* Texto ainda mais suave */
-      --card: #352F2C;           /* Fundo dos cartões: castanho-médio */
-      --section-bg: #302A27;     /* Fundo das secções: castanho mais escuro */
-      --border-color: #4D4641;   /* Cor das bordas */
+      --text-dark: #F5EFEA;
+      --text-light: #C8C0B9;
+      --text-muted: #A69B94;
+      --card: #352F2C;
+      --section-bg: #302A27;
+      --border-color: #4D4641;
       --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.15);
       --warning: #F59E0B;
       --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --info: #3B82F6;
+      --neutral-bg: rgba(156, 163, 175, 0.15);
       
-      /* Tipografia */
       --font-heading: 'Cormorant Garamond', serif;
       --font-body: 'Inter', sans-serif;
       --font-script: 'Parisienne', cursive;
       
-      /* Transições */
       --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
       --transition-fast: all 0.2s ease-out;
       
-      /* Sombras */
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
       --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
       --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
       
-      /* Bordas */
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 20px;
       --radius-xl: 28px;
       
-      /* Layout */
       --header-height: 64px;
       --safe-top: env(safe-area-inset-top);
       --safe-bottom: env(safe-area-inset-bottom);
@@ -72,6 +71,193 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ===== SISTEMA DE NOTIFICAÇÕES ===== */
+    .notification-center {
+      position: fixed;
+      top: calc(var(--header-height) + var(--safe-top) + 10px);
+      right: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 350px;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .notification {
+      background: var(--card);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transform: translateX(120%);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: auto;
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .notification.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notification-icon i {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      font-family: var(--font-heading);
+    }
+
+    .notification-message {
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.4;
+    }
+
+    .notification-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .notification-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .notification-close:hover {
+      background: var(--section-bg);
+      color: var(--text-dark);
+    }
+
+    .notification-close i {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Tipos de notificação */
+    .notification.rsvp {
+      border-left-color: var(--success);
+    }
+    .notification.rsvp .notification-icon {
+      background: linear-gradient(135deg, var(--success), #059669);
+    }
+
+    .notification.gift {
+      border-left-color: var(--warning);
+    }
+    .notification.gift .notification-icon {
+      background: linear-gradient(135deg, var(--warning), #D97706);
+    }
+
+    .notification.message {
+      border-left-color: var(--info);
+    }
+    .notification.message .notification-icon {
+      background: linear-gradient(135deg, var(--info), #2563EB);
+    }
+
+    .notification.comprovativo {
+      border-left-color: var(--accent);
+    }
+    .notification.comprovativo .notification-icon {
+      background: var(--accent-gradient);
+    }
+
+    /* Badge de notificação no topbar */
+    .notification-badge {
+      position: relative;
+    }
+
+    .notification-badge::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 2px solid var(--card);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* ===== ESTILOS PARA TENDÊNCIAS ===== */
+    .stat-change {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-weight: 600;
+    }
+
+    .stat-change.positive {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .stat-change.neutral {
+      background: var(--neutral-bg);
+      color: var(--text-muted);
     }
 
     /* ===== POPUP PROFISSIONAL PARA APP ===== */
@@ -445,6 +631,7 @@
       color: var(--text-light);
       cursor: pointer;
       transition: var(--transition-fast);
+      position: relative;
     }
 
     .mobile-refresh-btn:hover {
@@ -454,6 +641,18 @@
 
     .mobile-refresh-btn:active {
       transform: rotate(180deg);
+    }
+
+    .mobile-refresh-btn.has-notifications::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 2px solid var(--card);
     }
 
     /* Sidebar */
@@ -625,15 +824,6 @@
     .stat-icon i {
       width: 24px;
       height: 24px;
-    }
-
-    .stat-change {
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 30px;
-      background: rgba(16, 185, 129, 0.2);
-      color: var(--success);
-      font-weight: 600;
     }
 
     .stat-value {
@@ -928,6 +1118,11 @@
         padding-left: 16px;
         padding-right: 16px;
       }
+
+      .notification-center {
+        max-width: calc(100% - 32px);
+        right: 16px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -1011,6 +1206,9 @@
   </style>
 </head>
 <body>
+
+<!-- CENTRO DE NOTIFICAÇÕES -->
+<div class="notification-center" id="notificationCenter"></div>
 
 <!-- POPUP PROFISSIONAL PARA APP -->
 <div class="app-popup-overlay" id="appPopup">
@@ -1124,28 +1322,34 @@
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-icon"><i data-feather="check-circle"></i></div>
-            <span class="stat-change">+12%</span>
+            <span class="stat-change" id="rsvpTrend">+12%</span>
           </div>
           <div class="stat-value" id="rsvpCount">0</div>
-          <div class="stat-label">Confirmações</div>
+          <div class="stat-label">Confirmações totais</div>
         </div>
+        
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-icon"><i data-feather="users"></i></div>
+            <span class="stat-change" id="guestsTrend">+8%</span>
           </div>
           <div class="stat-value" id="guestTotalCount">0</div>
-          <div class="stat-label">Convidados</div>
+          <div class="stat-label">Total de convidados</div>
         </div>
+        
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-icon"><i data-feather="gift"></i></div>
+            <span class="stat-change" id="giftsTrend">+5%</span>
           </div>
           <div class="stat-value" id="giftsCount">0</div>
-          <div class="stat-label">Presentes</div>
+          <div class="stat-label">Presentes registados</div>
         </div>
+        
         <div class="stat-card">
           <div class="stat-header">
             <div class="stat-icon"><i data-feather="message-square"></i></div>
+            <span class="stat-change" id="messagesTrend">+15%</span>
           </div>
           <div class="stat-value" id="messagesCount">0</div>
           <div class="stat-label">Mensagens</div>
@@ -1179,8 +1383,7 @@
         <div class="section-header">
           <h3><i data-feather="users"></i> Confirmações</h3>
           <div class="section-actions">
-            <button class="btn" id="export-rsvps-csv">CSV</button>
-            <button class="btn" id="export-rsvps-json">JSON</button>
+            <button class="btn" id="export-rsvps-csv">📥 Exportar CSV</button>
           </div>
         </div>
         <div class="mobile-view" id="rsvpMobileList"></div>
@@ -1286,6 +1489,8 @@
   const API_BASE_URL = "https://api-casamento-mj.onrender.com";
   let adminPassword = "";
   let RSVPS_DATA = [], GIFTS_DATA = [], COMPROV_DATA = [], MESSAGES_DATA = [];
+  let lastCheckTimestamp = Date.now();
+  let notificationCheckInterval = null;
 
   // Elementos
   const loginScreen = document.getElementById('loginScreen');
@@ -1299,6 +1504,7 @@
   const sidebar = document.getElementById('sidebar');
   const mobileOverlay = document.getElementById('mobileOverlay');
   const mobilePageTitle = document.getElementById('mobilePageTitle');
+  const notificationCenter = document.getElementById('notificationCenter');
 
   // Elementos do popup
   const appPopup = document.getElementById('appPopup');
@@ -1306,6 +1512,223 @@
   const closePopupLater = document.getElementById('closePopupLater');
 
   feather.replace();
+
+  // ===== FUNÇÃO PARA CALCULAR TENDÊNCIAS =====
+  function calculateTrend(data, days = 7) {
+    const now = Date.now();
+    const weekInMs = days * 24 * 60 * 60 * 1000;
+    
+    // Período atual (últimos 'days' dias)
+    const currentPeriod = data.filter(item => {
+      const itemTime = new Date(item.timestamp).getTime();
+      return itemTime >= (now - weekInMs);
+    }).length;
+    
+    // Período anterior (anterior aos últimos 'days' dias)
+    const previousPeriod = data.filter(item => {
+      const itemTime = new Date(item.timestamp).getTime();
+      return itemTime >= (now - 2 * weekInMs) && itemTime < (now - weekInMs);
+    }).length;
+    
+    // Calcular diferença
+    if (previousPeriod === 0) {
+      return {
+        value: currentPeriod,
+        percentage: currentPeriod > 0 ? 100 : 0,
+        text: currentPeriod > 0 ? `+${currentPeriod}` : '0',
+        isPositive: currentPeriod > 0
+      };
+    }
+    
+    const difference = currentPeriod - previousPeriod;
+    const percentage = Math.round((difference / previousPeriod) * 100);
+    
+    return {
+      value: difference,
+      percentage: percentage,
+      text: difference > 0 ? `+${difference}` : (difference < 0 ? difference.toString() : '0'),
+      isPositive: difference >= 0
+    };
+  }
+
+  // ===== ATUALIZAR TENDÊNCIAS NOS CARDS =====
+  function updateTrends() {
+    // Tendência de RSVPs
+    const rsvpTrend = calculateTrend(RSVPS_DATA, 7);
+    const rsvpTrendEl = document.getElementById('rsvpTrend');
+    if (rsvpTrendEl) {
+      rsvpTrendEl.textContent = rsvpTrend.text;
+      rsvpTrendEl.className = 'stat-change ' + 
+        (rsvpTrend.value > 0 ? 'positive' : (rsvpTrend.value < 0 ? 'negative' : 'neutral'));
+    }
+    
+    // Tendência de convidados (soma dos guests)
+    const guestsData = RSVPS_DATA.map(r => ({
+      timestamp: r.timestamp,
+      value: parseInt(String(r.guests).replace('+', '')) || 0
+    }));
+    
+    const now = Date.now();
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+    
+    const currentGuests = guestsData
+      .filter(g => new Date(g.timestamp).getTime() >= (now - weekInMs))
+      .reduce((sum, g) => sum + g.value, 0);
+    
+    const previousGuests = guestsData
+      .filter(g => {
+        const time = new Date(g.timestamp).getTime();
+        return time >= (now - 2 * weekInMs) && time < (now - weekInMs);
+      })
+      .reduce((sum, g) => sum + g.value, 0);
+    
+    let guestsTrend = { text: '0', isPositive: true };
+    if (previousGuests === 0) {
+      guestsTrend.text = currentGuests > 0 ? `+${currentGuests}` : '0';
+    } else {
+      const diff = currentGuests - previousGuests;
+      guestsTrend.text = diff > 0 ? `+${diff}` : (diff < 0 ? diff.toString() : '0');
+      guestsTrend.isPositive = diff >= 0;
+    }
+    
+    const guestsTrendEl = document.getElementById('guestsTrend');
+    if (guestsTrendEl) {
+      guestsTrendEl.textContent = guestsTrend.text;
+      guestsTrendEl.className = 'stat-change ' + 
+        (guestsTrend.text.startsWith('+') ? 'positive' : 
+         guestsTrend.text.startsWith('-') ? 'negative' : 'neutral');
+    }
+    
+    // Tendência de presentes
+    const giftTrend = calculateTrend(GIFTS_DATA, 7);
+    const giftTrendEl = document.getElementById('giftsTrend');
+    if (giftTrendEl) {
+      giftTrendEl.textContent = giftTrend.text;
+      giftTrendEl.className = 'stat-change ' + 
+        (giftTrend.value > 0 ? 'positive' : (giftTrend.value < 0 ? 'negative' : 'neutral'));
+    }
+    
+    // Tendência de mensagens
+    const messageTrend = calculateTrend(MESSAGES_DATA, 7);
+    const messageTrendEl = document.getElementById('messagesTrend');
+    if (messageTrendEl) {
+      messageTrendEl.textContent = messageTrend.text;
+      messageTrendEl.className = 'stat-change ' + 
+        (messageTrend.value > 0 ? 'positive' : (messageTrend.value < 0 ? 'negative' : 'neutral'));
+    }
+  }
+
+  // ===== SISTEMA DE NOTIFICAÇÕES =====
+  function showNotification(type, title, message, data = {}) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    const icons = {
+      rsvp: 'check-circle',
+      gift: 'gift',
+      message: 'message-circle',
+      comprovativo: 'file-text'
+    };
+
+    notification.innerHTML = `
+      <div class="notification-icon">
+        <i data-feather="${icons[type] || 'bell'}"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-title">${title}</div>
+        <div class="notification-message">${message}</div>
+        <div class="notification-time">Agora mesmo</div>
+      </div>
+      <button class="notification-close" onclick="this.parentElement.remove()">
+        <i data-feather="x"></i>
+      </button>
+    `;
+
+    notificationCenter.appendChild(notification);
+    feather.replace();
+
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.remove();
+          }
+        }, 400);
+      }
+    }, 8000);
+
+    mobileRefreshBtn.classList.add('has-notifications');
+  }
+
+  async function checkForNewData() {
+    try {
+      const [rsvpData, giftData, comprovativoData, messageData] = await Promise.all([
+        fetchData("get_rsvps"),
+        fetchData("get_gifts"),
+        fetchData("get_comprovativos"),
+        fetchData("get_messages")
+      ]);
+
+      const newRsvps = (rsvpData.data || []).filter(item => new Date(item.timestamp) > lastCheckTimestamp);
+      const newGifts = (giftData.data || []).filter(item => new Date(item.timestamp) > lastCheckTimestamp);
+      const newComprovs = (comprovativoData.data || []).filter(item => new Date(item.timestamp) > lastCheckTimestamp);
+      const newMessages = (messageData.data || []).filter(item => new Date(item.timestamp) > lastCheckTimestamp);
+
+      newRsvps.forEach(rsvp => {
+        showNotification('rsvp', 'Nova Confirmação', 
+          `${rsvp.nome} confirmou presença com ${rsvp.guests} convidado(s)`);
+      });
+
+      newGifts.forEach(gift => {
+        showNotification('gift', 'Novo Presente', 
+          `${gift.nome} presenteou: ${(gift.gifts || []).join(', ')}`);
+      });
+
+      newMessages.forEach(message => {
+        showNotification('message', 'Nova Mensagem', 
+          `${message.nome}: ${message.message.substring(0, 50)}${message.message.length > 50 ? '...' : ''}`);
+      });
+
+      newComprovs.forEach(comp => {
+        showNotification('comprovativo', 'Novo Comprovativo', 
+          `${comp.nome} enviou comprovativo via ${comp.canal}`);
+      });
+
+      RSVPS_DATA = rsvpData.data || [];
+      GIFTS_DATA = giftData.data || [];
+      COMPROV_DATA = comprovativoData.data || [];
+      MESSAGES_DATA = messageData.data || [];
+      
+      updateAllTables();
+      loadGiftInventory();
+
+      if (newRsvps.length > 0 || newGifts.length > 0 || newComprovs.length > 0 || newMessages.length > 0) {
+        lastCheckTimestamp = Date.now();
+      }
+
+    } catch (error) {
+      console.error("Erro ao verificar notificações:", error);
+    }
+  }
+
+  function startNotificationPolling() {
+    if (notificationCheckInterval) {
+      clearInterval(notificationCheckInterval);
+    }
+    notificationCheckInterval = setInterval(checkForNewData, 10000);
+  }
+
+  function stopNotificationPolling() {
+    if (notificationCheckInterval) {
+      clearInterval(notificationCheckInterval);
+      notificationCheckInterval = null;
+    }
+  }
 
   // ===== POPUP LÓGICA =====
   function checkAndShowPopup() {
@@ -1407,8 +1830,11 @@
       GIFTS_DATA = giftData.data || [];
       COMPROV_DATA = comprovativoData.data || [];
       MESSAGES_DATA = messageData.data || [];
+      
+      lastCheckTimestamp = Date.now();
       updateAllTables();
       loadGiftInventory();
+      startNotificationPolling();
       
       checkAndShowPopup();
     })
@@ -1423,6 +1849,10 @@
     loginScreen.style.display = 'flex';
     document.getElementById('adminPassword').value = '';
     adminLoginError.textContent = '';
+    stopNotificationPolling();
+    mobileRefreshBtn.classList.remove('has-notifications');
+    
+    notificationCenter.innerHTML = '';
   });
 
   function refreshData() {
@@ -1437,8 +1867,11 @@
       GIFTS_DATA = giftData.data || [];
       COMPROV_DATA = comprovativoData.data || [];
       MESSAGES_DATA = messageData.data || [];
+      
+      lastCheckTimestamp = Date.now();
       updateAllTables();
       loadGiftInventory();
+      mobileRefreshBtn.classList.remove('has-notifications');
     })
     .catch(err => alert("Erro: " + err.message));
   }
@@ -1447,12 +1880,12 @@
 
   function updateAllTables() {
     updateStats();
+    updateTrends(); // <- NOVO: atualiza as tendências
     renderMobileLists();
     renderDesktopTables();
   }
 
   function renderDesktopTables() {
-    // Recent Activity Desktop
     const recentBody = document.getElementById('recentActivityBody');
     recentBody.innerHTML = '';
     let activities = [
@@ -1470,7 +1903,6 @@
       </tr>`;
     });
 
-    // RSVPs Desktop
     const rsvpBody = document.getElementById('rsvpTableBody');
     rsvpBody.innerHTML = '';
     RSVPS_DATA.forEach(r => {
@@ -1484,7 +1916,6 @@
       </tr>`;
     });
 
-    // Gifts Desktop
     const giftBody = document.getElementById('giftTableBody');
     giftBody.innerHTML = '';
     GIFTS_DATA.forEach(g => {
@@ -1495,7 +1926,6 @@
       </tr>`;
     });
 
-    // Comprovativos Desktop
     const compBody = document.getElementById('comprovativoTableBody');
     compBody.innerHTML = '';
     COMPROV_DATA.forEach(c => {
@@ -1507,7 +1937,6 @@
       </tr>`;
     });
 
-    // Messages Desktop
     const msgBody = document.getElementById('messageTableBody');
     msgBody.innerHTML = '';
     MESSAGES_DATA.forEach(m => {
@@ -1520,7 +1949,6 @@
   }
 
   function renderMobileLists() {
-    // Recent Activity Mobile
     const recent = document.getElementById('recentActivityMobile');
     recent.innerHTML = '';
     let activities = [
@@ -1551,7 +1979,6 @@
     });
     if(!activities.length) recent.innerHTML = '<div class="text-center">Sem atividades recentes</div>';
 
-    // RSVPs Mobile
     const rsvpList = document.getElementById('rsvpMobileList');
     rsvpList.innerHTML = '';
     RSVPS_DATA.forEach(r => {
@@ -1584,7 +2011,6 @@
     });
     if(!RSVPS_DATA.length) rsvpList.innerHTML = '<div class="text-center">Nenhuma confirmação ainda</div>';
 
-    // Gifts Mobile
     const giftList = document.getElementById('giftMobileList');
     giftList.innerHTML = '';
     GIFTS_DATA.forEach(g => {
@@ -1605,7 +2031,6 @@
     });
     if(!GIFTS_DATA.length) giftList.innerHTML = '<div class="text-center">Nenhum presente registado</div>';
 
-    // Comprovativos Mobile
     const compList = document.getElementById('comprovativoMobileList');
     compList.innerHTML = '';
     COMPROV_DATA.forEach(c => {
@@ -1630,7 +2055,6 @@
     });
     if(!COMPROV_DATA.length) compList.innerHTML = '<div class="text-center">Nenhum comprovativo enviado</div>';
 
-    // Messages Mobile
     const msgList = document.getElementById('messageMobileList');
     msgList.innerHTML = '';
     MESSAGES_DATA.forEach(m => {
@@ -1725,33 +2149,32 @@
     });
   }
 
-  // Exports
   document.getElementById('export-rsvps-csv')?.addEventListener('click', () => { 
     if(RSVPS_DATA.length) exportCSV(); 
     else alert('Sem dados para exportar'); 
   });
-  
-  document.getElementById('export-rsvps-json')?.addEventListener('click', () => { 
-    if(RSVPS_DATA.length) exportJSON(); 
-    else alert('Sem dados para exportar'); 
-  });
 
   function exportCSV() {
+    const BOM = "\uFEFF";
     let csv = "Data/Hora,Nome,Convidados,Telefone,Mesa,Mensagem\r\n";
-    RSVPS_DATA.forEach(r => csv += `"${new Date(r.timestamp).toISOString()}","${r.nome||''}","${r.guests||''}","${r.phone||''}","${r.mesa||''}","${(r.message||'').replace(/"/g,'""')}"\r\n`);
-    const blob = new Blob([csv],{type:'text/csv'}); 
+    
+    RSVPS_DATA.forEach(r => {
+      const data = new Date(r.timestamp).toLocaleString('pt-PT');
+      const nome = (r.nome || '').replace(/"/g, '""');
+      const guests = r.guests || '';
+      const phone = (r.phone || '').replace(/"/g, '""');
+      const mesa = (r.mesa || '').replace(/"/g, '""');
+      const message = (r.message || '').replace(/"/g, '""').replace(/\n/g, ' ');
+      
+      csv += `"${data}","${nome}","${guests}","${phone}","${mesa}","${message}"\r\n`;
+    });
+    
+    const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' }); 
     const a = document.createElement('a'); 
-    a.href=URL.createObjectURL(blob); 
-    a.download=`rsvps-${new Date().toISOString().slice(0,10)}.csv`; 
+    a.href = URL.createObjectURL(blob); 
+    a.download = `confirmacoes-${new Date().toLocaleDateString('pt-PT').replace(/\//g, '-')}.csv`; 
     a.click();
-  }
-  
-  function exportJSON() {
-    const blob = new Blob([JSON.stringify(RSVPS_DATA,null,2)],{type:'application/json'}); 
-    const a = document.createElement('a'); 
-    a.href=URL.createObjectURL(blob); 
-    a.download=`rsvps-${new Date().toISOString().slice(0,10)}.json`; 
-    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
   document.addEventListener('keydown', (e) => { 
