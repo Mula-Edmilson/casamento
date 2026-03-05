@@ -106,7 +106,7 @@ p:last-child {
 .hero {
   position: relative;
   min-height: 100vh;
-  background-image: url('https://i.postimg.cc/15KQyFX5/Whats-App-Image-2025-10-24-at-10-47-48-AM.jpg');
+  background-image: url('https://i.postimg.cc/XvBz2yNj/PG2.jpg');
   background-size: cover;
   background-position: center 30%;
   display: flex;
@@ -1159,6 +1159,29 @@ input[type="file"]::file-selector-button:hover {
   scrollbar-color: var(--accent) rgba(255, 255, 255, 0.1);
   min-height: 450px;
   align-items: center;
+}
+
+.bg-image{
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-image: url("SUA-IMAGEM.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index:-1;
+  animation: slowZoom 30s ease-in-out infinite alternate;
+}
+
+@keyframes slowZoom{
+  from{
+    transform: scale(1);
+  }
+  to{
+    transform: scale(1.08);
+  }
 }
 
 /* Custom scrollbar */

@@ -367,16 +367,26 @@
         gap: 1rem;
       }
     }
+       .bg-image{
+       position: fixed;
+       top:0;
+     left:0;
+     width:100vw;
+     height:100vh;
+    object-fit: cover;
+    z-index:-1;
+  }
   </style>
 </head>
 <body class="loading">
 
   <div class="page">
-    <!-- Vídeo de fundo -->
-    <video class="bg-video" autoplay muted loop playsinline>
-      <source src="https://video.wixstatic.com/video/5d9686_371092bb273d4afbae3e2b9a3a1f6164/480p/mp4/file.mp4" type="video/mp4">
-      O teu navegador não suporta vídeo HTML5.
-    </video>
+    <!-- Imagem de fundo -->
+    <img 
+      class="bg-image"
+      src="https://i.postimg.cc/G3YP2xtK/PG7-jpg.png"
+      alt="background"
+    >
 
     <div class="overlay"></div>
 
@@ -444,7 +454,7 @@
     const API_ENDPOINT = "https://api-casamento-mj.onrender.com/api";
 
     // Data do casamento
-    const weddingDate = new Date("2026-01-10T09:00:00");
+    const weddingDate = new Date("2026-03-28T09:00:00");
 
     // Elementos do countdown
     const daysEl = document.getElementById("days");
