@@ -2,891 +2,951 @@
 <html lang="pt">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Painel de Admin — Maria & João</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=yes, viewport-fit=cover">
+  <title>Painel Admin · Mobile</title>
   <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
-  <link rel="stylesheet" href="style.css">
+  
+  <!-- Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Feather Icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
 
   <style>
-    :root {
-      --bg-admin: #f6f4f1;
-      --bg-card-admin: #ffffff;
-      --accent-admin: #c49a6c;
-      --accent-soft-admin: #f0e3d4;
-      --text-admin: #2b2b2b;
-      --muted-admin: #777;
-      --border-admin: #e2dfda;
-      --radius-lg-admin: 14px;
-      --radius-md-admin: 10px;
-      --shadow-soft-admin: 0 14px 30px rgba(0,0,0,0.06);
-      --font-sans-admin: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    body.admin-page {
-      margin: 0 !important;
-      padding: 0 !important;
-      font-family: var(--font-sans-admin) !important;
-      background: radial-gradient(circle at top left, #fdf7f2, #f3efe9) !important;
-      color: var(--text-admin) !important;
-      min-height: 100vh !important;
-      display: flex !important;
-      flex-direction: column !important;
-      opacity: 1 !important;
-      visibility: visible !important;
-    }
-
-    body.admin-page * {
+    * {
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
     }
 
-    .admin-page .admin-header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      backdrop-filter: blur(10px);
-      background: rgba(246, 244, 241, 0.92);
-      border-bottom: 1px solid rgba(226, 223, 218, 0.7);
-      padding: 0.6rem 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+    :root {
+      --bg-primary: #F8F9FC;
+      --bg-card: #FFFFFF;
+      --accent: #9BA3B0;
+      --accent-soft: #D5DCE6;
+      --accent-gradient: linear-gradient(135deg, #9BA3B0, #B8C1CC);
+      --text-primary: #2C3E4F;
+      --text-secondary: #5D6D7E;
+      --text-muted: #8A9AAD;
+      --border-light: #E9ECF0;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.02);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --transition: all 0.2s ease;
+      --header-height: 60px;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
     }
 
-    .admin-page .admin-title {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .admin-page .admin-logo {
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      background: #fff;
+    /* Login Mobile */
+    .login-container {
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 18px rgba(196, 154, 108, 0.35);
-      overflow: hidden;
+      background: linear-gradient(135deg, #F8F9FC 0%, #F0F2F7 100%);
+      padding: 16px;
     }
 
-    .admin-page .admin-logo img {
+    .login-card {
+      background: var(--bg-card);
+      padding: 32px 24px;
+      border-radius: 32px;
+      box-shadow: var(--shadow-sm);
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .admin-page .admin-title h1 {
-      font-size: 1.1rem;
-      margin: 0;
-    }
-
-    .admin-page .admin-title p {
-      font-size: 0.75rem;
-      color: var(--muted-admin);
-      margin: 0.1rem 0 0;
-    }
-
-    .admin-page .admin-main {
-      padding: 1rem;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto 1.5rem;
-    }
-
-    .admin-page .btn-primary-admin,
-    .admin-page .btn-secondary-admin,
-    .admin-page .btn-outline-admin {
-      border-radius: 999px;
-      padding: 0.45rem 0.9rem;
-      font-size: 0.8rem;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.15s ease-out;
-      font-family: inherit;
-      background: transparent;
-    }
-
-    .admin-page .btn-primary-admin {
-      background: linear-gradient(135deg, #c49a6c, #e2c197);
-      color: #fff;
-      box-shadow: 0 8px 20px rgba(196,154,108,0.4);
-    }
-    .admin-page .btn-primary-admin:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(196,154,108,0.45);
-    }
-
-    .admin-page .btn-secondary-admin {
-      background: #fff;
-      color: var(--accent-admin);
-      border-color: var(--accent-soft-admin);
-    }
-    .admin-page .btn-secondary-admin:hover {
-      background: var(--accent-soft-admin);
-    }
-
-    .admin-page .btn-outline-admin {
-      background: transparent;
-      color: var(--muted-admin);
-      border-color: rgba(180, 180, 180, 0.5);
-    }
-    .admin-page .btn-outline-admin:hover {
-      border-color: var(--accent-admin);
-      color: var(--accent-admin);
-    }
-
-    .admin-page .admin-card {
-      background: var(--bg-card-admin);
-      border-radius: var(--radius-lg-admin);
-      box-shadow: var(--shadow-soft-admin);
-      padding: 1.5rem 1.25rem;
-      margin-top: 1rem;
-    }
-
-    .admin-page #adminLogin {
-      max-width: 420px;
-      margin: 3rem auto 0;
+      max-width: 360px;
       text-align: center;
     }
 
-    .admin-page #adminLogin h2 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
+    .login-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 24px;
+      margin-bottom: 20px;
     }
 
-    .admin-page #adminLogin p {
-      font-size: 0.85rem;
-      color: var(--muted-admin);
-      margin-top: 0.25rem;
+    .login-card h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
     }
 
-    .admin-page #adminLoginForm {
-      margin-top: 1.5rem;
+    .login-card p {
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      font-size: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
       text-align: left;
     }
 
-    .admin-page #adminLoginForm label {
+    .form-group label {
       display: block;
-      margin-bottom: 0.25rem;
-      font-size: 0.85rem;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text-secondary);
     }
 
-    .admin-page #adminLoginForm input {
+    .form-group input {
       width: 100%;
-      padding: 0.6rem 0.75rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-admin);
-      font-size: 0.9rem;
+      padding: 16px;
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      font-size: 16px;
+      background: var(--bg-primary);
+      -webkit-appearance: none;
     }
 
-    .admin-page #adminLoginError {
-      color: #d93025;
-      min-height: 1.2em;
-      margin-top: 0.6rem;
-      font-size: 0.8rem;
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(155, 163, 176, 0.1);
     }
 
-    .admin-page #dashboard {
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 24px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 100%;
+      min-height: 56px;
+      -webkit-appearance: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 4px 12px rgba(155, 163, 176, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    /* App Container */
+    .admin-app {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Mobile Top Bar */
+    .mobile-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: calc(var(--header-height) + var(--safe-top));
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-light);
+      padding: var(--safe-top) 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 800;
+    }
+
+    .mobile-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mobile-menu-btn {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .mobile-menu-btn:active {
+      background: var(--bg-primary);
+      transform: scale(0.95);
+    }
+
+    .mobile-title {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+
+    .mobile-refresh-btn {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 14px;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    /* Sidebar Mobile */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 280px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-light);
+      padding: calc(var(--safe-top) + 20px) 16px 20px;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      padding: 0 8px;
+    }
+
+    .sidebar-logo img {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+    }
+
+    .sidebar-logo h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .sidebar-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: -8px;
+      margin-bottom: 24px;
+      padding: 0 8px;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 15px;
+      transition: var(--transition);
+      cursor: pointer;
+      min-height: 52px;
+    }
+
+    .nav-item:active {
+      background: var(--bg-primary);
+      transform: scale(0.98);
+    }
+
+    .nav-item.active {
+      background: var(--accent-gradient);
+      color: white;
+    }
+
+    .sidebar-footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    /* Mobile Overlay */
+    .mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 900;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.3s ease;
+    }
+
+    .mobile-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Main Content Mobile */
+    .main-content {
+      flex: 1;
+      margin-left: 0;
+      padding: calc(var(--header-height) + var(--safe-top) + 12px) 12px calc(var(--safe-bottom) + 12px);
+      width: 100%;
+    }
+
+    /* Cards Mobile - Compactos */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      padding: 14px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      transition: var(--transition);
+    }
+
+    .stat-card:active {
+      transform: scale(0.97);
+      background: var(--bg-primary);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-gradient);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .stat-icon i {
+      width: 20px;
+      height: 20px;
+    }
+
+    .stat-change {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: #E8F5E9;
+      color: #2E7D32;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Cards de Seção */
+    .section-card {
+      background: var(--bg-card);
+      border-radius: 24px;
+      border: 1px solid var(--border-light);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-header h3 i {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .section-actions .btn {
+      padding: 10px 12px;
+      min-height: 40px;
+      font-size: 13px;
+      border-radius: 12px;
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+    }
+
+    /* Tabelas Mobile - Card Style */
+    .mobile-table {
+      padding: 8px;
+    }
+
+    .mobile-row {
+      background: var(--bg-primary);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border-light);
+    }
+
+    .mobile-row-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .mobile-row-label {
+      min-width: 90px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .mobile-row-value {
+      flex: 1;
+      color: var(--text-primary);
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .mobile-row-value strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #E3F2FD;
+      color: #1565C0;
+    }
+
+    .status-available {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+
+    .status-reserved {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    /* Gift Inventory Mobile */
+    .gift-inventory-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .gift-card {
+      background: var(--bg-primary);
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid var(--border-light);
+    }
+
+    .gift-card h4 {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .gift-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* Esconder tabelas desktop no mobile */
+    .desktop-table {
       display: none;
     }
 
-    .admin-page .dashboard-header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
-
-    .admin-page .dashboard-header h2 {
-      font-size: 1.4rem;
-      margin: 0;
-    }
-
-    .admin-page .dashboard-header p {
-      font-size: 0.85rem;
-      color: var(--muted-admin);
-      margin: 0.2rem 0 0;
-    }
-
-    .admin-page .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 0.75rem;
-      margin: 0.5rem 0 1.5rem;
-    }
-
-    .admin-page .summary-card {
-      background: #faf7f3;
-      border-radius: var(--radius-md-admin);
-      padding: 0.75rem 0.9rem;
-      border: 1px solid rgba(226, 223, 218, 0.75);
-      font-size: 0.8rem;
-    }
-
-    .admin-page .summary-card span.label {
-      color: var(--muted-admin);
+    /* Mostrar apenas mobile tables */
+    .mobile-view {
       display: block;
-      margin-bottom: 0.15rem;
     }
 
-    .admin-page .summary-card strong {
-      font-size: 1.05rem;
-    }
-
-    .admin-page .admin-section {
-      margin-top: 1.5rem;
-    }
-
-    .admin-page .admin-section-header {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.6rem;
-    }
-
-    .admin-page .admin-section-header h3 {
-      margin: 0;
-      font-size: 1.05rem;
-    }
-
-    .admin-page .admin-section-header p {
-      margin: 0.2rem 0 0;
-      font-size: 0.8rem;
-      color: var(--muted-admin);
-    }
-
-    .admin-page .admin-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      justify-content: flex-end;
-    }
-
-    .admin-page .table-wrapper {
-      margin-top: 0.4rem;
-      border-radius: var(--radius-md-admin);
-      border: 1px solid var(--border-admin);
-      overflow: auto;
-      max-height: 70vh;
-      background: #fff;
-    }
-
-    .admin-page table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 640px;
-      font-size: 0.78rem;
-    }
-
-    .admin-page th, .admin-page td {
-      padding: 0.5rem 0.7rem;
-      text-align: left;
-      border-bottom: 1px solid #f0ede7;
-    }
-
-    .admin-page thead th {
-      background: #faf7f2;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-
-    .admin-page tbody tr:nth-child(even) {
-      background: #faf8f4;
-    }
-
-    .admin-page tbody tr:hover {
-      background: #f5efe7;
-    }
-
-    .admin-page .mesa-cell {
-      font-weight: 500;
-      color: var(--accent-admin);
-    }
-
-    .admin-page td a {
-      font-weight: 500;
-      color: var(--accent-admin);
-      text-decoration: none;
-    }
-
-    .admin-page td a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 600px) {
-      .admin-page .admin-header {
-        padding: 0.5rem 0.75rem;
+    @media (min-width: 769px) {
+      .desktop-table {
+        display: block;
       }
-      .admin-page .admin-main {
-        padding: 0.75rem;
+      .mobile-view {
+        display: none;
       }
-      .admin-page .admin-card {
-        padding: 1.1rem 0.9rem;
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
       }
-      .admin-page table {
-        min-width: 540px;
+    }
+
+    /* Loading e Utilitários */
+    .text-center {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+    }
+
+    .feather {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    /* Safe area completo */
+    @supports (padding: max(0px)) {
+      .main-content {
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
       }
-      .admin-page #adminLogin h2 {
-        font-size: 1.6rem;
+    }
+
+    /* Touch feedback */
+    @media (hover: none) {
+      .nav-item:active,
+      .btn:active,
+      .stat-card:active,
+      .mobile-row:active {
+        opacity: 0.7;
+        transition: 0.1s;
       }
     }
   </style>
 </head>
+<body>
 
-<body class="admin-page">
-
-  <header class="admin-header">
-    <div class="admin-title">
-      <div class="admin-logo">
-        <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Logo Casamento">
-      </div> 
-      <div>
-        <h1>Painel do Casamento</h1>
-        <p>Maria & João · Gestão de convidados</p>
-      </div>
-    </div>
-    <button id="logoutAdmin" class="btn-outline-admin" style="display:none;">Sair</button>
-  </header>
-
-  <main class="admin-main">
-
-    <section id="adminLogin" class="admin-card">
-      <h2>Painel de Gestão</h2>
-      <p>Introduza a senha de administrador para aceder às listas.</p>
-
-      <form id="adminLoginForm">
-        <div style="margin-bottom: 1rem;">
-          <label for="adminPassword">Senha de Admin</label>
-          <input type="password" id="adminPassword">
-        </div>
-        <button type="submit" class="btn-primary-admin" style="width: 100%;">Aceder</button>
-      </form>
-      <p id="adminLoginError"></p>
-    </section>
+<div id="loginScreen" class="login-container">
+  <div class="login-card">
+    <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Logo" class="login-logo">
+    <h2>Bem-vindo</h2>
+    <p>Painel de gestão</p>
     
-    <section id="dashboard" class="admin-card">
-
-      <div class="dashboard-header">
-        <div>
-          <h2>Dashboard</h2>
-          <p>Visualize confirmações, presentes, comprovativos e mensagens.</p>
-        </div>
-        <div class="admin-actions">
-          <button class="btn-secondary-admin" id="refreshBtn">Atualizar listas</button>
-        </div>
+    <form id="adminLoginForm">
+      <div class="form-group">
+        <label for="adminPassword">Senha</label>
+        <input type="password" id="adminPassword" placeholder="••••••••" required>
       </div>
-
-      <div class="summary-grid">
-        <div class="summary-card">
-          <span class="label">Confirmações</span>
-          <strong id="rsvpCount">0</strong>
-        </div>
-        <div class="summary-card">
-          <span class="label">Total de convidados</span>
-          <strong id="guestTotalCount">0</strong>
-        </div>
-        <div class="summary-card">
-          <span class="label">Presentes registados</span>
-          <strong id="giftsCount">–</strong>
-        </div>
-        <div class="summary-card">
-          <span class="label">Mensagens</span>
-          <strong id="messagesCount">–</strong>
-        </div>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-header">
-          <div>
-            <h3>Confirmações de Presença</h3>
-            <p>Lista de RSVPs, número de convidados e mesa.</p>
-          </div>
-          <div class="admin-actions">
-            <button id="export-rsvps-csv" class="btn-primary-admin">Exportar CSV</button>
-            <button id="export-rsvps-json" class="btn-secondary-admin">Exportar JSON</button>
-          </div>
-        </div>
-
-        <div class="table-wrapper">
-          <table id="rsvpTable">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Nome</th>
-                <th>Convidados</th>
-                <th>Mesa</th>
-                <th>Telefone</th>
-                <th>Mensagem</th>
-              </tr>
-            </thead>
-            <tbody id="rsvpTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-header">
-          <div>
-            <h3>Gestão de Presentes (Lista)</h3>
-            <p id="giftSectionP">A carregar dados dos presentes...</p>
-          </div>
-        </div>
-        <div id="giftTableContainer" class="table-wrapper" style="display:none;">
-          <table id="giftTable">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Nome do Convidado</th>
-                <th>Presentes Registados</th>
-              </tr>
-            </thead>
-            <tbody id="giftTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="admin-section">
-        <div class="admin-section-header">
-          <div>
-            <h3>Comprovativos Monetários</h3>
-            <p id="comprovativoSectionP">A carregar comprovativos...</p>
-          </div>
-        </div>
-        <div id="comprovativoTableContainer" class="table-wrapper" style="display:none;">
-          <table id="comprovativoTable">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Nome</th>
-                <th>Canal</th>
-                <th>Comprovativo (Ficheiro)</th>
-              </tr>
-            </thead>
-            <tbody id="comprovativoTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-      <!-- Add this section to admin.html after existing sections -->
-
-<div class="admin-section">
-  <div class="admin-section-header">
-    <div>
-      <h3>Gestão de Presentes (Inventário)</h3>
-      <p>Visualize todos os presentes e seu status de reserva.</p>
-    </div>
-  </div>
-  <div id="giftInventoryContainer" class="table-wrapper">
-    <table id="giftInventoryTable">
-      <thead>
-        <tr>
-          <th>Presente</th>
-          <th>Status</th>
-          <th>Reservado Por</th>
-          <th>Data da Reserva</th>
-        </tr>
-      </thead>
-      <tbody id="giftInventoryBody"></tbody>
-    </table>
+      <button type="submit" class="btn btn-primary">Aceder</button>
+      <p id="adminLoginError" style="color: #D32F2F; margin-top: 16px; font-size: 14px;"></p>
+    </form>
   </div>
 </div>
 
+<div id="adminApp" style="display: none;" class="admin-app">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
 
-      <div class="admin-section">
-        <div class="admin-section-header">
-          <div>
-            <h3>Mural de Felicitações</h3>
-            <p id="messageSectionP">A carregar mensagens...</p>
-          </div>
+  <div class="mobile-topbar">
+    <div class="mobile-topbar-left">
+      <button class="mobile-menu-btn" id="menuToggle">
+        <i data-feather="menu"></i>
+      </button>
+      <span class="mobile-title" id="mobilePageTitle">Dashboard</span>
+    </div>
+    <div class="mobile-topbar-right">
+      <button class="mobile-refresh-btn" id="mobileRefreshBtn">
+        <i data-feather="refresh-cw"></i>
+      </button>
+    </div>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Logo">
+      <h1>Maria & João</h1>
+    </div>
+    <div class="sidebar-subtitle">Painel Admin</div>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+      <div class="nav-item active" data-section="dashboard"><i data-feather="home"></i><span>Dashboard</span></div>
+      <div class="nav-item" data-section="rsvps"><i data-feather="users"></i><span>Confirmações</span></div>
+      <div class="nav-item" data-section="gifts"><i data-feather="gift"></i><span>Presentes</span></div>
+      <div class="nav-item" data-section="comprovativos"><i data-feather="file-text"></i><span>Comprovativos</span></div>
+      <div class="nav-item" data-section="messages"><i data-feather="message-circle"></i><span>Mensagens</span></div>
+      <div class="nav-item" data-section="inventory"><i data-feather="package"></i><span>Inventário</span></div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="nav-item" id="logoutAdmin"><i data-feather="log-out"></i><span>Sair</span></div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="section-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon"><i data-feather="check-circle"></i></div><span class="stat-change">+12%</span></div>
+          <div class="stat-value" id="rsvpCount">0</div><div class="stat-label">Confirmações</div>
         </div>
-        <div id="messageTableContainer" class="table-wrapper" style="display:none;">
-          <table id="messageTable">
-            <thead>
-              <tr>
-                <th style="width: 15%;">Data</th>
-                <th style="width: 20%;">Nome</th>
-                <th style="width: 65%;">Mensagem</th>
-              </tr>
-            </thead>
-            <tbody id="messageTableBody"></tbody>
-          </table>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon"><i data-feather="users"></i></div></div>
+          <div class="stat-value" id="guestTotalCount">0</div><div class="stat-label">Convidados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon"><i data-feather="gift"></i></div></div>
+          <div class="stat-value" id="giftsCount">0</div><div class="stat-label">Presentes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><div class="stat-icon"><i data-feather="message-square"></i></div></div>
+          <div class="stat-value" id="messagesCount">0</div><div class="stat-label">Mensagens</div>
         </div>
       </div>
 
-    </section>
+      <div class="section-card">
+        <div class="section-header"><h3><i data-feather="activity"></i> Atividade Recente</h3></div>
+        <div class="mobile-view" id="recentActivityMobile"></div>
+        <div class="desktop-table table-wrapper"><table><thead><tr><th>Data</th><th>Nome</th><th>Ação</th><th>Detalhes</th></tr></thead><tbody id="recentActivityBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- RSVPs Section -->
+    <div id="rsvpsSection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i data-feather="users"></i> Confirmações</h3>
+          <div class="section-actions">
+            <button class="btn" id="export-rsvps-csv">CSV</button>
+            <button class="btn" id="export-rsvps-json">JSON</button>
+          </div>
+        </div>
+        <div class="mobile-view" id="rsvpMobileList"></div>
+        <div class="desktop-table table-wrapper"><table><thead><tr><th>Data</th><th>Nome</th><th>Convidados</th><th>Mesa</th><th>Telefone</th><th>Mensagem</th></tr></thead><tbody id="rsvpTableBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Gifts Section -->
+    <div id="giftsSection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header"><h3><i data-feather="gift"></i> Presentes</h3></div>
+        <div class="mobile-view" id="giftMobileList"></div>
+        <div class="desktop-table table-wrapper"><table><thead><tr><th>Data</th><th>Nome</th><th>Presentes</th></tr></thead><tbody id="giftTableBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Comprovativos Section -->
+    <div id="comprovativosSection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header"><h3><i data-feather="file-text"></i> Comprovativos</h3></div>
+        <div class="mobile-view" id="comprovativoMobileList"></div>
+        <div class="desktop-table table-wrapper"><table><thead><tr><th>Data</th><th>Nome</th><th>Canal</th><th>Comprovativo</th></tr></thead><tbody id="comprovativoTableBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Messages Section -->
+    <div id="messagesSection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header"><h3><i data-feather="message-circle"></i> Mensagens</h3></div>
+        <div class="mobile-view" id="messageMobileList"></div>
+        <div class="desktop-table table-wrapper"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th></tr></thead><tbody id="messageTableBody"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Inventory Section -->
+    <div id="inventorySection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header"><h3><i data-feather="package"></i> Inventário</h3></div>
+        <div id="giftInventoryContainer" class="mobile-view"></div>
+        <div class="desktop-table" id="giftInventoryDesktop"></div>
+      </div>
+    </div>
   </main>
+</div>
 
-  <script>
-    const API_BASE_URL = "https://api-casamento-mj.onrender.com";
-    let adminPassword = "";
-    let RSVPS_DATA = [];
-    let GIFTS_DATA = [];
-    let COMPROV_DATA = [];
-    let MESSAGES_DATA = [];
+<script>
+  const API_BASE_URL = "https://api-casamento-mj.onrender.com";
+  let adminPassword = "";
+  let RSVPS_DATA = [], GIFTS_DATA = [], COMPROV_DATA = [], MESSAGES_DATA = [];
 
-    const adminLoginForm = document.getElementById('adminLoginForm');
-    const adminLoginError = document.getElementById('adminLoginError');
-    const refreshBtn = document.getElementById('refreshBtn');
-    const logoutBtn = document.getElementById('logoutAdmin');
+  // Elementos
+  const loginScreen = document.getElementById('loginScreen');
+  const adminApp = document.getElementById('adminApp');
+  const adminLoginForm = document.getElementById('adminLoginForm');
+  const adminLoginError = document.getElementById('adminLoginError');
+  const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+  const logoutBtn = document.getElementById('logoutAdmin');
+  const navItems = document.querySelectorAll('.nav-item[data-section]');
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const mobileOverlay = document.getElementById('mobileOverlay');
+  const mobilePageTitle = document.getElementById('mobilePageTitle');
 
-    const escapeHtml = (str) =>
-      str ? String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-      : '-';
+  feather.replace();
 
-    adminLoginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      adminLoginError.textContent = "";
-      adminPassword = document.getElementById('adminPassword').value.trim();
-      if (!adminPassword) {
-        adminLoginError.textContent = "Por favor, introduza a senha.";
-        return;
-      }
+  // Mobile Menu
+  function openMobileMenu() { sidebar.classList.add('open'); mobileOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
+  function closeMobileMenu() { sidebar.classList.remove('open'); mobileOverlay.classList.remove('active'); document.body.style.overflow = ''; }
+  
+  menuToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.contains('open') ? closeMobileMenu() : openMobileMenu(); });
+  mobileOverlay.addEventListener('click', closeMobileMenu);
+  navItems.forEach(item => item.addEventListener('click', () => { if (window.innerWidth <= 768) closeMobileMenu(); }));
 
-      const button = e.target.querySelector('button');
-      button.disabled = true;
-      button.textContent = "A aceder...";
-
-      Promise.all([
-        fetchData("get_rsvps"),
-        fetchData("get_gifts"),
-        fetchData("get_comprovativos"),
-        fetchData("get_messages")
-      ])
-      .then(([rsvpData, giftData, comprovativoData, messageData]) => {
-        document.getElementById('adminLogin').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        logoutBtn.style.display = 'inline-flex';
-
-        RSVPS_DATA = rsvpData.data || [];
-        GIFTS_DATA = giftData.data || [];
-        COMPROV_DATA = comprovativoData.data || [];
-        MESSAGES_DATA = messageData.data || [];
-
-        populateRsvpTable(RSVPS_DATA);
-        populateGiftTable(GIFTS_DATA);
-        populateComprovativoTable(COMPROV_DATA);
-        populateMessageTable(MESSAGES_DATA);
-        updateSummaryCards();
-
-        button.disabled = false;
-        button.textContent = "Aceder";
-      })
-      .catch(err => {
-        adminLoginError.textContent = err.message || "Senha incorreta.";
-        button.disabled = false;
-        button.textContent = "Aceder";
-      });
+  // Navegação
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      navItems.forEach(nav => nav.classList.remove('active'));
+      item.classList.add('active');
+      showSection(item.dataset.section);
     });
+  });
 
-    logoutBtn.addEventListener('click', () => {
-      adminPassword = "";
-      RSVPS_DATA = [];
-      GIFTS_DATA = [];
-      COMPROV_DATA = [];
-      MESSAGES_DATA = [];
-
-      document.getElementById('dashboard').style.display = 'none';
-      document.getElementById('adminLogin').style.display = 'block';
-      document.getElementById('adminPassword').value = '';
-      logoutBtn.style.display = 'none';
-    });
-
-    refreshBtn.addEventListener('click', () => {
-      refreshBtn.disabled = true;
-      refreshBtn.textContent = "A atualizar...";
-
-      Promise.all([
-        fetchData("get_rsvps"),
-        fetchData("get_gifts"),
-        fetchData("get_comprovativos"),
-        fetchData("get_messages")
-      ])
-      .then(([rsvpData, giftData, comprovativoData, messageData]) => {
-        RSVPS_DATA = rsvpData.data || [];
-        GIFTS_DATA = giftData.data || [];
-        COMPROV_DATA = comprovativoData.data || [];
-        MESSAGES_DATA = messageData.data || [];
-
-        populateRsvpTable(RSVPS_DATA);
-        populateGiftTable(GIFTS_DATA);
-        populateComprovativoTable(COMPROV_DATA);
-        populateMessageTable(MESSAGES_DATA);
-        updateSummaryCards();
-
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = "Atualizar listas";
-      })
-      .catch(err => {
-        alert("Erro ao atualizar: " + err.message);
-        refreshBtn.disabled = false;
-        refreshBtn.textContent = "Atualizar listas";
-      });
-    });
-
-    function updateSummaryCards() {
-      document.getElementById('rsvpCount').textContent = RSVPS_DATA.length || 0;
-
-      let totalGuests = 0;
-      RSVPS_DATA.forEach(rsvp => {
-        let guestsCount = 0;
-        const guestsValue = String(rsvp.guests || '0');
-        if (guestsValue.includes('+')) {
-          guestsCount = parseInt(guestsValue.replace('+', ''), 10);
-        } else {
-          guestsCount = parseInt(guestsValue, 10);
-        }
-        if (!isNaN(guestsCount)) totalGuests += guestsCount;
-      });
-      document.getElementById('guestTotalCount').textContent = totalGuests;
-
-      document.getElementById('giftsCount').textContent = GIFTS_DATA.length || 0;
-      document.getElementById('messagesCount').textContent = MESSAGES_DATA.length || 0;
-    }
-
-    function populateRsvpTable(rsvps) {
-      const tableBody = document.getElementById('rsvpTableBody');
-      tableBody.innerHTML = '';
-
-      if (!rsvps || rsvps.length === 0) {
-        tableBody.innerHTML =
-          '<tr><td colspan="6" style="text-align:center; padding:24px;">Nenhuma confirmação recebida ainda.</td></tr>';
-        return;
-      }
-
-      rsvps.forEach(rsvp => {
-        const row = `
-          <tr>
-            <td style="white-space: nowrap;">
-              ${new Date(rsvp.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}
-            </td>
-            <td style="font-weight:500;">${escapeHtml(rsvp.nome)}</td>
-            <td>${escapeHtml(rsvp.guests)}</td>
-            <td class="mesa-cell">${escapeHtml(rsvp.mesa)}</td>
-            <td>${escapeHtml(rsvp.phone)}</td>
-            <td>${escapeHtml(rsvp.message)}</td>
-          </tr>
-        `;
-        tableBody.insertAdjacentHTML('beforeend', row);
-      });
-    }
-
-    function populateGiftTable(gifts) {
-      const tableContainer = document.getElementById('giftTableContainer');
-      const tableBody = document.getElementById('giftTableBody');
-      const giftSectionP = document.getElementById('giftSectionP');
-      tableBody.innerHTML = '';
-
-      if (!gifts || gifts.length === 0) {
-        giftSectionP.textContent = "Nenhum presente da lista foi registado ainda.";
-        tableContainer.style.display = 'none';
-        return;
-      }
-
-      giftSectionP.textContent = "Abaixo está a lista de presentes físicos registados pelos convidados.";
-      tableContainer.style.display = 'block';
-
-      gifts.forEach(entry => {
-        const row = `
-          <tr>
-            <td style="white-space: nowrap;">
-              ${new Date(entry.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}
-            </td>
-            <td style="font-weight:500;">${escapeHtml(entry.nome)}</td>
-            <td>${escapeHtml((entry.gifts || []).join(', '))}</td>
-          </tr>
-        `;
-        tableBody.insertAdjacentHTML('beforeend', row);
-      });
-    }
-
-    function populateComprovativoTable(comprovativos) {
-      const tableContainer = document.getElementById('comprovativoTableContainer');
-      const tableBody = document.getElementById('comprovativoTableBody');
-      const comprovativoSectionP = document.getElementById('comprovativoSectionP');
-      tableBody.innerHTML = '';
-
-      if (!comprovativos || comprovativos.length === 0) {
-        comprovativoSectionP.textContent = "Nenhum comprovativo monetário foi enviado ainda.";
-        tableContainer.style.display = 'none';
-        return;
-      }
-
-      comprovativoSectionP.textContent = "Abaixo estão os comprovativos monetários enviados.";
-      tableContainer.style.display = 'block';
-
-      comprovativos.forEach(entry => {
-        const fileLink = escapeHtml(entry.fileName);
-        const row = `
-          <tr>
-            <td style="white-space: nowrap;">
-              ${new Date(entry.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}
-            </td>
-            <td style="font-weight:500;">${escapeHtml(entry.nome)}</td>
-            <td>${escapeHtml(entry.canal)}</td>
-            <td><a href="${fileLink}" target="_blank" rel="noopener noreferrer">
-              ${escapeHtml(entry.originalName)}
-            </a></td>
-          </tr>
-        `;
-        tableBody.insertAdjacentHTML('beforeend', row);
-      });
-    }
-
-    function populateMessageTable(messages) {
-      const tableContainer = document.getElementById('messageTableContainer');
-      const tableBody = document.getElementById('messageTableBody');
-      const messageSectionP = document.getElementById('messageSectionP');
-      tableBody.innerHTML = '';
-
-      if (!messages || messages.length === 0) {
-        messageSectionP.textContent = "Nenhuma mensagem de felicitação foi enviada ainda.";
-        tableContainer.style.display = 'none';
-        return;
-      }
-
-      messageSectionP.textContent = "Abaixo estão as mensagens de felicitação dos convidados.";
-      tableContainer.style.display = 'block';
-
-      messages.forEach(entry => {
-        const row = `
-          <tr>
-            <td style="white-space: nowrap;">
-              ${new Date(entry.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}
-            </td>
-            <td style="font-weight:500;">${escapeHtml(entry.nome)}</td>
-            <td>${escapeHtml(entry.message)}</td>
-          </tr>
-        `;
-        tableBody.insertAdjacentHTML('beforeend', row);
-      });
-    }
-
-    function exportRsvpsToCSV() {
-      if (!RSVPS_DATA.length) {
-        alert('Não há dados de RSVP para exportar.');
-        return;
-      }
-
-      const header = ['Data/Hora', 'Nome', 'Nº Convidados', 'Telefone', 'Mesa', 'Mensagem'];
-
-      const rows = RSVPS_DATA.map(r => [
-        new Date(r.timestamp).toISOString(),
-        r.nome || '',
-        r.guests || '',
-        r.phone || '',
-        r.mesa || '',
-        (r.message || '').replace(/\r?\n/g, ' ')
-      ]);
-
-      const allRows = [header, ...rows];
-      const csv = allRows
-        .map(row => row.map(field => {
-          const f = String(field).replace(/"/g, '""');
-          return `"${f}"`;
-        }).join(','))
-        .join('\r\n');
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `rsvps-${new Date().toISOString().slice(0,10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    function exportRsvpsToJSON() {
-      if (!RSVPS_DATA.length) {
-        alert('Não há dados de RSVP para exportar.');
-        return;
-      }
-      const json = JSON.stringify(RSVPS_DATA, null, 2);
-      const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `rsvps-${new Date().toISOString().slice(0,10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const btnCsv = document.getElementById('export-rsvps-csv');
-      const btnJson = document.getElementById('export-rsvps-json');
-      if (btnCsv) btnCsv.addEventListener('click', exportRsvpsToCSV);
-      if (btnJson) btnJson.addEventListener('click', exportRsvpsToJSON);
-    });
-
-    function fetchData(action, payload = {}) {
-      return fetch(`${API_BASE_URL}/admin-api`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          password: adminPassword,
-          action,
-          ...payload
-        })
-      })
-      .then(res => {
-        if (!res.ok) {
-          return res.json().then(err => Promise.reject(new Error(err.message || 'Erro de servidor')));
-        }
-        return res.json();
-      })
-      .then(response => {
-        if (response.status !== "success") {
-          throw new Error(response.message);
-        }
-        return response;
-      });
-    }
-
-    // Call this after admin login
-// Add this function to admin.html
-async function loadGiftInventory() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/gifts`);
-    const result = await response.json();
-    
-    if (result.status === 'success') {
-      const tbody = document.getElementById('giftInventoryBody');
-      tbody.innerHTML = '';
-      
-      result.data.forEach(gift => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><strong>${escapeHtml(gift.name)}</strong></td>
-          <td>
-            <span style="color: ${gift.reserved ? '#D93025' : '#0B8043'}; font-weight: 500;">
-              ${gift.reserved ? 'Reservado' : 'Disponível'}
-            </span>
-          </td>
-          <td>${escapeHtml(gift.reservedBy) || '-'}</td>
-          <td>${gift.reservedAt ? new Date(gift.reservedAt).toLocaleString('pt-PT') : '-'}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-  } catch (error) {
-    console.error('Erro ao carregar inventário:', error);
+  function showSection(section) {
+    document.querySelectorAll('.section-content').forEach(el => el.style.display = 'none');
+    document.getElementById(`${section}Section`).style.display = 'block';
+    const titles = { dashboard:'Dashboard', rsvps:'Confirmações', gifts:'Presentes', comprovativos:'Comprovativos', messages:'Mensagens', inventory:'Inventário' };
+    mobilePageTitle.textContent = titles[section];
   }
-}
 
+  // Login
+  adminLoginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    adminPassword = document.getElementById('adminPassword').value.trim();
+    if (!adminPassword) { adminLoginError.textContent = "Senha obrigatória"; return; }
+
+    Promise.all([
+      fetchData("get_rsvps"), fetchData("get_gifts"), fetchData("get_comprovativos"), fetchData("get_messages")
+    ])
+    .then(([rsvpData, giftData, comprovativoData, messageData]) => {
+      loginScreen.style.display = 'none';
+      adminApp.style.display = 'flex';
+      RSVPS_DATA = rsvpData.data || [];
+      GIFTS_DATA = giftData.data || [];
+      COMPROV_DATA = comprovativoData.data || [];
+      MESSAGES_DATA = messageData.data || [];
+      updateAllTables();
+      loadGiftInventory();
+    })
+    .catch(err => { adminLoginError.textContent = err.message || "Senha incorreta"; });
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    adminPassword = ""; adminApp.style.display = 'none'; loginScreen.style.display = 'flex';
+  });
+
+  function refreshData() {
+    Promise.all([
+      fetchData("get_rsvps"), fetchData("get_gifts"), fetchData("get_comprovativos"), fetchData("get_messages")
+    ])
+    .then(([rsvpData, giftData, comprovativoData, messageData]) => {
+      RSVPS_DATA = rsvpData.data || [];
+      GIFTS_DATA = giftData.data || [];
+      COMPROV_DATA = comprovativoData.data || [];
+      MESSAGES_DATA = messageData.data || [];
+      updateAllTables();
+      loadGiftInventory();
+    })
+    .catch(err => alert("Erro: " + err.message));
+  }
+
+  mobileRefreshBtn.addEventListener('click', refreshData);
+
+  function updateAllTables() {
+    updateStats();
+    renderMobileLists();
+    // Desktop tables (opcional)
+    document.getElementById('rsvpCount').textContent = RSVPS_DATA.length;
+    let total = RSVPS_DATA.reduce((acc, r) => acc + (parseInt(String(r.guests).replace('+',''))||0), 0);
+    document.getElementById('guestTotalCount').textContent = total;
+    document.getElementById('giftsCount').textContent = GIFTS_DATA.length;
+    document.getElementById('messagesCount').textContent = MESSAGES_DATA.length;
+  }
+
+  function renderMobileLists() {
+    // Recent Activity Mobile
+    const recent = document.getElementById('recentActivityMobile');
+    recent.innerHTML = '';
+    let activities = [
+      ...RSVPS_DATA.map(r => ({...r, type:'rsvp', action:'Confirmou', detail:`${r.guests} convidados, Mesa ${r.mesa}`})),
+      ...GIFTS_DATA.map(g => ({...g, type:'gift', action:'Presenteou', detail:(g.gifts||[]).join(', ')})),
+      ...MESSAGES_DATA.map(m => ({...m, type:'message', action:'Mensagem', detail:m.message}))
+    ].sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).slice(0,10);
     
-  </script>
+    activities.forEach(a => {
+      recent.innerHTML += `<div class="mobile-row">
+        <div class="mobile-row-item"><span class="mobile-row-label">Data:</span><span class="mobile-row-value">${new Date(a.timestamp).toLocaleString('pt-PT').slice(0,10)}</span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Nome:</span><span class="mobile-row-value"><strong>${escapeHtml(a.nome)}</strong></span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Ação:</span><span class="mobile-row-value"><span class="status-badge">${a.action}</span></span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Detalhes:</span><span class="mobile-row-value">${escapeHtml(a.detail)}</span></div>
+      </div>`;
+    });
+    if(!activities.length) recent.innerHTML = '<div class="text-center">Sem atividades</div>';
+
+    // RSVPs Mobile
+    const rsvpList = document.getElementById('rsvpMobileList');
+    rsvpList.innerHTML = '';
+    RSVPS_DATA.forEach(r => {
+      rsvpList.innerHTML += `<div class="mobile-row">
+        <div class="mobile-row-item"><span class="mobile-row-label">Data:</span><span class="mobile-row-value">${new Date(r.timestamp).toLocaleString('pt-PT')}</span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Nome:</span><span class="mobile-row-value"><strong>${escapeHtml(r.nome)}</strong></span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Convidados:</span><span class="mobile-row-value">${escapeHtml(r.guests)}</span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Mesa:</span><span class="mobile-row-value"><span class="status-badge">${escapeHtml(r.mesa)}</span></span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Telefone:</span><span class="mobile-row-value">${escapeHtml(r.phone)}</span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Mensagem:</span><span class="mobile-row-value">${escapeHtml(r.message)}</span></div>
+      </div>`;
+    });
+
+    // Gifts Mobile
+    const giftList = document.getElementById('giftMobileList');
+    giftList.innerHTML = '';
+    GIFTS_DATA.forEach(g => {
+      giftList.innerHTML += `<div class="mobile-row">
+        <div class="mobile-row-item"><span class="mobile-row-label">Data:</span><span class="mobile-row-value">${new Date(g.timestamp).toLocaleString('pt-PT')}</span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Nome:</span><span class="mobile-row-value"><strong>${escapeHtml(g.nome)}</strong></span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Presentes:</span><span class="mobile-row-value">${escapeHtml((g.gifts||[]).join(', '))}</span></div>
+      </div>`;
+    });
+
+    // Comprovativos Mobile
+    const compList = document.getElementById('comprovativoMobileList');
+    compList.innerHTML = '';
+    COMPROV_DATA.forEach(c => {
+      compList.innerHTML += `<div class="mobile-row">
+        <div class="mobile-row-item"><span class="mobile-row-label">Data:</span><span class="mobile-row-value">${new Date(c.timestamp).toLocaleString('pt-PT')}</span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Nome:</span><span class="mobile-row-value"><strong>${escapeHtml(c.nome)}</strong></span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Canal:</span><span class="mobile-row-value">${escapeHtml(c.canal)}</span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Arquivo:</span><span class="mobile-row-value"><a href="${escapeHtml(c.fileName)}" style="color:var(--accent);">📎 ${escapeHtml(c.originalName)}</a></span></div>
+      </div>`;
+    });
+
+    // Messages Mobile
+    const msgList = document.getElementById('messageMobileList');
+    msgList.innerHTML = '';
+    MESSAGES_DATA.forEach(m => {
+      msgList.innerHTML += `<div class="mobile-row">
+        <div class="mobile-row-item"><span class="mobile-row-label">Data:</span><span class="mobile-row-value">${new Date(m.timestamp).toLocaleString('pt-PT')}</span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Nome:</span><span class="mobile-row-value"><strong>${escapeHtml(m.nome)}</strong></span></div>
+        <div class="mobile-row-item"><span class="mobile-row-label">Mensagem:</span><span class="mobile-row-value">${escapeHtml(m.message)}</span></div>
+      </div>`;
+    });
+  }
+
+  function updateStats() {
+    document.getElementById('rsvpCount').textContent = RSVPS_DATA.length;
+    let total = RSVPS_DATA.reduce((acc, r) => acc + (parseInt(String(r.guests).replace('+',''))||0), 0);
+    document.getElementById('guestTotalCount').textContent = total;
+    document.getElementById('giftsCount').textContent = GIFTS_DATA.length;
+    document.getElementById('messagesCount').textContent = MESSAGES_DATA.length;
+  }
+
+  function escapeHtml(str) { return str ? String(str).replace(/[&<>"]/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]; }) : '-'; }
+
+  async function loadGiftInventory() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/gifts`);
+      const result = await res.json();
+      const container = document.getElementById('giftInventoryContainer');
+      container.innerHTML = '';
+      if(result.status === 'success') {
+        result.data.forEach(gift => {
+          container.innerHTML += `<div class="gift-card">
+            <h4>${escapeHtml(gift.name)}</h4>
+            <div class="gift-details">
+              <span class="status-badge ${gift.reserved ? 'status-reserved' : 'status-available'}">${gift.reserved ? 'Reservado' : 'Disponível'}</span>
+              <span>${gift.reserved ? `por ${escapeHtml(gift.reservedBy)}` : ''}</span>
+            </div>
+            ${gift.reservedAt ? `<div style="font-size:12px; color:var(--text-muted); margin-top:8px;">${new Date(gift.reservedAt).toLocaleString('pt-PT')}</div>` : ''}
+          </div>`;
+        });
+      }
+    } catch (error) { console.error(error); }
+  }
+
+  function fetchData(action) {
+    return fetch(`${API_BASE_URL}/admin-api`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: adminPassword, action })
+    }).then(res => res.json()).then(res => { if(res.status !== "success") throw new Error(res.message); return res; });
+  }
+
+  // Exports
+  document.getElementById('export-rsvps-csv')?.addEventListener('click', () => { if(RSVPS_DATA.length) exportCSV(); else alert('Sem dados'); });
+  document.getElementById('export-rsvps-json')?.addEventListener('click', () => { if(RSVPS_DATA.length) exportJSON(); else alert('Sem dados'); });
+
+  function exportCSV() {
+    let csv = "Data/Hora,Nome,Convidados,Telefone,Mesa,Mensagem\r\n";
+    RSVPS_DATA.forEach(r => csv += `"${new Date(r.timestamp).toISOString()}","${r.nome||''}","${r.guests||''}","${r.phone||''}","${r.mesa||''}","${(r.message||'').replace(/"/g,'""')}"\r\n`);
+    const blob = new Blob([csv],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`rsvps-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  }
+  function exportJSON() {
+    const blob = new Blob([JSON.stringify(RSVPS_DATA,null,2)],{type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`rsvps-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  }
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sidebar.classList.contains('open')) closeMobileMenu(); });
+</script>
 </body>
 </html>

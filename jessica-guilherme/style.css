@@ -2,18 +2,18 @@
 
 /* --- 1. FUNDAMENTOS E VARIÁVEIS --- */
 :root {
-  --bg: #FDFBFA;
-  --accent: #B08968;
-  --text-dark: #3a3a3a;
-  --text-light: #5a5a5a;
+  --bg: #F8F9FC;
+  --accent: #9BA3B0;
+  --text-dark: #2C3E4F;
+  --text-light: #5D6D7E;
   --card: #FFFFFF;
-  --section-bg: #F8F5F2;
-  --border-color: #EAE0D5;
+  --section-bg: #F0F2F7;
+  --border-color: #D5DCE6;
   --font-heading: 'Cormorant Garamond', serif;
   --font-body: 'Inter', sans-serif;
   --font-script: 'Parisienne', cursive;
   --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-  --overlay-bottom-color: 234,224,213;
+  --overlay-bottom-color: 213,220,230;
 }
 
 * { 

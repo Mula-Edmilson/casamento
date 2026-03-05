@@ -29,8 +29,9 @@ const cloudinaryUpload = multer({ storage: cloudinaryStorage });
 // 2. Configurar o servidor
 const app = express();
 app.use(express.json());
-app.use(cors());
 app.use(express.static(__dirname)); // Serve ficheiros estáticos (HTML, CSS)
+app.use(cors());
+
 const PORT = process.env.PORT || 3000; 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD; 
 
