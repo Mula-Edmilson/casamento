@@ -3,12 +3,12 @@
 /* --- 1. FUNDAMENTOS E VARIÁVEIS --- */
 :root {
   --bg: #F8F9FC;
-  --accent: #9BA3B0;
+  --accent: #474747;
   --text-dark: #2C3E4F;
-  --text-light: #333d47;
+  --text-light: #252d35;
   --card: #FFFFFF;
   --section-bg: #F0F2F7;
-  --border-color: #D5DCE6;
+  --border-color: #616e83;
   --font-heading: 'Cormorant Garamond', serif;
   --font-body: 'Inter', sans-serif;
   --font-script: 'Parisienne', cursive;
