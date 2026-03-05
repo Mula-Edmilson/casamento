@@ -57,7 +57,7 @@ const Guest = mongoose.model('Guest', GuestSchema);
 const RsvpSchema = new mongoose.Schema({
   timestamp: Date,
   nome: String,
-  guests: String,
+  guests: Number,
   phone: String,
   message: String,
   mesa: String
