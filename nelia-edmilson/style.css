@@ -1,0 +1,19 @@
+/* style.css */
+.monogram-visual {
+    /* Defina o tamanho do contêiner onde a imagem ficará */
+    width: 250px;
+    height: 250px;
+    /* Adicione estas propriedades para ajudar a centralizar ou gerenciar a imagem */
+    display: flex; /* Permite centralizar a imagem dentro dele */
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    overflow: hidden; /* Garante que nada transborde */
+}
+
+.monogram-visual img {
+    /* Estas são as propriedades CRÍTICAS para a imagem dentro do contêiner */
+    max-width: 100%; /* Garante que a imagem nunca ultrapasse a largura do seu pai (.monogram-visual) */
+    max-height: 100%; /* Garante que a imagem nunca ultrapasse a altura do seu pai */
+    display: block; /* Remove espaços extras se houver */
+    object-fit: contain; /* Ou 'cover'. 'contain' redimensiona para caber, 'cover' preenche cortando */
+}

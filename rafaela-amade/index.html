@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Convite de Lobolo — Rafaela & Amade</title>
+
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+
+  <meta property="og:title" content="Convite de Lobolo — Rafaela & Amade">
+  <meta property="og:description" content="Junte-se a nós para celebrar o nosso Lobolo e o início de uma nova etapa das nossas vidas.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://i.postimg.cc/3x80jX2W/HERO.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Great+Vibes&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ===== Capa com mais vida (sem mexer no style.css) ===== */
+
+    body.cover-page{
+      padding: 0;
+      overflow:hidden;
+      background: #0f0f0f;
+    }
+
+    .cover-stage{
+      position: relative;
+      width: min(980px, 100vw);
+      min-height: 100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 22px;
+      margin: 0 auto;
+    }
+
+    /* Background premium com foto + vinheta */
+    .cover-bg{
+      position:absolute;
+      inset:0;
+      background-image:
+        radial-gradient(circle at 50% 25%, rgba(184,155,99,0.20), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,0.78), rgba(0,0,0,0.55)),
+        url('https://i.postimg.cc/3x80jX2W/HERO.jpg');
+      background-size: cover;
+      background-position: center 18%;
+      filter: saturate(0.95) contrast(1.02);
+      transform: scale(1.03);
+    }
+
+    /* Grain + vinheta */
+    .cover-bg::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 45%, transparent 55%, rgba(0,0,0,0.55) 100%),
+        radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: auto, 3px 3px;
+      opacity: 0.35;
+      mix-blend-mode: overlay;
+      pointer-events:none;
+    }
+
+    /* Card glass premium */
+    .cover-card{
+      position:relative;
+      z-index:2;
+
+      width: min(520px, 92vw);
+      padding: 28px 22px;
+
+      border-radius: 28px;
+
+      background: rgba(246,241,231,0.92);
+      border: 1px solid rgba(255,255,255,0.14);
+
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      box-shadow: 0 45px 120px rgba(0,0,0,0.45);
+      text-align:center;
+
+      opacity:0;
+      transform: translateY(18px) scale(0.99);
+      filter: blur(10px);
+
+      transition:
+        opacity 2.2s var(--ease-soft),
+        transform 2.2s var(--ease-soft),
+        filter 2.2s var(--ease-soft);
+    }
+
+    body.loaded .cover-card{
+      opacity:1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+
+    /* Moldura dourada interna */
+    .cover-card::before{
+      content:"";
+      position:absolute;
+      inset: 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(184,155,99,0.28);
+      pointer-events:none;
+    }
+
+    /* Monograma especial na capa */
+    .cover-monogram{
+      width:72px;
+      height:72px;
+      border-radius:999px;
+
+      margin: 0 auto 10px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      border: 1px solid rgba(184,155,99,0.55);
+      background: rgba(184,155,99,0.08);
+
+      box-shadow:
+        0 18px 50px rgba(0,0,0,0.18),
+        inset 0 0 0 1px rgba(255,255,255,0.30);
+    }
+
+    .cover-monogram span{
+      font-family:'Great Vibes', cursive;
+      font-size:28px;
+      color: rgba(31,31,31,0.92);
+    }
+
+    .cover-subtitle{
+      font-family:'Poppins', sans-serif;
+      font-size:11px;
+      letter-spacing:0.28em;
+      text-transform:uppercase;
+      color: rgba(31,31,31,0.58);
+      margin: 6px 0 8px;
+    }
+
+    .cover-names{
+      font-family:'Great Vibes', cursive;
+      font-size:54px;
+      margin:0 0 8px;
+      color: rgba(31,31,31,0.96);
+    }
+
+    .cover-meta{
+      margin: 0;
+      font-size:18px;
+      color: rgba(31,31,31,0.70);
+    }
+
+    .cover-meta small{
+      display:block;
+      margin-top: 6px;
+      font-family:'Poppins', sans-serif;
+      font-size:12px;
+      letter-spacing:0.20em;
+      text-transform:uppercase;
+      color: rgba(31,31,31,0.50);
+    }
+
+    .cover-actions{
+      margin-top: 18px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
+    .btn-cover{
+      padding: 12px 20px;
+      min-width: 220px;
+    }
+
+    .btn-soft{
+      border: 1px solid rgba(31,31,31,0.18);
+      background: rgba(255,255,255,0.60);
+      color: rgba(31,31,31,0.72);
+    }
+
+    .btn-soft:hover{
+      background: rgba(255,255,255,0.85);
+      border-color: rgba(31,31,31,0.28);
+    }
+
+    /* brilho animado subtil no botão principal */
+    .btn-primary{
+      position:relative;
+      overflow:hidden;
+    }
+    .btn-primary::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(circle at 20% 20%, rgba(184,155,99,0.22), transparent 48%);
+      opacity:0;
+      transition: opacity 0.5s var(--ease-soft);
+      pointer-events:none;
+    }
+    .btn-primary:hover::before{ opacity:1; }
+
+    /* rodapé minimal */
+    .cover-foot{
+      margin-top: 18px;
+      font-family:'Poppins', sans-serif;
+      font-size:11px;
+      color: rgba(31,31,31,0.52);
+      letter-spacing:0.10em;
+    }
+
+    /* animação lenta de luz no fundo */
+    .ambient-glow{
+      position:absolute;
+      inset:-40%;
+      z-index:1;
+      background: radial-gradient(circle at 40% 30%, rgba(184,155,99,0.12), transparent 60%);
+      filter: blur(30px);
+      animation: glowMove 10s ease-in-out infinite;
+      pointer-events:none;
+      opacity:0.55;
+    }
+
+    @keyframes glowMove{
+      0%{ transform: translate(-2%, -1%) scale(1); }
+      50%{ transform: translate(2%, 1%) scale(1.03); }
+      100%{ transform: translate(-2%, -1%) scale(1); }
+    }
+
+    @media (max-width: 520px){
+      .cover-names{ font-size:44px; }
+      .btn-cover{ min-width: 100%; }
+      .cover-card{ padding: 26px 18px; }
+    }
+  </style>
+</head>
+
+<body class="cover-page loading">
+
+  <main class="cover-stage" role="main" aria-label="Capa do convite">
+
+    <div class="cover-bg" aria-hidden="true"></div>
+    <div class="ambient-glow" aria-hidden="true"></div>
+
+    <section class="cover-card" aria-label="Convite de Lobolo">
+
+      <div class="cover-monogram">
+        <span>R&A</span>
+      </div>
+
+      <p class="cover-subtitle">Convite de Lobolo</p>
+
+      <h1 class="cover-names">Rafaela & Amade</h1>
+
+      <div class="vintage-divider" style="margin:18px auto 18px;"></div>
+
+      <p class="cover-meta">
+        <strong>21 de Março de 2026</strong> · <span style="white-space:nowrap;">14h00</span>
+        <small>Bunhiça</small>
+      </p>
+
+      <div class="cover-actions">
+        <a href="convite.html" class="btn btn-primary btn-cover">Abrir Convite</a>
+        <a href="convite.html#detalhes" class="btn btn-soft btn-cover">Ver Detalhes</a>
+      </div>
+
+      <p class="cover-foot">
+        Toque para abrir e visualizar todos os detalhes.
+      </p>
+
+    </section>
+
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+
+      window.onload = () => {
+        body.classList.remove('loading');
+        body.classList.add('loaded');
+      };
+
+      setTimeout(() => {
+        if (body.classList.contains('loading')) {
+          body.classList.remove('loading');
+          body.classList.add('loaded');
+        }
+      }, 500);
+    });
+  </script>
+
+</body>
+</html>
+

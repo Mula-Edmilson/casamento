@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Painel de Admin — Celeste & Pinto</title>
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    :root {
+      --bg-admin: #f6f4f1;
+      --bg-card-admin: #ffffff;
+      --accent-admin: #c49a6c;
+      --accent-soft-admin: #f0e3d4;
+      --text-admin: #2b2b2b;
+      --muted-admin: #777;
+      --border-admin: #e2dfda;
+      --radius-lg-admin: 14px;
+      --radius-md-admin: 10px;
+      --shadow-soft-admin: 0 14px 30px rgba(0,0,0,0.06);
+      --font-sans-admin: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    /* GARANTIR QUE O STYLE.CSS NÃO ESCONDE O ADMIN */
+    body.admin-page {
+      margin: 0 !important;
+      padding: 0 !important;
+      font-family: var(--font-sans-admin) !important;
+      background: radial-gradient(circle at top left, #fdf7f2, #f3efe9) !important;
+      color: var(--text-admin) !important;
+      min-height: 100vh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    body.admin-page * {
+      box-sizing: border-box;
+    }
+
+    /* HEADER ADMIN */
+    .admin-page .admin-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(246, 244, 241, 0.92);
+      border-bottom: 1px solid rgba(226, 223, 218, 0.7);
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .admin-page .admin-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .admin-page .admin-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(196, 154, 108, 0.35);
+  overflow: hidden;
+}
+
+.admin-page .admin-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ou 'contain' */
+}
+
+    .admin-page .admin-title h1 {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .admin-page .admin-title p {
+      font-size: 0.75rem;
+      color: var(--muted-admin);
+      margin: 0.1rem 0 0;
+    }
+
+    .admin-page .admin-main {
+      padding: 1rem;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto 1.5rem;
+    }
+
+    /* BOTÕES */
+    .admin-page .btn-primary-admin,
+    .admin-page .btn-secondary-admin,
+    .admin-page .btn-outline-admin {
+      border-radius: 999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.8rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+      font-family: inherit;
+      background: transparent;
+    }
+
+    .admin-page .btn-primary-admin {
+      background: linear-gradient(135deg, #c49a6c, #e2c197);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(196,154,108,0.4);
+    }
+    .admin-page .btn-primary-admin:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(196,154,108,0.45);
+    }
+
+    .admin-page .btn-secondary-admin {
+      background: #fff;
+      color: var(--accent-admin);
+      border-color: var(--accent-soft-admin);
+    }
+    .admin-page .btn-secondary-admin:hover {
+      background: var(--accent-soft-admin);
+    }
+
+    .admin-page .btn-outline-admin {
+      background: transparent;
+      color: var(--muted-admin);
+      border-color: rgba(180, 180, 180, 0.5);
+    }
+    .admin-page .btn-outline-admin:hover {
+      border-color: var(--accent-admin);
+      color: var(--accent-admin);
+    }
+
+    /* CARTÕES */
+    .admin-page .admin-card {
+      background: var(--bg-card-admin);
+      border-radius: var(--radius-lg-admin);
+      box-shadow: var(--shadow-soft-admin);
+      padding: 1.5rem 1.25rem;
+      margin-top: 1rem;
+    }
+
+    /* LOGIN */
+    .admin-page #adminLogin {
+      max-width: 420px;
+      margin: 3rem auto 0;
+      text-align: center;
+    }
+
+    .admin-page #adminLogin h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .admin-page #adminLogin p {
+      font-size: 0.85rem;
+      color: var(--muted-admin);
+      margin-top: 0.25rem;
+    }
+
+    .admin-page #adminLoginForm {
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+
+    .admin-page #adminLoginForm label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 0.85rem;
+    }
+
+    .admin-page #adminLoginForm input {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-admin);
+      font-size: 0.9rem;
+    }
+
+    .admin-page #adminLoginError {
+      color: #d93025;
+      min-height: 1.2em;
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
+    }
+
+    /* DASHBOARD */
+    .admin-page #dashboard {
+      display: none;
+    }
+
+    .admin-page .dashboard-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .admin-page .dashboard-header h2 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .admin-page .dashboard-header p {
+      font-size: 0.85rem;
+      color: var(--muted-admin);
+      margin: 0.2rem 0 0;
+    }
+
+    /* SUMMARY CARDS */
+    .admin-page .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin: 0.5rem 0 1.5rem;
+    }
+
+    .admin-page .summary-card {
+      background: #faf7f3;
+      border-radius: var(--radius-md-admin);
+      padding: 0.75rem 0.9rem;
+      border: 1px solid rgba(226, 223, 218, 0.75);
+      font-size: 0.8rem;
+    }
+
+    .admin-page .summary-card span.label {
+      color: var(--muted-admin);
+      display: block;
+      margin-bottom: 0.15rem;
+    }
+
+    .admin-page .summary-card strong {
+      font-size: 1.05rem;
+    }
+
+    /* SEÇÕES */
+    .admin-page .admin-section {
+      margin-top: 1.5rem;
+    }
+
+    .admin-page .admin-section-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .admin-page .admin-section-header h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .admin-page .admin-section-header p {
+      margin: 0.2rem 0 0;
+      font-size: 0.8rem;
+      color: var(--muted-admin);
+    }
+
+    .admin-page .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: flex-end;
+    }
+
+    /* TABELAS */
+    .admin-page .table-wrapper {
+      margin-top: 0.4rem;
+      border-radius: var(--radius-md-admin);
+      border: 1px solid var(--border-admin);
+      overflow: auto;
+      max-height: 70vh;
+      background: #fff;
+    }
+
+    .admin-page table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+      font-size: 0.78rem;
+    }
+
+    .admin-page th, .admin-page td {
+      padding: 0.5rem 0.7rem;
+      text-align: left;
+      border-bottom: 1px solid #f0ede7;
+    }
+
+    .admin-page thead th {
+      background: #faf7f2;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .admin-page tbody tr:nth-child(even) {
+      background: #faf8f4;
+    }
+
+    .admin-page tbody tr:hover {
+      background: #f5efe7;
+    }
+
+    .admin-page .mesa-cell {
+      font-weight: 500;
+      color: var(--accent-admin);
+    }
+
+    .admin-page td a {
+      font-weight: 500;
+      color: var(--accent-admin);
+      text-decoration: none;
+    }
+
+    .admin-page td a:hover {
+      text-decoration: underline;
+    }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+      .admin-page .admin-header {
+        padding: 0.5rem 0.75rem;
+      }
+      .admin-page .admin-main {
+        padding: 0.75rem;
+      }
+      .admin-page .admin-card {
+        padding: 1.1rem 0.9rem;
+      }
+      .admin-page table {
+        min-width: 540px;
+      }
+      .admin-page #adminLogin h2 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="admin-page">
+
+  <header class="admin-header">
+    <div class="admin-title">
+      <div class="admin-logo">
+  <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Logo Casamento">
+</div> 
+      </div>
+      <div>
+        <h1>Painel do Casamento</h1>
+        <p>Celeste &amp; Pinto · Gestão de convidados</p>
+      </div>
+    </div>
+    <button id="logoutAdmin" class="btn-outline-admin" style="display:none;">Sair</button>
+  </header>
+
+  <main class="admin-main">
+
+    <!-- LOGIN -->
+    <section id="adminLogin" class="admin-card">
+      <h2>Painel de Gestão</h2>
+      <p>Introduza a senha de administrador para aceder às listas.</p>
+
+      <form id="adminLoginForm">
+        <div style="margin-bottom: 1rem;">
+          <label for="adminPassword">Senha de Admin</label>
+          <input type="password" id="adminPassword">
+        </div>
+        <button type="submit" class="btn-primary-admin" style="width: 100%;">Aceder</button>
+      </form>
+      <p id="adminLoginError"></p>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="admin-card">
+
+      <div class="dashboard-header">
+        <div>
+          <h2>Dashboard</h2>
+          <p>Visualize confirmações, presentes, comprovativos e mensagens.</p>
+        </div>
+        <div class="admin-actions">
+          <button class="btn-secondary-admin" id="refreshBtn">Atualizar listas</button>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <span class="label">Confirmações</span>
+          <strong id="rsvpCount">0</strong>
+        </div>
+        <div class="summary-card">
+          <span class="label">Total de convidados</span>
+          <strong id="guestTotalCount">0</strong>
+        </div>
+        <div class="summary-card">
+          <span class="label">Presentes registados</span>
+          <strong id="giftsCount">–</strong>
+        </div>
+        <div class="summary-card">
+          <span class="label">Mensagens</span>
+          <strong id="messagesCount">–</strong>
+        </div>
+      </div>
+
+      <!-- RSVPs -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div>
+            <h3>Confirmações de Presença</h3>
+            <p>Lista de RSVPs, número de convidados e mesa.</p>
+          </div>
+          <div class="admin-actions">
+            <button id="export-rsvps-csv" class="btn-primary-admin">Exportar CSV</button>
+            <button id="export-rsvps-json" class="btn-secondary-admin">Exportar JSON</button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="rsvpTable">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Convidados</th>
+                <th>Mesa</th>
+                <th>Telefone</th>
+                <th>Mensagem</th>
+              </tr>
+            </thead>
+            <tbody id="rsvpTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRESENTES -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div>
+            <h3>Gestão de Presentes (Lista)</h3>
+            <p id="giftSectionP">A carregar dados dos presentes...</p>
+          </div>
+        </div>
+        <div id="giftTableContainer" class="table-wrapper" style="display:none;">
+          <table id="giftTable">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome do Convidado</th>
+                <th>Presentes Registados</th>
+              </tr>
+            </thead>
+            <tbody id="giftTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COMPROVATIVOS -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div>
+            <h3>Comprovativos Monetários</h3>
+            <p id="comprovativoSectionP">A carregar comprovativos...</p>
+          </div>
+        </div>
+        <div id="comprovativoTableContainer" class="table-wrapper" style="display:none;">
+          <table id="comprovativoTable">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Canal</th>
+                <th>Comprovativo (Ficheiro)</th>
+              </tr>
+            </thead>
+            <tbody id="comprovativoTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- MENSAGENS -->
+      <div class="admin-section">
+        <div class="admin-section-header">
+          <div>
+            <h3>Mural de Felicitações</h3>
+            <p id="messageSectionP">A carregar mensagens...</p>
+          </div>
+        </div>
+        <div id="messageTableContainer" class="table-wrapper" style="display:none;">
+          <table id="messageTable">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Data</th>
+                <th style="width: 20%;">Nome</th>
+                <th style="width: 65%;">Mensagem</th>
+              </tr>
+            </thead>
+            <tbody id="messageTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    const API_BASE_URL = "https://api-casamento-mj.onrender.com";
+    let adminPassword = "";
+    let RSVPS_DATA = [];
+    let GIFTS_DATA = [];
+    let COMPROV_DATA = [];
+    let MESSAGES_DATA = [];
+
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    const adminLoginError = document.getElementById('adminLoginError');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const logoutBtn = document.getElementById('logoutAdmin');
+
+    const escapeHtml = (str) =>
+      str ? String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+      : '-';
+
+    // LOGIN
+    adminLoginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      adminLoginError.textContent = "";
+      adminPassword = document.getElementById('adminPassword').value.trim();
+      if (!adminPassword) {
+        adminLoginError.textContent = "Por favor, introduza a senha.";
+        return;
+      }
+
+      const button = e.target.querySelector('button');
+      button.disabled = true;
+      button.textContent = "A aceder...";
+
+      Promise.all([
+        fetchData("get_rsvps"),
+        fetchData("get_gifts"),
+        fetchData("get_comprovativos"),
+        fetchData("get_messages")
+      ])
+      .then(([rsvpData, giftData, comprovativoData, messageData]) => {
+        document.getElementById('adminLogin').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        logoutBtn.style.display = 'inline-flex';
+
+        RSVPS_DATA = rsvpData.data || [];
+        GIFTS_DATA = giftData.data || [];
+        COMPROV_DATA = comprovativoData.data || [];
+        MESSAGES_DATA = messageData.data || [];
+
+        populateRsvpTable(RSVPS_DATA);
+        populateGiftTable(GIFTS_DATA);
+        populateComprovativoTable(COMPROV_DATA);
+        populateMessageTable(MESSAGES_DATA);
+        updateSummaryCards();
+
+        button.disabled = false;
+        button.textContent = "Aceder";
+      })
+      .catch(err => {
+        adminLoginError.textContent = err.message || "Senha incorreta.";
+        button.disabled = false;
+        button.textContent = "Aceder";
+      });
+    });
+
+    // LOGOUT
+    logoutBtn.addEventListener('click', () => {
+      adminPassword = "";
+      RSVPS_DATA = [];
+      GIFTS_DATA = [];
+      COMPROV_DATA = [];
+      MESSAGES_DATA = [];
+
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('adminLogin').style.display = 'block';
+      document.getElementById('adminPassword').value = '';
+      logoutBtn.style.display = 'none';
+    });
+
+    // ATUALIZAR
+    refreshBtn.addEventListener('click', () => {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = "A atualizar...";
+
+      Promise.all([
+        fetchData("get_rsvps"),
+        fetchData("get_gifts"),
+        fetchData("get_comprovativos"),
+        fetchData("get_messages")
+      ])
+      .then(([rsvpData, giftData, comprovativoData, messageData]) => {
+        RSVPS_DATA = rsvpData.data || [];
+        GIFTS_DATA = giftData.data || [];
+        COMPROV_DATA = comprovativoData.data || [];
+        MESSAGES_DATA = messageData.data || [];
+
+        populateRsvpTable(RSVPS_DATA);
+        populateGiftTable(GIFTS_DATA);
+        populateComprovativoTable(COMPROV_DATA);
+        populateMessageTable(MESSAGES_DATA);
+        updateSummaryCards();
+
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "Atualizar listas";
+      })
+      .catch(err => {
+        alert("Erro ao atualizar: " + err.message);
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "Atualizar listas";
+      });
+    });
+
+    function updateSummaryCards() {
+      document.getElementById('rsvpCount').textContent = RSVPS_DATA.length || 0;
+
+      let totalGuests = 0;
+      RSVPS_DATA.forEach(rsvp => {
+        let guestsCount = 0;
+        const guestsValue = String(rsvp.guests || '0');
+        if (guestsValue.includes('+')) {
+          guestsCount = parseInt(guestsValue.replace('+', ''), 10);
+        } else {
+          guestsCount = parseInt(guestsValue, 10);
+        }
+        if (!isNaN(guestsCount)) totalGuests += guestsCount;
+      });
+      document.getElementById('guestTotalCount').textContent = totalGuests;
+
+      document.getElementById('giftsCount').textContent = GIFTS_DATA.length || 0;
+      document.getElementById('messagesCount').textContent = MESSAGES_DATA.length || 0;
+    }
+
+    function populateRsvpTable(rsvps) {
+      const tableBody = document.getElementById('rsvpTableBody');
+      tableBody.innerHTML = '';
+
+      if (!rsvps || rsvps.length === 0) {
+        tableBody.innerHTML =
+          '<tr><td colspan="6" style="text-align:center; padding:24px;">Nenhuma confirmação recebida ainda.</td></tr>';
+        return;
+      }
+
+      rsvps.forEach(rsvp => {
+        const row = `
+          <tr>
+            <td style="white-space: nowrap;">
+              ${new Date(rsvp.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}
+            </td>
+            <td style="font-weight:500;">${escapeHtml(rsvp.nome)}</td>
+            <td>${escapeHtml(rsvp.guests)}</td>
+            <td class="mesa-cell">${escapeHtml(rsvp.mesa)}</td>
+            <td>${escapeHtml(rsvp.phone)}</td>
+            <td>${escapeHtml(rsvp.message)}</td>
+          </tr>
+        `;
+        tableBody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function populateGiftTable(gifts) {
+      const tableContainer = document.getElementById('giftTableContainer');
+      const tableBody = document.getElementById('giftTableBody');
+      const giftSectionP = document.getElementById('giftSectionP');
+      tableBody.innerHTML = '';
+
+      if (!gifts || gifts.length === 0) {
+        giftSectionP.textContent = "Nenhum presente da lista foi registado ainda.";
+        tableContainer.style.display = 'none';
+        return;
+      }
+
+      giftSectionP.textContent = "Abaixo está a lista de presentes físicos registados pelos convidados.";
+      tableContainer.style.display = 'block';
+
+      gifts.forEach(entry => {
+        const row = `
+          <tr>
+            <td style="white-space: nowrap;">
+              ${new Date(entry.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}
+            </td>
+            <td style="font-weight:500;">${escapeHtml(entry.nome)}</td>
+            <td>${escapeHtml((entry.gifts || []).join(', '))}</td>
+          </tr>
+        `;
+        tableBody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function populateComprovativoTable(comprovativos) {
+      const tableContainer = document.getElementById('comprovativoTableContainer');
+      const tableBody = document.getElementById('comprovativoTableBody');
+      const comprovativoSectionP = document.getElementById('comprovativoSectionP');
+      tableBody.innerHTML = '';
+
+      if (!comprovativos || comprovativos.length === 0) {
+        comprovativoSectionP.textContent = "Nenhum comprovativo monetário foi enviado ainda.";
+        tableContainer.style.display = 'none';
+        return;
+      }
+
+      comprovativoSectionP.textContent = "Abaixo estão os comprovativos monetários enviados.";
+      tableContainer.style.display = 'block';
+
+      comprovativos.forEach(entry => {
+        const fileLink = escapeHtml(entry.fileName);
+        const row = `
+          <tr>
+            <td style="white-space: nowrap;">
+              ${new Date(entry.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}
+            </td>
+            <td style="font-weight:500;">${escapeHtml(entry.nome)}</td>
+            <td>${escapeHtml(entry.canal)}</td>
+            <td><a href="${fileLink}" target="_blank" rel="noopener noreferrer">
+              ${escapeHtml(entry.originalName)}
+            </a></td>
+          </tr>
+        `;
+        tableBody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function populateMessageTable(messages) {
+      const tableContainer = document.getElementById('messageTableContainer');
+      const tableBody = document.getElementById('messageTableBody');
+      const messageSectionP = document.getElementById('messageSectionP');
+      tableBody.innerHTML = '';
+
+      if (!messages || messages.length === 0) {
+        messageSectionP.textContent = "Nenhuma mensagem de felicitação foi enviada ainda.";
+        tableContainer.style.display = 'none';
+        return;
+      }
+
+      messageSectionP.textContent = "Abaixo estão as mensagens de felicitação dos convidados.";
+      tableContainer.style.display = 'block';
+
+      messages.forEach(entry => {
+        const row = `
+          <tr>
+            <td style="white-space: nowrap;">
+              ${new Date(entry.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}
+            </td>
+            <td style="font-weight:500;">${escapeHtml(entry.nome)}</td>
+            <td>${escapeHtml(entry.message)}</td>
+          </tr>
+        `;
+        tableBody.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    function exportRsvpsToCSV() {
+      if (!RSVPS_DATA.length) {
+        alert('Não há dados de RSVP para exportar.');
+        return;
+      }
+
+      const header = ['Data/Hora', 'Nome', 'Nº Convidados', 'Telefone', 'Mesa', 'Mensagem'];
+
+      const rows = RSVPS_DATA.map(r => [
+        new Date(r.timestamp).toISOString(),
+        r.nome || '',
+        r.guests || '',
+        r.phone || '',
+        r.mesa || '',
+        (r.message || '').replace(/\r?\n/g, ' ')
+      ]);
+
+      const allRows = [header, ...rows];
+      const csv = allRows
+        .map(row => row.map(field => {
+          const f = String(field).replace(/"/g, '""');
+          return `"${f}"`;
+        }).join(','))
+        .join('\r\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rsvps-${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportRsvpsToJSON() {
+      if (!RSVPS_DATA.length) {
+        alert('Não há dados de RSVP para exportar.');
+        return;
+      }
+      const json = JSON.stringify(RSVPS_DATA, null, 2);
+      const blob = new Blob([json], { type: 'application/json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rsvps-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnCsv = document.getElementById('export-rsvps-csv');
+      const btnJson = document.getElementById('export-rsvps-json');
+      if (btnCsv) btnCsv.addEventListener('click', exportRsvpsToCSV);
+      if (btnJson) btnJson.addEventListener('click', exportRsvpsToJSON);
+    });
+
+    function fetchData(action, payload = {}) {
+      return fetch(`${API_BASE_URL}/admin-api`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password: adminPassword,
+          action,
+          ...payload
+        })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => Promise.reject(new Error(err.message || 'Erro de servidor')));
+        }
+        return res.json();
+      })
+      .then(response => {
+        if (response.status !== "success") {
+          throw new Error(response.message);
+        }
+        return response;
+      });
+    }
+  </script>
+</body>
+</html>
+
+

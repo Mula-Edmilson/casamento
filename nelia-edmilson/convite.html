@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Convite de Noivado — Nélia & Edmilson</title>
+
+<link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  
+  <meta property="og:title" content="Convite de Noivado — Nélia & Edmilson">
+  <meta property="og:description" content="Junte-se a nós para celebrar o nosso noivado e o início de uma nova etapa das nossas vidas.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://static.wixstatic.com/media/819ea0_b4ef6562eb6d4a4b9b4a2b2cf908c93f~mv2.jpg">
+  <meta property="og:url" content="URL_DO_CONVITE_ONLINE">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Great+Vibes&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    :root{
+      --bg:#faf8f5;
+      --accent:#b0775c; /* Dourado */
+      --accent-muted: #363535; /* Cinza/Prata */
+      --muted: var(--accent-muted); /* Corrigido: Agora usa a variável definida */
+      --text-dark: #b0775c;
+      --card: #ffffff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;background-color:var(--bg);
+      /* Fundo com linhas abstratas inspirado na imagem */
+      background-image:
+        url("https://i.postimg.cc/BbmmgqHs/15680936-5660126.jpg");
+      font-family:'Cormorant Garamond',serif;display:flex;align-items:center;justify-content:center;padding:24px;color:var(--text-dark)
+    }
+    .invite-wrap{
+      width:100%;max-width:680px;border-radius:12px;overflow:hidden;box-shadow:0 12px 40px rgba(176, 143, 92, 0.15);position:relative;background:var(--card);
+    }
+    /* Layout principal */
+    .hero{
+      display:grid;grid-template-columns:1fr;text-align:center;padding:48px 36px 24px;
+    }
+    .hero-content{
+      padding:18px 0;
+    }
+    .lead{
+      font-family: 'Poppins', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 13px;
+      margin: 0 0 12px;
+      color: var(--muted); /* Usa a cor cinza/prata corrigida */
+    }
+    h1{font-family:'Cormorant Garamond',serif;margin:0;font-size:42px;color:var(--text-dark);font-weight:600;}
+    p{margin:12px 0 18px;color:var(--muted);font-size:18px;line-height:1.6}
+
+    .details{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px;}
+    .pill{background:transparent;border: 1px solid rgba(176, 143, 92, 0.2);padding:10px 16px;border-radius:999px;font-weight:600;color:var(--accent);display:inline-flex;align-items:center;gap:8px;font-family:'Poppins', sans-serif;font-size:14px}
+
+    /* Monograma circular */
+    .monogram-wrap{position:relative;display:flex;align-items:center;justify-content:center;padding: 24px 0;}
+    .monogram-visual{
+      border-radius:50%;border:2px solid var(--accent);
+      background: #fff;
+      position:relative;
+    }
+
+    /* actions */
+    .actions{display:flex;flex-direction:column;align-items:center;gap:12px;padding:18px 36px 36px}
+    .action-buttons{display:flex;gap:12px;margin-bottom:18px}
+    .btn{border:0;padding:12px 18px;border-radius:8px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font-family:'Poppins',sans-serif;font-size:14px;transition:all .2s ease}
+    .btn-primary{background:var(--accent);color:white;box-shadow:0 8px 18px rgba(176, 143, 92, 0.22)}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(176, 143, 92, 0.28)}
+    .btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+    .btn-outline:hover{background:rgba(176, 143, 92, 0.05)}
+    .btn-ghost{background:transparent;color:var(--muted);border-radius:8px}
+
+    footer.note{font-size:13px;color:var(--muted);padding:0 36px 30px;text-align:center;font-family:'Poppins', sans-serif;}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,12,16,0.5);visibility:hidden;opacity:0;transition:all .18s; z-index:100}
+    .modal.open{visibility:visible;opacity:1}
+    .modal-card{width:100%;max-width:520px;background:white;border-radius:12px;padding:22px;box-shadow:0 16px 48px rgba(2,20,30,0.25)}
+    .form-row{display:flex;gap:10px}
+    label{font-size:13px;color:#333;font-family:'Poppins',sans-serif;}
+    input,textarea,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6e6;font-size:14px;font-family:'Cormorant Garamond',serif;}
+    textarea{min-height:100px}
+    .small{font-size:13px;color:var(--muted);font-family:'Poppins', sans-serif;}
+
+    /* responsive */
+    @media (max-width:880px){
+      .actions{padding:18px}
+      .hero{padding:24px 18px}
+      .action-buttons{flex-direction:column;width:100%;align-items:stretch;}
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="invite-wrap" role="main" aria-labelledby="inviteTitle">
+    <div class="hero">
+
+      <div class="monogram-wrap">
+        <div class="monogram-visual" aria-hidden="true">
+            <img src="https://i.postimg.cc/MTq7nh49/cover.png" alt="Monograma Dourado Nélia e Edmilson">
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <p class="lead">CONVIDAMO-LO(A) A CELEBRAR O NOSSO NOIVADO</p>
+        <h1 id="inviteTitle">NÉLIA & EDMILSON</h1>
+		  <p>"O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha. Não maltrata, não procura seus interesses, não se ira facilmente, não guarda rancor. O amor não se alegra com a injustiça, mas se alegra com a verdade. Tudo
+sofre, tudo crê, tudo espera, tudo suporta."(1 Coríntios 13:4-7)</p>
+        <p>Partilhe connosco a alegria deste dia inesquecível, enquanto celebramos o nosso noivado e damos início a uma nova etapa das nossas vidas juntos.</p>
+        <div class="details">
+          <div class="pill">📅 <strong>Data:</strong> 06 Dezembro 2025</div>
+          <div class="pill">⏰ <strong>Hora:</strong> 14:00</div>
+          <div class="pill">📍 <strong>Local:</strong> Infulene "A", Manduca</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="actions">
+       <div class="action-buttons">
+          <button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
+          <button class="btn btn-outline" id="mapBtn">Ver Localização</button>
+       </div>
+      <button class="btn btn-ghost" id="shareBtn">Partilhar Convite</button>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+        <span class="small">Tem dúvidas? <strong>Contacto:</strong> +258 87 417 7106</span>
+      </div>
+    </div>
+
+    <footer class="note">Este convite é interactivo: utilize os botões para confirmar presença e ver a localização.</footer>
+  </div>
+
+  <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
+    <div class="modal-card">
+      <h3 id="rsvpTitle" style="margin-top:0;font-family:'Cormorant Garamond', serif; font-size:24px; color:var(--text-dark)">Confirmar Presença</h3>
+      <p class="small">Preencha os dados abaixo e escolha como pretende enviar a confirmação (Email ou WhatsApp).</p>
+      <form id="rsvpForm">
+        <div style="margin-top:12px">
+          <label>Nome completo</label>
+          <input type="text" id="nome" required placeholder="Ex: Edson Nhantumbo">
+        </div>
+        <div style="margin-top:12px" class="form-row">
+          <div style="flex:1">
+            <label>Número de convidados</label>
+            <select id="guests">
+              <option value="1">1 (apenas eu)</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5+">5+</option>
+            </select>
+          </div>
+          <div style="flex:1">
+            <label>Telefone (opcional)</label>
+            <input id="phone" placeholder="+258 84X XXX XXX">
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <label>Mensagem (opcional)</label>
+          <textarea id="message" placeholder="Ex: Mal posso esperar por celebrar convosco!"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap">
+          <button type="submit" class="btn btn-primary">Enviar por Email</button>
+          <button type="button" class="btn btn-outline" id="sendWhatsapp">Enviar por WhatsApp</button>
+          <button type="button" class="btn btn-ghost" id="closeModal">Fechar</button>
+        </div>
+        <p class="small" style="margin-top:12px">Ao enviar por email será aberta a aplicação de email do seu dispositivo com os dados preenchidos. Para o WhatsApp é necessário um número de telefone do anfitrião.</p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const rsvpBtn = document.getElementById('rsvpBtn');
+    const rsvpModal = document.getElementById('rsvpModal');
+    const closeModal = document.getElementById('closeModal');
+    const rsvpForm = document.getElementById('rsvpForm');
+    const mapBtn = document.getElementById('mapBtn');
+    const sendWhatsapp = document.getElementById('sendWhatsapp');
+    const shareBtn = document.getElementById('shareBtn');
+    
+    // CONFIGURAÇÃO: Altere o endereço e o número do anfitrião aqui
+    const HOST_WHATSAPP_NUMBER = '+258874177106'; 
+    const EVENT_ADDRESS_FOR_MAPS = encodeURIComponent('Infulene "A", Manduca, Maputo, Moçambique');
+
+    // Abrir modal
+    rsvpBtn.addEventListener('click', ()=> rsvpModal.classList.add('open'));
+    closeModal.addEventListener('click', ()=> rsvpModal.classList.remove('open'));
+    rsvpModal.addEventListener('click', (e)=>{ if(e.target===rsvpModal) rsvpModal.classList.remove('open') });
+
+    // Ver localização — abre Google Maps numa nova aba
+    mapBtn.addEventListener('click', ()=>{
+      const url = `https://www.google.com/maps/search/?api=1&query=$${EVENT_ADDRESS_FOR_MAPS}`;
+      window.open(url,'_blank');
+    });
+
+    // Enviar RSVP por email (usa mailto:)
+    rsvpForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const guests = document.getElementById('guests').value;
+      const phone = document.getElementById('phone').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      const subject = encodeURIComponent('RSVP — Confirmação de Presença Nélia & Edmilson');
+      let body = `Nome: ${nome}%0D%0AConvidados: ${guests}%0D%0ATelefone: ${phone}%0D%0AMensagem: ${message}`;
+      const mailto = `mailto:neliajacintonhantumbo@gmail.com?subject=${subject}&body=${body}`;
+      window.location.href = mailto;
+      
+      rsvpModal.classList.remove('open');
+    });
+
+    // Enviar por WhatsApp — pré-preenche com a mensagem
+    sendWhatsapp.addEventListener('click', ()=>{
+      const nome = document.getElementById('nome').value.trim();
+      const guests = document.getElementById('guests').value;
+      const phone = document.getElementById('phone').value.trim();
+      const message = document.getElementById('message').value.trim();
+      const text = `RSVP - Nome: ${nome} | Convidados: ${guests} | Telefone: ${phone} | Mensagem: ${message}`;
+      
+      const wa = `https://wa.me/${HOST_WHATSAPP_NUMBER.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`;
+      window.open(wa,'_blank');
+      
+      rsvpModal.classList.remove('open');
+    });
+
+    // Partilhar convite — usa Web Share se disponível
+    shareBtn.addEventListener('click', async ()=>{
+      const shareData = {
+          title: 'Convite de Noivado — Nélia & Edmilson', 
+          text: 'Junte-se a nós para celebrar o nosso noivado! Confirme a sua presença aqui:', 
+          url: location.href
+      };
+      try{
+        if(navigator.share){
+          await navigator.share(shareData);
+        } else {
+          await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+          alert('Link do convite copiado para a área de transferência.');
+        }
+      }catch(err){
+        console.warn(err);
+        alert('Não foi possível partilhar. Copiando link para a área de transferência.');
+        navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+      }
+    });
+  </script>
+</body>
+</html>

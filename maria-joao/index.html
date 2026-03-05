@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Convite de Casamento — Maria & João</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon e Open Graph (para partilha) -->
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+
+  <meta property="og:title" content="Convite de Casamento — Maria & João">
+  <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
+  <meta property="og:type" content="lirandzo.com">
+  <meta property="og:image" content="https://i.postimg.cc/15KQyFX5/Whats-App-Image-2025-10-24-at-10-47-48-AM.jpg">
+
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #ffffff;
+      --accent: #B08968; /* Castanho do design principal */
+      --text: #ffffff;
+      --backdrop-dark: rgba(0, 0, 0, 0.45);
+      --backdrop-darker: rgba(0, 0, 0, 0.65);
+    }
+
+    body {
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .page {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Vídeo de fundo */
+    .bg-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    /* Camada escura + ligeiro degradê em baixo */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.35),
+        rgba(0, 0, 0, 0.6)
+      );
+      z-index: -1;
+    }
+
+    .content {
+      position: relative;
+      text-align: center;
+      max-width: 600px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .subtitle {
+      letter-spacing: 0.25em;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .countdown-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .days-label {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+
+    .days-number {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(4rem, 10vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .days-text {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    .quotation {
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .divider {
+      width: 120px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.7);
+      margin: 0.7rem auto 0.4rem;
+    }
+
+    .names {
+      font-family: "Playfair Display", serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-top: 0.3rem;
+    }
+
+    .date-text {
+      font-size: 0.9rem;
+      margin-top: 0.1rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+
+    /* Linha com horas, minutos, segundos */
+    .time-row {
+      display: flex;
+      gap: 1.4rem;
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.9;
+    }
+
+    .time-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+    }
+
+    .time-value {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .time-label {
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    /* Botão Abrir convite (corrigido) */
+    .bottom-area {
+      position: absolute;
+      bottom: 5rem;       /* mais acima, para não ser cortado */
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-open {
+      padding: 0.55rem 1.6rem;        /* menor */
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: var(--accent);      /* castanho cheio */
+      color: #fff;
+      font-size: 0.75rem;             /* texto menor */
+      text-transform: uppercase;
+      letter-spacing: 0.18em;         /* menos espaçado */
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); /* sombra mais subtil */
+    }
+
+    .btn-open:hover {
+      background: #9A6F50;            /* castanho um pouco mais escuro no hover */
+      border-color: #9A6F50;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    /* MOBILE */
+    @media (max-width: 480px) {
+      .names {
+        font-size: 1.3rem;
+      }
+
+      .date-text {
+        font-size: 0.8rem;
+      }
+
+      .bottom-area {
+        bottom: 12rem;      /* mais acima no mobile, para não cortar */
+      }
+
+      .btn-open {
+        padding: 0.45rem 1.4rem;  /* ainda mais compacto em mobile */
+        font-size: 0.7rem;
+        letter-spacing: 0.16em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+    <!-- VÍDEO DE FUNDO: podes trocar o src pelo teu vídeo -->
+    <video class="bg-video" autoplay muted loop playsinline>
+      <source src="https://video.wixstatic.com/video/5d9686_371092bb273d4afbae3e2b9a3a1f6164/480p/mp4/file.mp4" type="video/mp4">
+      O teu navegador não suporta vídeo HTML5.
+    </video>
+
+    <div class="overlay"></div>
+
+    <div class="content">
+      <div class="subtitle">CONTAGEM DECRESCENTE PARA O NOSSO DIA</div>
+
+      <div class="countdown-main">
+        <div class="days-label">
+          <span id="days" class="days-number">0</span>
+          <div class="days-text">
+            <div>DIAS</div>
+            <div>ATÉ</div>
+          </div>
+        </div>
+
+        <div class="quotation">"SIM, ACEITO!"</div>
+        <div class="divider"></div>
+
+        <div class="time-row" id="timeRow">
+          <div class="time-box">
+            <span id="hours" class="time-value">00</span>
+            <span class="time-label">HORAS</span>
+          </div>
+          <div class="time-box">
+            <span id="minutes" class="time-value">00</span>
+            <span class="time-label">MINUTOS</span>
+          </div>
+          <div class="time-box">
+            <span id="seconds" class="time-value">00</span>
+            <span class="time-label">SEGUNDOS</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="names">MARIA &amp; JOÃO</div>
+      <!-- DATA ALINHADA COM O CONVITE PRINCIPAL (convite.html) -->
+      <div class="date-text">10 DE JANEIRO 2026</div>
+    </div>
+
+    <div class="bottom-area">
+      <!-- Vai DIRECTO para o convite -->
+      <button class="btn-open" onclick="window.location.href='convite.html'">
+        Abrir convite
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ========= CONFIGURAÇÃO DA DATA DO CASAMENTO =========
+    // MESMA data do convite principal (convite.html): 10 Jan 2026 às 09:00
+    const weddingDate = new Date("2026-01-10T09:00:00"); // AAAA-MM-DDTHH:MM:SS (hora local)
+
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
+    const timeRowEl = document.getElementById("timeRow");
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = weddingDate.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        // Já chegou o dia
+        daysEl.textContent = "0";
+        hoursEl.textContent = "00";
+        minutesEl.textContent = "00";
+        secondsEl.textContent = "00";
+        if (timeRowEl) {
+          timeRowEl.style.opacity = "0.7";
+        }
+        return;
+      }
+
+      // TOTAL de segundos até ao evento
+      let totalSeconds = Math.floor(diff / 1000);
+
+      // Quebra em DIAS, HORAS, MINUTOS, SEGUNDOS – tudo da MESMA diferença
+      const days = Math.floor(totalSeconds / (3600 * 24));
+      totalSeconds -= days * 3600 * 24;
+
+      const hours = Math.floor(totalSeconds / 3600);
+      totalSeconds -= hours * 3600;
+
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds - minutes * 60;
+
+      daysEl.textContent = days;
+      hoursEl.textContent = String(hours).padStart(2, "0");
+      minutesEl.textContent = String(minutes).padStart(2, "0");
+      secondsEl.textContent = String(seconds).padStart(2, "0");
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
+
