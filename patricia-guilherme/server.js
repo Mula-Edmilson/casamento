@@ -332,36 +332,64 @@ async function handleLogin(req, res) {
 
 // --- Função de RSVP ---
 async function handleRsvp(req, res) {
-  const data = req.body;
-  
-  const nameClean = normalize(data.nome);
-  const allGuests = await Guest.find();
-  const guest = allGuests.find(g => normalize(g.Nome) === nameClean);
-  const mesa = guest ? guest.Mesa : "A definir";
-
-  const acompanhantes = guest ? Number(guest.Acompanhantes) : 0;
-const totalGuests = 1 + acompanhantes;
-
-const newRow = {
-  timestamp: new Date(),
-  nome: data.nome,
-  guests: totalGuests,
-  phone: data.phone,
-  message: data.message,
-  mesa: mesa
-};
-  await Rsvp.create(newRow);
-
   try {
-    if (guest) {
-      guest.Status = `Confirmado (${totalGuests})`;
-      await guest.save();
+    const data = req.body;
+
+    if (!data.nome) {
+      return res.status(400).json({
+        status: "error",
+        message: "Nome não enviado."
+      });
     }
-  } catch (e) {
-    console.error("Falha ao atualizar status do convidado:", e.message);
+
+    const inputClean = normalize(data.nome);
+
+    const allGuests = await Guest.find();
+    let guest = null;
+
+    for (const g of allGuests) {
+      if (normalize(g.Nome) === inputClean) {
+        guest = g;
+        break;
+      }
+    }
+
+    if (!guest) {
+      return res.status(404).json({
+        status: "error",
+        message: "Convidado não encontrado."
+      });
+    }
+
+    const acompanhantes = Number(guest.Acompanhantes) || 0;
+    const totalGuests = 1 + acompanhantes;
+
+    const newRow = {
+      timestamp: new Date(),
+      nome: guest.Nome,
+      guests: totalGuests,
+      phone: data.phone || "",
+      message: data.message || "",
+      mesa: guest.Mesa || ""
+    };
+
+    await Rsvp.create(newRow);
+
+    guest.Status = `Confirmado (${totalGuests})`;
+    await guest.save();
+
+    return res.status(200).json({
+      status: "success",
+      message: "Confirmação recebida!"
+    });
+
+  } catch (error) {
+    console.error("Erro no RSVP:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Erro no servidor."
+    });
   }
-  
-  return res.status(200).json({ status: "success", message: "Confirmação recebida!" });
 }
 
 // Initialize gift items after MongoDB connection
