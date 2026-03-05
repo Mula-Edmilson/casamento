@@ -339,19 +339,22 @@ async function handleRsvp(req, res) {
   const guest = allGuests.find(g => normalize(g.Nome) === nameClean);
   const mesa = guest ? guest.Mesa : "A definir";
 
-  const newRow = {
-    timestamp: new Date(),
-    nome: data.nome,
-    guests: data.guests,
-    phone: data.phone,
-    message: data.message,
-    mesa: mesa
-  };
+  const acompanhantes = guest ? Number(guest.Acompanhantes) : 0;
+const totalGuests = 1 + acompanhantes;
+
+const newRow = {
+  timestamp: new Date(),
+  nome: data.nome,
+  guests: totalGuests,
+  phone: data.phone,
+  message: data.message,
+  mesa: mesa
+};
   await Rsvp.create(newRow);
 
   try {
     if (guest) {
-      guest.Status = `Confirmado (${data.guests})`;
+      guest.Status = `Confirmado (${totalGuests})`;
       await guest.save();
     }
   } catch (e) {
