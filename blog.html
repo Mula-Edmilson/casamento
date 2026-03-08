@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blog — Lirandzo | Dicas para Casamentos Digitais</title>
+  
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  
+  <meta name="description" content="Inspirações, dicas e tendências para o seu casamento digital. Descubra como criar convites inesquecíveis e organizar o grande dia com a Lirandzo.">
+  
+  <meta property="og:title" content="Blog Lirandzo — Dicas para Casamentos">
+  <meta property="og:description" content="Inspirações e tendências para o seu casamento digital.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://i.postimg.cc/L8vk8vwF/capa.jpg">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    /* Estilos adicionais específicos para o blog */
+    .blog-header {
+      background: linear-gradient(rgba(43, 38, 35, 0.85), rgba(43, 38, 35, 0.85)), url('https://i.postimg.cc/Lsvbb4wL/10467.jpg');
+      background-size: cover;
+      background-position: center;
+      padding: 80px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .blog-header h1 {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+      color: var(--text-dark);
+    }
+    
+    .blog-header p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--text-light);
+    }
+    
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 32px;
+      max-width: 1200px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+    
+    .blog-card {
+      background: var(--card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .blog-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      border-color: var(--accent);
+    }
+    
+    .blog-card-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .blog-card-content {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .blog-card-category {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    .blog-card-title {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+      line-height: 1.3;
+    }
+    
+    .blog-card-excerpt {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 20px;
+      line-height: 1.6;
+      flex: 1;
+    }
+    
+    .blog-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+    
+    .blog-card-date {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .blog-card-date svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--accent);
+    }
+    
+    .blog-card-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: gap 0.2s ease;
+    }
+    
+    .blog-card-link:hover {
+      gap: 8px;
+      text-decoration: underline;
+    }
+    
+    .blog-card-link svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+    }
+    
+    .blog-newsletter {
+      background: var(--section-bg);
+      padding: 60px 24px;
+      text-align: center;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .blog-newsletter h2 {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+    
+    .blog-newsletter p {
+      max-width: 500px;
+      margin: 0 auto 32px auto;
+      color: var(--text-light);
+    }
+    
+    .newsletter-form {
+      display: flex;
+      max-width: 500px;
+      margin: 0 auto;
+      gap: 12px;
+    }
+    
+    .newsletter-form input {
+      flex: 1;
+      padding: 14px 18px;
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      background: var(--bg);
+      color: var(--text-dark);
+      font-size: 1rem;
+    }
+    
+    .newsletter-form input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(176, 137, 104, 0.2);
+    }
+    
+    .newsletter-form button {
+      padding: 14px 28px;
+      white-space: nowrap;
+    }
+    
+    @media (max-width: 768px) {
+      .blog-header h1 {
+        font-size: 2.5rem;
+      }
+      
+      .blog-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      
+      .newsletter-form {
+        flex-direction: column;
+      }
+      
+      .newsletter-form button {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .blog-card-image {
+        height: 180px;
+      }
+      
+      .blog-card-content {
+        padding: 20px;
+      }
+      
+      .blog-card-title {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="loading">
+  
+  <header class="legal-page-header">
+    <a href="index.html" aria-label="Voltar à página inicial">
+      <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo Logo">
+    </a>
+  </header>
+  
+  <div class="blog-header">
+    <h1 class="names">Blog Lirandzo</h1>
+    <p>Inspirações, dicas e tendências para o seu casamento digital</p>
+  </div>
+  
+  <main role="main">
+    
+    <div class="blog-grid">
+      
+      <!-- Post 1 -->
+      <article class="blog-card fade-in-section">
+        <img src="https://i.postimg.cc/MTq7nh49/cover.png" alt="Convite digital Elegância Clássica" class="blog-card-image">
+        <div class="blog-card-content">
+          <span class="blog-card-category">TENDÊNCIAS</span>
+          <h2 class="blog-card-title">5 razões para escolher um convite digital</h2>
+          <p class="blog-card-excerpt">Descubra por que cada vez mais casais em Moçambique estão a optar por convites digitais: economia, praticidade e sustentabilidade.</p>
+          <div class="blog-card-meta">
+            <span class="blog-card-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              15 Mar 2025
+            </span>
+            <a href="https://blog.colorie.com.br/5-motivos-para-escolher-convites-digitais-para-suas-celebracoes/" class="blog-card-link">
+              Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+      
+      <!-- Post 2 -->
+      <article class="blog-card fade-in-section">
+        <img src="https://i.postimg.cc/ydKkN2SB/thumbnail.jpg" alt="Convite Jardim Secreto" class="blog-card-image">
+        <div class="blog-card-content">
+          <span class="blog-card-category">INSPIRAÇÃO</span>
+          <h2 class="blog-card-title">Como escolher o modelo ideal para o seu casamento</h2>
+          <p class="blog-card-excerpt">Dicas práticas para encontrar o design que mais combina com a sua história: do rústico ao moderno, passando pelo clássico.</p>
+          <div class="blog-card-meta">
+            <span class="blog-card-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              28 Fev 2025
+            </span>
+            <a href="https://enfimnoivei.com/vestido-de-casamento-o-guia-completo-para-escolher-o-modelo-perfeito-para-o-seu-grande-dia/" class="blog-card-link">
+              Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+      
+      <!-- Post 3 -->
+      <article class="blog-card fade-in-section">
+        <img src="https://i.postimg.cc/fWvXbptV/MARIA-JOAO.jpg" alt="Convite Amor Moderno" class="blog-card-image">
+        <div class="blog-card-content">
+          <span class="blog-card-category">DICAS</span>
+          <h2 class="blog-card-title">RSVP: como gerir a lista de convidados sem stress</h2>
+          <p class="blog-card-excerpt">A funcionalidade de confirmação de presença nos convites digitais pode revolucionar a organização do seu casamento.</p>
+          <div class="blog-card-meta">
+            <span class="blog-card-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              10 Fev 2025
+            </span>
+            <a href="https://fotify.app/pt/help/rsvp-management/manage-guest-list/" class="blog-card-link">
+              Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+      
+      <!-- Post 4 -->
+      <article class="blog-card fade-in-section">
+        <img src="https://i.postimg.cc/NjqY5yS0/capa-de-convite-Celeste-Pinto.jpg" alt="Convite Rústico Chic" class="blog-card-image">
+        <div class="blog-card-content">
+          <span class="blog-card-category">CASAMENTOS</span>
+          <h2 class="blog-card-title">Tons terra e elegância: a tendência rústica chic</h2>
+          <p class="blog-card-excerpt">Inspire-se com ideias de decoração e convites que trazem aconchego e sofisticação para o seu grande dia.</p>
+          <div class="blog-card-meta">
+            <span class="blog-card-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              22 Jan 2025
+            </span>
+            <a href="https://www.theoscarseventos.com.br/single-post/estilo-r%C3%BAstico-chique-tend%C3%AAncias-de-decora%C3%A7%C3%A3o-para-2025" class="blog-card-link">
+              Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+      
+      <!-- Post 5 -->
+      <article class="blog-card fade-in-section">
+        <img src="https://i.postimg.cc/Lsvbb4wL/10467.jpg" alt="Fotografia de casamento" class="blog-card-image">
+        <div class="blog-card-content">
+          <span class="blog-card-category">FOTOGRAFIA</span>
+          <h2 class="blog-card-title">Dicas para uma sessão de pré-casamento inesquecível</h2>
+          <p class="blog-card-excerpt">Como preparar, o que vestir e como escolher o cenário perfeito para as fotos que vão emocionar os seus convidados.</p>
+          <div class="blog-card-meta">
+            <span class="blog-card-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              5 Jan 2025
+            </span>
+            <a href="https://www.dicasdemulher.com.br/pre-wedding/" class="blog-card-link">
+              Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+      
+      <!-- Post 6 -->
+      <article class="blog-card fade-in-section">
+        <img src="https://i.postimg.cc/15KQyFX5/Whats-App-Image-2025-10-24-at-10-47-48-AM.jpg" alt="Detalhes de casamento" class="blog-card-image">
+        <div class="blog-card-content">
+          <span class="blog-card-category">ORGANIZAÇÃO</span>
+          <h2 class="blog-card-title">Checklist completa para o casamento dos sonhos</h2>
+          <p class="blog-card-excerpt">Um guia mês a mês com tudo o que precisa de fazer para não esquecer nenhum detalhe importante.</p>
+          <div class="blog-card-meta">
+            <span class="blog-card-date">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              18 Dez 2024
+            </span>
+            <a href="https://blog.anatuori.com/2025/09/checklist-de-casamento.html" class="blog-card-link">
+              Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+      
+    </div>
+    
+    <!-- Secção de Newsletter -->
+    <section class="blog-newsletter fade-in-section">
+      <h2 class="section-title">Fique por dentro</h2>
+      <p>Receba dicas exclusivas, tendências e inspirações diretamente no seu email.</p>
+      
+      <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Obrigado por subscrever! Em breve receberá novidades.');">
+        <input type="email" placeholder="Seu melhor email" required>
+        <button type="submit" class="btn btn-primary">Subscrever</button>
+      </form>
+    </section>
+    
+  </main>
+  
+  <footer class="footer-complete">
+    <div class="footer-content">
+      <div class="footer-layout">
+        <div class="footer-col footer-col-main">
+          <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo Logo" class="footer-logo">
+          <p>A criar memórias inesquecíveis através de design elegante e partilha fácil.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navegação</h4>
+          <ul>
+            <li><a href="index.html#modelos">Modelos</a></li>
+            <li><a href="index.html#testemunhos">Testemunhos</a></li>
+            <li><a href="index.html#faq">FAQ</a></li>
+            <li><a href="blog.html">Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="termos.html">Termos de Uso</a></li>
+            <li><a href="privacidade.html">Política de Privacidade</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Siga-nos</h4>
+          <div class="social-links">
+            <a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" class="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=100064202196902" class="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" class="social-link" aria-label="Pinterest" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        &copy; 2025 Lirandzo. Todos os direitos reservados.
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Chatbot Lirandzo (opcional - pode incluir se quiser manter consistência) -->
+  <div class="chatbot-container" id="chatbotContainer">
+    <button class="chatbot-toggle" id="chatbotToggle" aria-label="Abrir chat">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+      </svg>
+    </button>
+    
+    <div class="chatbot-window" id="chatbotWindow">
+      <div class="chatbot-header">
+        <div class="chatbot-header-info">
+          <div class="chatbot-avatar">
+            <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo">
+          </div>
+          <div>
+            <h4>Lira · Lirandzo</h4>
+            <span class="chatbot-status">online</span>
+          </div>
+        </div>
+        <button class="chatbot-close" id="chatbotClose">×</button>
+      </div>
+      
+      <div class="chatbot-messages" id="chatbotMessages">
+        <div class="message bot">
+          <div class="message-avatar">✨</div>
+          <div class="message-content">
+            Olá! Sou a Lira, da Lirandzo 😊 Como posso ajudar vocês hoje?
+          </div>
+        </div>
+      </div>
+      
+      <div class="chatbot-typing" id="chatbotTyping" style="display: none;">
+        <span></span><span></span><span></span>
+      </div>
+      
+      <div class="chatbot-input-area">
+        <input type="text" id="chatbotInput" placeholder="Escreva sua mensagem..." autocomplete="off">
+        <button id="chatbotSend">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="currentColor" d="M2 21L23 12 2 3v7l15 2-15 2v7z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <button type="button" id="backToTopBtn" title="Voltar ao topo" aria-label="Voltar ao topo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Fade-in da página
+      const body = document.body;
+      window.onload = () => {
+        body.classList.remove('loading');
+        setTimeout(() => body.classList.add('loaded'), 100);
+      };
+      
+      // Fade-in das secções
+      const animatedSections = document.querySelectorAll('.fade-in-section');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      animatedSections.forEach(section => observer.observe(section));
+      
+      // Botão voltar ao topo
+      const backToTopButton = document.getElementById('backToTopBtn');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          backToTopButton.classList.add('show');
+        } else {
+          backToTopButton.classList.remove('show');
+        }
+      });
+      
+      backToTopButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      
+      // ========== CHATBOT (código simplificado) ==========
+      const chatbotToggle = document.getElementById('chatbotToggle');
+      const chatbotWindow = document.getElementById('chatbotWindow');
+      const chatbotClose = document.getElementById('chatbotClose');
+      const chatbotInput = document.getElementById('chatbotInput');
+      const chatbotSend = document.getElementById('chatbotSend');
+      const chatbotMessages = document.getElementById('chatbotMessages');
+      const chatbotTyping = document.getElementById('chatbotTyping');
+      
+      function showTyping() { chatbotTyping.style.display = 'flex'; }
+      function hideTyping() { chatbotTyping.style.display = 'none'; }
+      
+      function addMessage(text, isUser = false) {
+        if (isUser) {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'message user';
+          messageDiv.innerHTML = `
+            <div class="message-avatar">👤</div>
+            <div class="message-content">${text}</div>
+          `;
+          chatbotMessages.appendChild(messageDiv);
+        } else {
+          showTyping();
+          setTimeout(() => {
+            hideTyping();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot';
+            messageDiv.innerHTML = `
+              <div class="message-avatar">✨</div>
+              <div class="message-content">${text}</div>
+            `;
+            chatbotMessages.appendChild(messageDiv);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+          }, 800);
+        }
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+      }
+      
+      function sendMessage() {
+        const message = chatbotInput.value.trim();
+        if (message) {
+          addMessage(message, true);
+          chatbotInput.value = '';
+          
+          setTimeout(() => {
+            let response = "Obrigado pela mensagem! Em breve um dos nossos especialistas responderá. Enquanto isso, pode explorar o blog ou visitar a nossa secção de modelos. 😊";
+            if (message.toLowerCase().includes('modelo') || message.toLowerCase().includes('preço')) {
+              response = "Temos 4 modelos principais de convites digitais, com preços de 1.500 MT a 5.000 MT. Recomendo visitar a nossa página inicial para ver detalhes!";
+            } else if (message.toLowerCase().includes('blog') || message.toLowerCase().includes('artigo')) {
+              response = "Está no nosso blog! Pode explorar os artigos acima para dicas e inspirações para o seu casamento.";
+            }
+            addMessage(response, false);
+          }, 300);
+        }
+      }
+      
+      chatbotToggle.addEventListener('click', () => chatbotWindow.classList.add('active'));
+      chatbotClose.addEventListener('click', () => chatbotWindow.classList.remove('active'));
+      chatbotSend.addEventListener('click', sendMessage);
+      chatbotInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+      
+      document.addEventListener('click', (e) => {
+        if (!document.querySelector('.chatbot-container').contains(e.target) && chatbotWindow.classList.contains('active')) {
+          chatbotWindow.classList.remove('active');
+        }
+      });
+    });
+  </script>
+  
+</body>
+</html>
