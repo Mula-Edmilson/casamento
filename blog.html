@@ -410,7 +410,7 @@
             <a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" class="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
             </a>
-            <a href="https://www.facebook.com/profile.php?id=100064202196902" class="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.facebook.com/profile.php?id=61582215350970" class="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
             </a>
             <a href="#" class="social-link" aria-label="Pinterest" target="_blank" rel="noopener noreferrer">
@@ -424,52 +424,6 @@
       </div>
     </div>
   </footer>
-  
-  <!-- Chatbot Lirandzo (opcional - pode incluir se quiser manter consistência) -->
-  <div class="chatbot-container" id="chatbotContainer">
-    <button class="chatbot-toggle" id="chatbotToggle" aria-label="Abrir chat">
-      <svg viewBox="0 0 24 24" width="24" height="24">
-        <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-      </svg>
-    </button>
-    
-    <div class="chatbot-window" id="chatbotWindow">
-      <div class="chatbot-header">
-        <div class="chatbot-header-info">
-          <div class="chatbot-avatar">
-            <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo">
-          </div>
-          <div>
-            <h4>Lira · Lirandzo</h4>
-            <span class="chatbot-status">online</span>
-          </div>
-        </div>
-        <button class="chatbot-close" id="chatbotClose">×</button>
-      </div>
-      
-      <div class="chatbot-messages" id="chatbotMessages">
-        <div class="message bot">
-          <div class="message-avatar">✨</div>
-          <div class="message-content">
-            Olá! Sou a Lira, da Lirandzo 😊 Como posso ajudar vocês hoje?
-          </div>
-        </div>
-      </div>
-      
-      <div class="chatbot-typing" id="chatbotTyping" style="display: none;">
-        <span></span><span></span><span></span>
-      </div>
-      
-      <div class="chatbot-input-area">
-        <input type="text" id="chatbotInput" placeholder="Escreva sua mensagem..." autocomplete="off">
-        <button id="chatbotSend">
-          <svg viewBox="0 0 24 24" width="20" height="20">
-            <path fill="currentColor" d="M2 21L23 12 2 3v7l15 2-15 2v7z"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </div>
   
   <button type="button" id="backToTopBtn" title="Voltar ao topo" aria-label="Voltar ao topo">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -510,75 +464,10 @@
         e.preventDefault();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
-      
-      // ========== CHATBOT (código simplificado) ==========
-      const chatbotToggle = document.getElementById('chatbotToggle');
-      const chatbotWindow = document.getElementById('chatbotWindow');
-      const chatbotClose = document.getElementById('chatbotClose');
-      const chatbotInput = document.getElementById('chatbotInput');
-      const chatbotSend = document.getElementById('chatbotSend');
-      const chatbotMessages = document.getElementById('chatbotMessages');
-      const chatbotTyping = document.getElementById('chatbotTyping');
-      
-      function showTyping() { chatbotTyping.style.display = 'flex'; }
-      function hideTyping() { chatbotTyping.style.display = 'none'; }
-      
-      function addMessage(text, isUser = false) {
-        if (isUser) {
-          const messageDiv = document.createElement('div');
-          messageDiv.className = 'message user';
-          messageDiv.innerHTML = `
-            <div class="message-avatar">👤</div>
-            <div class="message-content">${text}</div>
-          `;
-          chatbotMessages.appendChild(messageDiv);
-        } else {
-          showTyping();
-          setTimeout(() => {
-            hideTyping();
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message bot';
-            messageDiv.innerHTML = `
-              <div class="message-avatar">✨</div>
-              <div class="message-content">${text}</div>
-            `;
-            chatbotMessages.appendChild(messageDiv);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-          }, 800);
-        }
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-      }
-      
-      function sendMessage() {
-        const message = chatbotInput.value.trim();
-        if (message) {
-          addMessage(message, true);
-          chatbotInput.value = '';
-          
-          setTimeout(() => {
-            let response = "Obrigado pela mensagem! Em breve um dos nossos especialistas responderá. Enquanto isso, pode explorar o blog ou visitar a nossa secção de modelos. 😊";
-            if (message.toLowerCase().includes('modelo') || message.toLowerCase().includes('preço')) {
-              response = "Temos 4 modelos principais de convites digitais, com preços de 1.500 MT a 5.000 MT. Recomendo visitar a nossa página inicial para ver detalhes!";
-            } else if (message.toLowerCase().includes('blog') || message.toLowerCase().includes('artigo')) {
-              response = "Está no nosso blog! Pode explorar os artigos acima para dicas e inspirações para o seu casamento.";
-            }
-            addMessage(response, false);
-          }, 300);
-        }
-      }
-      
-      chatbotToggle.addEventListener('click', () => chatbotWindow.classList.add('active'));
-      chatbotClose.addEventListener('click', () => chatbotWindow.classList.remove('active'));
-      chatbotSend.addEventListener('click', sendMessage);
-      chatbotInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
-      
-      document.addEventListener('click', (e) => {
-        if (!document.querySelector('.chatbot-container').contains(e.target) && chatbotWindow.classList.contains('active')) {
-          chatbotWindow.classList.remove('active');
-        }
-      });
     });
   </script>
+  <!-- Chatbot Unificado -->
+<script src="chatbot-unified.js"></script>
   
 </body>
 </html>
