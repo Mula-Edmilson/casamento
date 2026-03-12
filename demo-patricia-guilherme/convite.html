@@ -579,44 +579,50 @@
     let token = "";
     
     document.addEventListener('DOMContentLoaded', async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      token = urlParams.get("t");
 
-      if (!token) {
-        document.body.innerHTML = "Convite inválido.";
-        throw new Error("Token ausente");
-      }
+  const urlParams = new URLSearchParams(window.location.search);
+  token = urlParams.get("t");
 
-      // Carregar dados do convidado
-      await loadGuest();
+  if (!token) {
+    document.body.innerHTML = "Convite inválido.";
+    return;
+  }
 
-      // Inicializar a UI após carregar os dados
-      initializeUI();
+  const success = await loadGuest();
+
+  if (!success) {
+    document.body.innerHTML = "Convite inválido.";
+    return;
+  }
+
+  initializeUI();
+
+});
+
+    if (music) {
+
+  const tryAutoplay = music.play();
+
+  if (tryAutoplay !== undefined) {
+
+    tryAutoplay.catch(() => {
+
+      const playOnFirstInteraction = () => {
+        music.play().then(() => {
+          updateMusicIcon();
+          document.removeEventListener('click', playOnFirstInteraction);
+          document.removeEventListener('touchstart', playOnFirstInteraction);
+        });
+      };
+
+      document.addEventListener('click', playOnFirstInteraction);
+      document.addEventListener('touchstart', playOnFirstInteraction);
+
     });
 
-    async function loadGuest() {
-      try {
-        const response = await fetch(`${API_URL}?action=get_guest&token=${token}`);
-        const data = await response.json();
+  }
 
-        if (data.status !== "success") {
-          document.body.innerHTML = "Convite inválido";
-          return;
-        }
-
-        guestName = data.nome;
-        guestMesa = data.mesa;
-        maxGuests = data.maxGuests;
-        
-        // Armazenar no localStorage para compatibilidade
-        localStorage.setItem('guestName', guestName);
-        localStorage.setItem('guestMesa', guestMesa);
-        localStorage.setItem('loginToken', token);
-      } catch (error) {
-        console.error("Erro ao carregar convidado:", error);
-        document.body.innerHTML = "Erro ao carregar convite. Tente novamente mais tarde.";
-      }
-    }
+}
 
     function initializeUI() {
       const guestStatus = localStorage.getItem('guestStatus'); 
