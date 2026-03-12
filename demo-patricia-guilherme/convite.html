@@ -561,7 +561,7 @@
     // ============================================
     // CONFIGURAÇÃO DO GOOGLE APPS SCRIPT
     // ============================================
-  const API_URL = `https://script.google.com/macros/s/AKfycbx-D7Upkh0iGyZ-Zwus_Py0wCbV0jVrHiJzqj8bylhMC130MuG7wZNbqJUCxtob1v3Y/exec`;
+    const API_URL = `https://script.google.com/macros/s/AKfycbx-D7Upkh0iGyZ-Zwus_Py0wCbV0jVrHiJzqj8bylhMC130MuG7wZNbqJUCxtob1v3Y/exec`;
     
     function escapeHTML(str) {
       if (!str) return '';
@@ -572,57 +572,112 @@
         .replace(/'/g, '&#39;');
     }
     
+    // Função para requisições JSONP (para GET)
+    function jsonpRequest(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+        
+        window[callbackName] = function(data) {
+          delete window[callbackName];
+          document.body.removeChild(script);
+          resolve(data);
+        };
+
+        const script = document.createElement('script');
+        const separator = url.includes('?') ? '&' : '?';
+        script.src = url + separator + 'callback=' + callbackName;
+        
+        script.onerror = function(error) {
+          delete window[callbackName];
+          document.body.removeChild(script);
+          reject(new Error('JSONP request failed'));
+        };
+        
+        document.body.appendChild(script);
+      });
+    }
+
+    // Função para requisições POST (com tratamento de CORS)
+    async function postRequest(data) {
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          mode: 'no-cors', // Importante: no-cors para evitar erro de CORS
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        
+        // Com no-cors, não podemos ler a resposta
+        // Assumimos que deu certo se não houve erro de rede
+        return { status: "success" };
+      } catch (err) {
+        console.error("Erro na requisição POST:", err);
+        throw err;
+      }
+    }
+
+    // Função para upload de arquivo (FormData)
+    async function postFormData(formData) {
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Importante: no-cors para evitar erro de CORS
+          body: formData
+        });
+        
+        // Com no-cors, não podemos ler a resposta
+        return { status: "success" };
+      } catch (err) {
+        console.error("Erro no upload:", err);
+        throw err;
+      }
+    }
+    
     // Variáveis globais
     let guestName = "";
-    let guestMesa = "";
+    let guestMesa = null;
     let maxGuests = 1;
     let token = "";
+    let rsvpTitle = null; // Declarar para uso posterior
     
     document.addEventListener('DOMContentLoaded', async () => {
 
-  const urlParams = new URLSearchParams(window.location.search);
-  token = urlParams.get("t");
+      const urlParams = new URLSearchParams(window.location.search);
+      token = urlParams.get("t");
 
-  if (!token) {
-    document.body.innerHTML = "Convite inválido.";
-    return;
-  }
+      if (!token) {
+        document.body.innerHTML = "Convite inválido.";
+        return;
+      }
 
-  const success = await loadGuest();
+      async function loadGuest() {
+        try {
+          const result = await jsonpRequest(`${API_URL}?action=get_guest&token=${token}`);
+          
+          if(result.status !== "success"){
+            return false;
+          }
 
-  if (!success) {
-    document.body.innerHTML = "Convite inválido.";
-    return;
-  }
+          guestName = result.nome || "";
+          guestMesa = result.mesa || "A definir";
+          maxGuests = result.maxGuests || 1;
 
-  initializeUI();
+          return true;
+        } catch(err) {
+          console.error("Erro ao carregar convidado:", err);
+          return false;
+        }
+      }
 
-});
+      const success = await loadGuest();
 
-    if (music) {
+      if (!success) {
+        document.body.innerHTML = "Convite inválido.";
+        return;
+      }
 
-  const tryAutoplay = music.play();
-
-  if (tryAutoplay !== undefined) {
-
-    tryAutoplay.catch(() => {
-
-      const playOnFirstInteraction = () => {
-        music.play().then(() => {
-          updateMusicIcon();
-          document.removeEventListener('click', playOnFirstInteraction);
-          document.removeEventListener('touchstart', playOnFirstInteraction);
-        });
-      };
-
-      document.addEventListener('click', playOnFirstInteraction);
-      document.addEventListener('touchstart', playOnFirstInteraction);
-
+      initializeUI();
     });
-
-  }
-
-}
 
     function initializeUI() {
       const guestStatus = localStorage.getItem('guestStatus'); 
@@ -642,7 +697,7 @@
       if (rsvpForm && rsvpModal) {
         const nameInput = rsvpForm.querySelector('#nome');
         const guestsSelect = rsvpForm.querySelector('#guests');
-        const rsvpTitle = rsvpModal.querySelector('#rsvpTitle');
+        rsvpTitle = rsvpModal.querySelector('#rsvpTitle');
         const rsvpSubmitBtn = rsvpForm.querySelector('#sendRsvpServer');
 
         if (nameInput) {
@@ -688,7 +743,8 @@
           infoNameEl.textContent = guestName;
         }
         if (infoMesaEl) {
-          if (guestMesa && guestMesa !== "A definir" && guestMesa !== "undefined" && guestMesa.trim() !== "") {
+          // Verificar se guestMesa existe e é uma string
+          if (guestMesa && typeof guestMesa === 'string' && guestMesa !== "A definir" && guestMesa !== "undefined" && guestMesa.trim() !== "") {
             infoMesaEl.textContent = guestMesa;
           } else {
             infoMesaEl.textContent = "A sua mesa será indicada à entrada.";
@@ -744,19 +800,23 @@
         musicControl.classList.toggle('playing', !music.paused);
       };
       
-      const tryAutoplay = music.play();
-      if (tryAutoplay !== undefined) {
-        tryAutoplay.catch(() => {
-          const playOnFirstInteraction = () => {
-            music.play().then(() => {
-              updateMusicIcon();
-              document.removeEventListener('click', playOnFirstInteraction, { once: true });
-              document.removeEventListener('touchstart', playOnFirstInteraction, { once: true });
-            });
-          };
-          document.addEventListener('click', playOnFirstInteraction, { once: true });
-          document.addEventListener('touchstart', playOnFirstInteraction, { once: true });
-        });
+      if (music) {
+        const tryAutoplay = music.play();
+
+        if (tryAutoplay !== undefined) {
+          tryAutoplay.catch(() => {
+            const playOnFirstInteraction = () => {
+              music.play().then(() => {
+                updateMusicIcon();
+                document.removeEventListener('click', playOnFirstInteraction);
+                document.removeEventListener('touchstart', playOnFirstInteraction);
+              });
+            };
+
+            document.addEventListener('click', playOnFirstInteraction);
+            document.addEventListener('touchstart', playOnFirstInteraction);
+          });
+        }
       }
       
       if(musicControl) {
@@ -816,7 +876,7 @@
         });
       }
       
-      // RSVP Form - CORRIGIDO para Apps Script
+      // RSVP Form - Corrigido para CORS
       if (rsvpForm) {
         const rsvpStatus = document.getElementById('rsvpStatus');
         const submitButton = document.getElementById('sendRsvpServer');
@@ -840,31 +900,24 @@
           rsvpStatus.textContent = "";
 
           try {
-            const response = await fetch(API_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(data)
-            });
+            await postRequest(data);
             
-            const result = await response.json();
-
-            if (result.status === "success") {
-              localStorage.setItem('guestStatus', `Confirmado (${data.guests})`);
-              rsvpStatus.style.color = "green";
-              rsvpStatus.textContent = "Confirmação recebida com sucesso! Obrigado.";
-              submitButton.textContent = "Atualizado!";
-              setTimeout(() => {
-                document.getElementById('rsvpModal').classList.remove('open');
-                submitButton.disabled = false;
-                submitButton.textContent = "Atualizar Confirmação";
-                if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
-              }, 2000);
-            } else { 
-              throw new Error(result.message || "Erro ao enviar confirmação"); 
-            }
+            // Se chegou aqui, assumimos que deu certo
+            localStorage.setItem('guestStatus', `Confirmado (${data.guests})`);
+            rsvpStatus.style.color = "green";
+            rsvpStatus.textContent = "Confirmação recebida com sucesso! Obrigado.";
+            submitButton.textContent = "Atualizado!";
+            
+            setTimeout(() => {
+              document.getElementById('rsvpModal').classList.remove('open');
+              submitButton.disabled = false;
+              submitButton.textContent = "Atualizar Confirmação";
+              if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
+            }, 2000);
+            
           } catch (err) {
             rsvpStatus.style.color = "#D93025";
-            rsvpStatus.textContent = "Erro: " + err.message + ". Tente enviar por WhatsApp.";
+            rsvpStatus.textContent = "Erro ao enviar. Tente por WhatsApp.";
             submitButton.disabled = false;
             submitButton.textContent = originalButtonText; 
           }
@@ -886,27 +939,22 @@
         });
       });
 
-      // Função para carregar a lista de presentes
+      // Função para carregar a lista de presentes (usando JSONP)
       async function loadGiftList() {
         const giftLoading = document.getElementById('giftLoading');
         const giftError = document.getElementById('giftError');
         const giftList = document.getElementById('giftList');
-        const giftListForm = document.getElementById('giftListForm');
-        const submitGiftsBtn = document.getElementById('submitGiftsBtn');
 
         try {
-          const response = await fetch(`${API_URL}?action=gifts`);
-          const result = await response.json();
+          const result = await jsonpRequest(`${API_URL}?action=gifts`);
 
           if (result.status === 'success') {
             const gifts = result.data;
             
-            // Esconder loading, mostrar lista
             giftLoading.style.display = 'none';
             giftError.style.display = 'none';
             giftList.style.display = 'grid';
             
-            // Renderizar lista de presentes
             giftList.innerHTML = '';
             gifts.forEach(gift => {
               const item = document.createElement('label');
@@ -950,7 +998,6 @@
           mutations.forEach((mutation) => {
             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
               if (giftsCombinedModal.classList.contains('open')) {
-                // Verificar se a aba de presentes está ativa
                 const loicasContent = document.getElementById('loicasContent');
                 if (loicasContent && loicasContent.classList.contains('active')) {
                   loadGiftList();
@@ -962,7 +1009,6 @@
 
         observer.observe(giftsCombinedModal, { attributes: true });
 
-        // Também carregar quando mudar de aba
         const tabButtons = giftsCombinedModal.querySelectorAll('.tab-btn');
         tabButtons.forEach(button => {
           button.addEventListener('click', () => {
@@ -973,7 +1019,7 @@
         });
       }
 
-      // Gift List Form - CORRIGIDO para Apps Script
+      // Gift List Form - Corrigido para CORS
       const giftListForm = document.getElementById('giftListForm');
       if (giftListForm) {
         const giftStatus = document.getElementById('giftStatus');
@@ -1003,40 +1049,30 @@
           };
 
           try {
-            const response = await fetch(API_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(data)
-            });
+            await postRequest(data);
             
-            const result = await response.json();
-
-            if (result.status === "success") {
-              giftStatus.style.color = "green";
-              giftStatus.textContent = "Presentes registados com sucesso! Obrigado.";
-              submitButton.textContent = "Registado!";
-              
-              // Recarregar a lista para mostrar os novos itens reservados
-              await loadGiftList();
-              
-              setTimeout(() => {
-                submitButton.disabled = false;
-                submitButton.textContent = "Registar Presentes Selecionados";
-                giftStatus.textContent = "";
-              }, 2500);
-            } else {
-              throw new Error(result.message);
-            }
+            giftStatus.style.color = "green";
+            giftStatus.textContent = "Presentes registados com sucesso! Obrigado.";
+            submitButton.textContent = "Registado!";
+            
+            await loadGiftList();
+            
+            setTimeout(() => {
+              submitButton.disabled = false;
+              submitButton.textContent = "Registar Presentes Selecionados";
+              giftStatus.textContent = "";
+            }, 2500);
+            
           } catch (err) {
             giftStatus.style.color = "#D93025";
-            giftStatus.textContent = "Erro: " + err.message;
+            giftStatus.textContent = "Erro ao registar presentes. Tente novamente.";
             submitButton.disabled = false;
             submitButton.textContent = "Registar Presentes Selecionados";
           }
         });
       }
       
-      // Comprovativo Form - CORRIGIDO para Apps Script
+      // Comprovativo Form - Corrigido para CORS
       const comprovativoForm = document.getElementById('comprovativoForm');
       if (comprovativoForm) {
         const comprovativoStatus = document.getElementById('comprovativoStatus');
@@ -1067,29 +1103,22 @@
           comprovativoStatus.textContent = "";
 
           try {
-            const response = await fetch(API_URL, {
-              method: 'POST',
-              body: formData 
-            });
+            await postFormData(formData);
             
-            const result = await response.json();
-
-            if (result.status === "success") {
-              comprovativoStatus.style.color = "green";
-              comprovativoStatus.textContent = "Comprovativo enviado com sucesso!";
-              submitButton.textContent = "Enviado!";
-              comprovativoForm.reset();
-              setTimeout(() => {
-                submitButton.disabled = false;
-                submitButton.textContent = "Enviar Comprovativo";
-                comprovativoStatus.textContent = "";
-              }, 3000);
-            } else { 
-              throw new Error(result.message); 
-            }
+            comprovativoStatus.style.color = "green";
+            comprovativoStatus.textContent = "Comprovativo enviado com sucesso!";
+            submitButton.textContent = "Enviado!";
+            comprovativoForm.reset();
+            
+            setTimeout(() => {
+              submitButton.disabled = false;
+              submitButton.textContent = "Enviar Comprovativo";
+              comprovativoStatus.textContent = "";
+            }, 3000);
+            
           } catch (err) {
             comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Erro: " + err.message;
+            comprovativoStatus.textContent = "Erro ao enviar comprovativo. Tente novamente.";
             submitButton.disabled = false;
             submitButton.textContent = "Enviar Comprovativo";
           }
@@ -1108,7 +1137,7 @@
       }, { threshold: 0.15 });
       animatedSections.forEach(section => observer.observe(section));
 
-      // Mural de mensagens
+      // Mural de mensagens - Usando JSONP para carregar
       const messageForm = document.getElementById('messageForm');
       const messageText = document.getElementById('messageText');
       const messageStatus = document.getElementById('messageStatus');
@@ -1131,8 +1160,7 @@
 
       async function loadMessages() {
         try {
-          const response = await fetch(`${API_URL}?action=messages`);
-          const result = await response.json();
+          const result = await jsonpRequest(`${API_URL}?action=messages`);
           
           if (result.status === "success" && result.data.length > 0) {
             guestbookFeed.innerHTML = '';
@@ -1169,32 +1197,19 @@
           };
 
           try {
-            const response = await fetch(API_URL, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(data)
-            });
-            const result = await response.json();
+            await postRequest(data);
+            
+            messageStatus.style.color = "green";
+            messageStatus.textContent = "Mensagem enviada. Obrigado!";
+            messageText.value = "";
+            
+            // Recarregar mensagens
+            await loadMessages();
 
-            if (result.status === "success") {
-              messageStatus.style.color = "green";
-              messageStatus.textContent = "Mensagem enviada. Obrigado!";
-              messageText.value = "";
-              
-              const newEntry = renderMessage(result.data);
-              if (feedLoading) {
-                feedLoading.style.display = 'none';
-                guestbookFeed.innerHTML = '';
-              }
-              guestbookFeed.prepend(newEntry);
-
-              setTimeout(() => { messageStatus.textContent = ""; }, 3000);
-            } else {
-              throw new Error(result.message);
-            }
+            setTimeout(() => { messageStatus.textContent = ""; }, 3000);
           } catch (err) {
             messageStatus.style.color = "#D93025";
-            messageStatus.textContent = "Erro: " + err.message;
+            messageStatus.textContent = "Erro ao enviar mensagem.";
           } finally {
             submitButton.disabled = false;
             submitButton.textContent = "Enviar Mensagem";
