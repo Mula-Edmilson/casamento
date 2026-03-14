@@ -558,10 +558,88 @@
   </div>
 
   <script>
+
+    // ============================================
+// VERIFICAÇÃO DE DISPOSITIVO (ADICIONAR NO INÍCIO)
+// ============================================
+
+// Coloca isto no TOPO absoluto da tua tag <script> no convite.html
+const API_URL = `https://script.google.com/macros/s/AKfycbx-D7Upkh0iGyZ-Zwus_Py0wCbV0jVrHiJzqj8bylhMC130MuG7wZNbqJUCxtob1v3Y/exec`;
+
+function jsonpRequest(url) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+    const script = document.createElement('script');
+    const separator = url.includes('?') ? '&' : '?';
+    script.src = url + separator + 'callback=' + callbackName;
+    script.onerror = function() {
+      delete window[callbackName];
+      document.body.removeChild(script);
+      reject(new Error('JSONP request failed'));
+    };
+    document.body.appendChild(script);
+  });
+}
+async function verifyDeviceAccess() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get("t");
+  
+  if (!token) {
+    window.location.href = 'index.html';
+    return false;
+  }
+
+  const deviceToken = localStorage.getItem('deviceToken');
+  const guestToken = localStorage.getItem('guestToken');
+  
+  // Verificar se o token da URL corresponde ao token salvo
+  if (guestToken !== token) {
+    localStorage.clear();
+    window.location.href = 'index.html';
+    return false;
+  }
+
+  if (!deviceToken) {
+    localStorage.clear();
+    window.location.href = 'index.html';
+    return false;
+  }
+
+  try {
+    const result = await jsonpRequest(`${API_URL}?action=verify_device&token=${encodeURIComponent(token)}&deviceToken=${encodeURIComponent(deviceToken)}`);
+    
+    if (result.status === 'success' && result.canAccess) {
+      return true;
+    } else {
+      localStorage.clear();
+      window.location.href = 'index.html';
+      return false;
+    }
+  } catch (error) {
+    console.error('Erro ao verificar dispositivo:', error);
+    return false;
+  }
+}
+
+// Modificar o DOMContentLoaded para incluir a verificação
+document.addEventListener('DOMContentLoaded', async () => {
+  const hasAccess = await verifyDeviceAccess();
+  if (!hasAccess) return;
+
+  // Resto do código existente...
+  const urlParams = new URLSearchParams(window.location.search);
+  token = urlParams.get("t");
+  
+  // ... continuar com o código existente
+});
     // ============================================
     // CONFIGURAÇÃO DO GOOGLE APPS SCRIPT
     // ============================================
-    const API_URL = `https://script.google.com/macros/s/AKfycbx-D7Upkh0iGyZ-Zwus_Py0wCbV0jVrHiJzqj8bylhMC130MuG7wZNbqJUCxtob1v3Y/exec`;
     
     function escapeHTML(str) {
       if (!str) return '';
@@ -572,30 +650,6 @@
         .replace(/'/g, '&#39;');
     }
     
-    // Função para requisições JSONP (para GET)
-    function jsonpRequest(url) {
-      return new Promise((resolve, reject) => {
-        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-        
-        window[callbackName] = function(data) {
-          delete window[callbackName];
-          document.body.removeChild(script);
-          resolve(data);
-        };
-
-        const script = document.createElement('script');
-        const separator = url.includes('?') ? '&' : '?';
-        script.src = url + separator + 'callback=' + callbackName;
-        
-        script.onerror = function(error) {
-          delete window[callbackName];
-          document.body.removeChild(script);
-          reject(new Error('JSONP request failed'));
-        };
-        
-        document.body.appendChild(script);
-      });
-    }
 
     // Função para requisições POST (com tratamento de CORS)
     async function postRequest(data) {
@@ -1072,7 +1126,7 @@
         });
       }
       
-      // Comprovativo Form - Corrigido para CORS
+      // Comprovativo Form - CORRIGIDO PARA BASE64
       const comprovativoForm = document.getElementById('comprovativoForm');
       if (comprovativoForm) {
         const comprovativoStatus = document.getElementById('comprovativoStatus');
@@ -1091,37 +1145,59 @@
             return;
           }
 
-          const formData = new FormData();
-          formData.append('action', 'upload_comprovativo');
-          formData.append('nome', guestName);
-          formData.append('token', token);
-          formData.append('canal', canal);
-          formData.append('comprovativoFile', file); 
-
           submitButton.disabled = true;
-          submitButton.textContent = "A enviar...";
+          submitButton.textContent = "A processar imagem...";
           comprovativoStatus.textContent = "";
 
-          try {
-            await postFormData(formData);
+          // LER O FICHEIRO COMO BASE64 ANTES DE ENVIAR
+          const reader = new FileReader();
+          reader.onload = async function() {
+            const base64File = reader.result.split(',')[1]; 
             
-            comprovativoStatus.style.color = "green";
-            comprovativoStatus.textContent = "Comprovativo enviado com sucesso!";
-            submitButton.textContent = "Enviado!";
-            comprovativoForm.reset();
-            
-            setTimeout(() => {
+            const data = {
+              action: 'upload_comprovativo',
+              nome: guestName,
+              token: token,
+              canal: canal,
+              comprovativoFile: base64File,
+              comprovativoFile_filename: file.name,
+              comprovativoFile_type: file.type
+            };
+
+            submitButton.textContent = "A enviar...";
+
+            try {
+              // Agora usamos o postRequest normal em vez do postFormData
+              await postRequest(data); 
+              
+              comprovativoStatus.style.color = "green";
+              comprovativoStatus.textContent = "Comprovativo enviado com sucesso!";
+              submitButton.textContent = "Enviado!";
+              comprovativoForm.reset();
+              
+              setTimeout(() => {
+                submitButton.disabled = false;
+                submitButton.textContent = "Enviar Comprovativo";
+                comprovativoStatus.textContent = "";
+              }, 3000);
+              
+            } catch (err) {
+              comprovativoStatus.style.color = "#D93025";
+              comprovativoStatus.textContent = "Erro ao enviar comprovativo. Tente novamente.";
               submitButton.disabled = false;
               submitButton.textContent = "Enviar Comprovativo";
-              comprovativoStatus.textContent = "";
-            }, 3000);
-            
-          } catch (err) {
+            }
+          };
+
+          reader.onerror = function() {
             comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Erro ao enviar comprovativo. Tente novamente.";
+            comprovativoStatus.textContent = "Erro ao ler o ficheiro no seu dispositivo.";
             submitButton.disabled = false;
             submitButton.textContent = "Enviar Comprovativo";
-          }
+          };
+
+          // Inicia a leitura do ficheiro
+          reader.readAsDataURL(file);
         });
       }
 
