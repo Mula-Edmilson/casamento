@@ -26,14 +26,14 @@ body {
     right: 0;
     display: flex;
     align-items: center;
-    padding: 2.5% 4%;
+    padding: 2% 4%; /* Ligeira redução no padding superior */
     z-index: 10;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
 }
 
 .logo {
     color: #E50914;
-    font-size: 36px;
+    font-size: 32px; /* Redução ligeira */
     font-weight: 900;
     margin-right: 40px;
     letter-spacing: -1.5px;
@@ -42,21 +42,21 @@ body {
 
 .menu {
     display: flex;
-    gap: 25px;
+    gap: 20px; /* Redução do espaço */
     flex-grow: 1;
 }
 
 .menu span {
     color: #fff;
-    font-size: 17px;
-    font-weight: bold;
+    font-size: 15px; /* Redução ligeira */
+    font-weight: normal; /* Mais fino como no modelo */
     cursor: pointer;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
 }
 
 .header-icons {
     display: flex;
-    gap: 25px;
+    gap: 20px; /* Redução do espaço */
     align-items: center;
 }
 
@@ -72,108 +72,89 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: top center; /* Garante que o rosto fica visível */
+    object-position: top center;
     position: absolute;
     top: 0;
     left: 0;
     z-index: 0;
 }
 
-/* Overlay Específico (Fundo Preto) */
+/* Overlay - REDUZIDO PARA O MÍNIMO */
 .overlay {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    /* Gradiente que vai de transparente para preto 100% no final */
-    background: linear-gradient(to bottom, 
-        rgba(0,0,0,0) 0%, 
-        rgba(0,0,0,0) 45%, 
-        rgba(0,0,0,0.7) 65%, 
-        #000000 85%, 
-        #000000 100%);
+    /* Altura reduzida para apenas 35% da tela */
+    height: 35%; 
+    /* Degradê muito mais suave e transparente */
+    background: linear-gradient(to top, 
+        rgba(0,0,0,0.8) 0%, 
+        rgba(0,0,0,0.4) 40%, 
+        rgba(0,0,0,0) 100%);
     z-index: 1;
 }
 
-/* Conteúdo ajustado exatamente como na imagem */
+/* Conteúdo - MAIS COMPACTO */
 .content {
     position: absolute;
-    bottom: 3%;
-    left: 5%;
-    right: 5%;
+    bottom: 8%; /* Subi um pouco para afastar do limite inferior */
+    left: 4%;
+    right: 4%;
     z-index: 2;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 4px; /* Espaçamento mínimo entre elementos */
 }
 
 /* Estilo do "N FILME" */
 .n-filme {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: -5px;
 }
 
 .n-logo {
     color: #E50914;
-    font-size: 45px;
+    font-size: 36px; /* Redução */
     font-weight: 900;
     line-height: 1;
 }
 
 .filme-text {
     color: #fff;
-    font-size: 18px;
+    font-size: 14px; /* Redução */
     font-weight: bold;
-    letter-spacing: 5px;
+    letter-spacing: 3px; /* Redução */
 }
 
-/* Títulos */
+/* Título e Subtítulo - TAMANHOS REDUZIDOS */
 .title {
-    font-size: 65px;
+    font-size: 38px; /* Era 50px */
     font-weight: 900;
-    line-height: 1;
-    letter-spacing: 2px;
-    font-family: 'Arial Black', sans-serif;
-    margin-bottom: 5px;
+    line-height: 0.9;
+    letter-spacing: 0px;
+    margin-bottom: 2px;
 }
 
 .subtitle {
-    font-size: 24px;
-    font-weight: normal;
+    font-size: 14px; /* Era 18px */
+    font-weight: 500;
     color: #fff;
-    letter-spacing: 1px;
     margin-bottom: 10px;
 }
 
-/* Descrição dividida em parágrafos */
-.description {
-    display: flex;
-    flex-direction: column;
-    gap: 6px; /* Espaço entre as linhas exato da imagem */
-    margin-bottom: 15px;
-}
-
-.description p {
-    font-size: 15px;
-    font-weight: normal;
-    line-height: 1.4;
-    color: #fff;
-    max-width: 900px;
-}
-
-/* Botões */
+/* Botões - AJUSTADOS PARA SEREM MAIS COMPACTOS */
 .buttons {
     display: flex;
-    gap: 20px;
-    margin-bottom: 25px;
+    gap: 10px; /* Redução do espaço entre botões */
+    margin-bottom: 20px;
 }
 
 .btn-play, .btn-list {
-    padding: 14px 28px;
-    font-size: 17px;
+    padding: 8px 16px; /* Redução drástica do preenchimento */
+    font-size: 14px; /* Redução do tamanho da fonte */
     font-weight: bold;
     border: none;
     border-radius: 4px;
@@ -181,19 +162,26 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 6px; /* Redução do espaço entre ícone e texto */
+    text-transform: uppercase; /* Texto em maiúsculas */
+}
+
+/* Ícones dentro dos botões */
+.btn-play svg, .btn-list svg {
+    width: 18px; /* Ícones menores */
+    height: 18px;
 }
 
 .btn-play {
     background-color: white;
     color: black;
-    min-width: 220px;
+    min-width: 140px; /* Largura mínima menor */
 }
 
 .btn-list {
-    background-color: rgba(128, 128, 128, 0.6);
+    background-color: rgba(109, 109, 110, 0.7); /* Cor cinza mais fiel */
     color: white;
-    min-width: 220px;
+    min-width: 140px; /* Largura mínima menor */
 }
 
 /* Barra de Progresso no fundo */
@@ -203,8 +191,8 @@ body {
 
 .progress-bar {
     width: 100%;
-    height: 4px;
-    background-color: #333;
+    height: 3px; /* Mais fina */
+    background-color: rgba(85, 85, 85, 0.5);
     border-radius: 2px;
     position: relative;
 }
@@ -214,14 +202,14 @@ body {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 12px;
-    height: 12px;
+    width: 10px; /* Menor */
+    height: 10px; /* Menor */
     background-color: #b3b3b3;
     border-radius: 50%;
 }
 
 /* ========================================================= */
-/* OTIMIZAÇÃO MOBILE EXTREMA                                 */
+/* OTIMIZAÇÃO MOBILE                                         */
 /* ========================================================= */
 @media (max-width: 768px) {
     .header {
@@ -234,47 +222,55 @@ body {
     }
 
     .logo {
-        font-size: 28px;
+        font-size: 24px;
         margin-right: 0;
     }
     
-    /* No Mobile a tela é mais alta, o preto precisa subir mais */
+    /* No Mobile, o overlay ocupa um pouco mais para garantir legibilidade */
     .overlay {
-        background: linear-gradient(to bottom, 
-            rgba(0,0,0,0) 0%, 
-            rgba(0,0,0,0) 25%, 
-            rgba(0,0,0,0.8) 50%, 
-            #000000 65%, 
-            #000000 100%);
+        height: 40%;
+        background: linear-gradient(to top, 
+            rgba(0,0,0,1) 0%, 
+            rgba(0,0,0,0.8) 40%, 
+            rgba(0,0,0,0) 100%);
     }
     
     .content {
-        bottom: 2%;
-        left: 5%;
-        right: 5%;
-        gap: 8px;
+        bottom: 4%;
+        left: 4%;
+        right: 4%;
+        gap: 6px;
     }
     
-    .n-logo { font-size: 30px; }
-    .filme-text { font-size: 14px; }
+    /* Estilo do "N FILME" - TAMANHO REDUZIDO */
+.n-logo {
+    font-size: 24px; /* Era 36px */
+}
+    .filme-text {
+    font-size: 10px; /* Era 14px */
+    letter-spacing: 2px;
+}
     
-    .title { font-size: 45px; }
-    .subtitle { font-size: 18px; margin-bottom: 5px; }
+    .title { font-size: 28px; }
+    .subtitle { font-size: 12px; margin-bottom: 4px; }
     
-    .description p {
-        font-size: 12px;
-        line-height: 1.3;
-    }
-    
-    .buttons {
-        gap: 12px;
-        margin-bottom: 15px;
-    }
+    /* Botões - ULTRA COMPACTOS */
+.buttons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
 
     .btn-play, .btn-list {
-        padding: 12px 15px;
-        font-size: 14px;
-        min-width: auto;
-        flex: 1; /* Faz os botões dividirem a largura da tela igualmente */
-    }
+    padding: 5px 10px; /* Redução do preenchimento interno */
+    font-size: 10px;    /* Fonte bem pequena e elegante */
+    border-radius: 3px;
+    min-width: auto;   /* Largura mínima menor */
+    gap: 4px;
+}
+
+    .btn-play svg, .btn-list svg {
+    width: 14px; /* Ícones menores */
+    height: 14px;
+}
 }
