@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix - Homenagem ao Pai</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">NETFLIX</div>
+            <div class="menu">
+                <span>Start</span>
+                <span>Show</span>
+                <span>Movies</span>
+                <span>News</span>
+                <span>My List</span>
+            </div>
+            <div class="header-icons">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            </div>
+        </div>
+
+        <div class="hero">
+            <video autoplay muted loop playsinline class="bg-video" id="mainVideo">
+                <source src="AAAhttps://video.wixstatic.com/video/819ea0_e8b95752af964893ad3d41b6ee05e251/1080p/mp4/file.mp4" type="video/mp4AAA">
+            </video>
+            
+            <div class="overlay"></div>
+            
+            <div class="content">
+                <div class="n-filme">
+                    <span class="n-logo">N</span>
+                    <span class="filme-text">F I L M E</span>
+                </div>
+
+                <h1 class="title">SUPER-<span class="mulher">MULHER</span></h1>
+                <p class="subtitle">(Na voz de Pai)</p>
+               
+                <div class="buttons">
+                    <button class="btn-play">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zM9 7h6v2H9zm0 4h6v2H9zm0 4h6v2H9z"/></svg>
+                        TOCA AQUI
+                    </button>
+                    <button class="btn-list">+ MINHA LISTA</button>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
