@@ -564,7 +564,7 @@
 // ============================================
 
 // Coloca isto no TOPO absoluto da tua tag <script> no convite.html
-const API_URL = `https://script.google.com/macros/s/AKfycbx-D7Upkh0iGyZ-Zwus_Py0wCbV0jVrHiJzqj8bylhMC130MuG7wZNbqJUCxtob1v3Y/exec`;
+const API_URL = ''; // Demo: API real desativada
 
 function jsonpRequest(url) {
   return new Promise((resolve, reject) => {
@@ -587,43 +587,25 @@ function jsonpRequest(url) {
 }
 async function verifyDeviceAccess() {
   const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get("t");
-  
-  if (!token) {
-    window.location.href = 'index.html';
-    return false;
-  }
+  const tokenFromUrl = urlParams.get("t");
 
-  const deviceToken = localStorage.getItem('deviceToken');
-  const guestToken = localStorage.getItem('guestToken');
-  
-  // Verificar se o token da URL corresponde ao token salvo
-  if (guestToken !== token) {
-    localStorage.clear();
-    window.location.href = 'index.html';
-    return false;
-  }
-
-  if (!deviceToken) {
-    localStorage.clear();
-    window.location.href = 'index.html';
-    return false;
-  }
-
-  try {
-    const result = await jsonpRequest(`${API_URL}?action=verify_device&token=${encodeURIComponent(token)}&deviceToken=${encodeURIComponent(deviceToken)}`);
-    
-    if (result.status === 'success' && result.canAccess) {
-      return true;
-    } else {
-      localStorage.clear();
-      window.location.href = 'index.html';
+  // MODO DEMO: o acesso já não depende de credenciais, token real ou dispositivo.
+  // Basta o visitante entrar pelo index.html e escrever qualquer nome.
+  if (!tokenFromUrl) {
+    const savedToken = localStorage.getItem('guestToken');
+    if (savedToken) {
+      window.location.href = `convite.html?t=${encodeURIComponent(savedToken)}`;
       return false;
     }
-  } catch (error) {
-    console.error('Erro ao verificar dispositivo:', error);
+    window.location.href = 'index.html';
     return false;
   }
+
+  if (!localStorage.getItem('guestName')) {
+    localStorage.setItem('guestName', 'Convidado(a)');
+  }
+
+  return true;
 }
 
 // Modificar o DOMContentLoaded para incluir a verificação
@@ -652,39 +634,119 @@ document.addEventListener('DOMContentLoaded', async () => {
     
 
     // Função para requisições POST (com tratamento de CORS)
-    async function postRequest(data) {
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          mode: 'no-cors', // Importante: no-cors para evitar erro de CORS
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-        
-        // Com no-cors, não podemos ler a resposta
-        // Assumimos que deu certo se não houve erro de rede
-        return { status: "success" };
-      } catch (err) {
-        console.error("Erro na requisição POST:", err);
-        throw err;
-      }
+    const DEMO_GIFT_KEY = 'lirandzo_demo_gifts';
+const DEMO_MESSAGES_KEY = 'lirandzo_demo_messages';
+
+const DEMO_DEFAULT_GIFTS = [
+  { id: 'gift-01', name: 'Conjunto de pratos', reserved: false, reserved_by: '' },
+  { id: 'gift-02', name: 'Jogo de copos', reserved: false, reserved_by: '' },
+  { id: 'gift-03', name: 'Conjunto de talheres', reserved: false, reserved_by: '' },
+  { id: 'gift-04', name: 'Jogo de panelas', reserved: false, reserved_by: '' },
+  { id: 'gift-05', name: 'Liquidificador', reserved: false, reserved_by: '' },
+  { id: 'gift-06', name: 'Ferro de engomar', reserved: false, reserved_by: '' },
+  { id: 'gift-07', name: 'Jogo de lençóis', reserved: false, reserved_by: '' },
+  { id: 'gift-08', name: 'Toalhas de banho', reserved: false, reserved_by: '' }
+];
+
+function getDemoDefaultMessages() {
+  const now = Date.now();
+  return [
+    {
+      nome: 'Família e Amigos',
+      message: 'Que esta nova etapa seja cheia de amor, união e bênçãos. Felicidades aos noivos!',
+      timestamp: new Date(now - 1000 * 60 * 60 * 24 * 3).toISOString()
+    },
+    {
+      nome: 'Convidado Especial',
+      message: 'Desejamos uma vida a dois repleta de cumplicidade, alegria e muitos sonhos realizados.',
+      timestamp: new Date(now - 1000 * 60 * 60 * 24 * 2).toISOString()
+    },
+    {
+      nome: 'Amigos dos Noivos',
+      message: 'Que o amor que vos une hoje continue a crescer todos os dias. Parabéns por este momento lindo!',
+      timestamp: new Date(now - 1000 * 60 * 60 * 20).toISOString()
     }
+  ];
+}
+
+function cloneDemoData(data) {
+  return JSON.parse(JSON.stringify(data));
+}
+
+function getDemoGifts() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(DEMO_GIFT_KEY) || 'null');
+    if (Array.isArray(stored) && stored.length) return stored;
+  } catch (error) {}
+  const defaults = cloneDemoData(DEMO_DEFAULT_GIFTS);
+  localStorage.setItem(DEMO_GIFT_KEY, JSON.stringify(defaults));
+  return defaults;
+}
+
+function saveDemoGifts(gifts) {
+  localStorage.setItem(DEMO_GIFT_KEY, JSON.stringify(gifts));
+}
+
+function getDemoMessages() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(DEMO_MESSAGES_KEY) || 'null');
+    if (Array.isArray(stored) && stored.length) return stored;
+  } catch (error) {}
+  const defaults = getDemoDefaultMessages();
+  localStorage.setItem(DEMO_MESSAGES_KEY, JSON.stringify(defaults));
+  return defaults;
+}
+
+function saveDemoMessages(messages) {
+  localStorage.setItem(DEMO_MESSAGES_KEY, JSON.stringify(messages));
+}
+
+// MODO DEMO: grava localmente e não envia dados para a API real.
+async function postRequest(data) {
+  const payload = { ...data, timestamp: new Date().toISOString() };
+
+  switch (data?.action) {
+    case 'rsvp':
+      localStorage.setItem('lirandzo_demo_rsvp', JSON.stringify(payload));
+      break;
+
+    case 'save_gifts': {
+      const selected = Array.isArray(data.selectedGifts) ? data.selectedGifts : [];
+      const gifts = getDemoGifts().map(gift => selected.includes(gift.name)
+        ? { ...gift, reserved: true, reserved_by: data.nome || guestName || 'Convidado(a)' }
+        : gift
+      );
+      saveDemoGifts(gifts);
+      break;
+    }
+
+    case 'post_message': {
+      const messages = getDemoMessages();
+      messages.unshift({
+        nome: data.nome || guestName || 'Convidado(a)',
+        message: data.message || '',
+        timestamp: payload.timestamp
+      });
+      saveDemoMessages(messages);
+      break;
+    }
+
+    case 'upload_comprovativo':
+      localStorage.setItem('lirandzo_demo_comprovativo', JSON.stringify({
+        nome: data.nome || guestName || 'Convidado(a)',
+        canal: data.canal || '',
+        ficheiro: data.comprovativoFile_filename || '',
+        timestamp: payload.timestamp
+      }));
+      break;
+  }
+
+  return { status: 'success' };
+}
 
     // Função para upload de arquivo (FormData)
     async function postFormData(formData) {
-      try {
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          mode: 'no-cors', // Importante: no-cors para evitar erro de CORS
-          body: formData
-        });
-        
-        // Com no-cors, não podemos ler a resposta
-        return { status: "success" };
-      } catch (err) {
-        console.error("Erro no upload:", err);
-        throw err;
-      }
+      return { status: "success" };
     }
     
     // Variáveis globais
@@ -705,22 +767,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       async function loadGuest() {
-        try {
-          const result = await jsonpRequest(`${API_URL}?action=get_guest&token=${token}`);
-          
-          if(result.status !== "success"){
-            return false;
-          }
+        // MODO DEMO: o nome vem do formulário do index.html.
+        const savedName = (localStorage.getItem('guestName') || '').trim();
+        guestName = savedName || 'Convidado(a)';
+        guestMesa = localStorage.getItem('guestMesa') || 'A definir';
+        maxGuests = Number(localStorage.getItem('guestMax')) || 2;
 
-          guestName = result.nome || "";
-          guestMesa = result.mesa || "A definir";
-          maxGuests = result.maxGuests || 1;
-
-          return true;
-        } catch(err) {
-          console.error("Erro ao carregar convidado:", err);
-          return false;
-        }
+        return true;
       }
 
       const success = await loadGuest();
@@ -1000,47 +1053,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         const giftList = document.getElementById('giftList');
 
         try {
-          const result = await jsonpRequest(`${API_URL}?action=gifts`);
-
-          if (result.status === 'success') {
-            const gifts = result.data;
+          const gifts = getDemoGifts();
+          
+          giftLoading.style.display = 'none';
+          giftError.style.display = 'none';
+          giftList.style.display = 'grid';
+          giftList.innerHTML = '';
+          
+          gifts.forEach(gift => {
+            const item = document.createElement('label');
+            item.className = `gift-item ${gift.reserved ? 'reserved' : ''}`;
             
-            giftLoading.style.display = 'none';
-            giftError.style.display = 'none';
-            giftList.style.display = 'grid';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'gift';
+            checkbox.value = gift.name;
+            checkbox.disabled = gift.reserved;
             
-            giftList.innerHTML = '';
-            gifts.forEach(gift => {
-              const item = document.createElement('label');
-              item.className = `gift-item ${gift.reserved ? 'reserved' : ''}`;
-              
-              const checkbox = document.createElement('input');
-              checkbox.type = 'checkbox';
-              checkbox.name = 'gift';
-              checkbox.value = gift.name;
-              checkbox.disabled = gift.reserved;
-              
-              item.appendChild(checkbox);
-              item.appendChild(document.createTextNode(gift.name));
-              
-              if (gift.reserved_by && gift.reserved_by === guestName) {
-                const reservedSpan = document.createElement('span');
-                reservedSpan.style.marginLeft = 'auto';
-                reservedSpan.style.fontSize = '0.8rem';
-                reservedSpan.style.color = '#666';
-                reservedSpan.textContent = '(seu)';
-                item.appendChild(reservedSpan);
-              }
-              
-              giftList.appendChild(item);
-            });
-          } else {
-            throw new Error(result.message || 'Erro ao carregar presentes');
-          }
+            item.appendChild(checkbox);
+            item.appendChild(document.createTextNode(gift.name));
+            
+            if (gift.reserved_by && gift.reserved_by === guestName) {
+              const reservedSpan = document.createElement('span');
+              reservedSpan.style.marginLeft = 'auto';
+              reservedSpan.style.fontSize = '0.8rem';
+              reservedSpan.style.color = '#666';
+              reservedSpan.textContent = '(seu)';
+              item.appendChild(reservedSpan);
+            }
+            
+            giftList.appendChild(item);
+          });
         } catch (error) {
           giftLoading.style.display = 'none';
           giftError.style.display = 'block';
-          giftError.textContent = 'Erro ao carregar lista de presentes. Tente novamente mais tarde.';
+          giftError.textContent = 'Erro ao carregar lista de presentes.';
           console.error('Erro ao carregar presentes:', error);
         }
       }
@@ -1236,21 +1283,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       async function loadMessages() {
         try {
-          const result = await jsonpRequest(`${API_URL}?action=messages`);
+          const messages = getDemoMessages();
           
-          if (result.status === "success" && result.data.length > 0) {
+          if (messages.length > 0) {
             guestbookFeed.innerHTML = '';
-            result.data.forEach(message => {
+            messages.forEach(message => {
               guestbookFeed.appendChild(renderMessage(message));
             });
-          } else {
+          } else if (feedLoading) {
             feedLoading.textContent = "Ainda ninguém deixou uma mensagem. Seja o primeiro!";
           }
         } catch (err) {
-          feedLoading.textContent = "Erro ao carregar mensagens.";
+          if (feedLoading) feedLoading.textContent = "Erro ao carregar mensagens.";
         }
-      }
-      
+      }      
       loadMessages();
 
       if (messageForm) {

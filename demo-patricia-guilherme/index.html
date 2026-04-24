@@ -449,11 +449,11 @@
   <div class="login-overlay" id="loginOverlay">
     <div class="login-container">
       <h2 class="names">Patrícia & Guilherme</h2>
-      <p class="login-subtitle">Por favor, identifique-se para ver o convite</p>
+      <p class="login-subtitle">Digite qualquer nome para ver o convite</p>
       
       <form id="loginForm">
         <div class="form-group">
-          <label for="name">Seu primeiro nome</label>
+          <label for="name">Seu nome</label>
           <input type="text" id="name" placeholder="Ex: João" required autocomplete="off">
         </div>
         <button type="submit" class="btn btn-primary" id="submitBtn">
@@ -466,7 +466,7 @@
       
       <div class="info-text">
         <p>🔒 Cada convite só pode ser aberto em UM dispositivo</p>
-        <p>💝 Digite seu primeiro nome como está no convite</p>
+        <p>💝 Digite qualquer nome para abrir esta versão demo</p>
       </div>
     </div>
   </div>
@@ -475,7 +475,7 @@
     // ============================================
     // CONFIGURAÇÕES
     // ============================================
-    const API_URL = 'https://script.google.com/macros/s/AKfycbx-D7Upkh0iGyZ-Zwus_Py0wCbV0jVrHiJzqj8bylhMC130MuG7wZNbqJUCxtob1v3Y/exec';
+    const API_URL = ''; // Demo: API real desativada
     const WEDDING_DATE = new Date("2026-05-02T10:00:00");
 
     // ============================================
@@ -589,109 +589,48 @@
     // ============================================
     // Substitua a função jsonpRequest por esta:
 async function postRequest(data) {
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-  });
-  return { status: "success" }; // Com no-cors, não podemos ler a resposta
+  return { status: "success", data };
 }
 
-// E modifique a função performLogin:
+// MODO DEMO: qualquer nome abre o convite sem validar credenciais externas.
 async function performLogin(name) {
-  if (!name || name.trim() === '') {
+  const cleanName = (name || '').trim();
+  if (!cleanName) {
     loginError.textContent = "Por favor, digite seu nome";
     return;
   }
 
-  const deviceToken = getDeviceToken();
-  const userAgent = getUserAgentInfo();
-  
   const btnText = submitBtn.querySelector('.btn-text');
   const spinner = submitBtn.querySelector('.loading-spinner');
-  
+  const deviceToken = getDeviceToken();
+  const tokenSlug = cleanName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'convidado';
+  const demoToken = `demo-${tokenSlug}-${Date.now()}`;
+
   btnText.style.display = 'none';
   spinner.style.display = 'inline-block';
   submitBtn.disabled = true;
   loginError.textContent = '';
 
-  try {
-    // Apenas UM pedido via JSONP (GET). O Apps Script já está configurado para 
-    // registar o dispositivo no método GET se o action for "login".
-    const checkResult = await jsonpRequest(
-      `${API_URL}?action=login&name=${encodeURIComponent(name)}&deviceToken=${encodeURIComponent(deviceToken)}&userAgent=${encodeURIComponent(userAgent)}`
-    );
-    
-    if (checkResult.status === 'success') {
-      // Sucesso: Guardar dados e redirecionar para o convite
-      localStorage.setItem('guestName', checkResult.guestName);
-      localStorage.setItem('guestToken', checkResult.token);
-      localStorage.setItem('guestMesa', checkResult.Mesa || 'A definir');
-      localStorage.setItem('deviceToken', deviceToken);
-      
-      window.location.href = `convite.html?t=${checkResult.token}`;
-      
-    } else if (checkResult.code === 'ALREADY_OPENED') {
-      // Já aberto noutro dispositivo: Redirecionar para a página de erro
-      const devInfo = encodeURIComponent(checkResult.deviceInfo || 'Desconhecido');
-      const timeInfo = encodeURIComponent(checkResult.openedAt || 'Desconhecido');
-      window.location.href = `ja-aberto.html?device=${devInfo}&opened=${timeInfo}`;
-      
-    } else {
-      // Nome não encontrado ou outro erro: Mostrar mensagem e restaurar botão
-      loginError.textContent = checkResult.message || "Convidado não encontrado. Verifique o nome.";
-      btnText.style.display = 'inline';
-      spinner.style.display = 'none';
-      submitBtn.disabled = false;
-    }
-  } catch (error) {
-    console.error('Erro no login:', error);
-    loginError.textContent = "Erro de conexão com o servidor. Tente novamente.";
-    btnText.style.display = 'inline';
-    spinner.style.display = 'none';
-    submitBtn.disabled = false;
-  }
+  localStorage.setItem('guestName', cleanName);
+  localStorage.setItem('guestToken', demoToken);
+  localStorage.setItem('guestMesa', 'A definir');
+  localStorage.setItem('guestMax', '2');
+  localStorage.setItem('deviceToken', deviceToken);
+
+  window.location.href = `convite.html?t=${encodeURIComponent(demoToken)}`;
 }
 
     // ============================================
     // VERIFICAR SE JÁ ESTÁ LOGADO
     // ============================================
     async function checkExistingLogin() {
-      const guestToken = localStorage.getItem('guestToken');
-      const deviceToken = getDeviceToken();
-      const savedDeviceToken = localStorage.getItem('deviceToken');
-      
-      // Se não tem token, não está logado
-      if (!guestToken || !deviceToken) {
-        localStorage.removeItem('guestToken');
-        return;
-      }
-
-      // Verificar se o token do dispositivo mudou
-      if (deviceToken !== savedDeviceToken) {
-        localStorage.clear();
-        return;
-      }
-
-      try {
-        const result = await jsonpRequest(
-          `${API_URL}?action=verify_device&token=${encodeURIComponent(guestToken)}&deviceToken=${encodeURIComponent(deviceToken)}`
-        );
-        
-        if (result.status === 'success' && result.canAccess) {
-          // Pode acessar diretamente
-          window.location.href = `convite.html?t=${guestToken}`;
-        } else if (result.code === 'DEVICE_MISMATCH') {
-          // Dispositivo diferente - limpar
-          localStorage.clear();
-        }
-      } catch (error) {
-        console.error('Erro ao verificar login:', error);
-        // Em caso de erro, não redireciona automaticamente
-      }
+      // MODO DEMO: mantém a página inicial livre para escrever qualquer nome.
+      return;
     }
 
     // ============================================
