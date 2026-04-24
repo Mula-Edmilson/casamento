@@ -1,31 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- Página principal -->
-  <url>
-    <loc>https://lirandzo.com/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.00</priority>
-  </url>
-
-  <!-- Blog -->
-  <url>
-    <loc>https://lirandzo.com/blog.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.60</priority>
-  </url>
-
-  <!-- Páginas legais -->
-  <url>
-    <loc>https://lirandzo.com/termos.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.30</priority>
-  </url>
-
-  <url>
-    <loc>https://lirandzo.com/privacidade.html</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.30</priority>
-  </url>
-
+  <url><loc>https://lirandzo.com/</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://lirandzo.com/blog.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lirandzo.com/termos.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lirandzo.com/privacidade.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lirandzo.com/blog-convite-digital.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lirandzo.com/blog-modelo-ideal-casamento.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lirandzo.com/blog-rsvp-lista-convidados.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lirandzo.com/blog-sessao-pre-casamento.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lirandzo.com/blog-checklist-casamento.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://lirandzo.com/blog-tons-terra-elegancia.html</loc><lastmod>2026-04-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

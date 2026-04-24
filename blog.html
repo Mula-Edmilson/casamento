@@ -1,16 +1,16 @@
 <!doctype html>
-<html lang="pt">
+<html lang="pt-PT" data-title-pt="Blog — Lirandzo | Casamentos, Convites e Inspiração" data-title-en="Blog — Lirandzo | Weddings, Invitations and Inspiration" data-description-pt="Artigos, ideias e inspirações da Lirandzo sobre convites digitais, organização do evento e estética para casamentos." data-description-en="Articles, ideas and inspiration from Lirandzo about digital invitations, event planning and wedding aesthetics.">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Blog — Lirandzo | Dicas para Casamentos Digitais</title>
+  <title>Blog — Lirandzo | Casamentos, Convites e Inspiração</title>
   
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  <link rel="icon" type="image/svg+xml" href="assets/lirandzo-logo.svg">
   
-  <meta name="description" content="Inspirações, dicas e tendências para o seu casamento digital. Descubra como criar convites inesquecíveis e organizar o grande dia com a Lirandzo.">
+  <meta name="description" content="Artigos, ideias e inspirações da Lirandzo sobre convites digitais, organização do evento e estética para casamentos.">
   
   <meta property="og:title" content="Blog Lirandzo — Dicas para Casamentos">
-  <meta property="og:description" content="Inspirações e tendências para o seu casamento digital.">
+  <meta property="og:description" content="Inspirações, tendências e organização para experiências digitais elegantes.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://i.postimg.cc/L8vk8vwF/capa.jpg">
   
@@ -18,7 +18,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css">
+  
+<script>
+  (() => {
+    try {
+      const saved = localStorage.getItem('lirandzo-theme');
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (error) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<link rel="stylesheet" href="style.css?v=5">
   
   <style>
     /* Estilos adicionais específicos para o blog */
@@ -200,6 +214,12 @@
       white-space: nowrap;
     }
     
+    html[data-theme="light"] .blog-header {
+      background: linear-gradient(rgba(247, 240, 232, 0.84), rgba(247, 240, 232, 0.92)), url('https://i.postimg.cc/Lsvbb4wL/10467.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+
     @media (max-width: 768px) {
       .blog-header h1 {
         font-size: 2.5rem;
@@ -233,19 +253,38 @@
       }
     }
   </style>
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#2B2623">
+  <link rel="canonical" href="https://lirandzo.com/blog.html">
 </head>
 
-<body class="loading">
-  
-  <header class="legal-page-header">
-    <a href="index.html" aria-label="Voltar à página inicial">
-      <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo Logo">
+<body class="loading site-subpage blog-listing-page">
+  <header class="site-header" aria-label="Navegação principal Lirandzo">
+    <a class="site-brand" href="index.html#main-content" aria-label="Lirandzo — início">
+      <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="brand-logo">
     </a>
+    <nav class="site-menu" aria-label="Secções do site">
+      <a href="index.html#main-content">Início</a><a href="index.html#pacotes">Pacotes</a><a href="blog.html" class="is-active" aria-current="page">Blog</a><a href="index.html#faq">FAQ</a><a href="index.html#sobre-nos">Sobre</a><a href="index.html#apoio">Contacto</a>
+    </nav>
+    <div class="site-actions">
+      <a href="https://wa.me/258878061697?text=Ol%C3%A1!%20Quero%20o%20meu%20convite%20digital%20Lirandzo." class="header-cta" target="_blank" rel="noopener noreferrer">♡ Quero o meu convite</a>
+      <div class="language-switcher" data-language-switcher>
+        <button type="button" class="language-toggle" data-language-toggle aria-label="Escolher idioma" aria-expanded="false">
+          <span class="language-flag" data-language-flag aria-hidden="true">🇲🇿</span>
+          <span class="language-current" data-language-current>PT</span>
+          <span class="language-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="language-menu" data-language-menu role="menu" aria-label="Idiomas disponíveis">
+          <button type="button" data-lang-option="pt" role="menuitem"><span aria-hidden="true">🇲🇿</span><span>Português</span></button>
+          <button type="button" data-lang-option="en" role="menuitem"><span aria-hidden="true">🇬🇧</span><span>English</span></button>
+        </div>
+      </div>
+      <button type="button" class="theme-toggle site-theme-toggle" id="themeToggle" aria-label="Alternar tema"><span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span><span class="theme-toggle-label" data-theme-label>Tema claro</span></button>
+    </div>
   </header>
-  
-  <div class="blog-header">
+<div class="blog-header">
     <h1 class="names">Blog Lirandzo</h1>
-    <p>Inspirações, dicas e tendências para o seu casamento digital</p>
+    <p>Ideias, organização e referências para casais que procuram uma experiência digital mais elegante e funcional.</p>
   </div>
   
   <main role="main">
@@ -254,17 +293,19 @@
       
       <!-- Post 1 -->
       <article class="blog-card fade-in-section">
-        <img src="https://i.postimg.cc/MTq7nh49/cover.png" alt="Convite digital Elegância Clássica" class="blog-card-image">
+        <a href="blog-convite-digital.html" class="blog-card-image-link" aria-label="Ler artigo: 5 razões para escolher um convite digital">
+          <img src="https://i.postimg.cc/MTq7nh49/cover.png" alt="Convite digital elegante em destaque" class="blog-card-image">
+        </a>
         <div class="blog-card-content">
           <span class="blog-card-category">TENDÊNCIAS</span>
-          <h2 class="blog-card-title">5 razões para escolher um convite digital</h2>
-          <p class="blog-card-excerpt">Descubra por que cada vez mais casais em Moçambique estão a optar por convites digitais: economia, praticidade e sustentabilidade.</p>
+          <h2 class="blog-card-title"><a href="blog-convite-digital.html">5 razões para escolher um convite digital</a></h2>
+          <p class="blog-card-excerpt">Descubra por que cada vez mais casais estão a trocar o convite físico por uma experiência digital elegante, prática e fácil de partilhar.</p>
           <div class="blog-card-meta">
             <span class="blog-card-date">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              15 Mar 2025
+              15 Mar 2026
             </span>
-            <a href="https://blog.colorie.com.br/5-motivos-para-escolher-convites-digitais-para-suas-celebracoes/" class="blog-card-link">
+            <a href="blog-convite-digital.html" class="blog-card-link">
               Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
           </div>
@@ -273,17 +314,19 @@
       
       <!-- Post 2 -->
       <article class="blog-card fade-in-section">
-        <img src="https://i.postimg.cc/ydKkN2SB/thumbnail.jpg" alt="Convite Jardim Secreto" class="blog-card-image">
+        <a href="blog-modelo-ideal-casamento.html" class="blog-card-image-link" aria-label="Ler artigo: Como escolher o modelo ideal para o seu casamento">
+          <img src="https://i.postimg.cc/ydKkN2SB/thumbnail.jpg" alt="Modelo elegante de convite de casamento" class="blog-card-image">
+        </a>
         <div class="blog-card-content">
           <span class="blog-card-category">INSPIRAÇÃO</span>
-          <h2 class="blog-card-title">Como escolher o modelo ideal para o seu casamento</h2>
-          <p class="blog-card-excerpt">Dicas práticas para encontrar o design que mais combina com a sua história: do rústico ao moderno, passando pelo clássico.</p>
+          <h2 class="blog-card-title"><a href="blog-modelo-ideal-casamento.html">Como escolher o modelo ideal para o seu casamento</a></h2>
+          <p class="blog-card-excerpt">Um guia simples para escolher um modelo alinhado com a personalidade do casal, o local, a paleta de cores e o nível de formalidade do evento.</p>
           <div class="blog-card-meta">
             <span class="blog-card-date">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              28 Fev 2025
+              22 Mar 2026
             </span>
-            <a href="https://enfimnoivei.com/vestido-de-casamento-o-guia-completo-para-escolher-o-modelo-perfeito-para-o-seu-grande-dia/" class="blog-card-link">
+            <a href="blog-modelo-ideal-casamento.html" class="blog-card-link">
               Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
           </div>
@@ -292,17 +335,19 @@
       
       <!-- Post 3 -->
       <article class="blog-card fade-in-section">
-        <img src="https://i.postimg.cc/fWvXbptV/MARIA-JOAO.jpg" alt="Convite Amor Moderno" class="blog-card-image">
+        <a href="blog-rsvp-lista-convidados.html" class="blog-card-image-link" aria-label="Ler artigo: RSVP: como gerir a lista de convidados sem stress">
+          <img src="https://i.postimg.cc/fWvXbptV/MARIA-JOAO.jpg" alt="Noivos e gestão de convidados com RSVP" class="blog-card-image">
+        </a>
         <div class="blog-card-content">
           <span class="blog-card-category">DICAS</span>
-          <h2 class="blog-card-title">RSVP: como gerir a lista de convidados sem stress</h2>
-          <p class="blog-card-excerpt">A funcionalidade de confirmação de presença nos convites digitais pode revolucionar a organização do seu casamento.</p>
+          <h2 class="blog-card-title"><a href="blog-rsvp-lista-convidados.html">RSVP: como gerir a lista de convidados sem stress</a></h2>
+          <p class="blog-card-excerpt">Veja como o RSVP digital ajuda a organizar confirmações, acompanhantes, ausências e decisões importantes sem perder informação pelo caminho.</p>
           <div class="blog-card-meta">
             <span class="blog-card-date">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              10 Fev 2025
+              29 Mar 2026
             </span>
-            <a href="https://fotify.app/pt/help/rsvp-management/manage-guest-list/" class="blog-card-link">
+            <a href="blog-rsvp-lista-convidados.html" class="blog-card-link">
               Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
           </div>
@@ -311,17 +356,19 @@
       
       <!-- Post 4 -->
       <article class="blog-card fade-in-section">
-        <img src="https://i.postimg.cc/NjqY5yS0/capa-de-convite-Celeste-Pinto.jpg" alt="Convite Rústico Chic" class="blog-card-image">
+        <a href="blog-sessao-pre-casamento.html" class="blog-card-image-link" aria-label="Ler artigo: Dicas para uma sessão de pré-casamento inesquecível">
+          <img src="https://i.postimg.cc/Lsvbb4wL/10467.jpg" alt="Sessão fotográfica de pré-casamento" class="blog-card-image">
+        </a>
         <div class="blog-card-content">
-          <span class="blog-card-category">CASAMENTOS</span>
-          <h2 class="blog-card-title">Tons terra e elegância: a tendência rústica chic</h2>
-          <p class="blog-card-excerpt">Inspire-se com ideias de decoração e convites que trazem aconchego e sofisticação para o seu grande dia.</p>
+          <span class="blog-card-category">FOTOGRAFIA</span>
+          <h2 class="blog-card-title"><a href="blog-sessao-pre-casamento.html">Dicas para uma sessão de pré-casamento inesquecível</a></h2>
+          <p class="blog-card-excerpt">Da escolha do cenário ao vestuário, veja como preparar uma sessão pré-wedding com naturalidade, elegância e imagens com valor emocional.</p>
           <div class="blog-card-meta">
             <span class="blog-card-date">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              22 Jan 2025
+              05 Abr 2026
             </span>
-            <a href="https://www.theoscarseventos.com.br/single-post/estilo-r%C3%BAstico-chique-tend%C3%AAncias-de-decora%C3%A7%C3%A3o-para-2025" class="blog-card-link">
+            <a href="blog-sessao-pre-casamento.html" class="blog-card-link">
               Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
           </div>
@@ -330,17 +377,19 @@
       
       <!-- Post 5 -->
       <article class="blog-card fade-in-section">
-        <img src="https://i.postimg.cc/Lsvbb4wL/10467.jpg" alt="Fotografia de casamento" class="blog-card-image">
+        <a href="blog-checklist-casamento.html" class="blog-card-image-link" aria-label="Ler artigo: Checklist completa para o casamento dos sonhos">
+          <img src="https://i.postimg.cc/15KQyFX5/Whats-App-Image-2025-10-24-at-10-47-48-AM.jpg" alt="Detalhes organizados de casamento" class="blog-card-image">
+        </a>
         <div class="blog-card-content">
-          <span class="blog-card-category">FOTOGRAFIA</span>
-          <h2 class="blog-card-title">Dicas para uma sessão de pré-casamento inesquecível</h2>
-          <p class="blog-card-excerpt">Como preparar, o que vestir e como escolher o cenário perfeito para as fotos que vão emocionar os seus convidados.</p>
+          <span class="blog-card-category">ORGANIZAÇÃO</span>
+          <h2 class="blog-card-title"><a href="blog-checklist-casamento.html">Checklist completa para o casamento dos sonhos</a></h2>
+          <p class="blog-card-excerpt">Uma checklist prática para manter o casamento organizado, desde a definição do orçamento até ao convite digital, fornecedores e confirmação dos convidados.</p>
           <div class="blog-card-meta">
             <span class="blog-card-date">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              5 Jan 2025
+              12 Abr 2026
             </span>
-            <a href="https://www.dicasdemulher.com.br/pre-wedding/" class="blog-card-link">
+            <a href="blog-checklist-casamento.html" class="blog-card-link">
               Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
           </div>
@@ -349,17 +398,19 @@
       
       <!-- Post 6 -->
       <article class="blog-card fade-in-section">
-        <img src="https://i.postimg.cc/15KQyFX5/Whats-App-Image-2025-10-24-at-10-47-48-AM.jpg" alt="Detalhes de casamento" class="blog-card-image">
+        <a href="blog-tons-terra-elegancia.html" class="blog-card-image-link" aria-label="Ler artigo: Tons terra e elegância">
+          <img src="https://i.postimg.cc/NjqY5yS0/capa-de-convite-Celeste-Pinto.jpg" alt="Convite em tons terra e estética elegante" class="blog-card-image">
+        </a>
         <div class="blog-card-content">
-          <span class="blog-card-category">ORGANIZAÇÃO</span>
-          <h2 class="blog-card-title">Checklist completa para o casamento dos sonhos</h2>
-          <p class="blog-card-excerpt">Um guia mês a mês com tudo o que precisa de fazer para não esquecer nenhum detalhe importante.</p>
+          <span class="blog-card-category">ESTILO</span>
+          <h2 class="blog-card-title"><a href="blog-tons-terra-elegancia.html">Tons terra e elegância</a></h2>
+          <p class="blog-card-excerpt">Entenda por que os tons terra continuam fortes nos casamentos e como aplicar essa estética de forma sofisticada no convite digital.</p>
           <div class="blog-card-meta">
             <span class="blog-card-date">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              18 Dez 2024
+              19 Abr 2026
             </span>
-            <a href="https://blog.anatuori.com/2025/09/checklist-de-casamento.html" class="blog-card-link">
+            <a href="blog-tons-terra-elegancia.html" class="blog-card-link">
               Ler mais <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </a>
           </div>
@@ -381,49 +432,30 @@
     
   </main>
   
-  <footer class="footer-complete">
-    <div class="footer-content">
-      <div class="footer-layout">
-        <div class="footer-col footer-col-main">
-          <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo Logo" class="footer-logo">
-          <p>A criar memórias inesquecíveis através de design elegante e partilha fácil.</p>
-        </div>
-        <div class="footer-col">
-          <h4>Navegação</h4>
-          <ul>
-            <li><a href="index.html#modelos">Modelos</a></li>
-            <li><a href="index.html#testemunhos">Testemunhos</a></li>
-            <li><a href="index.html#faq">FAQ</a></li>
-            <li><a href="blog.html">Blog</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="termos.html">Termos de Uso</a></li>
-            <li><a href="privacidade.html">Política de Privacidade</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Siga-nos</h4>
-          <div class="social-links">
-            <a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" class="social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-            </a>
-            <a href="https://www.facebook.com/profile.php?id=61582215350970" class="social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-            </a>
-            <a href="#" class="social-link" aria-label="Pinterest" target="_blank" rel="noopener noreferrer">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="footer-copyright">
-        &copy; 2025 Lirandzo. Todos os direitos reservados.
+  <footer class="footer-complete footer-corporate" aria-label="Rodapé corporativo">
+  <div class="footer-corp-inner">
+    <div class="footer-corp-top">
+      <a class="footer-corp-brand" href="index.html" aria-label="Lirandzo - página inicial">
+        <img src="assets/lirandzo-logo.svg" alt="Lirandzo Convites Digitais" class="footer-logo">
+        <span>Convites digitais e soluções corporate com design estratégico.</span>
+      </a>
+      <div class="footer-corp-actions">
+        <a class="footer-corp-contact" href="mailto:lirandzo.mz@gmail.com" aria-label="Enviar email para Lirandzo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+          <span>lirandzo.mz@gmail.com</span>
+        </a>
+        <a class="footer-corp-btn" href="https://wa.me/258878061697" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
       </div>
     </div>
-  </footer>
+    <div class="footer-corp-grid">
+      <div class="footer-corp-col footer-corp-about"><h3>Lirandzo</h3><p>Experiências digitais elegantes para casamentos, eventos e projectos empresariais.</p></div>
+      <nav class="footer-corp-col" aria-label="Navegação do rodapé"><h3>Navegação</h3><ul><li><a href="index.html#pacotes">Pacotes</a></li><li><a href="index.html#pacotes">Corporate</a></li><li><a href="index.html#testemunhos">Testemunhos</a></li><li><a href="index.html#faq">FAQ</a></li></ul></nav>
+      <div class="footer-corp-col"><h3>Serviços</h3><ul><li><a href="index.html#pacotes">Convites digitais</a></li><li><a href="index.html#pacotes">Páginas corporate</a></li><li><a href="index.html#apoio">Apoio comercial</a></li><li><a href="blog.html">Blog</a></li></ul></div>
+      <div class="footer-corp-col"><h3>Empresa</h3><ul><li><a href="termos.html">Termos de Uso</a></li><li><a href="privacidade.html">Política de Privacidade</a></li><li><a href="mailto:lirandzo.mz@gmail.com">Email</a></li><li><a href="https://wa.me/258878061697" target="_blank" rel="noopener noreferrer">WhatsApp</a></li></ul></div>
+    </div>
+    <div class="footer-corp-bottom"><p>&copy; 2026 Lirandzo. Todos os direitos reservados.</p><div class="footer-corp-social" aria-label="Redes sociais"><a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.5"></circle><path d="M17.4 6.7h.1"></path></svg></a><a href="https://www.facebook.com/profile.php?id=61582215350970" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v4h4v-4h3l1-4h-4V9c0-.6.4-1 1-1z"></path></svg></a><a href="https://wa.me/258878061697" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l1.2-3.6A7 7 0 1 1 8.6 18L5 19z"></path><path d="M9 9c.6 2.1 2 3.6 4 4l1-1"></path></svg></a></div></div>
+  </div>
+</footer>
   
   <button type="button" id="backToTopBtn" title="Voltar ao topo" aria-label="Voltar ao topo">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -467,7 +499,9 @@
     });
   </script>
   <!-- Chatbot Unificado -->
+<script src="theme.js"></script>
 <script src="chatbot-unified.js"></script>
   
+<script src="lang-currency.js"></script>
 </body>
 </html>

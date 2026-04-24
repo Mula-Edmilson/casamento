@@ -1,0 +1,334 @@
+
+/* =========================================================
+   FINAL QA FIX — lightboxes compactas, tema, ícones e contraste
+   ========================================================= */
+:root {
+  --lz-icon-stroke: #a87552;
+  --lz-icon-fill-soft: rgba(168,117,82,.10);
+  --lz-input-bg: #fffaf5;
+  --lz-input-border: rgba(166,122,85,.28);
+  --lz-modal-paper: #fff8f1;
+  --lz-modal-text: #2d211b;
+  --lz-modal-muted: #705d51;
+}
+html[data-theme="dark"] {
+  --lz-icon-stroke: #d7b08d;
+  --lz-icon-fill-soft: rgba(215,176,141,.12);
+  --lz-input-bg: #3a302b;
+  --lz-input-border: rgba(226,190,159,.24);
+  --lz-modal-paper: #241e1b;
+  --lz-modal-text: #fff7ef;
+  --lz-modal-muted: #dbc6b8;
+}
+
+/* Theme toggle: compacto, funcional e coerente no header */
+.site-actions { display:flex !important; align-items:center !important; gap:10px !important; }
+.site-theme-toggle,
+.theme-toggle.site-theme-toggle {
+  position: static !important;
+  width: auto !important;
+  min-width: 50px !important;
+  height: 42px !important;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  border: 1px solid rgba(166,122,85,.22) !important;
+  background: rgba(255,255,255,.68) !important;
+  color: #3a281f !important;
+  box-shadow: 0 10px 26px rgba(52,32,19,.08) !important;
+  transform: none !important;
+  cursor: pointer !important;
+}
+html[data-theme="dark"] .site-theme-toggle {
+  background: rgba(58,49,43,.92) !important;
+  border-color: rgba(215,176,141,.26) !important;
+  color: #fff1e8 !important;
+}
+.site-theme-toggle .theme-toggle-icon {
+  width: 20px !important; height: 20px !important;
+  display: inline-grid !important; place-items:center !important;
+  font-size: 16px !important; line-height: 1 !important;
+}
+.site-theme-toggle .theme-toggle-label { font-size: 12px !important; font-weight: 500 !important; letter-spacing: .02em !important; }
+@media (max-width: 760px){
+  .site-header { z-index: 1200 !important; }
+  .site-actions .header-cta { display: none !important; }
+  .site-theme-toggle { width: 54px !important; min-width: 54px !important; height: 54px !important; padding: 0 !important; }
+  .site-theme-toggle .theme-toggle-label { display:none !important; }
+  .site-theme-toggle .theme-toggle-icon { font-size: 20px !important; }
+}
+
+/* Ícones dos pacotes: substituir imagens por símbolos minimalistas vetoriais em CSS */
+#pacotes .package-icon {
+  width: 58px !important;
+  height: 58px !important;
+  margin-bottom: 18px !important;
+  position: relative !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 18px !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.82), rgba(176,137,104,.10)) !important;
+  border: 1px solid rgba(166,122,85,.18) !important;
+  box-shadow: 0 15px 28px rgba(71,42,27,.10) !important;
+  filter: none !important;
+}
+#pacotes .package-icon img { display: none !important; }
+#pacotes .package-icon::before,
+#pacotes .package-icon::after { content:""; position:absolute; box-sizing:border-box; }
+#pacotes .package-icon.pearl::before {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid #b28a65;
+  background: radial-gradient(circle at 32% 28%, #fffaf3 0 22%, #e8d5bd 42%, #b58c68 100%);
+  box-shadow: inset -5px -5px 12px rgba(79,47,31,.18), 0 8px 14px rgba(79,47,31,.10);
+}
+#pacotes .package-icon.pearl::after { width: 10px; height: 10px; border-radius:50%; background: rgba(255,255,255,.92); top:18px; left:19px; }
+#pacotes .package-icon.emerald::before,
+#pacotes .package-icon.ruby::before {
+  width: 29px; height: 34px;
+  clip-path: polygon(26% 0, 74% 0, 100% 28%, 50% 100%, 0 28%);
+  border: 2px solid currentColor;
+  background: linear-gradient(145deg, rgba(255,255,255,.46), currentColor);
+  opacity: .95;
+}
+#pacotes .package-icon.emerald { color:#087455 !important; }
+#pacotes .package-icon.ruby { color:#b91d38 !important; }
+#pacotes .package-icon.emerald::after,
+#pacotes .package-icon.ruby::after {
+  width: 20px; height: 23px; top:18px; left:19px;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  border-left: 1px solid rgba(255,255,255,.65);
+  border-right: 1px solid rgba(0,0,0,.16);
+  opacity:.55;
+}
+#pacotes .package-icon.corporate::before {
+  width: 32px; height: 24px; border-radius: 5px;
+  border: 2px solid #8f674c; background: rgba(143,103,76,.10);
+  top: 24px;
+}
+#pacotes .package-icon.corporate::after {
+  width: 14px; height: 8px; border: 2px solid #8f674c; border-bottom:0;
+  border-radius: 6px 6px 0 0; top: 16px;
+}
+#pacotes .package-card-premium li::before,
+.faq-icon,
+.info-icon,
+.vantagem-icon svg,
+.mobile-menu svg,
+.bottom-nav svg,
+.btn svg { color: var(--lz-icon-stroke) !important; stroke: var(--lz-icon-stroke) !important; }
+
+/* Textos com peso mais natural */
+body, p, li, input, textarea, select, button { font-weight: 400; }
+#pacotes .package-card-premium li,
+.briefing-grid label,
+.premium-contact-list p,
+.modal-card p { font-weight: 400 !important; }
+.briefing-grid label > span,
+.premium-contact-list strong { font-weight: 600 !important; }
+#pacotes .package-price { font-weight: 300 !important; }
+
+/* Lightbox: não cortar topo, mais compacta e com contraste correcto */
+.modal,
+.modal.open {
+  z-index: 5000 !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  overflow-y: auto !important;
+  padding: clamp(18px, 4vh, 42px) 14px !important;
+  background: rgba(26,20,17,.78) !important;
+  backdrop-filter: blur(12px) !important;
+}
+.modal-card.contact-premium-card,
+.modal-card.briefing-premium-card,
+.modal-card.briefing-modal-card {
+  margin: auto 0 !important;
+  width: min(560px, calc(100vw - 28px)) !important;
+  max-height: calc(100dvh - 36px) !important;
+  overflow: auto !important;
+  border-radius: 18px !important;
+  padding: 0 !important;
+  background: var(--lz-modal-paper) !important;
+  color: var(--lz-modal-text) !important;
+  border: 1px solid rgba(166,122,85,.22) !important;
+  box-shadow: 0 28px 90px rgba(0,0,0,.34) !important;
+}
+.briefing-premium-card { width: min(620px, calc(100vw - 28px)) !important; }
+.modal-x {
+  top: 10px !important; right: 10px !important; width: 32px !important; height: 32px !important;
+  border: 1px solid rgba(255,255,255,.24) !important;
+  background: rgba(20,14,10,.35) !important;
+  color: #fff !important;
+  z-index: 8 !important;
+}
+.modal-hero,
+.briefing-modal-top.modal-hero {
+  min-height: 138px !important;
+  height: auto !important;
+  display: grid !important;
+  place-items: center !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+.modal-hero::before { background: linear-gradient(180deg, rgba(28,16,9,.38), rgba(28,16,9,.72)) !important; }
+.modal-hero-overlay { padding: 22px 24px !important; max-width: 520px !important; }
+.modal-hero h3,
+#briefingModalTitle,
+#modalContactTitle {
+  font-size: clamp(1.45rem, 4.6vw, 2rem) !important;
+  line-height: 1.05 !important;
+  margin: 0 0 6px !important;
+  color: #fff !important;
+  font-weight: 400 !important;
+}
+.modal-hero p { font-size: .92rem !important; line-height: 1.42 !important; margin: 0 auto !important; color: rgba(255,255,255,.92) !important; }
+.briefing-kicker {
+  display: inline-flex !important; justify-content:center !important; align-items:center !important;
+  padding: 7px 12px !important; margin: 0 0 8px !important;
+  font-size: .68rem !important; line-height: 1 !important; letter-spacing: .14em !important;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+}
+.briefing-premium-card .briefing-form,
+.briefing-modal-card .briefing-form {
+  padding: 18px 20px 20px !important;
+  gap: 12px !important;
+  background: var(--lz-modal-paper) !important;
+}
+.briefing-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; gap: 11px 12px !important; margin:0 !important; }
+.briefing-grid label { gap: 5px !important; margin: 0 !important; color: var(--lz-modal-text) !important; font-size: .82rem !important; line-height: 1.2 !important; }
+.briefing-grid input,
+.briefing-grid select,
+.briefing-grid textarea,
+#corporateBriefingForm input,
+#corporateBriefingForm select,
+#corporateBriefingForm textarea {
+  min-height: 42px !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  background: var(--lz-input-bg) !important;
+  border: 1px solid var(--lz-input-border) !important;
+  color: var(--lz-modal-text) !important;
+  font-size: .9rem !important;
+  line-height: 1.25 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12) !important;
+}
+.briefing-grid textarea,
+#corporateBriefingForm textarea { min-height: 76px !important; }
+#corporateBriefingForm textarea[rows="5"] { min-height: 92px !important; }
+.briefing-grid input::placeholder,
+.briefing-grid textarea::placeholder,
+#corporateBriefingForm input::placeholder,
+#corporateBriefingForm textarea::placeholder {
+  color: color-mix(in srgb, var(--lz-modal-text) 54%, transparent) !important;
+  opacity: 1 !important;
+}
+html[data-theme="dark"] .briefing-grid input::placeholder,
+html[data-theme="dark"] .briefing-grid textarea::placeholder,
+html[data-theme="dark"] #corporateBriefingForm input::placeholder,
+html[data-theme="dark"] #corporateBriefingForm textarea::placeholder {
+  color: rgba(255,247,239,.58) !important;
+}
+.briefing-actions { padding-top: 2px !important; gap: 9px !important; }
+.briefing-actions .btn { min-height: 42px !important; padding: 10px 16px !important; border-radius: 12px !important; }
+.premium-contact-list { padding: 18px 20px 6px !important; gap: 11px !important; background: var(--lz-modal-paper) !important; }
+.premium-contact-list .info-block {
+  padding: 13px 14px !important; border-radius: 14px !important;
+  background: var(--lz-input-bg) !important; border-color: var(--lz-input-border) !important;
+}
+.info-icon {
+  width: 34px !important; height: 34px !important; border-radius: 12px !important;
+  display:grid !important; place-items:center !important;
+  background: var(--lz-icon-fill-soft) !important; color: var(--lz-icon-stroke) !important;
+  font-size: 1.05rem !important; font-weight: 400 !important;
+}
+.premium-contact-list p { color: var(--lz-modal-muted) !important; font-size:.9rem !important; line-height:1.45 !important; }
+.premium-contact-list strong { color: var(--lz-modal-text) !important; font-size:.72rem !important; letter-spacing:.06em !important; }
+.contact-close-action { padding: 8px 20px 20px !important; margin:0 !important; }
+.contact-close-action .btn { min-height:40px !important; }
+
+@media (max-width: 720px){
+  .modal,
+  .modal.open {
+    padding: calc(72px + env(safe-area-inset-top, 0px)) 12px calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+    align-items: flex-start !important;
+  }
+  .modal-card.contact-premium-card,
+  .modal-card.briefing-premium-card,
+  .modal-card.briefing-modal-card {
+    width: min(100%, 520px) !important;
+    max-height: calc(100dvh - 96px) !important;
+    margin: 0 auto !important;
+    border-radius: 22px !important;
+  }
+  .modal-hero,
+  .briefing-modal-top.modal-hero { min-height: 128px !important; }
+  .modal-hero-overlay { padding: 20px 18px !important; }
+  .modal-hero h3,
+  #briefingModalTitle,
+  #modalContactTitle { font-size: clamp(1.35rem, 7vw, 1.78rem) !important; }
+  .modal-hero p { font-size: .86rem !important; max-width: 310px !important; }
+  .briefing-premium-card .briefing-form,
+  .briefing-modal-card .briefing-form { padding: 16px 18px 18px !important; }
+  .briefing-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .briefing-grid label { font-size: .8rem !important; }
+  .briefing-grid input,
+  .briefing-grid select,
+  .briefing-grid textarea,
+  #corporateBriefingForm input,
+  #corporateBriefingForm select,
+  #corporateBriefingForm textarea { min-height: 40px !important; font-size: .88rem !important; }
+  .briefing-grid textarea,
+  #corporateBriefingForm textarea { min-height: 66px !important; }
+  #corporateBriefingForm textarea[rows="5"] { min-height: 78px !important; }
+}
+
+/* Chatbot: fundo sólido, contraste correcto em dark e sem transparência */
+html[data-theme="dark"] {
+  --chatbot-bg: #1f1916;
+  --chatbot-card: #2a231f;
+  --chatbot-soft: #352c27;
+  --chatbot-border: rgba(225,188,156,.20);
+  --chatbot-text: #fff7ef;
+  --chatbot-muted: #d7c1b2;
+  --chatbot-link: #f0c49d;
+}
+html[data-theme="light"] {
+  --chatbot-bg: #f7f0e8;
+  --chatbot-card: #fff9f3;
+  --chatbot-soft: #efe4d8;
+  --chatbot-border: #d7c2ae;
+  --chatbot-text: #2e241e;
+  --chatbot-muted: #6c5b50;
+  --chatbot-link: #9b6c43;
+}
+.chatbot-window,
+.chatbot-window.active {
+  background: var(--chatbot-card) !important;
+  color: var(--chatbot-text) !important;
+  border-color: var(--chatbot-border) !important;
+  backdrop-filter: none !important;
+  opacity: 1 !important;
+}
+.chatbot-header { background: var(--chatbot-soft) !important; color: var(--chatbot-text) !important; }
+.chatbot-messages { background: var(--chatbot-bg) !important; }
+.message.bot .message-content,
+.chatbot-typing { background: var(--chatbot-soft) !important; color: var(--chatbot-text) !important; }
+.chatbot-input-area { background: var(--chatbot-card) !important; border-top-color: var(--chatbot-border) !important; }
+.chatbot-input { background: var(--chatbot-soft) !important; color: var(--chatbot-text) !important; border-color: var(--chatbot-border) !important; }
+.chatbot-input::placeholder { color: var(--chatbot-muted) !important; opacity: 1 !important; }
+
+/* Pacotes em mobile: cards menos gigantes, ícones consistentes */
+@media (max-width: 760px){
+  #pacotes.packages-showcase { padding: 64px 18px 66px !important; }
+  #pacotes .premium-cards-row { grid-template-columns: 1fr !important; max-width: 360px !important; gap: 22px !important; }
+  #pacotes .package-card-premium.template-card { min-height: auto !important; padding: 28px 24px 24px !important; border-radius: 22px !important; }
+  #pacotes .package-icon { width: 56px !important; height: 56px !important; }
+  #pacotes .package-card-premium h3 { font-size: 1.85rem !important; }
+  #pacotes .package-price { font-size: 1.75rem !important; margin-bottom: 22px !important; }
+  #pacotes .package-card-premium li { font-size: .98rem !important; }
+}

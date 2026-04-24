@@ -1,55 +1,122 @@
 
 <!doctype html>
-<html lang="pt">
+<html lang="pt-PT" data-title-pt="Lirandzo — Pacotes Digitais e Soluções Corporate" data-title-en="Lirandzo — Digital Packages and Corporate Solutions">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Lirandzo — Convites de Casamento Digitais</title>
+  <title>Lirandzo — Pacotes Digitais e Soluções Corporate</title>
   
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  <link rel="icon" type="image/svg+xml" href="assets/lirandzo-logo.svg">
 
-  <meta name="description" content="Crie convites de casamento digitais elegantes e personalizados em Moçambique. Modelos modernos, confirmação fácil por WhatsApp/Email. Veja as demos!">
+  <meta name="description" content="Conheça os pacotes Pérola, Esmeralda, Rubi e Corporate da Lirandzo para convites digitais e propostas empresariais em Moçambique.">
 
-  <meta property="og:title" content="Lirandzo — Convites de Casamento Digitais">
+  <meta property="og:title" content="Lirandzo — Pacotes Digitais e Soluções Corporate">
   <meta name="geo.region" content="MZ">
   <meta name="geo.placename" content="Mozambique">
   <meta name="language" content="pt-PT">
   <meta name="robots" content="index, follow">
   <meta name="keywords" content="convites digitais, convites online, convites virtuais, convite digital, convite online, convite de casamento, convite de casamento digital, convite de aniversário, convite corporativo, convite whatsapp, convite por link, convite com qr code, convites personalizados, convites modernos, convites digitais moçambique, convite casamento moçambique, convite digital maputo, convites online maputo, convite virtual, criar convite online, convite interativo, convite empresarial">
-  <meta property="og:description" content="Crie convites de casamento elegantes e inesquecíveis. Design moderno, partilha fácil.">
+  <meta property="og:description" content="Pacotes Pérola, Esmeralda, Rubi e Corporate para convites digitais e propostas empresariais sob medida.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://i.postimg.cc/L8vk8vwF/capa.jpg"> <link rel="preconnect" href="https://fonts.googleapis.com">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Lirandzo — Convites Digitais Modernos">
-  <meta name="twitter:description" content="Crie convites digitais modernos para os seus eventos com a Lirandzo.">
+  <meta name="twitter:title" content="Lirandzo — Pacotes Digitais e Corporate">
+  <meta name="twitter:description" content="Descubra os pacotes Pérola, Esmeralda, Rubi e Corporate da Lirandzo.">
   <meta name="twitter:image" content="https://i.postimg.cc/L8vk8vwF/capa.jpg">
+  <meta name="theme-color" content="#2B2623">
+  <meta property="og:url" content="https://lirandzo.com/">
+  <link rel="canonical" href="https://lirandzo.com/">
 
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=4">
+  
+<script>
+  (() => {
+    try {
+      const saved = localStorage.getItem('lirandzo-theme');
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (error) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<link rel="stylesheet" href="style.css?v=5">
   <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Service",
-  "name": "Lirandzo",
-  "url": "https://lirandzo.com",
-  "logo": "https://lirandzo.com/images/logo.png",
-  "description": "Convites de casamento digitais elegantes e personalizados em Moçambique.",
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "MZ"
-  },
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "customer support",
-    "telephone": "+258878061697",
-    "serviceType": "Convites Digitais para Eventos",
-    "email": "lirandzo.mz@gmail.com"
-  },
-  "sameAs": [
-    "https://www.instagram.com/lirandzo.mz",
-    "https://www.facebook.com/profile.php?id=61582215350970"
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "Lirandzo",
+      "url": "https://lirandzo.com",
+      "logo": "assets/lirandzo-logo.svg",
+      "email": "lirandzo.mz@gmail.com",
+      "telephone": "+258878061697",
+      "sameAs": [
+        "https://www.instagram.com/lirandzo.mz",
+        "https://www.facebook.com/profile.php?id=61582215350970"
+      ]
+    },
+    {
+      "@type": "Service",
+      "name": "Pacotes Digitais e Soluções Corporate Lirandzo",
+      "provider": {
+        "@type": "Organization",
+        "name": "Lirandzo"
+      },
+      "areaServed": "MZ",
+      "serviceType": "Convites digitais e propostas corporate sob medida",
+      "description": "Pacotes digitais para convites, eventos e propostas corporate com design elegante, briefing estruturado e activação sob medida."
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "O que é um convite de casamento digital?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "É um mini-site personalizado para o vosso casamento com informações do evento, agenda, música, fotos e outros recursos conforme o pacote escolhido."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Qual pacote devo escolher?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "O pacote Pérola é ideal para uma apresentação elegante e essencial. O Esmeralda acrescenta organização e experiências extra. O Rubi foi pensado para eventos premium com vídeo, check-in e cápsula de tempo mais completa."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quanto tempo demora a ter o meu convite pronto?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Após confirmação do pagamento e envio dos materiais necessários, a entrega acontece normalmente entre 3 e 5 dias úteis."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Posso ter o preço noutras moedas?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim. A Lirandzo pode trabalhar com valores fixados em moeda estrangeira sob consulta comercial prévia."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "A Lirandzo também tem solução Corporate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim. O pacote Corporate é definido sob consulta, depois do envio de um briefing compacto com objectivo, marca, prazo e escopo do projecto."
+          }
+        }
+      ]
+    }
   ]
 }
 </script>
@@ -57,54 +124,48 @@
 </head>
 
 <body class="loading">
+  <a href="#main-content" class="skip-link">Saltar para o conteúdo principal</a>
+
+  <header class="site-header" aria-label="Navegação principal Lirandzo">
+    <a class="site-brand" href="#main-content" aria-label="Lirandzo — início">
+      <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="brand-logo">
+    </a>
+    <nav class="site-menu" aria-label="Secções do site">
+      <a href="#main-content">Início</a><a href="#pacotes">Pacotes</a><a href="#quiz-section">Quiz</a><a href="#como-funciona">Como Funciona</a><a href="#testemunhos">Testemunhos</a><a href="blog.html">Blog</a><a href="#faq">FAQ</a><a href="#sobre-nos">Sobre</a><a href="#apoio">Contacto</a>
+    </nav>
+    <div class="site-actions">
+      <a href="https://wa.me/258878061697?text=Ol%C3%A1!%20Quero%20o%20meu%20convite%20digital%20Lirandzo." class="header-cta" target="_blank" rel="noopener noreferrer">♡ Quero o meu convite</a>
+      <div class="language-switcher" data-language-switcher>
+        <button type="button" class="language-toggle" data-language-toggle aria-label="Escolher idioma" aria-expanded="false">
+          <span class="language-flag" data-language-flag aria-hidden="true">🇲🇿</span>
+          <span class="language-current" data-language-current>PT</span>
+          <span class="language-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="language-menu" data-language-menu role="menu" aria-label="Idiomas disponíveis">
+          <button type="button" data-lang-option="pt" role="menuitem"><span aria-hidden="true">🇲🇿</span><span>Português</span></button>
+          <button type="button" data-lang-option="en" role="menuitem"><span aria-hidden="true">🇬🇧</span><span>English</span></button>
+        </div>
+      </div>
+      <button type="button" class="theme-toggle site-theme-toggle" id="themeToggle" aria-label="Alternar tema"><span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span><span class="theme-toggle-label" data-theme-label>Tema claro</span></button>
+    </div>
+  </header>
   
-  <main role="main">
+  <main id="main-content" role="main">
     
     <header class="hero">
       <div class="hero-content">
-        <p class="lead">Convites de Casamento Digitais</p>
+        <p class="lead">Convites Digitais e Soluções Corporate</p>
         <h1 class="names">Lirandzo</h1>
-        <p class="landing-subtitle">Design elegante, partilha fácil. A sua história de amor merece um convite à altura.</p>
-        <a href="#modelos" class="btn btn-primary btn-animated">Ver Modelos</a> </div>
-      <a href="#modelos" class="scroll-down-indicator" aria-label="Ver modelos">
+        <p class="landing-subtitle">Pacotes digitais elegantes para casamentos e propostas corporate com design cuidado, organização clara e activação orientada ao objectivo.</p>
+        <a href="#pacotes" class="btn btn-primary btn-animated">Ver Pacotes</a> </div>
+      <a href="#pacotes" class="scroll-down-indicator" aria-label="Ver pacotes">
         <svg viewBox="0 0 24 24"><path d="M12 19.5l-7-7 1.5-1.5L12 16.5l5.5-5.5L19 12.5z"/></svg>
       </a>
     </header>
     
-    <section class="section fade-in-section" id="vantagens">
-        <h2 class="section-title">Mais que um Convite</h2>
-        <p class="section-subtitle">Descubra porque um convite digital é a melhor escolha para o seu grande dia.</p>
-        
-        <div class="vantagens-grid">
-            <div class="vantagem-item">
-                <div class="vantagem-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 9 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
-                </div>
-                <h4>Interativo e Completo</h4>
-                <p>Integre mapas GPS, música, galeria de fotos e RSVP instantâneo num só link. Tudo o que o seu convidado precisa.</p>
-            </div>
-            
-            <div class="vantagem-item">
-                <div class="vantagem-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                </div>
-                <h4>Partilha Fácil e Ilimitada</h4>
-                <p>Envie para todos os seus convidados via WhatsApp, email ou redes sociais. Sem custos de impressão ou selos.</p>
-            </div>
-            
-            <div class="vantagem-item">
-                <div class="vantagem-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10v6M12 2v20M20.4 4.6l-2.8 2.8M17.6 17.6l2.8 2.8M4.6 4.6l2.8 2.8M7.4 17.6l-2.8 2.8"></path></svg>
-                </div>
-                <h4>Ecológico e Moderno</h4>
-                <p>Reduza o desperdício de papel com uma solução elegante e sustentável que impressionará os seus convidados.</p>
-            </div>
-        </div>
-    </section>
-
     <section class="section section-highlight fade-in-section" id="demo-video">
-  <h2 class="section-title">Veja a Magia em Ação</h2>
-  <p class="section-subtitle">Um convite digital é mais do que texto. É uma experiência. Veja como o seu convidado irá interagir.</p>
+  <h2 class="section-title">Veja a Experiência em Ação</h2>
+  <p class="section-subtitle">Do primeiro impacto visual à consulta dos detalhes do evento, este é o tipo de experiência que os vossos convidados recebem.</p>
 
   <div class="phone-mockup">
     <div class="phone-screen">
@@ -118,353 +179,277 @@
     </div>
   </div>
 </section>
-    <section class="section fade-in-section" id="quiz-section">
-        <h2 class="section-title">Descubra o Seu Estilo</h2>
-        <p class="section-subtitle">Não tem a certeza por onde começar? Responda a 3 perguntas rápidas e encontre o convite perfeito!</p>
+
+<section class="section fade-in-section" id="vantagens">
+        <h2 class="section-title">Mais que um Convite</h2>
+        <p class="section-subtitle">Cada pacote foi pensado para unir design, organização e emoção numa experiência digital mais completa para o vosso evento.</p>
+        
+        <div class="vantagens-grid">
+            <div class="vantagem-item">
+                <div class="vantagem-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 9 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+                </div>
+                <h3>Experiência do evento num só link</h3>
+                <p>Agenda com mapa, contagem regressiva, música, retratos dos noivos e feed de felicitações reunidos numa apresentação elegante e fácil de partilhar.</p>
+            </div>
+            
+            <div class="vantagem-item">
+                <div class="vantagem-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                </div>
+                <h3>Partilha simples, imagem premium</h3>
+                <p>O convite continua leve para enviar por WhatsApp, email ou redes sociais, mas com presença visual muito mais forte e profissional.</p>
+            </div>
+            
+            <div class="vantagem-item">
+                <div class="vantagem-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10v6M12 2v20M20.4 4.6l-2.8 2.8M17.6 17.6l2.8 2.8M4.6 4.6l2.8 2.8M7.4 17.6l-2.8 2.8"></path></svg>
+                </div>
+                <h3>Mais controlo e mais memória</h3>
+                <p>Nos pacotes superiores, a Lirandzo acrescenta dashboard de convidados, presentes, dress code, check-in e cápsula de tempo virtual.</p>
+            </div>
+        </div>
+    </section>
+
+<section class="section fade-in-section premium-wave-section packages-showcase" id="pacotes">
+        <p class="section-kicker">PACOTES</p>
+        <h2 class="section-title">Escolha o pacote ideal</h2>
+        <p class="section-subtitle">Soluções completas para momentos inesquecíveis</p>
+        <div class="packages-grid premium-cards-row">
+            <article class="template-card package-card-premium focusable-card" role="button" tabindex="0" aria-label="Abrir detalhes do pacote Pérola" data-template-name="Pacote Pérola" data-template-price="6.000 MT" data-demo-url="nelia-edmilson" data-features="Capa com Foto e Nomes|Agenda do Evento (com mapa)|Feed de Felicitações|Contagem Regressiva|Música de Fundo|Retratos dos Noivos">
+                <div class="package-icon pearl" aria-hidden="true"><svg class="lz-package-svg" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="17"/><path d="M22 20c4-4 10-6 18-5"/><path d="M18 36c5 9 14 14 25 10"/></svg></div><h4>PÉROLA</h4><p class="package-price">6.000 MT</p>
+                <ul><li>Todos os recursos essenciais</li><li>Convite elegante e personalizado</li><li>Ideal para casamentos intimistas</li></ul><button type="button" class="btn package-outline">Ver detalhes</button>
+            </article>
+            <article class="template-card package-card-premium focusable-card" role="button" tabindex="0" aria-label="Abrir detalhes do pacote Esmeralda" data-template-name="Pacote Esmeralda" data-template-price="10.000 MT" data-demo-url="demo-anicia-nelson" data-features="Capa com Foto e Nomes|Agenda do Evento (com mapa)|Feed de Felicitações|Contagem Regressiva|Música de Fundo|Retratos dos Noivos|Lembrete automático da data do evento|Presentes de Casamento|Sessão Pré-Wedding (Fotos)|Sugestões de Dress Code|Cápsula de tempo virtual até 1GB por 15 dias|Dashboard de Convidados|Convite Exclusivo">
+                <div class="package-icon emerald" aria-hidden="true"><svg class="lz-package-svg" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10 49 21 43 50H21L15 21 32 10Z"/><path d="M15 21h34"/><path d="M23 21l9 29 9-29"/><path d="M23 21l9-11 9 11"/></svg></div><h4>ESMERALDA</h4><p class="package-price">10.000 MT</p>
+                <ul><li>Tudo do Pacote Pérola</li><li>Recursos exclusivos</li><li>Experiência ainda mais completa</li></ul><button type="button" class="btn package-outline">Ver detalhes</button>
+            </article>
+            <article class="template-card package-card-premium focusable-card" role="button" tabindex="0" aria-label="Abrir detalhes do pacote Rubi" data-template-name="Pacote Rubi" data-template-price="15.000 MT" data-demo-url="celeste-pinto" data-features="Capa com Foto e Nomes|Agenda do Evento (com mapa)|Feed de Felicitações|Contagem Regressiva|Música de Fundo|Retratos dos Noivos|Lembrete automático da data do evento|Presentes de Casamento|Sessão Pré-Wedding (Fotos + 1 Vídeo)|Sugestões de Dress Code|Check-In|Cápsula de tempo virtual até 1GB por 30 dias|Dashboard de Convidados|Convite Exclusivo|Por analisar e acrescentar">
+                <div class="package-icon ruby" aria-hidden="true"><svg class="lz-package-svg" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10 50 23 32 54 14 23 32 10Z"/><path d="M14 23h36"/><path d="M22 23l10 31 10-31"/><path d="M22 23l10-13 10 13"/></svg></div><h4>RUBI</h4><p class="package-price">15.000 MT</p>
+                <ul><li>Tudo do Pacote Esmeralda</li><li>Recursos premium</li><li>Máxima exclusividade</li></ul><button type="button" class="btn package-outline ruby-outline">Ver detalhes</button>
+            </article>
+            <article class="template-card package-card-premium package-card-corporate focusable-card" role="button" tabindex="0" aria-label="Abrir detalhes do pacote Corporate" data-template-name="Pacote Corporate" data-template-price="Sob consulta" data-demo-url="" data-cta-mode="briefing" data-features="Soluções para empresas|Projectos personalizados|Atendimento dedicado|Briefing estratégico compacto|Design alinhado à marca|Proposta e preço definidos sob consulta">
+                <div class="package-icon corporate" aria-hidden="true"><svg class="lz-package-svg" viewBox="0 0 64 64" aria-hidden="true"><rect x="14" y="22" width="36" height="28" rx="5"/><path d="M24 22v-5c0-3 2-5 5-5h6c3 0 5 2 5 5v5"/><path d="M14 33h36"/><path d="M29 34h6"/></svg></div><h4>CORPORATE</h4><p class="package-price">Sob consulta</p>
+                <ul><li>Soluções para empresas</li><li>Projectos personalizados</li><li>Atendimento dedicado</li></ul><button type="button" class="btn package-solid">Pedir orçamento</button>
+            </article>
+        </div>
+        <p class="packages-note"><svg class="packages-note-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.7 2.9 8.3 7 10 4.1-1.7 7-5.3 7-10V6l-7-3Z"/><path d="m9.5 12 1.7 1.7 3.8-4"/></svg><span>Pagamento seguro e suporte dedicado em todos os pacotes.</span></p>
+        <aside class="currency-converter" data-currency-converter aria-label="Conversor de moedas dos pacotes">
+          <div class="currency-copy">
+            <span class="currency-kicker">Conversor de moedas</span>
+            <p>Valores indicativos para clientes fora de Moçambique. O câmbio pode variar no momento do pagamento.</p>
+          </div>
+          <label class="currency-select-label" for="currencySelect"><span class="currency-label-top"><span class="currency-flag" data-currency-flag aria-hidden="true">🇲🇿</span><span>Moeda</span></span>
+            <select id="currencySelect" data-currency-select>
+              <option value="MZN">🇲🇿 Metical moçambicano</option>
+              <option value="USD">🇺🇸 Dólar americano</option>
+              <option value="AOA">🇦🇴 Kwanza angolano</option>
+            </select>
+          </label>
+          <div class="currency-values" data-currency-values></div>
+          <small class="currency-rate-note" data-currency-rate-note>Câmbio indicativo</small>
+        </aside>
+    </section>
+<section class="section fade-in-section" id="quiz-section">
+        <h2 class="section-title">Descubra o Pacote Certo</h2>
+        <p class="section-subtitle">Responda a 3 perguntas rápidas para perceber qual dos pacotes de casamento Lirandzo se ajusta melhor ao nível de experiência que pretendem.</p>
         
         <div class="quiz-container">
             <div class="quiz-step active" data-step="1">
-                <h4>1. Onde será a celebração principal?</h4>
+                <h3>1. O que é mais importante para vocês?</h3>
                 <div class="quiz-options">
-                    <button class="quiz-option" data-value="rustico">Campo / Quinta</button>
-                    <button class="quiz-option" data-value="classico">Salão Elegante</button>
-                    <button class="quiz-option" data-value="moderno">Espaço Moderno / Cidade</button>
-                    <button class="quiz-option" data-value="floral">Jardim / Ar Livre</button>
+                    <button type="button" class="quiz-option" data-value="perola">Ter um convite elegante e essencial</button>
+                    <button type="button" class="quiz-option" data-value="esmeralda">Ter mais organização e funcionalidades</button>
+                    <button type="button" class="quiz-option" data-value="rubi">Ter uma experiência premium e diferenciada</button>
+                    <button type="button" class="quiz-option" data-value="esmeralda">Combinar imagem bonita com recursos úteis</button>
                 </div>
             </div>
             
             <div class="quiz-step" data-step="2">
-                <h4>2. Qual a vossa paleta de cores preferida?</h4>
+                <h3>2. Que nível de extras pretendem no convite?</h3>
                 <div class="quiz-options">
-                    <button class="quiz-option" data-value="rustico">Tons Terra / Neutros</button>
-                    <button class="quiz-option" data-value="floral">Pastéis / Florais</button>
-                    <button class="quiz-option" data-value="classico">Branco / Dourado / Prateado</button>
-                    <button class="quiz-option" data-value="moderno">Preto / Branco / Cores Vivas</button>
+                    <button type="button" class="quiz-option" data-value="perola">Só os elementos principais do evento</button>
+                    <button type="button" class="quiz-option" data-value="esmeralda">Presentes, dress code e lembretes</button>
+                    <button type="button" class="quiz-option" data-value="rubi">Vídeo, check-in e cápsula de tempo estendida</button>
+                    <button type="button" class="quiz-option" data-value="esmeralda">Dashboard e mais apoio à organização</button>
                 </div>
             </div>
 
             <div class="quiz-step" data-step="3">
-                <h4>3. Qual palavra descreve melhor o vosso estilo?</h4>
+                <h3>3. Como imaginam a experiência final?</h3>
                  <div class="quiz-options">
-                    <button class="quiz-option" data-value="classico">Intemporal</button>
-                    <button class="quiz-option" data-value="moderno">Minimalista</button>
-                    <button class="quiz-option" data-value="floral">Romântico</button>
-                    <button class="quiz-option" data-value="rustico">Acolhedor</button>
+                    <button type="button" class="quiz-option" data-value="perola">Simples, bonita e directa</button>
+                    <button type="button" class="quiz-option" data-value="esmeralda">Completa, organizada e memorável</button>
+                    <button type="button" class="quiz-option" data-value="rubi">Exclusiva, premium e com mais camadas</button>
+                    <button type="button" class="quiz-option" data-value="rubi">Com forte impacto visual e mais cobertura</button>
                 </div>
             </div>
 
             <div class="quiz-result" id="quizResult">
-                <h4>O seu estilo ideal é...</h4>
-                <div id="recommendation">
-                    </div>
-                <a href="#modelos" class="btn btn-outline" style="margin-top: 20px;">Ver todos os Modelos</a>
+                <h3>O pacote mais indicado é...</h3>
+                <div id="recommendation"></div>
+                <a href="#pacotes" class="btn btn-outline quiz-result-btn">Ver todos os pacotes</a>
             </div>
         </div>
     </section>
 
-    <section class="section fade-in-section" id="modelos">
-        <h2 class="section-title">Os Nossos Modelos</h2>
-        <p class="section-subtitle">Escolha o design que mais combina com a vossa história. Cada modelo é totalmente personalizável.</p>
-        
-        <div class="auto-scroll-container">
-            <div class="template-card focusable-card"
-                 data-template-name="Elegância Clássica" 
-                 data-template-price="1.500 MT"
-                 data-demo-url="nelia-edmilson"
-                 data-features="Capa com Foto e Nomes|Agenda do Evento (com mapa)|Confirmação (Email/WhatsApp)">
-                <img src="https://i.postimg.cc/MTq7nh49/cover.png" alt="Template de convite 'Elegância Clássica' com tipografia sofisticada"> <div class="template-info">
-                    <h4>Elegância Clássica</h4>
-                    <p>Design intemporal com tipografia sofisticada.</p>
-                </div>
-            </div>
-            <div class="template-card focusable-card" 
-                 data-template-name="Jardim Secreto" 
-                 data-template-price="2.500 MT"
-                 data-demo-url="demo-anicia-nelson"
-                 data-features="Capa com Foto e Nomes|Contagem Regressiva|Música de Fundo|Agenda do Evento (com mapa)|Galeria de Fotos|Sugestões de Traje|Opções de Presentes|Confirmação (Email/WhatsApp)">
-                <img src="https://i.postimg.cc/ydKkN2SB/thumbnail.jpg" alt="Template de convite 'Jardim Secreto' com design floral"> <div class="template-info">
-                    <h4>Jardim Secreto</h4>
-                    <p>Elegante e floral, perfeito para casamentos ao ar livre.</p>
-                </div>
-            </div>
-            <div class="template-card focusable-card"
-                 data-template-name="Amor Moderno" 
-                 data-template-price="3.500 MT"
-                 data-demo-url="maria-joao/"
-                 data-features="Capa com Foto e Nomes|Contagem Regressiva|Música de Fundo|Sessão Pre-casamento (6 fotos)|Agenda do Evento (com mapa)|Galeria de Fotos|Sugestões de Traje|Opções de Presentes|Confirmação (Email/WhatsApp)">
-                <img src="https://i.postimg.cc/fWvXbptV/MARIA-JOAO.jpg" alt="Template de convite 'Amor Moderno' com design minimalista focado em foto"> <div class="template-info">
-                    <h4>Amor Moderno</h4>
-                    <p>Minimalista, focado na vossa fotografia.</p>
-                </div>
-            </div>
-            <div class="template-card focusable-card"
-                 data-template-name="Rústico Chic" 
-                 data-template-price="5.000 MT"
-                 data-demo-url="celeste-pinto"
-                 data-features="Capa com Foto e Nomes|Contagem Regressiva|Música de Fundo|Sessão Pre-casamento (6 fotos + 1 Video Teaser)|Agenda do Evento (com mapa)|Galeria de Fotos|Sugestões de Traje|Opções de Presentes|Confirmação (Email/WhatsApp)|Painel administrativo (melhor gestão do evento)">
-                <img src="https://i.postimg.cc/NjqY5yS0/capa_de_convite_Celeste_Pinto.jpg" alt="Template de convite 'Rústico Chic' com tons terra"> <div class="template-info">
-                    <h4>Rústico Chic</h4>
-                    <p>Tons terra e uma sensação acolhedora.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="section section-highlight fade-in-section" id="comparativo">
-        <h2 class="section-title">Compare os Nossos Pacotes</h2>
-        <p class="section-subtitle">Encontre o plano perfeito que se ajusta à vossa visão e orçamento.</p>
-        
-        <div class="tabela-container"> 
-            <table class="tabela-precos">
-                <thead>
-                    <tr>
-                        <th>Funcionalidade</th>
-                        <th>Elegância Clássica</th>
-                        <th>Jardim Secreto</th>
-                        <th>Amor Moderno</th>
-                        <th>Rústico Chic</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Capa com Foto e Nomes</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                    </tr>
-                    <tr>
-                        <td>Agenda do Evento (com mapa)</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                    </tr>
-                    <tr>
-                        <td>Confirmação (Email/WhatsApp)</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                    </tr>
-                    <tr>
-                        <td>Contagem Regressiva</td>
-                        <td class="dash">—</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                    </tr>
-                    <tr>
-                        <td>Música de Fundo</td>
-                        <td class="dash">—</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                    </tr>
-                    <tr>
-                        <td>Galeria de Fotos</td>
-                        <td class="dash">—</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                    </tr>
-                    <tr>
-                        <td>Opções de Presentes</td>
-                        <td class="dash">—</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                    </tr>
-                     <tr>
-                        <td>Sugestões de Traje</td>
-                        <td class="dash">—</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                        <td class="check">✔</td>
-                    </tr>
-                    <tr>
-                        <td>Sessão Pre-casamento</td>
-                        <td class="dash">—</td>
-                        <td class="dash">—</td>
-                        <td class="check">6 fotos</td>
-                        <td class="check">6 fotos + 1 Vídeo</td>
-                    </tr>
-                    <tr>
-                        <td>Preço</td>
-                        <td><strong>1.500 MT</strong></td>
-                        <td><strong>2.500 MT</strong></td>
-                        <td><strong>3.500 MT</strong></td>
-                        <td><strong>5.000 MT</strong></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button type="button" class="btn btn-outline btn-small open-modal-from-table" data-index="0">Escolher</button></td>
-                        <td><button type="button" class="btn btn-outline btn-small open-modal-from-table" data-index="1">Escolher</button></td>
-                        <td><button type="button" class="btn btn-outline btn-small open-modal-from-table" data-index="2">Escolher</button></td>
-                        <td><button type="button" class="btn btn-outline btn-small open-modal-from-table" data-index="3">Escolher</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="comparativo-mobile">
-            
-            <div class="pacote-card">
-                <div class="pacote-header">
-                    <h4>Elegância Clássica</h4>
-                    <span class="pacote-price">1.500 MT</span>
-                </div>
-                <ul class="pacote-features">
-                    <li><span class="check">✔</span> Capa com Foto e Nomes</li>
-                    <li><span class="check">✔</span> Agenda do Evento (com mapa)</li>
-                    <li><span class="check">✔</span> Confirmação (Email/WhatsApp)</li>
-                    <li><span class="dash">—</span> Contagem Regressiva</li>
-                    <li><span class="dash">—</span> Música de Fundo</li>
-                    <li><span class="dash">—</span> Galeria de Fotos</li>
-                    <li><span class="dash">—</span> Opções de Presentes</li>
-                    <li><span class="dash">—</span> Sugestões de Traje</li>
-                    <li><span class="dash">—</span> Sessão Pre-casamento</li>
-                </ul>
-                <button type="button" class="btn btn-outline open-modal-from-table" data-index="1">Escolher Pacote</button>
-            </div>
-            
-            <div class="pacote-card">
-                <div class="pacote-header">
-                    <h4>Jardim Secreto</h4>
-                    <span class="pacote-price">2.500 MT</span>
-                </div>
-                <ul class="pacote-features">
-                    <li><span class="check">✔</span> Capa com Foto e Nomes</li>
-                    <li><span class="check">✔</span> Agenda do Evento (com mapa)</li>
-                    <li><span class="check">✔</span> Confirmação (Email/WhatsApp)</li>
-                    <li><span class="check">✔</span> Contagem Regressiva</li>
-                    <li><span class="check">✔</span> Música de Fundo</li>
-                    <li><span class="check">✔</span> Galeria de Fotos</li>
-                    <li><span class="check">✔</span> Opções de Presentes</li>
-                    <li><span class="check">✔</span> Sugestões de Traje</li>
-                    <li><span class="dash">—</span> Sessão Pre-casamento</li>
-                </ul>
-                <button type="button" class="btn btn-outline open-modal-from-table" data-index="0">Escolher Pacote</button>
-            </div>
-            
-            <div class="pacote-card">
-                <div class="pacote-header">
-                    <h4>Amor Moderno</h4>
-                    <span class="pacote-price">3.500 MT</span>
-                </div>
-                <ul class="pacote-features">
-                    <li><span class="check">✔</span> Capa com Foto e Nomes</li>
-                    <li><span class="check">✔</span> Agenda do Evento (com mapa)</li>
-                    <li><span class="check">✔</span> Confirmação (Email/WhatsApp)</li>
-                    <li><span class="check">✔</span> Contagem Regressiva</li>
-                    <li><span class="check">✔</span> Música de Fundo</li>
-                    <li><span class="check">✔</span> Galeria de Fotos</li>
-                    <li><span class="check">✔</span> Opções de Presentes</li>
-                    <li><span class="check">✔</span> Sugestões de Traje</li>
-                    <li><span class="check">✔</span> Sessão Pre-casamento (6 fotos)</li>
-                </ul>
-                <button type="button" class="btn btn-outline open-modal-from-table" data-index="2">Escolher Pacote</button>
-            </div>
-            
-            <div class="pacote-card">
-                <div class="pacote-header">
-                    <h4>Rústico Chic</h4>
-                    <span class="pacote-price">5.000 MT</span>
-                </div>
-                <ul class="pacote-features">
-                    <li><span class="check">✔</span> Capa com Foto e Nomes</li>
-                    <li><span class="check">✔</span> Agenda do Evento (com mapa)</li>
-                    <li><span class="check">✔</span> Confirmação (Email/WhatsApp)</li>
-                    <li><span class="check">✔</span> Contagem Regressiva</li>
-                    <li><span class="check">✔</span> Música de Fundo</li>
-                    <li><span class="check">✔</span> Galeria de Fotos</li>
-                    <li><span class="check">✔</span> Opções de Presentes</li>
-                    <li><span class="check">✔</span> Sugestões de Traje</li>
-                    <li><span class="check">✔</span> Sessão Pre-casamento (6 fotos + 1 Vídeo)</li>
-                  <li><span class="check">✔</span> Painel administrativo (melhor gestão do evento)</li>
-                </ul>
-                <button type="button" class="btn btn-outline open-modal-from-table" data-index="3">Escolher Pacote</button>
-            </div>
-        </div>
-             
-    </section>
-
-    <section class="section fade-in-section" id="como-funciona">
+<section class="section fade-in-section" id="como-funciona">
         <h2 class="section-title">Como Funciona</h2>
-        <p class="section-subtitle">O nosso processo é simples, rápido e totalmente focado em si.</p>
+        <p class="section-subtitle">O nosso processo é simples, rápido e organizado, tanto para casamentos como para pedidos Corporate.</p>
         
         <div class="processo-container">
             <div class="processo-passo">
                 <div class="passo-numero">1</div>
-                <h4>Escolha o Modelo</h4>
-                <p>Navegue pelos nossos designs e escolha o que mais fala ao vosso coração.</p>
+                <h3>Escolha o Pacote</h3>
+                <p>Compare os pacotes e escolha o nível de experiência que melhor responde ao vosso evento.</p>
             </div>
             
             <div class="processo-passo">
                 <div class="passo-numero">2</div>
-                <h4>Envie os Seus Dados</h4>
+                <h3>Envie os Seus Dados</h3>
                 <p>Partilhe connosco as vossas fotos, textos, músicas e detalhes do evento.</p>
             </div>
             
             <div class="processo-passo">
                 <div class="passo-numero">3</div>
-                <h4>Receba o Seu Link</h4>
-                <p>Em 3-5 dias úteis, o seu convite digital exclusivo estará pronto a partilhar!</p>
+                <h3>Receba o Seu Link</h3>
+                <p>Em 3 a 5 dias úteis, o vosso convite digital estará pronto para revisão, aprovação e partilha.</p>
             </div>
         </div>
     </section>
 
     
-    <section class="section section-highlight fade-in-section parallax-bg" id="testemunhos"> 
-        <h2 class="section-title">O que dizem os nossos noivos</h2>
-        <p class="section-subtitle">A confiança e a felicidade dos nossos clientes são a nossa prioridade.</p>
-        
-        <div class="auto-scroll-container">
-            <img src="https://i.postimg.cc/JhvmynhF/Whats-App-Image-2025-10-26-at-12-50-56-AM.jpg" alt="Screenshot de conversa WhatsApp com feedback positivo de cliente Lirandzo" class="testimonial-screenshot focusable-card"> <img src="https://i.postimg.cc/HLRHJxLK/Whats-App-Image-2025-10-26-at-12-50-57-AM.jpg" alt="Outro screenshot de conversa WhatsApp com elogio de cliente Lirandzo" class="testimonial-screenshot focusable-card"> <img src="https://i.postimg.cc/JhvmynhF/Whats-App-Image-2025-10-26-at-12-50-56-AM.jpg" alt="Mais um feedback positivo de cliente Lirandzo via WhatsApp" class="testimonial-screenshot focusable-card"> </div>
+    <section class="section section-highlight fade-in-section premium-wave-section testimonials-showcase" id="testemunhos"> 
+        <p class="section-kicker">TESTEMUNHOS</p>
+        <h2 class="section-title">O que nossos clientes dizem</h2>
+        <p class="section-subtitle">Histórias reais de quem confiou na Lirandzo</p>
+
+        <div class="testimonial-loop-viewport" aria-label="Testemunhos de clientes em movimento contínuo">
+          <div class="testimonial-stage testimonial-loop-track">
+            <article class="testimonial-card styled-testimonial">
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <img src="https://i.postimg.cc/ydKkN2SB/thumbnail.jpg" alt="Cliente Lirandzo" class="testimonial-avatar">
+              <p>O convite superou todas as nossas expectativas. Simples, elegante e muito fácil de partilhar com os convidados.</p>
+              <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+              <p>Anicia & Nelson</p>
+              <small>Casamento em Maputo</small>
+            </article>
+            <article class="testimonial-card styled-testimonial">
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <img src="https://i.postimg.cc/fWvXbptV/MARIA-JOAO.jpg" alt="Cliente Lirandzo" class="testimonial-avatar">
+              <p>Atendimento impecável e um convite digital que encantou todos os nossos convidados. Recomendamos de olhos fechados.</p>
+              <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+              <p>Maria & Mateus</p>
+              <small>Casamento em Beira</small>
+            </article>
+            <article class="testimonial-card styled-testimonial">
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <img src="https://i.postimg.cc/NjqY5yS0/capa-de-convite-Celeste-Pinto.jpg" alt="Cliente Lirandzo" class="testimonial-avatar">
+              <p>Profissionalismo e criatividade em cada detalhe. O resultado ficou bonito, organizado e com uma sensação premium.</p>
+              <div class="stars" aria-label="5 de 5 estrelas">★★★★★</div>
+              <p>Celeste & Pinto</p>
+              <small>Casamento em Maputo</small>
+            </article>
+            <article class="testimonial-card styled-testimonial" aria-hidden="true">
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <img src="https://i.postimg.cc/15KQyFX5/Whats-App-Image-2025-10-24-at-10-47-48-AM.jpg" alt="" class="testimonial-avatar">
+              <p>O convite superou todas as nossas expectativas. Simples, elegante e muito fácil de partilhar com os convidados.</p>
+              <div class="stars">★★★★★</div>
+              <p>Ana & Carlos</p>
+              <small>Casamento em Maputo</small>
+            </article>
+            <article class="testimonial-card styled-testimonial" aria-hidden="true">
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <img src="https://i.postimg.cc/XvBz2yNj/PG2.jpg" alt="" class="testimonial-avatar">
+              <p>Atendimento impecável e um convite digital que encantou todos os nossos convidados. Recomendamos de olhos fechados.</p>
+              <div class="stars">★★★★★</div>
+              <p>Patricia & Guilherme</p>
+              <small>Casamento em Beira</small>
+            </article>
+            <article class="testimonial-card styled-testimonial" aria-hidden="true">
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <img src="https://i.postimg.cc/3x80jX2W/HERO.jpg" alt="" class="testimonial-avatar">
+              <p>Profissionalismo e criatividade em cada detalhe. O resultado ficou bonito, organizado e com uma sensação premium.</p>
+              <div class="stars">★★★★★</div>
+              <p>Rafaela & Amade</p>
+              <small>Casamento em Nampula</small>
+            </article>
+          </div>
+        </div>
     </section>
 
-    <section class="section fade-in-section" id="faq">
-        <h2 class="section-title">Perguntas Frequentes</h2>
-        <p class="section-subtitle">Tudo o que precisa de saber para começar a criar o seu convite digital.</p>
-
-        <div class="faq-container">
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    <span>O que é um convite de casamento digital?</span>
-                    <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <div class="faq-answer">
-                    <p>É um mini-site exclusivo para o seu casamento. Em vez de um cartão físico, os seus convidados recebem um link que abre uma experiência interativa com todas as informações: contagem regressiva, mapas, galeria de fotos, confirmação de presença (RSVP) e muito mais.</p>
+    <section class="section fade-in-section faq-premium-section" id="faq">
+        <div class="faq-layout">
+            <div class="faq-intro">
+                <span class="faq-eyebrow">FAQ</span>
+                <h2 class="section-title">Perguntas Frequentes</h2>
+                <p class="section-subtitle">Tudo o que precisa de saber antes de escolher o pacote ideal para o vosso convite digital.</p>
+                <div class="faq-support-card" aria-label="Apoio Lirandzo">
+                    <span>Precisa de ajuda rápida?</span>
+                    <p>Fale connosco antes de escolher o pacote.</p>
+                    <a href="https://wa.me/258878061697?text=Ol%C3%A1!%20Tenho%20uma%20d%C3%BAvida%20sobre%20os%20convites%20digitais%20Lirandzo." target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a>
                 </div>
             </div>
 
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    <span>Como é que os convidados confirmam a presença (RSVP)?</span>
-                    <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <div class="faq-answer">
-                    <p>O convite inclui um botão de "Confirmar Presença". O convidado pode preencher um formulário simples ou ser redirecionado para o seu WhatsApp com uma mensagem pré-definida. É rápido, fácil e ajuda-vos a organizar a lista de convidados sem esforço.</p>
+            <div class="faq-container" data-faq-accordion>
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span>O que é um convite de casamento digital?</span>
+                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>É um mini-site exclusivo para o vosso casamento. Em vez de um cartão físico, os convidados recebem um link com a informação do evento e os recursos incluídos no pacote escolhido.</p>
+                    </div>
                 </div>
-            </div>
 
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    <span>Posso personalizar o modelo que escolher?</span>
-                    <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <div class="faq-answer">
-                    <p>Sim! Todos os nossos modelos são 100% personalizáveis. Alteramos as cores para combinar com a vossa paleta, usamos as vossas fotos, mudamos as músicas e adaptamos os textos. O objectivo é que o convite seja um reflexo perfeito da vossa história.</p>
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span>Qual pacote devo escolher?</span>
+                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>O pacote Pérola é ideal para uma entrega elegante e essencial. O Esmeralda acrescenta mais organização, funcionalidades e memória visual. O Rubi é a opção premium, com vídeo, check-in e maior profundidade de experiência.</p>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="faq-item">
-                <button class="faq-question" aria-expanded="false">
-                    <span>Quanto tempo demora a ter o meu convite pronto?</span>
-                    <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <div class="faq-answer">
-                    <p>Após a confirmação do pagamento e o envio de todas as informações necessárias (fotos, textos, detalhes do evento), o seu convite digital fica pronto em 3 a 5 dias úteis. Entregamos tudo pronto a partilhar!</p>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span>Posso personalizar o pacote que escolher?</span>
+                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Sim. A base funcional segue o pacote contratado, mas a identidade visual, os conteúdos e vários detalhes do convite são adaptados à história e ao estilo do casal.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span>Quanto tempo demora a ter o meu convite pronto?</span>
+                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Após a confirmação do pagamento e o envio dos materiais necessários, a entrega acontece normalmente entre 3 e 5 dias úteis.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span>Posso pagar noutras moedas?</span>
+                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Sim. A estrutura comercial pode trabalhar com valores fixados em moeda estrangeira sob consulta prévia, mantendo clareza antes da adjudicação.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button type="button" class="faq-question" aria-expanded="false">
+                        <span>Têm também solução Corporate?</span>
+                        <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Sim. O pacote Corporate é direccionado a projectos empresariais, convites institucionais, activações e páginas promocionais. O valor é definido sob consulta, depois do envio de um briefing compacto.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -473,91 +458,80 @@
     <section class="section fade-in-section" id="sobre-nos">
         <div class="sobre-container">
             <div class="sobre-imagem">
-                <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Imagem de logotipo da lirandzo">
+                <img src="assets/lirandzo-logo.svg" alt="Imagem de logotipo da lirandzo">
             </div>
             <div class="sobre-texto">
                 <h2 class="section-title" style="text-align: center; margin-bottom: 24px;">Sobre a Lirandzo</h2>
-                <p>A Lirandzo nasceu da paixão por contar histórias de amor. Não somos apenas designers; somos contadores de histórias digitais. Acreditamos que cada casal é único, e que o seu convite de casamento deve ser mais do que um simples pedaço de papel - deve ser uma experiência.</p>
-                <p>Com sede em Moçambique, combinamos a elegância do design intemporal com a inovação da tecnologia para criar memórias que duram para sempre. A sua felicidade é a nossa inspiração.</p>
-                <a href="#apoio" class="btn btn-outline" style="margin-top: 16px;">Fale Connosco</a>
+                <p>A Lirandzo nasceu da vontade de transformar convites em experiências digitais mais bem pensadas. Hoje a marca trabalha com uma estrutura comercial mais clara, sem perder a sensibilidade estética e o cuidado com cada história.</p>
+                <p>Com base em Moçambique, combinamos design elegante, organização do evento e tecnologia para criar convites mais úteis, mais memoráveis e mais alinhados com o nível de cada celebração.</p>
+                
             </div>
         </div>
     </section>
 
-    <section class="section section-highlight fade-in-section" id="apoio">
-        <h2 class="section-title">Precisa de ajuda?</h2>
-        <p class="section-subtitle">A nossa equipa está pronta para ajudar com qualquer detalhe. Fale connosco diretamente!</p>
-        <a href="https://wa.me/258878061697?text=Ol%C3%A1!%20Visitei%20o%20site%20da%20Lirandzo%20e%20gostaria%20de%20fazer%20algumas%20perguntas." 
-           class="btn btn-primary btn-animated" 
-           target="_blank" 
-           rel="noopener noreferrer">
-            Falar no WhatsApp
+
+    <section class="section section-highlight fade-in-section support-ops-section" id="apoio">
+        <h2 class="section-title">Operação e Suporte</h2>
+        <p class="section-subtitle">Infraestrutura estável e acompanhamento contínuo para garantir fiabilidade, desempenho e consistência em cada detalhe.</p>
+        <div class="support-ops-grid" aria-label="Áreas de operação e suporte">
+            <article class="support-ops-card">
+                <span class="support-ops-kicker">01</span>
+                <h3>Fiabilidade</h3>
+                <p>Estrutura pensada para manter a experiência clara, acessível e funcional.</p>
+            </article>
+            <article class="support-ops-card">
+                <span class="support-ops-kicker">02</span>
+                <h3>Desempenho</h3>
+                <p>Componentes compactos, navegação fluida e atenção à consistência visual.</p>
+            </article>
+            <article class="support-ops-card">
+                <span class="support-ops-kicker">03</span>
+                <h3>Continuidade</h3>
+                <p>Acompanhamento técnico para preservar qualidade antes, durante e depois da entrega.</p>
+            </article>
+        </div>
+    </section>
+
+    <footer class="footer-complete footer-corporate" aria-label="Rodapé corporativo">
+  <div class="footer-corp-inner">
+    <div class="footer-corp-top">
+      <a class="footer-corp-brand" href="index.html" aria-label="Lirandzo - página inicial">
+        <img src="assets/lirandzo-logo.svg" alt="Lirandzo Convites Digitais" class="footer-logo">
+        <span>Convites digitais e soluções corporate com design estratégico.</span>
+      </a>
+      <div class="footer-corp-actions">
+        <a class="footer-corp-contact" href="mailto:lirandzo.mz@gmail.com" aria-label="Enviar email para Lirandzo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+          <span>lirandzo.mz@gmail.com</span>
         </a>
-    </section>
-
-    <footer class="footer-complete fade-in-section">
-        <div class="footer-content">
-            <div class="footer-layout">
-                
-                <div class="footer-col footer-col-main">
-                    <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo Logo" class="footer-logo">
-                    <p>A criar memórias inesquecíveis através de design elegante e partilha fácil.</p>
-                </div>
-                
-                <div class="footer-col">
-                    <h4>Navegação</h4>
-                    <ul>
-                        <li><a href="#modelos">Modelos</a></li>
-                        <li><a href="#testemunhos">Testemunhos</a></li>
-                        <li><a href="#faq">FAQ</a></li>
-                        <li><a href="blog.html">Blog</a></li> </ul>
-                </div>
-
-                <div class="footer-col">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="termos.html" target="_blank">Termos de Uso</a></li>
-                        <li><a href="privacidade.html" target="_blank">Política de Privacidade</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-col">
-                    <h4>Siga-nos</h4>
-                    <div class="social-links">
-                        <a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" class="social-link" aria-label="Instagram">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                        </a>
-                        <a href="https://www.facebook.com/profile.php?id=61582215350970" class="social-link" aria-label="Facebook">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Pinterest">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-            
-            <div class="footer-copyright">
-              &copy; 2025 Lirandzo. Todos os direitos reservados.
-            </div>
-        </div>
-    </footer>
+        <a class="footer-corp-btn" href="https://wa.me/258878061697" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
+      </div>
+    </div>
+    <div class="footer-corp-grid">
+      <div class="footer-corp-col footer-corp-about"><h3>Lirandzo</h3><p>Experiências digitais elegantes para casamentos, eventos e projectos empresariais.</p></div>
+      <nav class="footer-corp-col" aria-label="Navegação do rodapé"><h3>Navegação</h3><ul><li><a href="index.html#pacotes">Pacotes</a></li><li><a href="index.html#testemunhos">Testemunhos</a></li><li><a href="index.html#faq">FAQ</a></li></ul></nav>
+      <div class="footer-corp-col"><h3>Serviços</h3><ul><li><a href="index.html#pacotes">Convites digitais</a></li><li><button type="button" class="footer-link-button" data-open-briefing>Páginas corporate</button></li><li><a href="index.html#apoio">Apoio comercial</a></li><li><a href="blog.html">Blog</a></li></ul></div>
+      <div class="footer-corp-col"><h3>Empresa</h3><ul><li><a href="termos.html">Termos de Uso</a></li><li><a href="privacidade.html">Política de Privacidade</a></li><li><a href="mailto:lirandzo.mz@gmail.com">Email</a></li><li><a href="https://wa.me/258878061697" target="_blank" rel="noopener noreferrer">WhatsApp</a></li></ul></div>
+    </div>
+    <div class="footer-corp-bottom"><p>&copy; 2026 Lirandzo. Todos os direitos reservados.</p><div class="footer-corp-social" aria-label="Redes sociais"><a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.5"></circle><path d="M17.4 6.7h.1"></path></svg></a><a href="https://www.facebook.com/profile.php?id=61582215350970" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v4h4v-4h3l1-4h-4V9c0-.6.4-1 1-1z"></path></svg></a><a href="https://wa.me/258878061697" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l1.2-3.6A7 7 0 1 1 8.6 18L5 19z"></path><path d="M9 9c.6 2.1 2 3.6 4 4l1-1"></path></svg></a></div></div>
+  </div>
+</footer>
 
     <div class="modal" id="templateDetailModal" role="dialog" aria-modal="true" aria-labelledby="modalTemplateName">
       
-      <button type="button" class="modal-nav-btn prev" aria-label="Modelo anterior">
+      <button type="button" class="modal-nav-btn prev" aria-label="Pacote anterior">
         <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>
       </button>
 
       <div class="modal-card modal-card-details">
           
           <div class="modal-header">
-              <h3 id="modalTemplateName">Nome do Modelo</h3>
+              <h3 id="modalTemplateName">Nome do Pacote</h3>
               <span class="modal-price" id="modalTemplatePrice">Preço</span>
           </div>
 
           <p class="modal-features-title">O que este pacote inclui:</p>
+          <p class="modal-support-note">Os detalhes podem ser ajustados de acordo com o projecto e a validação comercial.</p>
           <ul class="modal-features-list" id="modalFeaturesList"></ul>
 
           <div class="form-actions" style="margin-top: 30px;">
@@ -565,43 +539,107 @@
           </div>
       </div>
 
-      <button type="button" class="modal-nav-btn next" aria-label="Modelo seguinte">
+      <button type="button" class="modal-nav-btn next" aria-label="Pacote seguinte">
         <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>
       </button>
 
     </div>
 
-    <div class="modal" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalContactTitle">
-      <div class="modal-card">
-          <h3 id="modalContactTitle">Entre em Contacto</h3>
-          <p>A nossa equipa está aqui para um atendimento personalizado.</p>
-          
-          <div class="contact-details-modal">
-              <div class="info-block">
-                  <p><strong>Email</strong><br>lirandzo.mz@gmail.com</p>
-              </div>
-              <div class="info-block">
-                  <p><strong>WhatsApp</strong><br>+258 87 806 1697</p>
-              </div>
-              <div class="info-block">
-                  <p><strong>Horário</strong><br>Segunda a Sexta, 09:00 - 17:00</p>
-              </div>
-          </div>
-          
-          <div class="form-actions" style="margin-top: 30px;">
-            <button type="button" class="btn btn-ghost" data-close-modal>Fechar</button>
-          </div>
+    <div class="modal contact-modal" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="modalContactTitle">
+      <div class="modal-card contact-premium-card"><button type="button" class="modal-x" data-close-modal aria-label="Fechar contacto">×</button>
+          <div class="modal-hero contact-hero"><div class="modal-hero-overlay"><h3 id="modalContactTitle">Entre em Contacto</h3><p>A nossa equipa está aqui para um atendimento personalizado.</p></div></div>
+          <div class="contact-details-modal premium-contact-list"><div class="info-block"><span class="info-icon">✉</span><p><strong>Email</strong><br>lirandzo.mz@gmail.com</p></div><div class="info-block"><span class="info-icon">☏</span><p><strong>WhatsApp</strong><br>+258 87 806 1697</p></div><div class="info-block"><span class="info-icon">◷</span><p><strong>Horário</strong><br>Segunda a Sexta, 09:00 - 17:00</p></div></div>
+          <div class="form-actions contact-close-action"><button type="button" class="btn btn-ghost" data-close-modal>Fechar</button></div>
       </div>
     </div>
     
+
+
+<div class="modal briefing-premium-modal" id="briefingModal" role="dialog" aria-modal="true" aria-labelledby="briefingModalTitle">
+  <div class="modal-card briefing-modal-card briefing-premium-card"><button type="button" class="modal-x" data-close-modal aria-label="Fechar briefing">×</button>
+      <div class="briefing-modal-top modal-hero briefing-hero"><div class="modal-hero-overlay">
+          <h3 id="briefingModalTitle">Briefing compacto</h3><p>Preencha os pontos essenciais do projecto. O formulário será enviado para análise comercial inicial.</p>
+      </div></div>
+
+      <form id="corporateBriefingForm" class="briefing-form" action="https://formsubmit.co/ajax/lirandzo.mz@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="Novo briefing Corporate — Lirandzo">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="pacote" value="Corporate">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="text" name="_honey" class="honeypot-field" tabindex="-1" autocomplete="off">
+
+        <div class="briefing-grid">
+          <label>
+            <span>Nome</span>
+            <input type="text" name="nome" placeholder="Digite o seu nome" required>
+          </label>
+          <label>
+            <span>Empresa / Marca</span>
+            <input type="text" name="empresa" placeholder="Digite o nome da empresa" required>
+          </label>
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" placeholder="seu@email.com" required>
+          </label>
+          <label>
+            <span>Telefone / WhatsApp</span>
+            <input type="text" name="telefone" placeholder="+258 000 000 000" required>
+          </label>
+          <label>
+            <span>Tipo de projecto</span>
+            <select name="tipo_de_projecto" required>
+              <option value="" selected disabled>Seleccione</option>
+              <option>Convite institucional</option>
+              <option>Página promocional</option>
+              <option>Evento corporativo</option>
+              <option>Landing page comercial</option>
+              <option>Outro</option>
+            </select>
+          </label>
+          <label>
+            <span>Prazo pretendido</span>
+            <input type="text" name="prazo" placeholder="Ex.: 10 dias">
+          </label>
+          <label class="briefing-grid-full">
+            <span>Objectivo principal</span>
+            <input type="text" name="objectivo" placeholder="Ex.: captar leads, apresentar evento, lançar campanha" required>
+          </label>
+          <label class="briefing-grid-full">
+            <span>Público-alvo</span>
+            <input type="text" name="publico_alvo" placeholder="Quem deve receber ou visitar esta página?">
+          </label>
+          <label class="briefing-grid-full">
+            <span>Referências, links ou observações</span>
+            <textarea name="referencias" rows="3" placeholder="Partilhe referências visuais, links e notas importantes"></textarea>
+          </label>
+          <label class="briefing-grid-full">
+            <span>Resumo do projecto</span>
+            <textarea name="descricao" rows="5" placeholder="Descreva de forma directa o que precisa" required></textarea>
+          </label>
+        </div>
+
+        <div class="briefing-status" id="briefingStatus" aria-live="polite"></div>
+
+        <div class="form-actions briefing-actions">
+          <button type="submit" class="btn btn-primary btn-animated" id="submitBriefingBtn">Enviar briefing</button>
+          <button type="button" class="btn btn-ghost" data-close-modal>Cancelar</button>
+        </div>
+      </form>
+  </div>
+</div>
+
     <nav class="floating-nav">
-        <a href="#modelos" class="fab-link" aria-label="Ver Modelos">
+        <a href="#pacotes" class="fab-link" aria-label="Ver Pacotes">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-            <span>Modelos</span>
+            <span>Pacotes</span>
         </a>
         <button type="button" id="openContactModalBtn" class="fab-link" aria-label="Abrir Contactos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             <span>Contactos</span>
+        </button>
+        <button type="button" class="fab-link" data-open-briefing aria-label="Abrir briefing corporate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V4.5A1.5 1.5 0 0 1 5.5 3h8.88A1.5 1.5 0 0 1 15.44 3.44l4.12 4.12A1.5 1.5 0 0 1 20 8.62V19.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5Z"></path><path d="M8 12h8M8 16h5M14 3v5h5"></path></svg>
+            <span>Corporate</span>
         </button>
         <a href="#testemunhos" class="fab-link" aria-label="Ver Testemunhos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -617,14 +655,12 @@
   
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Fade-in da página
       const body = document.body;
       window.onload = () => {
-          body.classList.remove('loading');
-          setTimeout(() => body.classList.add('loaded'), 100);
+        body.classList.remove('loading');
+        setTimeout(() => body.classList.add('loaded'), 100);
       };
 
-      // Fade-in das secções
       const animatedSections = document.querySelectorAll('.fade-in-section');
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -635,287 +671,401 @@
         });
       }, { threshold: 0.15 });
       animatedSections.forEach(section => observer.observe(section));
-      
-      
-      // --- LÓGICA DOS MODAIS (ATUALIZADA) ---
-      
-      const WHATSAPP_NUMBER = '258878061697'; 
+
+      const WHATSAPP_NUMBER = '258878061697';
       const allModals = document.querySelectorAll('.modal');
-      
-      // Modal de Detalhes do Template (LÓGICA ATUALIZADA)
       const templateModal = document.getElementById('templateDetailModal');
-      const templateCards = document.querySelectorAll('.template-card');
+      const templateCards = [...document.querySelectorAll('.template-card')];
       const selectPackageBtn = document.getElementById('selectPackageBtn');
       const modalTemplateName = document.getElementById('modalTemplateName');
       const modalTemplatePrice = document.getElementById('modalTemplatePrice');
-      const viewDemoBtn = document.getElementById('viewDemoBtn'); 
+      const viewDemoBtn = document.getElementById('viewDemoBtn');
       const modalFeaturesList = document.getElementById('modalFeaturesList');
-      const featureIconSvg = `<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg>`;
-      
-      // Botões de navegação do Modal
       const modalNavPrev = document.querySelector('.modal-nav-btn.prev');
       const modalNavNext = document.querySelector('.modal-nav-btn.next');
-      let currentTemplateIndex = 0; // Rastreia o índice atual
+      const contactModal = document.getElementById('contactModal');
+      const openContactBtn = document.getElementById('openContactModalBtn');
+      const openBriefingBtn = document.getElementById('openBriefingBtn');
+      const briefingModal = document.getElementById('briefingModal');
+      const briefingForm = document.getElementById('corporateBriefingForm');
+      const briefingStatus = document.getElementById('briefingStatus');
+      const submitBriefingBtn = document.getElementById('submitBriefingBtn');
+      const featureIconSvg = `<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg>`;
+      let currentTemplateIndex = 0;
 
-      // Função para atualizar o conteúdo do modal
-      function updateModalContent(index) {
-          const card = templateCards[index];
-          if (!card) return;
-
-          const templateName = card.dataset.templateName;
-          const templatePrice = card.dataset.templatePrice;
-          const demoUrl = card.dataset.demoUrl; 
-          const featuresString = card.dataset.features;
-
-          // Atualiza conteúdo
-          modalTemplateName.textContent = templateName;
-          modalTemplatePrice.textContent = templatePrice;
-          templateModal.dataset.currentTemplate = templateName; // Para o botão "Escolher"
-
-          // Atualiza o link da demo
-          if (demoUrl) {
-            viewDemoBtn.href = demoUrl;
-            viewDemoBtn.style.display = 'inline-block'; 
-          } else {
-            viewDemoBtn.style.display = 'none'; 
-          }
-
-          // Atualiza lista de features com animação
-          modalFeaturesList.innerHTML = ''; 
-          if (featuresString) {
-            const featuresArray = featuresString.split('|');
-            featuresArray.forEach((featureText, i) => {
-              const li = document.createElement('li');
-              li.innerHTML = `${featureIconSvg} ${featureText}`;
-              modalFeaturesList.appendChild(li);
-              // A animação de entrada (CSS) será re-aplicada
-              // Adiciona um pequeno delay para a animação
-              setTimeout(() => li.classList.add('visible'), 50 + i * 25); 
-            });
-          }
-          
-          // Atualiza o estado dos botões de navegação
-          modalNavPrev.disabled = (index === 0);
-          modalNavNext.disabled = (index === templateCards.length - 1);
-          currentTemplateIndex = index; // Atualiza o rastreador
+      function openModal(modal) {
+        if (!modal) return;
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
       }
 
-      // Adiciona listener a CADA card para abrir o modal
+      function closeModal(modal) {
+        if (!modal) return;
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      function updateModalContent(index) {
+        const card = templateCards[index];
+        if (!card) return;
+
+        const templateName = card.dataset.templateName;
+        const templatePrice = card.dataset.templatePrice;
+        const demoUrl = card.dataset.demoUrl;
+        const featuresString = card.dataset.features;
+        const ctaMode = card.dataset.ctaMode || 'whatsapp';
+
+        modalTemplateName.textContent = templateName;
+        modalTemplatePrice.textContent = templatePrice;
+        templateModal.dataset.currentTemplate = templateName;
+        templateModal.dataset.currentCtaMode = ctaMode;
+        currentTemplateIndex = index;
+
+        if (demoUrl) {
+          viewDemoBtn.href = demoUrl;
+          viewDemoBtn.style.display = 'inline-block';
+        } else {
+          viewDemoBtn.removeAttribute('href');
+          viewDemoBtn.style.display = 'none';
+        }
+
+        selectPackageBtn.textContent = ctaMode === 'briefing' ? 'Pedir Orçamento' : 'Escolher Pacote';
+
+        modalFeaturesList.innerHTML = '';
+        if (featuresString) {
+          featuresString.split('|').forEach((featureText, i) => {
+            const li = document.createElement('li');
+            li.innerHTML = `${featureIconSvg} ${featureText}`;
+            modalFeaturesList.appendChild(li);
+            setTimeout(() => li.classList.add('visible'), 40 + i * 20);
+          });
+        }
+
+        modalNavPrev.disabled = index === 0;
+        modalNavNext.disabled = index === templateCards.length - 1;
+      }
+
       templateCards.forEach((card, index) => {
         card.addEventListener('click', () => {
-          updateModalContent(index); // Chama a função de atualização
-          templateModal.classList.add('open');
+          updateModalContent(index);
+          openModal(templateModal);
+        });
+
+        card.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            updateModalContent(index);
+            openModal(templateModal);
+          }
         });
       });
 
-      // Listeners para os botões de navegação do modal
       modalNavPrev.addEventListener('click', () => {
-          if (currentTemplateIndex > 0) {
-              updateModalContent(currentTemplateIndex - 1);
-          }
+        if (currentTemplateIndex > 0) updateModalContent(currentTemplateIndex - 1);
       });
-
       modalNavNext.addEventListener('click', () => {
-          if (currentTemplateIndex < templateCards.length - 1) {
-              updateModalContent(currentTemplateIndex + 1);
+        if (currentTemplateIndex < templateCards.length - 1) updateModalContent(currentTemplateIndex + 1);
+      });
+
+
+function openBriefingModal(context = 'Pacote Corporate') {
+  const packageInput = briefingForm ? briefingForm.querySelector('input[name="pacote"]') : null;
+  const subjectInput = briefingForm ? briefingForm.querySelector('input[name="_subject"]') : null;
+  if (packageInput) packageInput.value = context;
+  if (subjectInput) subjectInput.value = `Novo briefing ${context} — Lirandzo`;
+  if (briefingStatus) {
+    briefingStatus.textContent = '';
+    briefingStatus.className = 'briefing-status';
+  }
+  openModal(briefingModal);
+}
+
+selectPackageBtn.addEventListener('click', () => {
+  const selectedTemplate = templateModal.dataset.currentTemplate;
+  const ctaMode = templateModal.dataset.currentCtaMode || 'whatsapp';
+  if (ctaMode === 'briefing') {
+    closeModal(templateModal);
+    openBriefingModal(selectedTemplate || 'Pacote Corporate');
+    return;
+  }
+  const message = `Olá! Tenho interesse no ${selectedTemplate}. Gostaria de saber os próximos passos.`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+});
+
+
+if (openContactBtn) {
+  openContactBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal(contactModal);
+  });
+}
+
+if (openBriefingBtn) {
+  openBriefingBtn.addEventListener('click', () => openBriefingModal('Pacote Corporate'));
+}
+
+document.querySelectorAll('[data-open-briefing]').forEach(button => {
+  button.addEventListener('click', () => openBriefingModal(button.dataset.package || 'Pacote Corporate'));
+});
+
+
+      /* Testemunhos: carousel estável, sem dependências externas */
+      const testimonialCards = [...document.querySelectorAll('#testemunhos .styled-testimonial')];
+      const testimonialDots = [...document.querySelectorAll('#testemunhos .testimonial-dots button')];
+      const testimonialPrev = document.querySelector('#testemunhos .testimonial-prev');
+      const testimonialNext = document.querySelector('#testemunhos .testimonial-next');
+      let activeTestimonialIndex = 1;
+
+      function renderTestimonials() {
+        if (!testimonialCards.length) return;
+        testimonialCards.forEach((card, index) => {
+          card.classList.remove('is-active', 'is-side', 'is-left', 'is-right', 'is-hidden');
+          if (index === activeTestimonialIndex) {
+            card.classList.add('is-active');
+          } else if ((index + 1) % testimonialCards.length === activeTestimonialIndex) {
+            card.classList.add('is-side', 'is-left');
+          } else if ((activeTestimonialIndex + 1) % testimonialCards.length === index) {
+            card.classList.add('is-side', 'is-right');
+          } else {
+            card.classList.add('is-hidden');
           }
-      });
-
-
-      // Listener do botão "Escolher Pacote" (continua igual)
-      selectPackageBtn.addEventListener('click', () => {
-        const selectedTemplate = templateModal.dataset.currentTemplate;
-        const message = `Olá! Tenho interesse em adquirir o modelo de convite "${selectedTemplate}". Gostaria de saber os próximos passos.`;
-        const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-        window.open(waUrl, '_blank');
-      });
-
-      // Lógica do Modal de Contacto (continua igual)
-      const contactModal = document.getElementById('contactModal');
-      const openContactBtn = document.getElementById('openContactModalBtn');
-
-      function openContactModal(e) {
-          e.preventDefault(); 
-          contactModal.classList.add('open');
+        });
+        testimonialDots.forEach((dot, index) => dot.classList.toggle('active', index === activeTestimonialIndex));
       }
 
-      openContactBtn.addEventListener('click', openContactModal);
+      function moveTestimonials(direction) {
+        if (!testimonialCards.length) return;
+        activeTestimonialIndex = (activeTestimonialIndex + direction + testimonialCards.length) % testimonialCards.length;
+        renderTestimonials();
+      }
 
+      if (testimonialPrev) testimonialPrev.addEventListener('click', () => moveTestimonials(-1));
+      if (testimonialNext) testimonialNext.addEventListener('click', () => moveTestimonials(1));
+      testimonialDots.forEach((dot, index) => dot.addEventListener('click', () => {
+        activeTestimonialIndex = index;
+        renderTestimonials();
+      }));
+      renderTestimonials();
 
-      // Lógica Genérica para Fechar Modais (continua igual)
       allModals.forEach(modal => {
-          modal.addEventListener('click', (e) => {
-            if (e.target === modal || e.target.closest('[data-close-modal]')) {
-              modal.classList.remove('open');
-            }
-          });
+        modal.addEventListener('click', (event) => {
+          if (event.target === modal || event.target.closest('[data-close-modal]')) {
+            closeModal(modal);
+          }
+        });
       });
-      
 
-      // LÓGICA DO SCROLL AUTOMÁTICO (continua igual)
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          allModals.forEach(closeModal);
+        }
+      });
+
       function setupAutoScrollers() {
-        const scrollers = document.querySelectorAll('#modelos .auto-scroll-container, #testemunhos .auto-scroll-container');
+        const scrollers = document.querySelectorAll('#pacotes .auto-scroll-container, #testemunhos .auto-scroll-container');
         scrollers.forEach(scroller => {
           let scrollInterval;
-          let scrollSpeed = 0.5; 
-          let direction = 1;     
+          let scrollSpeed = 0.5;
+          let direction = 1;
 
           function startScrolling() {
-            if (scrollInterval) clearInterval(scrollInterval); 
+            if ('ontouchstart' in window) return;
+            clearInterval(scrollInterval);
             scrollInterval = setInterval(() => {
               const maxScroll = scroller.scrollWidth - scroller.clientWidth;
-              if (scroller.scrollLeft >= maxScroll - 1) { direction = -1; } 
-              else if (scroller.scrollLeft <= 0) { direction = 1; }
+              if (scroller.scrollLeft >= maxScroll - 1) direction = -1;
+              else if (scroller.scrollLeft <= 0) direction = 1;
               scroller.scrollLeft += scrollSpeed * direction;
-            }, 15); 
+            }, 15);
           }
-          function stopScrolling() { clearInterval(scrollInterval); }
+
+          function stopScrolling() {
+            clearInterval(scrollInterval);
+          }
 
           scroller.addEventListener('mouseenter', stopScrolling);
           scroller.addEventListener('mouseleave', startScrolling);
-          if (!('ontouchstart' in window)) {
-              startScrolling();
-          }
+          startScrolling();
         });
       }
       setupAutoScrollers();
-            
-      // LÓGICA DO QUIZ DE ESTILO (continua igual)
+
       function setupStyleQuiz() {
-          const quizContainer = document.querySelector('.quiz-container');
-          if (!quizContainer) return;
+        const quizContainer = document.querySelector('.quiz-container');
+        if (!quizContainer) return;
 
-          const steps = quizContainer.querySelectorAll('.quiz-step');
-          const options = quizContainer.querySelectorAll('.quiz-option');
-          const resultDiv = quizContainer.querySelector('.quiz-result');
-          const recommendationEl = document.getElementById('recommendation');
-          let currentStep = 1;
-          const answers = {};
-          const recommendations = {
-              'rustico': 'Rústico Chic',
-              'classico': 'Elegância Clássica',
-              'moderno': 'Amor Moderno',
-              'floral': 'Jardim Secreto'
-          };
-
-          options.forEach(option => {
-              option.addEventListener('click', () => {
-                  const step = option.closest('.quiz-step');
-                  const stepNumber = parseInt(step.dataset.step);
-                  answers[stepNumber] = option.dataset.value;
-
-                  const nextStep = quizContainer.querySelector(`.quiz-step[data-step="${stepNumber + 1}"]`);
-                  if (nextStep) {
-                      step.classList.remove('active');
-                      nextStep.classList.add('active');
-                      currentStep++;
-                  } else {
-                      step.classList.remove('active');
-                      showResult();
-                  }
-              });
-          });
-
-          function showResult() {
-              const counts = {};
-              Object.values(answers).forEach(val => { counts[val] = (counts[val] || 0) + 1; });
-              
-              let recommendedStyle = 'classico'; 
-              let maxCount = 0;
-              for (const style in counts) {
-                  if (counts[style] > maxCount) {
-                      maxCount = counts[style];
-                      recommendedStyle = style;
-                  }
-              }
-
-              const recommendedModelName = recommendations[recommendedStyle] || 'Elegância Clássica';
-              recommendationEl.innerHTML = `
-                  <p>Parece que o seu estilo é <strong>${recommendedStyle.charAt(0).toUpperCase() + recommendedStyle.slice(1)}</strong>!</p>
-                  <p>Recomendamos que explore o modelo:</p>
-                  <h4>${recommendedModelName}</h4> 
-              `; 
-              resultDiv.style.display = 'block';
+        const options = quizContainer.querySelectorAll('.quiz-option');
+        const resultDiv = quizContainer.querySelector('.quiz-result');
+        const recommendationEl = document.getElementById('recommendation');
+        const recommendations = {
+          perola: {
+            name: 'Pacote Pérola',
+            label: 'essencial elegante',
+            text: 'Ideal para quem quer presença visual forte, comunicação clara e os elementos essenciais bem resolvidos.'
+          },
+          esmeralda: {
+            name: 'Pacote Esmeralda',
+            label: 'equilíbrio entre forma e função',
+            text: 'Recomendado para quem quer mais organização, memória do evento e uma experiência digital mais completa.'
+          },
+          rubi: {
+            name: 'Pacote Rubi',
+            label: 'experiência premium',
+            text: 'A melhor escolha para casais que querem elevar o convite com vídeo, check-in e um nível superior de exclusividade.'
           }
+        };
+        const answers = {};
+
+        options.forEach(option => {
+          option.addEventListener('click', () => {
+            const step = option.closest('.quiz-step');
+            const stepNumber = Number(step.dataset.step);
+            answers[stepNumber] = option.dataset.value;
+
+            const nextStep = quizContainer.querySelector(`.quiz-step[data-step="${stepNumber + 1}"]`);
+            step.classList.remove('active');
+            if (nextStep) {
+              nextStep.classList.add('active');
+            } else {
+              const counts = Object.values(answers).reduce((acc, value) => {
+                acc[value] = (acc[value] || 0) + 1;
+                return acc;
+              }, {});
+              const recommendedKey = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || 'esmeralda';
+              const recommendation = recommendations[recommendedKey];
+              recommendationEl.innerHTML = `
+                <p>O perfil de vocês aponta para uma solução mais <strong>${recommendation.label}</strong>.</p>
+                <h4>${recommendation.name}</h4>
+                <p>${recommendation.text}</p>
+              `;
+              resultDiv.style.display = 'block';
+            }
+          });
+        });
       }
       setupStyleQuiz();
 
-      // LÓGICA DO ACCORDION (FAQ)
       function setupFAQAccordion() {
-          const faqItems = document.querySelectorAll('.faq-item');
-          faqItems.forEach(item => {
-              const question = item.querySelector('.faq-question');
-              
-              question.addEventListener('click', () => {
-                  // Fecha todos os outros itens
-                  faqItems.forEach(otherItem => {
-                      if (otherItem !== item && otherItem.classList.contains('active')) {
-                          otherItem.classList.remove('active');
-                          otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
-                      }
-                  });
+        const faqItems = Array.from(document.querySelectorAll('.faq-item'));
+        if (!faqItems.length) return;
 
-                  // Abre ou fecha o item clicado
-                  const isActive = item.classList.toggle('active');
-                  question.setAttribute('aria-expanded', isActive);
-              });
+        const closeItem = (item) => {
+          const question = item.querySelector('.faq-question');
+          const answer = item.querySelector('.faq-answer');
+          item.classList.remove('active');
+          if (question) question.setAttribute('aria-expanded', 'false');
+          if (answer) answer.style.maxHeight = '0px';
+        };
+
+        const openItem = (item) => {
+          const question = item.querySelector('.faq-question');
+          const answer = item.querySelector('.faq-answer');
+          item.classList.add('active');
+          if (question) question.setAttribute('aria-expanded', 'true');
+          if (answer) answer.style.maxHeight = `${answer.scrollHeight}px`;
+        };
+
+        faqItems.forEach((item, index) => {
+          const question = item.querySelector('.faq-question');
+          const answer = item.querySelector('.faq-answer');
+          if (!question || !answer) return;
+
+          const panelId = answer.id || `faq-answer-${index + 1}`;
+          answer.id = panelId;
+          question.setAttribute('aria-controls', panelId);
+          answer.style.maxHeight = '0px';
+
+          question.addEventListener('click', () => {
+            const willOpen = !item.classList.contains('active');
+            faqItems.forEach(closeItem);
+            if (willOpen) openItem(item);
           });
+        });
+
+        window.addEventListener('resize', () => {
+          faqItems.forEach(item => {
+            if (!item.classList.contains('active')) return;
+            const answer = item.querySelector('.faq-answer');
+            if (answer) answer.style.maxHeight = `${answer.scrollHeight}px`;
+          });
+        }, { passive: true });
       }
       setupFAQAccordion();
 
-      
-      // LÓGICA PARA ABRIR MODAL PELA TABELA OU PELOS CARTÕES MÓVEIS
       function setupTableModalButtons() {
-          const tableButtons = document.querySelectorAll('.open-modal-from-table');
-          
-          tableButtons.forEach(button => {
-              button.addEventListener('click', (e) => {
-                  e.preventDefault(); // Previne qualquer comportamento padrão do botão
-                  
-                  const templateIndex = parseInt(button.dataset.index, 10);
-                  
-                  if (isNaN(templateIndex) || templateIndex < 0 || templateIndex >= templateCards.length) {
-                      console.error('Índice do template inválido no botão da tabela/cartão.');
-                      return;
-                  }
-                  
-                  updateModalContent(templateIndex);
-                  templateModal.classList.add('open');
-              });
+        document.querySelectorAll('.open-modal-from-table').forEach(button => {
+          button.addEventListener('click', (event) => {
+            event.preventDefault();
+            const templateIndex = Number(button.dataset.index);
+            if (Number.isNaN(templateIndex) || !templateCards[templateIndex]) return;
+            updateModalContent(templateIndex);
+            openModal(templateModal);
           });
+        });
       }
       setupTableModalButtons();
-      
-      // ==========================================================
-      // NOVO: LÓGICA PARA O BOTÃO "VOLTAR AO TOPO"
-      // ==========================================================
-      function setupBackToTopButton() {
-          const backToTopButton = document.getElementById('backToTopBtn');
-          if (!backToTopButton) return;
 
-          // Mostrar/Esconder o botão baseado no scroll
-          window.addEventListener('scroll', () => {
-              if (window.scrollY > 300) { // Mostra após scrollar 300px
-                  backToTopButton.classList.add('show');
-              } else {
-                  backToTopButton.classList.remove('show');
-              }
-          });
 
-          // Ação de clique: scroll suave para o topo
-          backToTopButton.addEventListener('click', (e) => {
-              e.preventDefault();
-              window.scrollTo({
-                  top: 0,
-                  behavior: 'smooth' // Scroll suave
-              });
-          });
+function setupBriefingForm() {
+  if (!briefingForm) return;
+  briefingForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(briefingForm);
+    if (briefingStatus) {
+      briefingStatus.textContent = 'A enviar briefing...';
+      briefingStatus.className = 'briefing-status is-loading';
+    }
+    if (submitBriefingBtn) submitBriefingBtn.disabled = true;
+
+    try {
+      const response = await fetch(briefingForm.action, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData
+      });
+      const data = await response.json();
+      if (!response.ok || data.success === 'false') throw new Error('Falha no envio');
+
+      briefingForm.reset();
+      const packageInput = briefingForm.querySelector('input[name="pacote"]');
+      if (packageInput) packageInput.value = 'Pacote Corporate';
+      if (briefingStatus) {
+        briefingStatus.textContent = 'Briefing enviado com sucesso. A equipa da Lirandzo irá analisar o pedido e responder pelo email indicado.';
+        briefingStatus.className = 'briefing-status is-success';
       }
-      setupBackToTopButton(); // Chama a nova função
-      
+    } catch (error) {
+      if (briefingStatus) {
+        briefingStatus.textContent = 'Não foi possível enviar agora. Tente novamente ou contacte-nos por WhatsApp.';
+        briefingStatus.className = 'briefing-status is-error';
+      }
+    } finally {
+      if (submitBriefingBtn) submitBriefingBtn.disabled = false;
+    }
+  });
+}
+setupBriefingForm();
+
+      function setupBackToTopButton() {
+        const backToTopButton = document.getElementById('backToTopBtn');
+        if (!backToTopButton) return;
+
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 300) backToTopButton.classList.add('show');
+          else backToTopButton.classList.remove('show');
+        });
+
+        backToTopButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+      setupBackToTopButton();
     });
   </script>
   <!-- Chatbot Unificado -->
+<script src="theme.js"></script>
 <script src="chatbot-unified.js"></script>
+<script src="motion-refinement.js"></script>
+<script src="lang-currency.js"></script>
 </body>
 </html>

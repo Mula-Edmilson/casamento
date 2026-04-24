@@ -1,30 +1,64 @@
 <!doctype html>
-<html lang="pt">
+<html lang="pt-PT" data-title-pt="Política de Privacidade — Lirandzo" data-title-en="Privacy Policy — Lirandzo" data-description-pt="Saiba como a Lirandzo recolhe, utiliza e protege dados relacionados aos seus convites digitais." data-description-en="Learn how Lirandzo collects, uses and protects data related to its digital invitations.">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Política de Privacidade — Lirandzo</title>
   
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  <link rel="icon" type="image/svg+xml" href="assets/lirandzo-logo.svg">
+  <meta name="description" content="Saiba como a Lirandzo recolhe, utiliza e protege dados relacionados aos seus convites digitais.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#2B2623">
+  <link rel="canonical" href="https://lirandzo.com/privacidade.html">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css">
+  
+<script>
+  (() => {
+    try {
+      const saved = localStorage.getItem('lirandzo-theme');
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (error) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 
-<body class="loading">
-    
-    <header class="legal-page-header">
-        <a href="index.html" aria-label="Voltar à página inicial">
-            <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo Logo">
-        </a>
-    </header>
-  
-    <main role="main" class="legal-page-wrap">
+<body class="loading site-subpage legal-subpage">
+  <header class="site-header" aria-label="Navegação principal Lirandzo">
+    <a class="site-brand" href="index.html#main-content" aria-label="Lirandzo — início">
+      <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="brand-logo">
+    </a>
+    <nav class="site-menu" aria-label="Secções do site">
+      <a href="index.html#main-content">Início</a><a href="index.html#pacotes">Pacotes</a><a href="blog.html">Blog</a><a href="index.html#faq">FAQ</a><a href="index.html#sobre-nos">Sobre</a><a href="index.html#apoio">Contacto</a>
+    </nav>
+    <div class="site-actions">
+      <a href="https://wa.me/258878061697?text=Ol%C3%A1!%20Quero%20o%20meu%20convite%20digital%20Lirandzo." class="header-cta" target="_blank" rel="noopener noreferrer">♡ Quero o meu convite</a>
+      <div class="language-switcher" data-language-switcher>
+        <button type="button" class="language-toggle" data-language-toggle aria-label="Escolher idioma" aria-expanded="false">
+          <span class="language-flag" data-language-flag aria-hidden="true">🇲🇿</span>
+          <span class="language-current" data-language-current>PT</span>
+          <span class="language-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="language-menu" data-language-menu role="menu" aria-label="Idiomas disponíveis">
+          <button type="button" data-lang-option="pt" role="menuitem"><span aria-hidden="true">🇲🇿</span><span>Português</span></button>
+          <button type="button" data-lang-option="en" role="menuitem"><span aria-hidden="true">🇬🇧</span><span>English</span></button>
+        </div>
+      </div>
+      <button type="button" class="theme-toggle site-theme-toggle" id="themeToggle" aria-label="Alternar tema"><span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span><span class="theme-toggle-label" data-theme-label>Tema claro</span></button>
+    </div>
+  </header>
+<main role="main" class="legal-page-wrap">
         <h1>Política de Privacidade</h1>
-        <p><em>Última atualização: 29 de Outubro de 2025</em></p>
+        <p><em>Última atualização: 23 de Abril de 2026</em></p>
         
         <p>A sua privacidade é de extrema importância para nós. Esta política descreve como a Lirandzo recolhe, usa e protege as informações pessoais que você nos fornece.</p>
         
@@ -57,43 +91,30 @@
         
     </main>
   
-    <footer class="footer-complete">
-        <div class="footer-content">
-            <div class="footer-layout">
-                <div class="footer-col footer-col-main">
-                    <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Lirandzo Logo" class="footer-logo">
-                    <p>A criar memórias inesquecíveis através de design elegante e partilha fácil.</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Navegação</h4>
-                    <ul>
-                        <li><a href="index.html#modelos">Modelos</a></li>
-                        <li><a href="index.html#testemunhos">Testemunhos</a></li>
-                        <li><a href="index.html#faq">FAQ</a></li>
-                        <li><a href="#blog-placeholder">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="termos.html">Termos de Uso</a></li>
-                        <li><a href="privacidade.html">Política de Privacidade</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Siga-nos</h4>
-                    <div class="social-links">
-                        <a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" class="social-link" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
-                        <a href="https://www.facebook.com/profile.php?id=61582215350970" class="social-link" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
-                        <a href="#" class="social-link" aria-label="Pinterest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-copyright">
-              &copy; 2025 Lirandzo. Todos os direitos reservados.
-            </div>
-        </div>
-    </footer>
+    <footer class="footer-complete footer-corporate" aria-label="Rodapé corporativo">
+  <div class="footer-corp-inner">
+    <div class="footer-corp-top">
+      <a class="footer-corp-brand" href="index.html" aria-label="Lirandzo - página inicial">
+        <img src="assets/lirandzo-logo.svg" alt="Lirandzo Convites Digitais" class="footer-logo">
+        <span>Convites digitais e soluções corporate com design estratégico.</span>
+      </a>
+      <div class="footer-corp-actions">
+        <a class="footer-corp-contact" href="mailto:lirandzo.mz@gmail.com" aria-label="Enviar email para Lirandzo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+          <span>lirandzo.mz@gmail.com</span>
+        </a>
+        <a class="footer-corp-btn" href="https://wa.me/258878061697" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
+      </div>
+    </div>
+    <div class="footer-corp-grid">
+      <div class="footer-corp-col footer-corp-about"><h3>Lirandzo</h3><p>Experiências digitais elegantes para casamentos, eventos e projectos empresariais.</p></div>
+      <nav class="footer-corp-col" aria-label="Navegação do rodapé"><h3>Navegação</h3><ul><li><a href="index.html#pacotes">Pacotes</a></li><li><a href="index.html#pacotes">Corporate</a></li><li><a href="index.html#testemunhos">Testemunhos</a></li><li><a href="index.html#faq">FAQ</a></li></ul></nav>
+      <div class="footer-corp-col"><h3>Serviços</h3><ul><li><a href="index.html#pacotes">Convites digitais</a></li><li><a href="index.html#pacotes">Páginas corporate</a></li><li><a href="index.html#apoio">Apoio comercial</a></li><li><a href="blog.html">Blog</a></li></ul></div>
+      <div class="footer-corp-col"><h3>Empresa</h3><ul><li><a href="termos.html">Termos de Uso</a></li><li><a href="privacidade.html">Política de Privacidade</a></li><li><a href="mailto:lirandzo.mz@gmail.com">Email</a></li><li><a href="https://wa.me/258878061697" target="_blank" rel="noopener noreferrer">WhatsApp</a></li></ul></div>
+    </div>
+    <div class="footer-corp-bottom"><p>&copy; 2026 Lirandzo. Todos os direitos reservados.</p><div class="footer-corp-social" aria-label="Redes sociais"><a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.5"></circle><path d="M17.4 6.7h.1"></path></svg></a><a href="https://www.facebook.com/profile.php?id=61582215350970" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v4h4v-4h3l1-4h-4V9c0-.6.4-1 1-1z"></path></svg></a><a href="https://wa.me/258878061697" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l1.2-3.6A7 7 0 1 1 8.6 18L5 19z"></path><path d="M9 9c.6 2.1 2 3.6 4 4l1-1"></path></svg></a></div></div>
+  </div>
+</footer>
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
@@ -105,6 +126,8 @@
       });
     </script>
     <!-- Chatbot Unificado -->
+<script src="theme.js"></script>
 <script src="chatbot-unified.js"></script>
+<script src="lang-currency.js"></script>
 </body>
 </html>
