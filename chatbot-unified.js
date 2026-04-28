@@ -357,8 +357,16 @@
     const kb = t();
     const status = document.getElementById('chatbotStatus');
     const input = document.getElementById('chatbotInput');
+    const toggle = document.getElementById('chatbotToggle');
+    const close = document.getElementById('chatbotClose');
+    const bar = document.querySelector('.chatbot-intelligence-bar');
     if (status) status.textContent = kb.status;
     if (input) input.placeholder = kb.placeholder;
+    if (toggle) toggle.setAttribute('aria-label', lang() === 'en' ? 'Open chat' : 'Abrir chat');
+    if (close) close.setAttribute('aria-label', lang() === 'en' ? 'Close chat' : 'Fechar chat');
+    if (bar) bar.innerHTML = `<span></span>${lang() === 'en' ? 'Packages · Corporate · Support · Pricing' : 'Pacotes · Corporate · Apoio · Preços'}`;
+    document.querySelectorAll('.chatbot-actions').forEach(el => el.remove());
+    addActions();
   }
 
   function setupChatbotPositioning() {
@@ -368,11 +376,10 @@
     if (!chatbotContainer) return;
     const adjust = () => {
       const isMobile = window.innerWidth <= 768;
-      chatbotContainer.style.left = isMobile ? '10px' : '20px';
-      if (!isMobile) { chatbotContainer.style.bottom = '22px'; return; }
-      const back = backToTopBtn && backToTopBtn.classList.contains('show');
+      chatbotContainer.style.left = isMobile ? '12px' : '18px';
+      if (!isMobile) { chatbotContainer.style.bottom = '18px'; return; }
       const nav = floatingNav && window.getComputedStyle(floatingNav).display !== 'none';
-      chatbotContainer.style.bottom = back && nav ? '120px' : back ? '90px' : nav ? '100px' : '18px';
+      chatbotContainer.style.bottom = nav ? '76px' : '18px';
     };
     adjust();
     window.addEventListener('resize', adjust);
@@ -381,10 +388,10 @@
 
   function initChatbot() {
     if (document.getElementById('chatbotContainer')) return;
-    if (!document.querySelector('link[href="chatbot-styles.css"]')) {
+    if (!document.querySelector('link[href^="chatbot-styles.css"]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'chatbot-styles.css';
+      link.href = 'chatbot-styles.css?v=lang-chatfix-v7';
       document.head.appendChild(link);
     }
     createChatbotHTML();
@@ -396,13 +403,24 @@
     const close = document.getElementById('chatbotClose');
     const form = document.getElementById('chatbotForm');
 
-    toggle?.addEventListener('click', (e) => { e.stopPropagation(); win?.classList.toggle('active'); refreshLanguageTexts(); });
-    close?.addEventListener('click', () => win?.classList.remove('active'));
+    toggle?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      win?.classList.toggle('active');
+      document.body.classList.toggle('chatbot-open', !!win?.classList.contains('active'));
+      refreshLanguageTexts();
+    });
+    close?.addEventListener('click', () => {
+      win?.classList.remove('active');
+      document.body.classList.remove('chatbot-open');
+    });
     form?.addEventListener('submit', (e) => { e.preventDefault(); sendMessage(); });
 
     document.addEventListener('click', (event) => {
       const container = document.getElementById('chatbotContainer');
-      if (container && win && !container.contains(event.target) && win.classList.contains('active')) win.classList.remove('active');
+      if (container && win && !container.contains(event.target) && win.classList.contains('active')) {
+        win.classList.remove('active');
+        document.body.classList.remove('chatbot-open');
+      }
     });
 
     document.addEventListener('click', (event) => {
@@ -415,6 +433,8 @@
     });
 
     window.addEventListener('storage', refreshLanguageTexts);
+    window.addEventListener('lirandzo:language-change', refreshLanguageTexts);
+    window.addEventListener('lirandzo:languagechange', refreshLanguageTexts);
     document.addEventListener('lirandzo:language-change', refreshLanguageTexts);
   }
 

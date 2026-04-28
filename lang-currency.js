@@ -467,6 +467,99 @@
     'O cliente (os noivos) tem o direito de aceder, corrigir ou solicitar a exclusão de todas as informações pessoais fornecidas a qualquer momento. Os convidados que submeterem dados via RSVP devem contactar os noivos para gerir os seus dados.': 'The client (the couple) has the right to access, correct or request the deletion of all personal information provided at any time. Guests who submit data through RSVP should contact the couple to manage their data.',
   });
 
+  // LIRANDZO_IMMERSIVE_UI_TRANSLATIONS — dynamic mobile/PWA/chat panels
+  Object.assign(translations, {
+    'Instalar': 'Install',
+    'Adicionar Lirandzo ao telemóvel': 'Add Lirandzo to your phone',
+    'Link copiado para partilhar.': 'Link copied to share.',
+    'Ainda não há pacotes guardados. Vá à secção de pacotes e toque em “Guardar”.': 'There are no saved packages yet. Go to the packages section and tap “Save”.',
+    'Preço sob consulta': 'Price upon request',
+    'guardado para comparação': 'saved for comparison',
+    'Guardados': 'Saved',
+    'Gerir convites guardados': 'Manage saved invitations',
+    'Compare, remova ou envie a lista guardada directamente para a Lirandzo.': 'Compare, remove or send the saved list directly to Lirandzo.',
+    'Enviar lista no WhatsApp': 'Send list on WhatsApp',
+    'Limpar lista': 'Clear list',
+    'Remover': 'Remove',
+    'Gerir': 'Manage',
+    'Tem': 'You have',
+    'convite guardado': 'saved invitation',
+    'convites guardados': 'saved invitations',
+    'para comparar.': 'to compare.',
+    'Guardar': 'Save',
+    'Partilhar': 'Share',
+    'Partilhar este artigo': 'Share this article',
+    'Fechar': 'Close',
+    'Comparador': 'Comparison',
+    'Compare os pacotes sem sair da página': 'Compare packages without leaving the page',
+    'Uma leitura compacta para escolher entre essencial, completo, premium ou corporate.': 'A compact view to choose between essential, complete, premium or corporate.',
+    'Pedir recomendação': 'Ask for a recommendation',
+    'Solução Lirandzo': 'Lirandzo solution',
+    'Comparar pacotes': 'Compare packages',
+    'Ver experiência em 30 segundos': 'See the 30-second experience',
+    'Gerir guardados': 'Manage saved',
+    'Escolha do pacote': 'Package choice',
+    'O visitante percebe rapidamente qual nível de experiência combina com o evento.': 'The visitor quickly understands which experience level fits the event.',
+    'Design do convite': 'Invitation design',
+    'A identidade visual do casal é transformada numa página digital elegante.': 'The couple’s visual identity is turned into an elegant digital page.',
+    'RSVP e organização': 'RSVP and organisation',
+    'Confirmações, detalhes e mensagens ficam mais fáceis de gerir.': 'Confirmations, details and messages become easier to manage.',
+    'Partilha final': 'Final sharing',
+    'O link fica pronto para enviar por WhatsApp, redes sociais ou email.': 'The link is ready to send through WhatsApp, social media or email.',
+    'Experiência': 'Experience',
+    'Uma explicação rápida, pensada para mobile, que mostra o valor do convite digital antes da decisão.': 'A quick mobile-first explanation that shows the value of the digital invitation before the decision.',
+    'Começar convite digital': 'Start digital invitation',
+    'Acções rápidas Lirandzo': 'Lirandzo quick actions',
+    'Começar': 'Start',
+    'Início': 'Home',
+    'Veja a experiência Lirandzo': 'See the Lirandzo experience',
+    'Experiência digital em acção': 'Digital experience in action',
+    'Vantagens': 'Benefits',
+    'Entenda o valor do convite': 'Understand the value of the invitation',
+    'Compare e guarde favoritos': 'Compare and save favourites',
+    'Descubra o pacote ideal': 'Find the ideal package',
+    'Fazer quiz': 'Take quiz',
+    'Processo': 'Process',
+    'Veja os próximos passos': 'See the next steps',
+    'Prova social': 'Social proof',
+    'Clientes que confiaram': 'Clients who trusted us',
+    'Tire dúvidas rapidamente': 'Clear doubts quickly',
+    'Falar': 'Talk',
+    'Conheça a Lirandzo': 'Get to know Lirandzo',
+    'Estamos prontos para ajudar': 'We are ready to help',
+    'Artigo': 'Article',
+    'Partilhe esta inspiração': 'Share this inspiration',
+    'Inspiração para casamento': 'Wedding inspiration',
+    'Precisa de ajuda rápida?': 'Need quick help?',
+    'Continuar': 'Continue',
+    'de onde parou': 'where you stopped',
+    'Escolha uma acção rápida ou abra a conversa completa.': 'Choose a quick action or open the full conversation.',
+    'Comparar': 'Compare',
+    'Recomendar': 'Recommend',
+    'Abrir conversa completa': 'Open full conversation',
+    'Pacotes · Corporate · Apoio · Preços': 'Packages · Corporate · Support · Pricing',
+    'Removido dos guardados.': 'Removed from saved items.',
+    'Lista de guardados limpa.': 'Saved list cleared.',
+    'guardado para consulta.': 'saved for later.',
+    'Pérola guardado para consulta.': 'Pearl saved for later.',
+    'Esmeralda guardado para consulta.': 'Emerald saved for later.',
+    'Rubi guardado para consulta.': 'Ruby saved for later.',
+    'Corporate guardado para consulta.': 'Corporate saved for later.',
+    'Essencial elegante': 'Elegant essential',
+    'Equilíbrio completo': 'Complete balance',
+    'Experiência premium': 'Premium experience',
+    'Projectos empresariais': 'Business projects',
+    'Convite personalizado': 'Personalised invitation',
+    'Tudo do Pérola': 'Everything in Pearl',
+    'Tudo do Esmeralda': 'Everything in Emerald',
+    'Cápsula de tempo': 'Time capsule',
+    'Vídeo pré-wedding': 'Pre-wedding video',
+    'Cápsula por mais dias': 'Longer time capsule',
+    'Experiência mais exclusiva': 'More exclusive experience',
+    'Escopo sob medida': 'Tailored scope'
+  });
+
+
 
   const placeholders = {
     'Digite o seu nome': 'Enter your name',
@@ -515,6 +608,7 @@
   }
 
   function translateAttributes(el, lang) {
+    if (el.closest && el.closest('[data-no-translate]')) return;
     const attrs = ['aria-label', 'title', 'alt', 'data-template-name', 'data-template-price'];
     attrs.forEach(attr => {
       if (!el.hasAttribute(attr)) return;
@@ -580,7 +674,7 @@
       acceptNode(node) {
         const parent = node.parentElement;
         if (!parent) return NodeFilter.FILTER_REJECT;
-        if (parent.closest('script, style, textarea, input, svg')) return NodeFilter.FILTER_REJECT;
+        if (parent.closest('script, style, textarea, input, svg, [data-no-translate]')) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });
@@ -590,6 +684,8 @@
 
     localStorage.setItem(LANG_KEY, currentLang);
     updateCurrencyConverter(localStorage.getItem(CURRENCY_KEY) || 'MZN');
+    window.dispatchEvent(new CustomEvent('lirandzo:language-change', { detail: { lang: currentLang } }));
+    window.dispatchEvent(new CustomEvent('lirandzo:languagechange', { detail: { lang: currentLang } }));
     translating = false;
   }
 
@@ -708,5 +804,5 @@
     setupMutationTranslator();
   });
 
-  window.LirandzoI18n = { applyLanguage, translate: t };
+  window.LirandzoI18n = { applyLanguage, translate: t, get currentLang() { return currentLang; } };
 })();

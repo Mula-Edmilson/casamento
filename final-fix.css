@@ -128,7 +128,7 @@ body, p, li, input, textarea, select, button { font-weight: 400; }
 .modal-card p { font-weight: 400 !important; }
 .briefing-grid label > span,
 .premium-contact-list strong { font-weight: 600 !important; }
-#pacotes .package-price { font-weight: 300 !important; }
+#pacotes .package-price { font-weight: 500 !important; }
 
 /* Lightbox: não cortar topo, mais compacta e com contraste correcto */
 .modal,

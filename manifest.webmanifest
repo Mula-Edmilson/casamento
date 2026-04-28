@@ -1,0 +1,15 @@
+{
+  "name": "Lirandzo — Convites Digitais",
+  "short_name": "Lirandzo",
+  "description": "Convites digitais elegantes, RSVP e experiências digitais para casamentos e projectos corporate.",
+  "lang": "pt-PT",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#2B2623",
+  "theme_color": "#B08968",
+  "icons": [
+    { "src": "assets/lirandzo-logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

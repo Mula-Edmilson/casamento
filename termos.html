@@ -29,10 +29,28 @@
     }
   })();
 </script>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=logo-loading-v4">
+  <link rel="stylesheet" href="chatbot-styles.css?v=lang-clean-v8">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Lirandzo">
+  <link rel="stylesheet" href="mobile-immersive.css?v=lang-clean-v8">
 </head>
 
 <body class="loading site-subpage legal-subpage">
+  <div class="site-preloader" aria-hidden="true">
+    <div class="lirandzo-loader">
+      <div class="lirandzo-loader-logo-wrap">
+        <img class="lirandzo-loader-logo" src="assets/lirandzo-logo.svg" alt="">
+      </div>
+      <div class="lirandzo-loader-text">
+        <strong>Lirandzo</strong>
+        <span>Convites Digitais</span>
+      </div>
+    </div>
+  </div>
+
   <header class="site-header" aria-label="Navegação principal Lirandzo">
     <a class="site-brand" href="index.html#main-content" aria-label="Lirandzo — início">
       <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="brand-logo">
@@ -121,9 +139,11 @@
       });
     </script>
 <!-- Chatbot Unificado -->
-<script src="theme.js"></script>
-<script src="chatbot-unified.js"></script>
-<script src="lang-currency.js"></script>
+<script src="theme.js?v=logo-loading-v4"></script>
+<script src="chatbot-unified.js?v=lang-clean-v8"></script>
+<script src="lang-currency.js?v=lang-clean-v8"></script>
+<script src="loading-logo.js?v=logo-loading-v4"></script>
+<script src="mobile-immersive.js?v=lang-clean-v8"></script>
 </body>
 
 </html>
