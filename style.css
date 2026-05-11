@@ -6429,3 +6429,45 @@ html[data-theme="light"] .lirandzo-loader-text span { color: rgba(58, 43, 36, .6
     animation: none !important;
   }
 }
+
+
+/* Etiqueta Popular — Pacote Esmeralda */
+#pacotes .package-popular-badge {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  z-index: 4 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 28px !important;
+  padding: 0 12px !important;
+  border-radius: 999px !important;
+  background: var(--lz-action) !important;
+  color: #fffaf5 !important;
+  border: 1px solid rgba(255,255,255,.32) !important;
+  box-shadow: 0 10px 22px rgba(74,42,28,.18) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  pointer-events: none !important;
+}
+
+html[data-theme="dark"] #pacotes .package-popular-badge {
+  background: var(--lz-action-dark) !important;
+  color: #251b16 !important;
+  border-color: rgba(255,244,235,.24) !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,.28) !important;
+}
+
+@media (max-width: 760px) {
+  #pacotes .package-popular-badge {
+    top: 14px !important;
+    right: 14px !important;
+    min-height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 10px !important;
+  }
+}

@@ -22,7 +22,7 @@
       packages: {
         perola: {
           name: 'Pérola', price: '6.000 MT', fit: 'casamentos intimistas, elegantes e directos',
-          includes: ['capa com foto e nomes', 'agenda do evento com mapa', 'feed de felicitações', 'contagem regressiva', 'música de fundo', 'retratos dos noivos'],
+          includes: ['capa com foto e nomes', 'agenda do evento com mapa', 'feed de felicitações', 'contagem regressiva', 'música de fundo', ],
           human: 'É a escolha mais essencial: bonito, elegante e suficiente para quem quer um convite digital bem apresentado sem funcionalidades avançadas.'
         },
         esmeralda: {
@@ -59,7 +59,7 @@
       packages: {
         perola: {
           name: 'Pearl', price: '6,000 MZN', fit: 'intimate, elegant and straightforward weddings',
-          includes: ['cover with photo and names', 'event schedule with map', 'wishes feed', 'countdown', 'background music', 'couple portraits'],
+          includes: ['cover with photo and names', 'event schedule with map', 'wishes feed', 'countdown', 'background music'],
           human: 'It is the essential choice: elegant, refined and enough for couples who want a polished digital invitation without advanced features.'
         },
         esmeralda: {
