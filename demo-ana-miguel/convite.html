@@ -574,6 +574,10 @@
 <span>+258 84 000 0000 | +258 87 000 0000</span>
 </div>
 </footer>
+
+<footer class="lirandzo-demo-footer" aria-label="Rodapé Lirandzo">
+  <img src="assets/media/lirandzo-logo.svg" alt="Lirandzo" loading="lazy">
+</footer>
 </main>
 <!-- MODAIS -->
 <div aria-labelledby="rsvpTitle" aria-modal="true" class="modal" id="rsvpModal" role="dialog">
@@ -613,9 +617,9 @@
 <h4>Um Mimo para o Futuro</h4>
 <div class="info-block payment-method-block">
 <div class="payment-method-header">
-<strong>Conta Bancária Demo (Banco Exemplo)</strong>
-<div class="payment-logo-stack" aria-label="Espaço para logotipo do Banco Exemplo">
-<div class="payment-logo-slot"><span>LOGO<br/>BANCO</span></div>
+<strong>Conta Bancária Demo (Millennium BIM)</strong>
+<div class="payment-logo-stack" aria-label="Logotipo Millennium BIM">
+<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/bim.jpg" alt="Millennium BIM" loading="lazy"/></div>
 </div>
 </div>
 <p>Titular: Casal Demo<br/>NIB: 0000 0000 0000 0000 0000 0</p>
@@ -624,9 +628,9 @@
 <div class="info-block payment-method-block">
 <div class="payment-method-header">
 <strong>M-Pesa / e-Mola — Demonstração</strong>
-<div class="payment-logo-stack" aria-label="Espaço para logotipos M-Pesa e e-Mola">
-<div class="payment-logo-slot"><span>M-Pesa</span></div>
-<div class="payment-logo-slot"><span>e-Mola</span></div>
+<div class="payment-logo-stack" aria-label="Logotipos M-Pesa e e-Mola">
+<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/m-pesa.jpg" alt="M-Pesa" loading="lazy"/></div>
+<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/e-mola.jpg" alt="e-Mola" loading="lazy"/></div>
 </div>
 </div>
 <p>840000000 (Conta Demo)<br/>870000000 (Conta Demo)</p></div>
@@ -1164,25 +1168,70 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (isDirections) return `${baseUrl}/dir/?api=1&destination=${encodedAddress}`;
         return `${baseUrl}/search/?api=1&query=${encodedAddress}`;
       };
-      
+      let preservedScrollY = 0;
+      const MODAL_CLOSE_ANIMATION_MS = 420;
+
+      const getCurrentScrollY = () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      const lockPageScrollForModal = () => {
+        // Não bloqueamos html/body com overflow/position.
+        // Isso era a origem do salto para o topo em alguns navegadores.
+        preservedScrollY = getCurrentScrollY();
+      };
+
+      const unlockPageScrollAfterModal = () => {
+        document.documentElement.classList.remove('modal-is-open');
+        document.body.classList.remove('modal-open');
+      };
+
       const openModal = (modalId) => {
         const modal = document.getElementById(modalId);
-        if (modal) {
-          modal.classList.add('open');
-          document.documentElement.classList.add('modal-is-open');
-          document.body.classList.add('modal-open');
-          const modalCard = modal.querySelector('.modal-card');
-          if (modalCard) modalCard.scrollTop = 0;
-        }
+        if (!modal) return;
+
+        const beforeOpenScrollY = getCurrentScrollY();
+        lockPageScrollForModal();
+        document.documentElement.classList.remove('modal-is-open');
+        document.body.classList.remove('modal-open');
+
+        if (modal.__closeTimer) clearTimeout(modal.__closeTimer);
+        modal.classList.remove('is-closing');
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+
+        const modalCard = modal.querySelector('.modal-card');
+        if (modalCard) modalCard.scrollTop = 0;
+
+        // Garantia anti-salto: abrir modal nunca altera a posição do convite.
+        requestAnimationFrame(() => {
+          if (Math.abs(getCurrentScrollY() - beforeOpenScrollY) > 2) {
+            window.scrollTo({ top: beforeOpenScrollY, left: 0, behavior: 'auto' });
+          }
+        });
       };
 
       const closeModal = (modal) => {
-        if (!modal) return;
-        modal.classList.remove('open');
-        if (!document.querySelector('.modal.open')) {
-          document.documentElement.classList.remove('modal-is-open');
-          document.body.classList.remove('modal-open');
-        }
+        if (!modal || !modal.classList.contains('open')) return;
+
+        const beforeCloseScrollY = getCurrentScrollY();
+        modal.classList.add('is-closing');
+        modal.setAttribute('aria-hidden', 'true');
+
+        if (modal.__closeTimer) clearTimeout(modal.__closeTimer);
+        modal.__closeTimer = setTimeout(() => {
+          modal.classList.remove('open', 'is-closing');
+          modal.__closeTimer = null;
+
+          if (!document.querySelector('.modal.open')) {
+            unlockPageScrollAfterModal();
+          }
+
+          // Garantia anti-salto também ao fechar.
+          requestAnimationFrame(() => {
+            if (Math.abs(getCurrentScrollY() - beforeCloseScrollY) > 2) {
+              window.scrollTo({ top: beforeCloseScrollY, left: 0, behavior: 'auto' });
+            }
+          });
+        }, MODAL_CLOSE_ANIMATION_MS);
       };
       
       body.classList.remove('loading');
@@ -1293,21 +1342,42 @@ document.addEventListener('DOMContentLoaded', async () => {
       confirmPresenceBtn?.addEventListener('click', () => setRsvpChoice('confirmed'));
       pendingPresenceBtn?.addEventListener('click', () => setRsvpChoice('pending'));
 
-      [fabRsvpBtn, rsvpBtn].forEach(btn => btn?.addEventListener('click', () => openModal('rsvpModal')));
-      [fabGiftsBtn, giftsCombinedBtn].forEach(btn => btn?.addEventListener('click', () => openModal('giftsCombinedModal')));
-      fabGuestInfoBtn?.addEventListener('click', () => openModal('guestInfoModal'));
-      dressCodeBtn?.addEventListener('click', () => openModal('dressCodeModal'));
+
+      document.addEventListener('click', (event) => {
+        const emptyAnchor = event.target.closest('a[href="#"]');
+        if (!emptyAnchor) return;
+        const isModalTrigger = emptyAnchor.hasAttribute('data-open-modal') || emptyAnchor.closest('[data-open-modal]');
+        const isCloseTrigger = emptyAnchor.hasAttribute('data-close-modal') || emptyAnchor.closest('[data-close-modal]');
+        const isPlaceholderMap = emptyAnchor.id && /map/i.test(emptyAnchor.id);
+        if (isModalTrigger || isCloseTrigger || isPlaceholderMap) {
+          event.preventDefault();
+        }
+      }, true);
+
+      const bindModalTrigger = (element, modalId) => {
+        element?.addEventListener('click', (event) => {
+          event.preventDefault();
+          openModal(modalId);
+        });
+      };
+
+      [fabRsvpBtn, rsvpBtn].forEach(btn => bindModalTrigger(btn, 'rsvpModal'));
+      [fabGiftsBtn, giftsCombinedBtn].forEach(btn => bindModalTrigger(btn, 'giftsCombinedModal'));
+      bindModalTrigger(fabGuestInfoBtn, 'guestInfoModal');
+      bindModalTrigger(dressCodeBtn, 'dressCodeModal');
       document.querySelectorAll('[data-open-modal]').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (event) => {
+          event.preventDefault();
           const targetModal = btn.getAttribute('data-open-modal');
           if (targetModal) openModal(targetModal);
         });
       });
-      fabMapBtn?.addEventListener('click', () => openModal('locationChooserModal'));
+      bindModalTrigger(fabMapBtn, 'locationChooserModal');
       
       document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
           if (e.target === modal || e.target.closest('[data-close-modal]')) {
+            e.preventDefault();
             closeModal(modal);
           }
         });
