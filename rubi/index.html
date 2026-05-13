@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Convite de Casamento — Pacote Esmeralda V10 Premium Comercial · Lirandzo</title>
+  <meta name="description" content="Convite digital de casamento Rustic Chic, Pacote Esmeralda Lirandzo, com entrada personalizada, links únicos por convidado, gestão de mesas, RSVP avançado, presentes em lightbox, mural moderado, check-in por QR Code, música e painel comercial.">
+  <meta property="og:title" content="Convite de Casamento — Nélia & Edmilson">
+  <meta property="og:description" content="Temos a honra de convidá-lo(a) para celebrar connosco este momento especial.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/cover-photo.jpg">
+  <link rel="icon" href="assets/lirandzo-logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Parisienne&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="motion-preparing">
+  <div class="experience-progress" id="experienceProgress" aria-hidden="true"><span></span></div>
+  <div class="preloader" id="preloader" aria-label="A carregar convite">
+    <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="preloader-logo">
+    <span>Preparando o convite</span>
+  </div>
+
+  <section class="guest-gate" id="guestGate" aria-label="Entrada personalizada do convite">
+    <div class="guest-gate-photo" aria-hidden="true"></div>
+    <div class="guest-gate-card">
+      <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="gate-logo">
+      <p class="small-caps">Convite reservado</p>
+      <h2>Nélia & Edmilson prepararam este convite para si.</h2>
+      <p>Escreva o seu nome para entrar numa experiência personalizada.</p>
+      <form id="guestGateForm" class="gate-form">
+        <input type="text" id="guestNameInput" placeholder="O seu nome" autocomplete="name" required>
+        <button type="submit" class="btn primary">Entrar no convite</button>
+      </form>
+      <button type="button" class="text-link" id="skipGuestGate">Entrar sem personalizar</button>
+    </div>
+  </section>
+
+  <audio id="backgroundMusic" preload="metadata" loop></audio>
+  <div class="ambient-motion" aria-hidden="true">
+    <span class="ambient-grain"></span>
+    <span class="ambient-leaf leaf-one"></span>
+    <span class="ambient-leaf leaf-two"></span>
+    <span class="ambient-leaf leaf-three"></span>
+  </div>
+
+  <aside class="floating-actions" aria-label="Acções rápidas do convite">
+    <button type="button" class="float-btn" data-open-modal="rsvpModal" aria-label="Confirmar presença">
+      <span>RSVP</span>
+    </button>
+    <button type="button" class="float-btn" data-open-modal="giftModal" aria-label="Abrir lista de presentes">
+      <span>Presentes</span>
+    </button>
+    <button type="button" class="float-btn" id="quickMapBtn" aria-label="Abrir mapa">
+      <span>Mapa</span>
+    </button>
+    <button type="button" class="float-btn" id="musicToggle" aria-label="Controlar música">
+      <span>Som</span>
+    </button>
+    <button type="button" class="float-btn" data-open-modal="checkinModal" aria-label="Ver código de entrada">
+      <span>Check-in</span>
+    </button>
+    <button type="button" class="float-btn" id="shareInvite" aria-label="Partilhar convite">
+      <span>Partilhar</span>
+    </button>
+  </aside>
+
+  <nav class="chapter-nav" id="chapterNav" aria-label="Navegação por capítulos do convite">
+    <button type="button" data-chapter-target="topo" class="is-active"><span>01</span>Capa</button>
+    <button type="button" data-chapter-target="historia"><span>02</span>História</button>
+    <button type="button" data-chapter-target="momentos"><span>03</span>Momentos</button>
+    <button type="button" data-chapter-target="programa"><span>04</span>Dia</button>
+    <button type="button" data-chapter-target="presentes"><span>05</span>Presentes</button>
+    <button type="button" data-chapter-target="rsvp-final"><span>06</span>Final</button>
+  </nav>
+
+  <main class="invite-shell" id="topo">
+    <header class="cover" aria-labelledby="inviteTitle">
+      <div class="cover-photo" aria-hidden="true"></div>
+      <div class="cover-ornament cover-ornament-top"></div>
+      <div class="cover-ornament cover-ornament-bottom"></div>
+      <div class="cover-content">
+        <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="brand-mark">
+        <p class="eyebrow">Convite de casamento</p>
+        <p class="guest-welcome" id="guestWelcome">Convite reservado para si</p>
+        <h1 id="inviteTitle"><span data-couple-names>Nélia & Edmilson</span></h1>
+        <p class="cover-date" data-wedding-date>12 de Dezembro de 2026</p>
+        <div class="countdown" id="countdown" aria-label="Contagem regressiva">
+          <div><strong id="days">00</strong><span>Dias</span></div>
+          <div><strong id="hours">00</strong><span>Horas</span></div>
+          <div><strong id="minutes">00</strong><span>Min.</span></div>
+          <div><strong id="seconds">00</strong><span>Seg.</span></div>
+        </div>
+        <button type="button" class="scroll-invite-cue" data-scroll-to="historia" aria-label="Descer para ver o convite">
+          <span>Entrar no convite</span>
+          <i aria-hidden="true"></i>
+        </button>
+      </div>
+    </header>
+
+    <section class="section intro-section reveal">
+      <p class="small-caps">Com imensa alegria</p>
+      <h2>Um dia pensado para ser vivido com calma, amor e presença.</h2>
+      <p class="script-line">Cada detalhe deste convite foi preparado para partilhar consigo a nossa história, o programa do grande dia e as informações importantes para celebrar connosco.</p>
+      <p class="personal-note" id="personalNote">A sua presença tornará este dia ainda mais especial.</p>
+      <div class="intro-actions">
+        <button type="button" class="btn primary" data-open-modal="rsvpModal">Confirmar presença</button>
+        <button type="button" class="btn ghost" id="addCalendarBtn">Adicionar ao calendário</button>
+      </div>
+    </section>
+
+    <section class="section story-section section-photo reveal" id="historia">
+      <div class="section-photo-bg" aria-hidden="true">
+        <img src="assets/cover-photo.jpg" alt="">
+      </div>
+      <div class="section-photo-overlay" aria-hidden="true"></div>
+      <div class="section-photo-content">
+        <p class="small-caps">A nossa história</p>
+        <h2>Antes do sim, houve caminho.</h2>
+        <div class="timeline" id="storyTimeline" tabindex="0" aria-label="Linha temporal da história do casal">
+          <article>
+            <span>01</span>
+            <h3>O primeiro encontro</h3>
+            <p>Um momento simples, daqueles que parecem pequenos no início e se tornam memória permanente.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>A descoberta</h3>
+            <p>Entre conversas, planos e cumplicidade, percebemos que o amor também se constrói nos detalhes.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>O pedido</h3>
+            <p>Um sim cheio de verdade, família, fé e vontade de começar uma nova etapa lado a lado.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>O grande dia</h3>
+            <p>Agora queremos celebrar este capítulo consigo, rodeados de quem torna a nossa vida mais bonita.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section formal-invite-section reveal" id="convite-formal">
+      <p class="small-caps">Convite formal</p>
+      <h2>Com a bênção das nossas famílias, temos a honra de convidar.</h2>
+      <article class="letter-card" aria-label="Mensagem formal do convite">
+        <span class="letter-monogram" aria-hidden="true">N · E</span>
+        <p>Há dias que nascem para serem guardados com ternura. O nosso casamento é um deles.</p>
+        <p>Será uma alegria imensa contar com a sua presença para testemunhar este compromisso e celebrar connosco o início da nossa nova família.</p>
+        <footer>
+          <strong data-couple-names>Nélia & Edmilson</strong>
+          <small data-wedding-date>12 de Dezembro de 2026</small>
+        </footer>
+      </article>
+    </section>
+
+    <section class="section family-section reveal" id="familias">
+      <p class="small-caps">Famílias</p>
+      <h2>Um amor celebrado com raízes, bênçãos e presença.</h2>
+      <div class="family-grid">
+        <article>
+          <span>Família da noiva</span>
+          <h3>Com carinho e gratidão</h3>
+          <p>Os familiares da noiva partilham este momento como símbolo de união, respeito e continuidade.</p>
+        </article>
+        <article class="family-center-card">
+          <span>União</span>
+          <h3>Nélia & Edmilson</h3>
+          <p>Duas histórias, uma só casa, uma só promessa.</p>
+        </article>
+        <article>
+          <span>Família do noivo</span>
+          <h3>Com honra e alegria</h3>
+          <p>Os familiares do noivo recebem este dia como uma bênção e uma celebração de amor.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section gallery-section cinematic-moments reveal" id="momentos">
+      <p class="small-caps">Momentos</p>
+      <h2>A nossa história contada como um pequeno álbum vivo.</h2>
+      <p class="section-lead">Esta secção foi redesenhada para guiar o convidado por capítulos: uma foto principal, uma legenda emocional e miniaturas fáceis de compreender.</p>
+      <div class="moments-cinema" id="momentsCinema" aria-label="Álbum cinematográfico dos noivos">
+        <button type="button" class="moments-stage" id="momentStage" data-lightbox="assets/cover-photo.jpg" aria-label="Ampliar momento em destaque">
+          <img src="assets/cover-photo.jpg" alt="Momento em destaque dos noivos" id="momentStageImage">
+          <span class="moment-number" id="momentStageNumber">01</span>
+          <div>
+            <small id="momentStageLabel">Capítulo principal</small>
+            <strong id="momentStageTitle">O olhar que anuncia o sim</strong>
+            <p id="momentStageText">Uma imagem de abertura para sentir o ambiente, a calma e a elegância deste casamento.</p>
+          </div>
+        </button>
+        <div class="moment-strip" role="tablist" aria-label="Escolher capítulo visual">
+          <button type="button" class="moment-thumb is-active" data-moment-index="0"><img src="assets/cover-photo.jpg" alt=""><span>O início</span></button>
+          <button type="button" class="moment-thumb" data-moment-index="1"><img src="assets/gallery-1.jpg" alt=""><span>Pré-casamento</span></button>
+          <button type="button" class="moment-thumb" data-moment-index="2"><img src="assets/gallery-2.jpg" alt=""><span>Detalhes</span></button>
+          <button type="button" class="moment-thumb" data-moment-index="3"><img src="assets/gallery-3.jpg" alt=""><span>Memórias</span></button>
+        </div>
+        <div class="moment-actions">
+          <button type="button" class="btn ghost" id="prevMoment">Anterior</button>
+          <button type="button" class="btn primary" id="nextMoment">Próximo momento</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section honour-section section-photo reveal" id="padrinhos">
+      <div class="section-photo-bg" aria-hidden="true">
+        <img src="assets/gallery-1.jpg" alt="">
+      </div>
+      <div class="section-photo-overlay" aria-hidden="true"></div>
+      <div class="section-photo-content">
+        <p class="small-caps">Padrinhos & honra</p>
+        <h2>Pessoas especiais que caminham connosco até ao altar.</h2>
+        <div class="honour-list" aria-label="Lista de padrinhos e pessoas de honra">
+          <article><span>01</span><strong>Madrinha da noiva</strong><p>Uma presença de confiança, cuidado e memória.</p></article>
+          <article><span>02</span><strong>Padrinho do noivo</strong><p>Um apoio próximo para celebrar este novo capítulo.</p></article>
+          <article><span>03</span><strong>Damas de honra</strong><p>Elegância, alegria e carinho nos detalhes do grande dia.</p></article>
+          <article><span>04</span><strong>Meninos das alianças</strong><p>O toque mais doce antes da chegada dos noivos.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section agenda-section reveal" id="programa">
+      <p class="small-caps">O grande dia</p>
+      <h2>Programa do evento</h2>
+      <div class="agenda-list">
+        <article class="agenda-item">
+          <time>14:00</time>
+          <div>
+            <h3>Cerimónia religiosa</h3>
+            <p data-ceremony-place>Igreja Nossa Senhora da Paz</p>
+            <button type="button" class="text-link" data-map="ceremony">Abrir mapa</button>
+          </div>
+        </article>
+        <article class="agenda-item">
+          <time>16:30</time>
+          <div>
+            <h3>Sessão de fotografias</h3>
+            <p>Um momento reservado para registos com família e amigos próximos.</p>
+          </div>
+        </article>
+        <article class="agenda-item">
+          <time>18:00</time>
+          <div>
+            <h3>Copo de água</h3>
+            <p data-reception-place>Quinta Terra Dourada</p>
+            <button type="button" class="text-link" data-map="reception">Abrir mapa</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section reception-section reveal" id="recepcao">
+      <p class="small-caps">Recepção</p>
+      <h2>Uma celebração desenhada para ser leve, elegante e memorável.</h2>
+      <div class="reception-flow">
+        <article><span>Boas-vindas</span><strong>Recepção dos convidados</strong><p>Chegada tranquila, orientação de mesas e acolhimento da família.</p></article>
+        <article><span>Jantar</span><strong>Serviço especial</strong><p>Um momento de partilha, conversa e celebração à mesa.</p></article>
+        <article><span>Brinde</span><strong>Palavras aos noivos</strong><p>Discursos breves, fotografias e memórias para guardar.</p></article>
+        <article><span>Festa</span><strong>Música e celebração</strong><p>Depois do protocolo, a noite continua com pista aberta.</p></article>
+      </div>
+    </section>
+
+    <section class="section guide-section reveal" id="guia">
+      <p class="small-caps">Guia do evento</p>
+      <h2>Informações importantes</h2>
+      <div class="guide-grid">
+        <article>
+          <h3>Dress code</h3>
+          <p>Elegante em tons terra: areia, terracota, verde oliva, castanho suave e creme.</p>
+          <div class="palette" aria-label="Paleta de cores sugerida">
+            <span style="--tone:#efe2cf"></span><span style="--tone:#c69068"></span><span style="--tone:#8b5d3f"></span><span style="--tone:#68724c"></span><span style="--tone:#3b2a22"></span>
+          </div>
+        </article>
+        <article>
+          <h3>Mesa do convidado</h3>
+          <p>Na versão final, cada convidado pode aceder com link pessoal e consultar a sua mesa.</p>
+          <button type="button" class="text-link" data-open-modal="guestModal">Ver informação</button>
+        </article>
+        <article>
+          <h3>Confirmação</h3>
+          <p>Confirme a sua presença para nos ajudar a organizar cada detalhe com tranquilidade.</p>
+          <button type="button" class="text-link" data-open-modal="rsvpModal">Confirmar agora</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="section gifts-section reveal" id="presentes">
+      <p class="small-caps">Lista de presentes</p>
+      <h2>Um gesto de carinho, apresentado com discrição.</h2>
+      <p class="section-lead">Para manter o convite limpo, elegante e com sensação de navegação premium, a lista de presentes abre numa lightbox reservada. Assim o convidado escolhe com calma, sem a página ficar pesada.</p>
+      <article class="gift-preview-card" aria-label="Resumo da lista de presentes">
+        <span class="gift-preview-seal">Esmeralda</span>
+        <h3>Lista de presentes dos noivos</h3>
+        <p>Abra a lista, escolha uma ou mais opções disponíveis e confirme a reserva em poucos segundos.</p>
+        <div class="gift-preview-meta">
+          <span>Reserva organizada</span>
+          <span>Sem duplicações</span>
+          <span>Experiência privada</span>
+        </div>
+      </article>
+      <div class="section-actions">
+        <button type="button" class="btn primary" data-open-modal="giftModal">Abrir lista de presentes</button>
+        <!-- <button type="button" class="btn ghost" data-open-modal="dashboardModal">Área dos noivos</button> -->
+      </div>
+    </section>
+
+    <section class="section guestbook-section reveal" id="felicitacoes">
+      <p class="small-caps">Mural de felicitações</p>
+      <h2>Deixe uma mensagem aos noivos</h2>
+      <form class="note-form" id="messageForm">
+        <label>O seu nome
+          <input type="text" id="messageName" autocomplete="name" placeholder="Escreva o seu nome" required>
+        </label>
+        <label>A sua mensagem
+          <textarea id="messageText" rows="4" placeholder="Escreva uma mensagem de carinho" required></textarea>
+        </label>
+        <button type="submit" class="btn primary">Publicar mensagem</button>
+      </form>
+      <div class="guestbook-feed" id="guestbookFeed" aria-live="polite"></div>
+    </section>
+
+    <section class="section guest-faq-section reveal" id="perguntas">
+      <p class="small-caps">Perguntas dos convidados</p>
+      <h2>Pequenas respostas para chegar ao casamento com tranquilidade.</h2>
+      <div class="guest-faq" id="guestFaq">
+        <article class="faq-item is-open">
+          <button type="button" aria-expanded="true">Posso levar acompanhante?</button>
+          <div><p>Na versão final, o convite pode indicar automaticamente se a entrada é individual ou com acompanhante.</p></div>
+        </article>
+        <article class="faq-item">
+          <button type="button" aria-expanded="false">Como confirmo a minha presença?</button>
+          <div><p>Use o botão RSVP deste convite. A confirmação fica guardada e também pode ser enviada por WhatsApp.</p></div>
+        </article>
+        <article class="faq-item">
+          <button type="button" aria-expanded="false">Onde vejo a localização?</button>
+          <div><p>No programa do evento há botões de mapa para a cerimónia e para a recepção.</p></div>
+        </article>
+        <article class="faq-item">
+          <button type="button" aria-expanded="false">Existe dress code?</button>
+          <div><p>Sim. A sugestão é elegante em tons terra: areia, terracota, verde oliva, castanho suave e creme.</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section capsule-section reveal" id="capsula">
+      <p class="small-caps">Cápsula do tempo</p>
+      <h2>Uma mensagem para ser guardada</h2>
+      <p class="section-lead">Escreva uma mensagem privada para os noivos abrirem depois do casamento. Ela não aparece no mural público.</p>
+      <form class="note-form" id="capsuleForm">
+        <label>Nome
+          <input type="text" id="capsuleName" placeholder="O seu nome" required>
+        </label>
+        <label>Mensagem privada
+          <textarea id="capsuleText" rows="4" placeholder="Uma memória, conselho ou desejo para o casal" required></textarea>
+        </label>
+        <button type="submit" class="btn primary">Guardar na cápsula</button>
+      </form>
+      <p class="status" id="capsuleStatus" role="status"></p>
+    </section>
+
+    <section class="section closing-section reveal" id="rsvp-final">
+      <div class="closing-photo" aria-hidden="true"></div>
+      <div class="closing-card">
+        <p class="small-caps">Esperamos por si</p>
+        <h2>Que este dia também fique guardado na sua memória.</h2>
+        <p id="closingPersonalText">Será uma honra celebrar este momento consigo.</p>
+        <div class="section-actions">
+          <button type="button" class="btn primary" data-open-modal="rsvpModal">Confirmar presença</button>
+          <button type="button" class="btn ghost" data-open-modal="checkinModal">Ver código de entrada</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section commercial-note-section reveal" id="gestao-comercial">
+      <p class="small-caps">Pacote Esmeralda Comercial</p>
+      <h2>Convite preparado para gestão real do evento.</h2>
+      <p class="section-lead">Esta versão inclui links únicos, QR individual, mesa por convidado, RSVP, presentes, mural com aprovação e check-in preparado para equipa do evento.</p>
+      <div class="section-actions">
+        <!-- <a class="btn primary" href="admin-convidados/index.html" target="_blank" rel="noopener noreferrer">Abrir gestão de convidados</a> -->
+        <a class="btn ghost" href="checkin/index.html" target="_blank" rel="noopener noreferrer">Abrir check-in</a>
+      </div>
+    </section>
+
+    <footer class="invite-footer">
+      <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="footer-logo">
+      <p>Pacote Esmeralda · Rustic Chic Wedding</p>
+      <!-- <button type="button" class="text-link" data-open-modal="dashboardModal">Acesso dos noivos</button> -->
+    </footer>
+  </main>
+
+  <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
+    <div class="modal-card">
+      <button type="button" class="modal-close" data-close-modal aria-label="Fechar">×</button>
+      <p class="small-caps">RSVP</p>
+      <h2 id="rsvpTitle">Confirmar presença</h2>
+      <form id="rsvpForm" class="modal-form">
+        <label>Nome completo
+          <input type="text" id="rsvpName" required placeholder="Nome do convidado">
+        </label>
+        <label>Telefone / WhatsApp
+          <input type="tel" id="rsvpPhone" placeholder="Ex.: +258 84 000 0000">
+        </label>
+        <label>Presença
+          <select id="rsvpPresence" required>
+            <option value="Confirmado">Confirmo presença</option>
+            <option value="Talvez">Talvez, confirmarei em breve</option>
+            <option value="Não poderei comparecer">Não poderei comparecer</option>
+          </select>
+        </label>
+        <label>Número de pessoas
+          <select id="rsvpGuests">
+            <option value="1">1 pessoa</option>
+            <option value="2">2 pessoas</option>
+            <option value="3">3 pessoas</option>
+            <option value="4">4 pessoas</option>
+          </select>
+        </label>
+        <label>Nomes dos acompanhantes
+          <textarea id="rsvpCompanions" rows="2" placeholder="Opcional: escreva os nomes dos acompanhantes"></textarea>
+        </label>
+        <label>Momento em que estará presente
+          <select id="rsvpEventPart">
+            <option value="Cerimónia e recepção">Cerimónia e recepção</option>
+            <option value="Apenas cerimónia">Apenas cerimónia</option>
+            <option value="Apenas recepção">Apenas recepção</option>
+          </select>
+        </label>
+        <label>Preferência alimentar / observação especial
+          <input type="text" id="rsvpDiet" placeholder="Ex.: vegetariano, alergia, sem restrições">
+        </label>
+        <label>Mensagem opcional
+          <textarea id="rsvpMessage" rows="3" placeholder="Alguma observação para os noivos?"></textarea>
+        </label>
+        <div class="modal-actions">
+          <button type="submit" class="btn primary">Guardar RSVP</button>
+          <button type="button" class="btn ghost" id="sendRsvpWhatsapp">Enviar por WhatsApp</button>
+        </div>
+      </form>
+      <p class="status" id="rsvpStatus" role="status"></p>
+    </div>
+  </div>
+
+  <div class="modal" id="guestModal" role="dialog" aria-modal="true" aria-labelledby="guestTitle">
+    <div class="modal-card compact">
+      <button type="button" class="modal-close" data-close-modal aria-label="Fechar">×</button>
+      <p class="small-caps">Convidado</p>
+      <h2 id="guestTitle">Exemplo de informação pessoal</h2>
+      <div class="guest-info-card">
+        <strong>Mesa Rustic Chic 03</strong>
+        <span>Entrada autorizada para 2 pessoas</span>
+        <small>Na versão final, esta informação pode ser personalizada por convidado.</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal gift-lightbox" id="giftModal" role="dialog" aria-modal="true" aria-labelledby="giftTitle">
+    <div class="modal-card gift-modal-card">
+      <button type="button" class="modal-close" data-close-modal aria-label="Fechar">×</button>
+      <p class="small-caps">Lista reservada</p>
+      <h2 id="giftTitle">Escolha o seu presente</h2>
+      <p class="modal-lead">A lista fica numa lightbox para preservar a elegância do convite. Seleccione os presentes disponíveis, escreva o seu nome e confirme a reserva.</p>
+      <label class="gift-name-field">O seu nome para a reserva
+        <input type="text" id="giftReservationName" autocomplete="name" placeholder="Escreva o seu nome">
+      </label>
+      <div class="gift-tabs" id="giftTabs" aria-label="Categorias de presentes"></div>
+      <div class="gift-list gift-list-modal" id="giftList" aria-live="polite"></div>
+      <div class="gift-receipt-card" id="giftReceipt" hidden></div>
+      <label class="gift-name-field proof-field">Comprovativo ou nota de pagamento
+        <input type="file" id="giftProof" accept="image/png,image/jpeg,application/pdf">
+        <small>Demo local: o ficheiro não é enviado. Na versão real pode ser ligado ao Google Sheets, Apps Script ou MongoDB.</small>
+      </label>
+      <div class="modal-actions gift-modal-actions">
+        <button type="button" class="btn primary" id="saveGiftSelection">Reservar presente</button>
+        <button type="button" class="btn ghost" data-close-modal>Voltar ao convite</button>
+      </div>
+      <p class="status" id="giftStatus" role="status"></p>
+    </div>
+  </div>
+
+  <div class="modal" id="dashboardModal" role="dialog" aria-modal="true" aria-labelledby="dashboardTitle">
+    <div class="modal-card dashboard-card">
+      <button type="button" class="modal-close" data-close-modal aria-label="Fechar">×</button>
+      <p class="small-caps">Área dos noivos</p>
+      <h2 id="dashboardTitle">Área Esmeralda</h2>
+      <div id="dashboardLock" class="dashboard-lock">
+        <p>Introduza o PIN para consultar os dados desta demo.</p>
+        <input type="password" id="dashboardPin" inputmode="numeric" placeholder="PIN de acesso">
+        <button type="button" class="btn primary" id="unlockDashboard">Entrar</button>
+        <small>PIN de demonstração: 2026</small>
+      </div>
+      <div id="dashboardPanel" class="dashboard-panel" hidden>
+        <div class="dashboard-grid">
+          <article><strong id="dashRsvps">0</strong><span>RSVPs</span></article>
+          <article><strong id="dashGuests">0</strong><span>Convidados</span></article>
+          <article><strong id="dashGifts">0</strong><span>Presentes</span></article>
+          <article><strong id="dashMessages">0</strong><span>Mensagens</span></article>
+          <article><strong id="dashCapsules">0</strong><span>Cápsulas</span></article>
+        </div>
+        <div class="dashboard-tabs" id="dashboardTabs" aria-label="Gestão dos dados do convite">
+          <button type="button" class="is-active" data-dashboard-view="summary">Resumo</button>
+          <button type="button" data-dashboard-view="rsvps">RSVPs</button>
+          <button type="button" data-dashboard-view="gifts">Presentes</button>
+          <button type="button" data-dashboard-view="messages">Mensagens</button>
+          <button type="button" data-dashboard-view="checkin">Check-in</button>
+          <button type="button" data-dashboard-view="guests">Convidados</button>
+        </div>
+        <div class="dashboard-output" id="dashboardOutput"></div>
+        <div class="modal-actions dashboard-actions">
+          <button type="button" class="btn primary" id="exportData">Exportar JSON</button>
+          <button type="button" class="btn ghost" id="exportCsv">Exportar CSV</button>
+          <button type="button" class="btn ghost" id="sendSummaryWhatsapp">Resumo WhatsApp</button>
+          <a class="btn ghost" href="checkin/index.html" target="_blank" rel="noopener noreferrer">App de check-in</a>
+          <a class="btn ghost" href="admin-convidados/index.html" target="_blank" rel="noopener noreferrer">Gestão de convidados</a>
+          <button type="button" class="btn ghost danger" id="clearDemoData">Limpar demo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="checkinModal" role="dialog" aria-modal="true" aria-labelledby="checkinTitle">
+    <div class="modal-card compact checkin-card">
+      <button type="button" class="modal-close" data-close-modal aria-label="Fechar">×</button>
+      <p class="small-caps">Check-in</p>
+      <h2 id="checkinTitle">Código de entrada</h2>
+      <p class="modal-lead">Este cartão já inclui um QR Code real para ser lido pela aplicação de check-in da equipa do evento.</p>
+      <div class="checkin-ticket">
+        <span>Convidado</span>
+        <strong id="checkinGuestName">Convidado especial</strong>
+        <small id="checkinMeta">Entrada válida para 1 pessoa</small>
+        <div class="qr-real-wrap" aria-label="QR Code de check-in">
+          <img id="qrImage" class="qr-real" alt="QR Code de entrada do convidado">
+          <div class="qr-demo" id="qrDemo" aria-hidden="true"></div>
+        </div>
+        <em id="checkinCode">LZD-ESM-0000</em>
+      </div>
+      <div class="modal-actions">
+        <a class="btn primary" href="checkin/index.html" target="_blank" rel="noopener noreferrer">Abrir app de check-in</a>
+        <button type="button" class="btn ghost" id="copyCheckinCode">Copiar código</button>
+        <button type="button" class="btn ghost" data-close-modal>Voltar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal lightbox" id="lightboxModal" role="dialog" aria-modal="true" aria-label="Imagem ampliada">
+    <button type="button" class="modal-close lightbox-close" data-close-modal aria-label="Fechar">×</button>
+    <img id="lightboxImage" alt="Imagem ampliada">
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
