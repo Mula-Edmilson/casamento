@@ -105,38 +105,6 @@
     document.body.classList.remove('chatbot-open');
   }
 
-  function setupInstallPrompt() {
-    let deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', event => {
-      event.preventDefault();
-      deferredPrompt = event;
-      if ($('.lz-install-pill')) return;
-      const pill = document.createElement('button');
-      pill.type = 'button';
-      pill.className = 'lz-resume-pill lz-install-pill is-visible';
-      pill.innerHTML = '<span>Instalar</span><small>Adicionar Lirandzo ao telemóvel</small><span class="lz-resume-x" aria-hidden="true">×</span>';
-      document.body.appendChild(pill);
-      pill.addEventListener('click', async click => {
-        if (click.target.closest('.lz-resume-x')) { pill.remove(); return; }
-        if (!deferredPrompt) return;
-        haptic(14);
-        deferredPrompt.prompt();
-        try { await deferredPrompt.userChoice; } catch (_) {}
-        deferredPrompt = null;
-        pill.remove();
-      });
-    });
-  }
-
-  function setupPWA() {
-    if (!('serviceWorker' in navigator)) return;
-    const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    if (!isSecure) return;
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    });
-  }
-
   function setupReadingProgress() {
     if (!isArticle() || $('.lz-reading-progress')) return;
     const progress = document.createElement('div');
@@ -662,7 +630,6 @@
   }
 
   function init() {
-    setupInstallPrompt();
     setupPWA();
     setupReadingProgress();
     setupExperiencePanel();

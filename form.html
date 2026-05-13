@@ -1,0 +1,1383 @@
+<!doctype html>
+<html lang="pt-PT" data-title-pt="Formulário por Pacote para Convite Digital — Lirandzo" data-title-en="Package-Based Form for Digital Invitation — Lirandzo" data-description-pt="Formulário por pacote para clientes enviarem apenas os dados necessários para criar convites digitais de casamento e convites para eventos com mapa, programa, presentes, RSVP e informações personalizadas conforme o pacote escolhido." data-description-en="Package-based form for clients to send only the information needed to create digital wedding invitations and event invitations with maps, schedule, gifts, RSVP and personalised details according to the selected package.">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="assets/lirandzo-logo.svg" rel="icon" type="image/svg+xml"/>
+<title>Formulário por Pacote para Convite Digital — Lirandzo</title>
+<link href="https://lirandzo.com/form.html" rel="canonical"/>
+<meta content="Formulário por pacote para clientes enviarem apenas os dados necessários para criar convites digitais de casamento e convites para eventos com mapa, programa, presentes, RSVP e informações personalizadas conforme o pacote escolhido." name="description"/>
+<meta content="formulário convite digital, dados para convite digital, convite de casamento digital, convites digitais, convites para eventos, casamento, RSVP online, convite por WhatsApp, convite por link, mapa do evento, lista de presentes, Moçambique, Maputo" name="keywords"/>
+<meta content="index, follow" name="robots"/>
+<meta content="Lirandzo" name="author"/>
+<meta content="pt-PT" name="language"/>
+<meta content="MZ" name="geo.region"/>
+<meta content="Moçambique" name="geo.placename"/>
+<meta content="#2B2623" name="theme-color"/>
+<meta content="Formulário por Pacote para Convite Digital — Lirandzo" property="og:title"/>
+<meta content="Escolha o pacote e envie apenas os dados necessários para a produção do convite digital Lirandzo: nomes, data, locais, fotos, mapa, presentes, RSVP e recursos incluídos." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://lirandzo.com/form.html" property="og:url"/>
+<meta content="https://i.postimg.cc/L8vk8vwF/capa.jpg" property="og:image"/>
+<meta content="Lirandzo" property="og:site_name"/>
+<meta content="pt_PT" property="og:locale"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="Formulário por Pacote para Convite Digital — Lirandzo" name="twitter:title"/>
+<meta content="Formulário por pacote para recolher dados necessários para criar convites digitais de casamento e convites para eventos." name="twitter:description"/>
+<meta content="https://i.postimg.cc/L8vk8vwF/capa.jpg" name="twitter:image"/>
+<meta content="yes" name="mobile-web-app-capable"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="Lirandzo" name="apple-mobile-web-app-title"/>
+<script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://lirandzo.com/#organization",
+      "name": "Lirandzo",
+      "url": "https://lirandzo.com",
+      "logo": { "@type": "ImageObject", "url": "https://lirandzo.com/assets/lirandzo-logo.svg" },
+      "email": "lirandzo.mz@gmail.com",
+      "telephone": "+258878061697",
+      "sameAs": ["https://www.instagram.com/lirandzo.mz", "https://www.facebook.com/profile.php?id=61582215350970"],
+      "address": { "@type": "PostalAddress", "addressCountry": "MZ" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://lirandzo.com/form.html#webpage",
+      "url": "https://lirandzo.com/form.html",
+      "name": "Formulário por Pacote para Convite Digital — Lirandzo",
+      "description": "Formulário por pacote para clientes enviarem dados de casamento e eventos para criação de convites digitais.",
+      "inLanguage": "pt-PT",
+      "isPartOf": { "@id": "https://lirandzo.com/#website" },
+      "publisher": { "@id": "https://lirandzo.com/#organization" }
+    }
+  ]
+}</script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Inter:wght@300;400;500;600;700;800&amp;family=Parisienne&amp;display=swap" rel="stylesheet"/>
+<script>
+  (() => {
+    try {
+      const saved = localStorage.getItem('lirandzo-theme');
+      const theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (error) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<link href="style.css?v=form-v1" rel="stylesheet"/>
+<link href="chatbot-styles.css?v=form-v1" rel="stylesheet"/>
+<link href="manifest.webmanifest" rel="manifest"/>
+<link href="mobile-immersive.css?v=form-v1" rel="stylesheet"/>
+
+  <style>
+    .form-page {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(176, 137, 104, .18), transparent 38%),
+        linear-gradient(180deg, rgba(43, 38, 35, .98), rgba(48, 42, 39, .98));
+    }
+
+    html[data-theme="light"] .form-page {
+      background:
+        radial-gradient(circle at top left, rgba(176, 137, 104, .22), transparent 34%),
+        linear-gradient(180deg, #fff8ef 0%, #f4ede4 100%);
+    }
+
+    .form-hero {
+      position: relative;
+      padding: clamp(110px, 13vw, 150px) 20px 36px;
+      overflow: hidden;
+    }
+
+    .form-hero::before,
+    .form-hero::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(176, 137, 104, .16);
+      pointer-events: none;
+      transform: rotate(-12deg);
+    }
+
+    .form-hero::before {
+      width: 260px;
+      height: 260px;
+      right: -86px;
+      top: 92px;
+      border-radius: 50%;
+    }
+
+    .form-hero::after {
+      width: 160px;
+      height: 160px;
+      left: -58px;
+      bottom: 8px;
+      border-radius: 42px;
+    }
+
+    .form-hero-inner {
+      width: min(1120px, calc(100% - 0px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.16fr) minmax(280px, .84fr);
+      gap: 24px;
+      align-items: end;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+      padding: 7px 12px;
+      border: 1px solid rgba(176, 137, 104, .28);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .07);
+      color: #e6c2a2;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    html[data-theme="light"] .form-eyebrow {
+      background: rgba(255, 255, 255, .72);
+      color: #8a5938;
+    }
+
+    .form-title {
+      margin: 0;
+      max-width: 780px;
+      font-family: var(--font-heading, 'Cormorant Garamond', serif);
+      font-size: clamp(2.6rem, 7.6vw, 6.6rem);
+      line-height: .86;
+      letter-spacing: -.055em;
+      color: #fff7ee;
+    }
+
+    html[data-theme="light"] .form-title { color: #2f2620; }
+
+    .form-title span {
+      display: block;
+      color: #d2a579;
+      font-family: var(--font-script, 'Parisienne', cursive);
+      font-weight: 400;
+      letter-spacing: -.02em;
+      margin-top: .08em;
+      font-size: .65em;
+    }
+
+    .form-hero-copy {
+      margin: 18px 0 0;
+      max-width: 670px;
+      color: rgba(255, 247, 238, .74);
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+
+    html[data-theme="light"] .form-hero-copy { color: rgba(47, 38, 32, .72); }
+
+    .form-mini-panel {
+      padding: 20px;
+      border: 1px solid rgba(176, 137, 104, .2);
+      border-radius: 26px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .035));
+      box-shadow: 0 24px 70px rgba(0,0,0,.22);
+      backdrop-filter: blur(18px);
+    }
+
+    html[data-theme="light"] .form-mini-panel {
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 24px 55px rgba(68, 43, 26, .10);
+    }
+
+    .form-mini-panel strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #fff7ee;
+      font-family: var(--font-heading, serif);
+      font-size: 1.55rem;
+      line-height: 1;
+    }
+
+    html[data-theme="light"] .form-mini-panel strong { color: #2f2620; }
+
+    .form-mini-panel p {
+      margin: 0 0 14px;
+      color: rgba(255, 247, 238, .70);
+      font-size: .88rem;
+      line-height: 1.65;
+    }
+
+    html[data-theme="light"] .form-mini-panel p { color: rgba(47, 38, 32, .70); }
+
+    .form-mini-list {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .form-mini-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 247, 238, .82);
+      font-size: .82rem;
+    }
+
+    html[data-theme="light"] .form-mini-list li { color: rgba(47, 38, 32, .78); }
+
+    .form-mini-list li::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #d2a579;
+      box-shadow: 0 0 0 5px rgba(210, 165, 121, .12);
+      flex: 0 0 auto;
+    }
+
+    .form-shell {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto 70px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .form-progress-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin: 0 0 14px;
+      padding: 14px 16px;
+      border: 1px solid rgba(176, 137, 104, .18);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .075);
+      backdrop-filter: blur(14px);
+    }
+
+    html[data-theme="light"] .form-progress-card { background: rgba(255,255,255,.72); }
+
+    .form-progress-card p {
+      margin: 0;
+      color: rgba(255, 247, 238, .74);
+      font-size: .86rem;
+      line-height: 1.45;
+    }
+
+    html[data-theme="light"] .form-progress-card p { color: rgba(47, 38, 32, .70); }
+
+    .form-progress-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+      color: #f3dac4;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    html[data-theme="light"] .form-progress-pill { color: #7c4f31; }
+
+    .form-progress-pill::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #d2a579;
+      box-shadow: 0 0 0 6px rgba(210, 165, 121, .13);
+    }
+
+    .client-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-section-card {
+      border: 1px solid rgba(176, 137, 104, .18);
+      border-radius: 26px;
+      background: rgba(255,255,255,.072);
+      overflow: hidden;
+      box-shadow: 0 18px 46px rgba(0,0,0,.14);
+      backdrop-filter: blur(16px);
+    }
+
+    html[data-theme="light"] .form-section-card {
+      background: rgba(255,255,255,.76);
+      box-shadow: 0 18px 46px rgba(68,43,26,.09);
+    }
+
+    .form-section-card summary {
+      list-style: none;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 13px;
+      padding: 16px 18px;
+      user-select: none;
+    }
+
+    .form-section-card summary::-webkit-details-marker { display: none; }
+
+    .section-index {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(210, 165, 121, .16);
+      border: 1px solid rgba(210, 165, 121, .24);
+      color: #f1cda9;
+      font-family: var(--font-heading, serif);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    html[data-theme="light"] .section-index { color: #8a5938; background: rgba(176,137,104,.12); }
+
+    .section-heading strong {
+      display: block;
+      color: #fff7ee;
+      font-size: .98rem;
+      letter-spacing: -.01em;
+    }
+
+    html[data-theme="light"] .section-heading strong { color: #2f2620; }
+
+    .section-heading span {
+      display: block;
+      margin-top: 3px;
+      color: rgba(255, 247, 238, .55);
+      font-size: .76rem;
+      line-height: 1.35;
+    }
+
+    html[data-theme="light"] .section-heading span { color: rgba(47, 38, 32, .55); }
+
+    .summary-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #f1cda9;
+      border: 1px solid rgba(210,165,121,.18);
+      transition: transform .25s ease;
+    }
+
+    .form-section-card[open] .summary-icon { transform: rotate(45deg); }
+
+    .form-section-body {
+      padding: 0 18px 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .field {
+      grid-column: span 4;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+
+    .field.span-2 { grid-column: span 2; }
+    .field.span-3 { grid-column: span 3; }
+    .field.span-4 { grid-column: span 4; }
+    .field.span-5 { grid-column: span 5; }
+    .field.span-6 { grid-column: span 6; }
+    .field.span-8 { grid-column: span 8; }
+    .field.span-12 { grid-column: span 12; }
+
+    .field label,
+    .field .field-label {
+      color: rgba(255, 247, 238, .86);
+      font-size: .73rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: .01em;
+    }
+
+    html[data-theme="light"] .field label,
+    html[data-theme="light"] .field .field-label { color: rgba(47, 38, 32, .86); }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid rgba(230, 197, 167, .18);
+      border-radius: 14px;
+      background: rgba(255,255,255,.075);
+      color: #fff7ee;
+      font: 400 .88rem/1.3 var(--font-body, Inter, sans-serif);
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .field textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: rgba(255, 247, 238, .38); }
+
+    .field select option { color: #2f2620; }
+
+    html[data-theme="light"] .field input,
+    html[data-theme="light"] .field select,
+    html[data-theme="light"] .field textarea {
+      background: rgba(255,255,255,.86);
+      color: #2f2620;
+      border-color: rgba(117, 77, 48, .16);
+    }
+
+    html[data-theme="light"] .field input::placeholder,
+    html[data-theme="light"] .field textarea::placeholder { color: rgba(47, 38, 32, .36); }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(210,165,121,.72);
+      box-shadow: 0 0 0 4px rgba(210,165,121,.12);
+      background: rgba(255,255,255,.10);
+    }
+
+    html[data-theme="light"] .field input:focus,
+    html[data-theme="light"] .field select:focus,
+    html[data-theme="light"] .field textarea:focus { background: #fff; }
+
+    .field-help {
+      margin: 0;
+      color: rgba(255, 247, 238, .47);
+      font-size: .72rem;
+      line-height: 1.35;
+    }
+
+    html[data-theme="light"] .field-help { color: rgba(47, 38, 32, .50); }
+
+    .radio-grid,
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .option-chip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 9px 10px;
+      border: 1px solid rgba(230,197,167,.15);
+      border-radius: 14px;
+      background: rgba(255,255,255,.055);
+      color: rgba(255,247,238,.80);
+      font-size: .82rem;
+      cursor: pointer;
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
+    }
+
+    html[data-theme="light"] .option-chip {
+      background: rgba(255,255,255,.74);
+      color: rgba(47,38,32,.76);
+      border-color: rgba(117,77,48,.14);
+    }
+
+    .option-chip:hover { transform: translateY(-1px); border-color: rgba(210,165,121,.48); }
+    .option-chip input { width: 16px; height: 16px; accent-color: #b08968; }
+
+    .inline-note {
+      grid-column: span 12;
+      margin: 2px 0 0;
+      padding: 11px 12px;
+      border: 1px dashed rgba(210,165,121,.30);
+      border-radius: 16px;
+      color: rgba(255,247,238,.70);
+      background: rgba(210,165,121,.08);
+      font-size: .78rem;
+      line-height: 1.55;
+    }
+
+    html[data-theme="light"] .inline-note {
+      color: rgba(47,38,32,.68);
+      background: rgba(176,137,104,.08);
+    }
+
+    .form-final-card {
+      display: grid;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid rgba(210, 165, 121, .28);
+      border-radius: 26px;
+      background: linear-gradient(145deg, rgba(176,137,104,.18), rgba(255,255,255,.07));
+      box-shadow: 0 22px 60px rgba(0,0,0,.18);
+    }
+
+    html[data-theme="light"] .form-final-card {
+      background: linear-gradient(145deg, rgba(176,137,104,.14), rgba(255,255,255,.82));
+      box-shadow: 0 22px 60px rgba(68,43,26,.10);
+    }
+
+    .terms-check {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 12px;
+      align-items: start;
+      color: rgba(255,247,238,.82);
+      font-size: .86rem;
+      line-height: 1.55;
+    }
+
+    html[data-theme="light"] .terms-check { color: rgba(47,38,32,.78); }
+    .terms-check input { width: 18px; height: 18px; margin-top: 2px; accent-color: #b08968; }
+    .terms-check a { color: #efc7a5; text-decoration: underline; text-underline-offset: 3px; }
+    html[data-theme="light"] .terms-check a { color: #805334; }
+
+    .form-actions-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .form-submit-btn,
+    .form-secondary-btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: .88rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+    }
+
+    .form-submit-btn {
+      border: 1px solid #b08968;
+      color: #2f2118;
+      background: linear-gradient(135deg, #f0d1b3, #b08968);
+      box-shadow: 0 14px 34px rgba(176, 137, 104, .28);
+    }
+
+    .form-secondary-btn {
+      border: 1px solid rgba(230,197,167,.22);
+      color: rgba(255,247,238,.82);
+      background: rgba(255,255,255,.06);
+    }
+
+    html[data-theme="light"] .form-secondary-btn { color: rgba(47,38,32,.72); background: rgba(255,255,255,.70); border-color: rgba(117,77,48,.16); }
+
+    .form-submit-btn:hover,
+    .form-secondary-btn:hover { transform: translateY(-2px); }
+    .form-submit-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .form-status {
+      min-height: 22px;
+      margin: 0;
+      color: rgba(255,247,238,.74);
+      font-size: .84rem;
+      line-height: 1.5;
+    }
+
+    .form-status.is-success { color: #aee4b8; }
+    .form-status.is-error { color: #ffb2a4; }
+    html[data-theme="light"] .form-status { color: rgba(47,38,32,.70); }
+    html[data-theme="light"] .form-status.is-success { color: #267446; }
+    html[data-theme="light"] .form-status.is-error { color: #9d3327; }
+
+    .required-mark { color: #f0c6a2; }
+
+
+
+    .package-picker-card {
+      display: grid;
+      gap: 14px;
+      margin: 0 0 12px;
+      padding: 18px;
+      border: 1px solid rgba(210,165,121,.24);
+      border-radius: 28px;
+      background: rgba(255,255,255,.075);
+      box-shadow: 0 20px 55px rgba(0,0,0,.16);
+      backdrop-filter: blur(16px);
+    }
+
+    html[data-theme="light"] .package-picker-card {
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 20px 48px rgba(68,43,26,.09);
+    }
+
+    .package-picker-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .package-picker-head strong {
+      display: block;
+      color: #fff7ee;
+      font-family: var(--font-heading, serif);
+      font-size: clamp(1.45rem, 3vw, 2.05rem);
+      line-height: 1;
+      letter-spacing: -.025em;
+    }
+
+    html[data-theme="light"] .package-picker-head strong { color: #2f2620; }
+
+    .package-picker-head p {
+      margin: 7px 0 0;
+      max-width: 650px;
+      color: rgba(255,247,238,.64);
+      font-size: .86rem;
+      line-height: 1.55;
+    }
+
+    html[data-theme="light"] .package-picker-head p { color: rgba(47,38,32,.64); }
+
+    .package-current-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(210,165,121,.26);
+      border-radius: 999px;
+      color: #efc7a5;
+      background: rgba(210,165,121,.09);
+      font-size: .76rem;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    html[data-theme="light"] .package-current-pill { color: #7c4f31; }
+
+    .package-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .package-picker-option {
+      position: relative;
+      display: grid;
+      gap: 8px;
+      min-height: 100%;
+      padding: 16px;
+      border: 1px solid rgba(230,197,167,.17);
+      border-radius: 22px;
+      background: rgba(255,255,255,.055);
+      color: rgba(255,247,238,.78);
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease;
+    }
+
+    html[data-theme="light"] .package-picker-option {
+      background: rgba(255,255,255,.78);
+      border-color: rgba(117,77,48,.14);
+      color: rgba(47,38,32,.72);
+    }
+
+    .package-picker-option:hover,
+    .package-picker-option.is-selected {
+      transform: translateY(-2px);
+      border-color: rgba(210,165,121,.68);
+      box-shadow: 0 18px 42px rgba(0,0,0,.16);
+      background: rgba(210,165,121,.105);
+    }
+
+    html[data-theme="light"] .package-picker-option:hover,
+    html[data-theme="light"] .package-picker-option.is-selected {
+      box-shadow: 0 18px 34px rgba(68,43,26,.11);
+      background: rgba(176,137,104,.11);
+    }
+
+    .package-picker-option input {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 17px;
+      height: 17px;
+      accent-color: #b08968;
+    }
+
+    .package-picker-kicker {
+      width: fit-content;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(210,165,121,.12);
+      color: #efc7a5;
+      font-size: .66rem;
+      font-weight: 900;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    html[data-theme="light"] .package-picker-kicker { color: #7c4f31; }
+
+    .package-picker-option b {
+      color: #fff7ee;
+      font-family: var(--font-heading, serif);
+      font-size: 1.65rem;
+      line-height: .98;
+      letter-spacing: -.025em;
+    }
+
+    html[data-theme="light"] .package-picker-option b { color: #2f2620; }
+
+    .package-picker-option small {
+      color: rgba(255,247,238,.58);
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+
+    html[data-theme="light"] .package-picker-option small { color: rgba(47,38,32,.58); }
+
+    .package-picker-option ul {
+      display: grid;
+      gap: 5px;
+      margin: 4px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .package-picker-option li {
+      display: flex;
+      gap: 7px;
+      align-items: flex-start;
+      font-size: .76rem;
+      line-height: 1.35;
+    }
+
+    .package-picker-option li::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: .48em;
+      background: #d2a579;
+      flex: 0 0 auto;
+    }
+
+    .package-guidance-card {
+      display: none;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+      margin: 0 0 12px;
+      padding: 13px 14px;
+      border: 1px solid rgba(210,165,121,.25);
+      border-radius: 20px;
+      background: rgba(210,165,121,.08);
+      color: rgba(255,247,238,.72);
+      font-size: .84rem;
+      line-height: 1.55;
+    }
+
+    .package-guidance-card.is-visible { display: grid; }
+    .package-guidance-card::before {
+      content: "✓";
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(210,165,121,.16);
+      color: #efc7a5;
+      font-weight: 900;
+    }
+
+    html[data-theme="light"] .package-guidance-card { color: rgba(47,38,32,.70); background: rgba(176,137,104,.08); }
+    html[data-theme="light"] .package-guidance-card::before { color: #7c4f31; }
+
+    .package-only-hidden,
+    .form-final-card.package-only-hidden,
+    .field[data-field-hidden="true"] { display: none !important; }
+
+    @media (max-width: 900px) {
+      .package-picker-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 900px) {
+      .form-hero-inner { grid-template-columns: 1fr; }
+      .form-mini-panel { max-width: 560px; }
+      .field,
+      .field.span-2,
+      .field.span-3,
+      .field.span-4,
+      .field.span-5,
+      .field.span-6,
+      .field.span-8 { grid-column: span 6; }
+      .radio-grid,
+      .check-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 620px) {
+      .form-hero { padding-top: 104px; }
+      .form-shell { width: min(100% - 20px, 1120px); margin-bottom: 46px; }
+      .form-progress-card { grid-template-columns: 1fr; }
+      .form-section-card summary { grid-template-columns: auto 1fr auto; padding: 14px 13px; gap: 10px; }
+      .form-section-body { padding: 0 13px 14px; }
+      .form-grid { gap: 9px; }
+      .field,
+      .field.span-2,
+      .field.span-3,
+      .field.span-4,
+      .field.span-5,
+      .field.span-6,
+      .field.span-8,
+      .field.span-12 { grid-column: span 12; }
+      .radio-grid,
+      .check-grid { grid-template-columns: 1fr; }
+      .form-actions-row { align-items: stretch; }
+      .form-submit-btn,
+      .form-secondary-btn { width: 100%; }
+      .form-title { font-size: clamp(2.35rem, 16vw, 4rem); }
+    }
+  </style>
+
+</head>
+
+<body class="loading">
+  <div class="site-preloader" aria-hidden="true">
+    <div class="lirandzo-loader">
+      <div class="lirandzo-loader-logo-wrap"><img class="lirandzo-loader-logo" src="assets/lirandzo-logo.svg" alt=""></div>
+      <div class="lirandzo-loader-text"><strong>Lirandzo</strong><span>Convites Digitais</span></div>
+    </div>
+  </div>
+  <a href="#main-content" class="skip-link">Saltar para o conteúdo principal</a>
+  <header class="site-header" aria-label="Navegação principal Lirandzo">
+    <a class="site-brand" href="index.html#main-content" aria-label="Lirandzo — início">
+      <img src="assets/lirandzo-logo.svg" alt="Lirandzo" class="brand-logo">
+    </a>
+    <nav class="site-menu" aria-label="Secções do site">
+      <a href="index.html#main-content">Início</a><a href="index.html#pacotes">Convites digitais</a><a href="form.html" class="is-active" aria-current="page">Formulário</a><a href="blog.html">Blog</a><a href="index.html#faq">FAQ</a><a href="index.html#sobre-nos">Sobre</a><a href="index.html#apoio">Contacto</a>
+    </nav>
+    <div class="site-actions">
+      <a href="https://wa.me/258878061697?text=Ol%C3%A1!%20Quero%20preencher%20o%20formul%C3%A1rio%20do%20meu%20convite%20digital%20Lirandzo." class="header-cta" target="_blank" rel="noopener noreferrer">♡ Apoio no WhatsApp</a>
+      <div class="language-switcher" data-language-switcher>
+        <button type="button" class="language-toggle" data-language-toggle aria-label="Escolher idioma" aria-expanded="false">
+          <span class="language-flag" data-language-flag aria-hidden="true">🇲🇿</span>
+          <span class="language-current" data-language-current>PT</span>
+          <span class="language-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="language-menu" data-language-menu role="menu" aria-label="Idiomas disponíveis">
+          <button type="button" data-lang-option="pt" role="menuitem"><span aria-hidden="true">🇲🇿</span><span>Português</span></button>
+          <button type="button" data-lang-option="en" role="menuitem"><span aria-hidden="true">🇬🇧</span><span>English</span></button>
+        </div>
+      </div>
+      <button type="button" class="theme-toggle site-theme-toggle" id="themeToggle" aria-label="Alternar tema"><span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☼</span><span class="theme-toggle-label" data-theme-label>Tema claro</span></button>
+    </div>
+  </header>
+  
+  <main id="main-content" class="form-page">
+    <section class="form-hero" aria-labelledby="formPageTitle">
+      <div class="form-hero-inner">
+        <div>
+          <p class="form-eyebrow">Formulário de produção · Lirandzo</p>
+          <h1 class="form-title" id="formPageTitle">Dados para criar o seu convite <span>digital</span></h1>
+          <!-- <p class="form-hero-copy">Escolha o pacote pretendido e preencha apenas os dados necessários para esse convite. O formulário adapta-se ao pacote escolhido para evitar campos longos, repetidos ou desnecessários.</p> -->
+        </div>
+        <aside class="form-mini-panel" aria-label="Orientações antes de preencher">
+          <strong>Antes de começar</strong>
+          <p>Tenha consigo os nomes completos, datas, locais, links dos mapas, contactos de apoio e links das fotografias que pretende usar no convite.</p>
+          <ul class="form-mini-list">
+            <li>Campos com asterisco são obrigatórios.</li>
+            <li>Pode deixar indicações em aberto quando ainda não tiver tudo fechado.</li>
+            <!--<li>Fotografias devem ser enviadas por link do Drive, Dropbox ou WeTransfer.</li> -->
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="form-shell" aria-label="Formulário de adesão ao convite digital">
+      <div class="form-progress-card">
+        <p>Primeiro escolha o pacote. Depois, o formulário mostra apenas os campos realmente necessários para esse nível de convite.</p>
+        <span class="form-progress-pill" id="formProgressPill">0% preenchido</span>
+      </div>
+
+      <form id="lirandzoClientForm" class="client-form" action="https://formsubmit.co/ajax/lirandzo.mz@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="Novo formulário de adesão — Lirandzo">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="Resumo organizado do briefing" id="briefingSummaryField" value="">
+
+        <section class="package-picker-card" aria-label="Escolha do pacote Lirandzo">
+          <div class="package-picker-head">
+            <div>
+              <strong>Escolha o pacote</strong>
+              <!-- <p>Ao seleccionar o pacote, aparecem apenas os blocos de informação necessários para produzir aquele convite. Isto reduz o tempo de preenchimento e evita perguntas que não se aplicam.</p> -->
+            </div>
+            <span class="package-current-pill" id="selectedPackagePill">Nenhum pacote escolhido</span>
+          </div>
+          <div class="package-picker-grid">
+            <label class="package-picker-option" data-package-card="perola">
+              <input type="radio" name="Pacote escolhido" value="Pacote Pérola" data-package-radio="perola" required>
+              <span class="package-picker-kicker">Essencial</span>
+              <b>Pérola</b>
+              <small>Convite elegante e directo com a informação principal do evento.</small>
+              <ul><li>Capa com foto e nomes</li><li>Agenda com mapa</li><li>Feed de felicitações</li><li>Contagem regressiva e música</li></ul>
+            </label>
+            <label class="package-picker-option" data-package-card="esmeralda">
+              <input type="radio" name="Pacote escolhido" value="Pacote Esmeralda" data-package-radio="esmeralda" required>
+              <span class="package-picker-kicker">Mais escolhido</span>
+              <b>Esmeralda</b>
+              <small>Mais organização, memória visual e recursos úteis para os convidados.</small>
+              <ul><li>Tudo do Pérola</li><li>Presentes e dress code</li><li>Pré-wedding com 5 fotos</li><li>Dashboard de convidados</li></ul>
+            </label>
+            <label class="package-picker-option" data-package-card="rubi">
+              <input type="radio" name="Pacote escolhido" value="Pacote Rubi" data-package-radio="rubi" required>
+              <span class="package-picker-kicker">Premium</span>
+              <b>Rubi</b>
+              <small>Experiência mais completa com vídeo, check-in e recursos premium.</small>
+              <ul><li>Tudo do Esmeralda</li><li>7 fotos + 1 vídeo</li><li>Check-in com código de entrada</li><li>Cápsula por 30 dias</li></ul>
+            </label>
+          </div>
+        </section>
+
+        <div class="package-guidance-card" id="packageGuidance">Escolha um pacote para ver o formulário correspondente.</div>
+
+        <details class="form-section-card" data-packages="perola esmeralda rubi" open>
+          <summary><span class="section-index">01</span><span class="section-heading"><strong>Contacto do cliente</strong><span>Informação para contacto, confirmação e acompanhamento.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-4"><label for="clientName">Nome do cliente <span class="required-mark">*</span></label><input id="clientName" name="Nome do cliente" type="text" placeholder="Ex.: Edmilson Mula" required></div>
+              <div class="field span-4"><label for="clientPhone">Contacto / WhatsApp <span class="required-mark">*</span></label><input id="clientPhone" name="Contacto WhatsApp do cliente" type="tel" placeholder="Ex.: +258 87 000 0000" required></div>
+              <div class="field span-4"><label for="clientEmail">Email <span class="required-mark">*</span></label><input id="clientEmail" name="Email do cliente" type="email" placeholder="email@exemplo.com" required></div>
+              <div class="field span-4"><label for="clientCity">Cidade / País</label><input id="clientCity" name="Cidade e país do cliente" type="text" placeholder="Ex.: Maputo, Moçambique"></div>
+              <div class="field span-4"><label for="deliveryDeadline">Data desejada para entrega</label><input id="deliveryDeadline" name="Data desejada para entrega do convite" type="date"></div>
+              <div class="field span-4"><label for="mainContact">Quem aprova o convite?</label><input id="mainContact" name="Responsável pela aprovação" type="text" placeholder="Ex.: Noiva, noivo, cerimonialista"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="perola esmeralda rubi" open>
+          <summary><span class="section-index">02</span><span class="section-heading"><strong>Tipo de convite e modelo</strong><span>Preferências iniciais de estilo, idioma e estrutura.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-4"><label for="eventType">Tipo de evento <span class="required-mark">*</span></label><select id="eventType" name="Tipo de evento" required><option value="">Seleccionar</option><option>Casamento</option><option>Noivado</option><option>Aniversário</option><option>Chá de panela</option><option>Baptizado</option><option>Evento familiar</option><option>Outro evento</option></select></div>
+              <div class="field span-4"><label for="chosenModel">Modelo escolhido <span class="required-mark">*</span></label><input id="chosenModel" name="Modelo escolhido" type="text" placeholder="Ex.: modelo Ana & Miguel / link do modelo" required></div>
+              <div class="field span-4"><label for="inviteLanguage">Idioma do convite</label><select id="inviteLanguage" name="Idioma do convite"><option>Português</option><option>Português e Inglês</option><option>Inglês</option><option>Outro idioma</option></select></div>
+              <div class="field span-4"><label for="visualStyle">Estilo visual pretendido</label><select id="visualStyle" name="Estilo visual pretendido"><option>Elegante e romântico</option><option>Minimalista</option><option>Clássico</option><option>Moderno</option><option>Luxo discreto</option><option>Tradicional</option><option>Ainda não sei</option></select></div>
+              <div class="field span-4"><label for="colorPalette">Cores principais</label><input id="colorPalette" name="Cores principais do convite" type="text" placeholder="Ex.: tons terra, branco, dourado"></div>
+              <div class="field span-4"><label for="musicPreference">Música / ambiente sonoro</label><input id="musicPreference" name="Música ou ambiente sonoro" type="text" placeholder="Nome da música, link ou estilo"></div>
+              <p class="inline-note">Nota: se ainda não tiver escolhido um modelo, escreva “ainda não escolhi” e indique o estilo que mais gosta.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="perola esmeralda rubi" open>
+          <summary><span class="section-index">03</span><span class="section-heading"><strong>Dados dos noivos ou anfitriões</strong><span>Nomes principais, familiares e frase de destaque.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-4"><label for="brideName">Nome da noiva / anfitriã <span class="required-mark">*</span></label><input id="brideName" name="Nome da noiva ou anfitriã" type="text" required></div>
+              <div class="field span-4"><label for="groomName">Nome do noivo / anfitrião <span class="required-mark">*</span></label><input id="groomName" name="Nome do noivo ou anfitrião" type="text" required></div>
+              <div class="field span-4"><label for="displayNames">Nomes como devem aparecer no convite</label><input id="displayNames" name="Nomes exibidos no convite" type="text" placeholder="Ex.: Ana & Miguel"></div>
+              <div class="field span-6"><label for="brideParents">Pais da noiva / anfitriã</label><input id="brideParents" name="Pais da noiva ou anfitriã" type="text" placeholder="Ex.: Filha de ... e de ..."></div>
+              <div class="field span-6"><label for="groomParents">Pais do noivo / anfitrião</label><input id="groomParents" name="Pais do noivo ou anfitrião" type="text" placeholder="Ex.: Filho de ... e de ..."></div>
+              <div class="field span-4"><label for="monogram">Iniciais / monograma</label><input id="monogram" name="Iniciais ou monograma" type="text" placeholder="Ex.: AM"></div>
+              <div class="field span-8"><label for="verseQuote">Versículo, frase ou citação</label><input id="verseQuote" name="Versículo frase ou citação" type="text" placeholder="Texto que aparece na abertura do convite"></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="perola esmeralda rubi">
+          <summary><span class="section-index">04</span><span class="section-heading"><strong>Data, programa e locais</strong><span>Informações do grande dia, horários e mapas.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-3"><label for="eventDate">Data do evento <span class="required-mark">*</span></label><input id="eventDate" name="Data do evento" type="date" required></div>
+              <div class="field span-3"><label for="eventStartTime">Hora principal</label><input id="eventStartTime" name="Hora principal do evento" type="time"></div>
+              <div class="field span-3"><label for="rsvpDeadline">Prazo de RSVP</label><input id="rsvpDeadline" name="Prazo para confirmação de presença" type="date"></div>
+              <div class="field span-3"><label for="timezone">Fuso horário</label><input id="timezone" name="Fuso horário" type="text" placeholder="Ex.: Africa/Maputo"></div>
+              <div class="field span-4"><label for="ceremonyName">Cerimónia — nome/local</label><input id="ceremonyName" name="Cerimónia nome do local" type="text" placeholder="Ex.: Igreja / Capela"></div>
+              <div class="field span-2"><label for="ceremonyTime">Hora</label><input id="ceremonyTime" name="Hora da cerimónia" type="time"></div>
+              <div class="field span-6"><label for="ceremonyMap">Link do mapa da cerimónia</label><input id="ceremonyMap" name="Link do mapa da cerimónia" type="url" placeholder="https://maps.google.com/..."></div>
+              <div class="field span-4"><label for="receptionName">Recepção — nome/local</label><input id="receptionName" name="Recepção nome do local" type="text" placeholder="Ex.: Quinta / Salão"></div>
+              <div class="field span-2"><label for="receptionTime">Hora</label><input id="receptionTime" name="Hora da recepção" type="time"></div>
+              <div class="field span-6"><label for="receptionMap">Link do mapa da recepção</label><input id="receptionMap" name="Link do mapa da recepção" type="url" placeholder="https://maps.google.com/..."></div>
+              <div class="field span-12"><label for="programDetails">Programa adicional</label><textarea id="programDetails" name="Programa adicional do evento" placeholder="Ex.: civil, copo de água, sessão de fotos, festa, horários e observações."></textarea></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="esmeralda rubi">
+          <summary><span class="section-index">05</span><span class="section-heading"><strong>História, carta e mensagens</strong><span>Conteúdo emocional que dá vida ao convite.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-6"><label for="storyMeeting">A nossa história — o encontro</label><textarea id="storyMeeting" name="História do casal - encontro" placeholder="Como se conheceram?"></textarea></div>
+              <div class="field span-6"><label for="storyFriendship">A nossa história — amizade / início</label><textarea id="storyFriendship" name="História do casal - amizade" placeholder="Como a relação começou a crescer?"></textarea></div>
+              <div class="field span-6"><label for="storyGrowth">A nossa história — crescimento</label><textarea id="storyGrowth" name="História do casal - crescimento" placeholder="Momentos importantes, desafios ou aprendizagens."></textarea></div>
+              <div class="field span-6"><label for="storyPromise">A nossa história — promessa</label><textarea id="storyPromise" name="História do casal - promessa" placeholder="Mensagem final sobre o compromisso."></textarea></div>
+              <div class="field span-12"><label for="coupleLetter">Carta dos noivos / anfitriões</label><textarea id="coupleLetter" name="Carta dos noivos ou anfitriões" placeholder="Mensagem de gratidão aos convidados."></textarea></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="esmeralda rubi">
+          <summary><span class="section-index">06</span><span class="section-heading"><strong>Padrinhos, honra e homenagens</strong><span>Pessoas especiais, funções e dedicatórias.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-6"><label for="honourPeople">Padrinhos, madrinhas, damas e cavalheiros</label><textarea id="honourPeople" name="Padrinhos madrinhas damas cavalheiros" placeholder="Escreva: Nome | função | pequena dedicatória. Um por linha."></textarea></div>
+              <div class="field span-6"><label for="familyTribute">Homenagem às famílias</label><textarea id="familyTribute" name="Homenagem às famílias" placeholder="Mensagem de homenagem, agradecimento ou texto especial."></textarea></div>
+              <div class="field span-12"><label for="specialMentions">Outras pessoas ou homenagens especiais</label><textarea id="specialMentions" name="Outras homenagens especiais" placeholder="Ex.: pais ausentes, avós, equipa de honra, familiares importantes."></textarea></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="esmeralda rubi">
+          <summary><span class="section-index">07</span><span class="section-heading"><strong>RSVP, convidados e entrada</strong><span>Confirmação de presença, mesas e controlo de acesso.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-4"><label for="rsvpNeed">O convite terá RSVP?</label><select id="rsvpNeed" name="Necessita de RSVP"><option>Sim</option><option>Não</option><option>Ainda não sei</option></select></div>
+              <div class="field span-4"><label for="guestLimit">Número estimado de convidados</label><input id="guestLimit" name="Número estimado de convidados" type="number" min="1" placeholder="Ex.: 150"></div>
+              <div class="field span-4"><label for="guestListLink">Link da lista de convidados</label><input id="guestListLink" name="Link da lista de convidados" type="url" placeholder="Google Sheets / Excel online"></div>
+              <div class="field span-4"><label for="tablesInfo">Mesas ou lugares definidos?</label><select id="tablesInfo" name="Informação sobre mesas ou lugares"><option>Ainda não</option><option>Sim, por mesa</option><option>Sim, por lugar</option><option>Não será necessário</option></select></div>
+              <div class="field span-4"><label for="qrNeed">Código de entrada / QR code</label><select id="qrNeed" name="Código de entrada ou QR code"><option>Sim, quero usar</option><option>Não será necessário</option><option>Ainda não sei</option></select></div>
+              <div class="field span-4"><label for="rsvpContacts">Contactos de apoio no dia</label><input id="rsvpContacts" name="Contactos de apoio no dia" type="text" placeholder="Ex.: +258 84..., +258 87..."></div>
+              <div class="field span-12"><label for="rsvpQuestions">Perguntas extra no RSVP</label><textarea id="rsvpQuestions" name="Perguntas extra para RSVP" placeholder="Ex.: restrições alimentares, número de acompanhantes, transporte, presença na cerimónia e recepção."></textarea></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="esmeralda rubi">
+          <summary><span class="section-index">08</span><span class="section-heading"><strong>Presentes e contribuições</strong><span>Lista de presentes, conta bancária e métodos de contribuição.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-4"><label for="giftMode">Secção de presentes</label><select id="giftMode" name="Secção de presentes"><option>Lista de presentes + contribuição monetária</option><option>Apenas lista de presentes</option><option>Apenas contribuição monetária</option><option>Não incluir</option><option>Ainda não sei</option></select></div>
+              <div class="field span-4"><label for="bankName">Banco / titular</label><input id="bankName" name="Banco e titular da conta" type="text" placeholder="Ex.: Millennium BIM — Titular"></div>
+              <div class="field span-4"><label for="bankDetails">NIB / IBAN / NUIB</label><input id="bankDetails" name="Dados bancários" type="text" placeholder="NIB, IBAN ou NUIB"></div>
+              <div class="field span-6"><label for="mobileMoney">M-Pesa / e-Mola / outro</label><input id="mobileMoney" name="Contactos para contribuição móvel" type="text" placeholder="Número, titular e serviço"></div>
+              <div class="field span-6"><label for="paymentLogos">Links dos logos dos métodos de pagamento</label><input id="paymentLogos" name="Links dos logos de pagamento" type="url" placeholder="Pasta com logos ou imagens"></div>
+              <div class="field span-12"><label for="giftList">Lista de presentes</label><textarea id="giftList" name="Lista de presentes" placeholder="Escreva: presente | descrição | observação. Um por linha."></textarea></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="esmeralda rubi">
+          <summary><span class="section-index">09</span><span class="section-heading"><strong>Menu, etiqueta e apoio</strong><span>Informações úteis para orientar os convidados.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-6"><label for="menuDetails">Menu da celebração</label><textarea id="menuDetails" name="Menu da celebração" placeholder="Entrada, prato principal, bebidas, sobremesa e restrições alimentares."></textarea></div>
+              <div class="field span-6"><label for="dressCode">Dress code / inspiração de vestuário</label><textarea id="dressCode" name="Dress code e inspiração de vestuário" placeholder="Ex.: casual elegante, tons neutros, branco, preto, dourado."></textarea></div>
+              <div class="field span-6"><label for="etiquetteRules">Etiqueta do evento</label><textarea id="etiquetteRules" name="Etiqueta do evento" placeholder="Ex.: pontualidade, telemóvel em silêncio, fotos com discrição."></textarea></div>
+              <div class="field span-6"><label for="transportInfo">Transporte, estacionamento e chegada</label><textarea id="transportInfo" name="Transporte estacionamento e chegada" placeholder="Indicações para chegar, estacionamento, shuttle, rotas e apoio."></textarea></div>
+            </div>
+          </div>
+        </details>
+
+        <details class="form-section-card" data-packages="perola esmeralda rubi">
+          <summary><span class="section-index">10</span><span class="section-heading"><strong>Observações finais</strong><span>Indicações adicionais, restrições e prioridades.</span></span><span class="summary-icon">+</span></summary>
+          <div class="form-section-body">
+            <div class="form-grid">
+              <div class="field span-12"><label for="finalNotes">Observações gerais</label><textarea id="finalNotes" name="Observações gerais" placeholder="Tudo que a Lirandzo deve considerar antes de produzir o convite."></textarea></div>
+              <div class="field span-12"><span class="field-label">Prioridades do cliente</span><div class="check-grid">
+                <label class="option-chip"><input type="checkbox" name="Prioridades do cliente" value="Entrega rápida"> Entrega rápida</label>
+                <label class="option-chip"><input type="checkbox" name="Prioridades do cliente" value="Design mais romântico"> Design mais romântico</label>
+                <label class="option-chip"><input type="checkbox" name="Prioridades do cliente" value="Design mais minimalista"> Design mais minimalista</label>
+                <label class="option-chip"><input type="checkbox" name="Prioridades do cliente" value="Mais impacto visual"> Mais impacto visual</label>
+                <label class="option-chip"><input type="checkbox" name="Prioridades do cliente" value="Apoio nos textos"> Apoio nos textos</label>
+                <label class="option-chip"><input type="checkbox" name="Prioridades do cliente" value="Ainda preciso de orientação"> Ainda preciso de orientação</label>
+              </div></div>
+            </div>
+          </div>
+        </details>
+
+        <div class="form-final-card" data-final-card aria-label="Confirmação dos termos e envio">
+          <label class="terms-check" for="termsAccepted">
+            <input id="termsAccepted" name="Confirmação dos termos" type="checkbox" value="Li e aceito os termos e condições" required>
+            <span>Confirmo que li e aceito os <a href="termos.html" target="_blank" rel="noopener noreferrer">Termos e Condições</a> e a <a href="privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a> da Lirandzo.</span>
+          </label>
+          <p class="form-status" id="formStatus" aria-live="polite"></p>
+          <div class="form-actions-row">
+            <button type="submit" class="form-submit-btn" id="submitClientForm">Enviar formulário por email</button>
+            <a class="form-secondary-btn" href="https://wa.me/258878061697?text=Ol%C3%A1!%20Acabei%20de%20preencher%20o%20formul%C3%A1rio%20do%20meu%20convite%20digital." target="_blank" rel="noopener noreferrer">Avisar pelo WhatsApp</a>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer-complete footer-corporate" aria-label="Rodapé Lirandzo">
+  <div class="footer-corp-inner">
+    <div class="footer-corp-top">
+      <a class="footer-corp-brand" href="index.html" aria-label="Lirandzo - página inicial">
+        <img src="assets/lirandzo-logo.svg" alt="Lirandzo Convites Digitais" class="footer-logo">
+        <span>Convites digitais elegantes para casamentos e eventos memoráveis.</span>
+      </a>
+      <div class="footer-corp-actions">
+        <a class="footer-corp-contact" href="mailto:lirandzo.mz@gmail.com" aria-label="Enviar email para Lirandzo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+          <span>lirandzo.mz@gmail.com</span>
+        </a>
+        <a class="footer-corp-contact" href="tel:+258878061697" aria-label="Ligar para Lirandzo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.8-.4 1.2-.2 1.1.4 2.2.6 3.4.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.4c.6 0 1 .4 1 1 0 1.2.2 2.3.6 3.4.1.4.1.8-.2 1.2l-2.2 2.2z"></path></svg>
+          <span>+258 87 806 1697</span>
+        </a>
+        <a class="footer-corp-btn" href="https://wa.me/258878061697" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
+      </div>
+    </div>
+    <div class="footer-corp-grid">
+      <div class="footer-corp-col footer-corp-about"><h3>Lirandzo</h3><p>Experiências digitais elegantes para casamentos, convites para eventos e momentos especiais.</p></div>
+      <nav class="footer-corp-col" aria-label="Navegação do rodapé"><h3>Navegação</h3><ul><li><a href="index.html">Início</a></li><li><a href="index.html#pacotes">Convites digitais</a></li><li><a href="index.html#testemunhos">Testemunhos</a></li><li><a href="index.html#faq">FAQ</a></li></ul></nav>
+      <div class="footer-corp-col"><h3>Serviços</h3><ul><li><a href="index.html#pacotes">Convites digitais</a></li><li><a href="index.html#vantagens">Convites para eventos</a></li><li><a href="index.html#como-funciona">Convites de casamento</a></li><li><a href="blog.html">Blog</a></li></ul></div>
+      <div class="footer-corp-col"><h3>Contactos</h3><ul><li><a href="tel:+258878061697">+258 87 806 1697</a></li><li><a href="mailto:lirandzo.mz@gmail.com">lirandzo.mz@gmail.com</a></li><li><a href="https://wa.me/258878061697" target="_blank" rel="noopener noreferrer">WhatsApp</a></li><li><a href="privacidade.html">Política de Privacidade</a></li></ul></div>
+    </div>
+    <div class="footer-corp-bottom"><p>&copy; 2026 Lirandzo. Todos os direitos reservados.</p><div class="footer-corp-social" aria-label="Redes sociais"><a href="https://www.instagram.com/lirandzo.mz?igsh=MWxjNWhwNDllYTRweQ==" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.5"></circle><path d="M17.4 6.7h.1"></path></svg></a><a href="https://www.facebook.com/profile.php?id=61582215350970" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-3 0-5 2-5 5v3H6v4h3v4h4v-4h3l1-4h-4V9c0-.6.4-1 1-1z"></path></svg></a><a href="https://wa.me/258878061697" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l1.2-3.6A7 7 0 1 1 8.6 18L5 19z"></path><path d="M9 9c.6 2.1 2 3.6 4 4l1-1"></path></svg></a></div></div>
+  </div>
+</footer>
+  
+  <script>
+    (() => {
+      const form = document.getElementById('lirandzoClientForm');
+      const status = document.getElementById('formStatus');
+      const submitBtn = document.getElementById('submitClientForm');
+      const progressPill = document.getElementById('formProgressPill');
+      const summaryField = document.getElementById('briefingSummaryField');
+      const termsAccepted = document.getElementById('termsAccepted');
+      const packageRadios = Array.from(document.querySelectorAll('[data-package-radio]'));
+      const packageCards = Array.from(document.querySelectorAll('[data-package-card]'));
+      const packageSections = Array.from(document.querySelectorAll('.form-section-card[data-packages]'));
+      const packageFields = Array.from(document.querySelectorAll('[data-field-packages]'));
+      const packageGuidance = document.getElementById('packageGuidance');
+      const packagePill = document.getElementById('selectedPackagePill');
+      const finalCard = document.querySelector('[data-final-card]');
+      if (!form) return;
+
+      const formCopy = {
+        pt: {
+          noPackage: 'Nenhum pacote escolhido',
+          choosePackage: 'Escolha um pacote para ver o formulário correspondente.',
+          filled: 'preenchido',
+          selectPackageError: 'Antes de enviar, escolha primeiro o pacote pretendido.',
+          termsError: 'Antes de enviar, confirme que leu e aceita os Termos e Condições da Lirandzo.',
+          sending: 'A enviar o formulário...',
+          success: 'Formulário enviado com sucesso. A equipa da Lirandzo recebeu os dados e irá analisar as informações do convite.',
+          sendError: 'Não foi possível enviar agora. Tente novamente ou envie as informações pelo WhatsApp da Lirandzo.',
+          'package.perola.label': 'Pacote Pérola',
+          'package.esmeralda.label': 'Pacote Esmeralda',
+          'package.rubi.label': 'Pacote Rubi',
+          'guidance.perola': 'Está a preencher o formulário do Pacote Pérola. Mantivemos apenas os blocos essenciais: contacto, modelo, dados dos noivos, data, locais, foto principal, música, feed de felicitações e observações finais.',
+          'guidance.esmeralda': 'Está a preencher o formulário do Pacote Esmeralda. Foram acrescentados os blocos de RSVP, dashboard de convidados, presentes, dress code, pré-wedding e informações complementares.',
+          'guidance.rubi': 'Está a preencher o formulário do Pacote Rubi. Além dos blocos do Esmeralda, este fluxo recolhe dados para vídeo, check-in, código de entrada e experiência premium.'
+        },
+        en: {
+          noPackage: 'No package selected',
+          choosePackage: 'Choose a package to see the corresponding form.',
+          filled: 'completed',
+          selectPackageError: 'Before submitting, choose the package you want first.',
+          termsError: 'Before submitting, confirm that you have read and accepted Lirandzo’s Terms and Conditions.',
+          sending: 'Sending the form...',
+          success: 'Form submitted successfully. The Lirandzo team has received the details and will review the invitation information.',
+          sendError: 'Unable to send right now. Please try again or send the information through Lirandzo WhatsApp.',
+          'package.perola.label': 'Pearl Package',
+          'package.esmeralda.label': 'Emerald Package',
+          'package.rubi.label': 'Ruby Package',
+          'guidance.perola': 'You are filling in the Pearl Package form. We kept only the essential blocks: contact, template, couple details, date, venues, main photo, music, congratulations feed and final notes.',
+          'guidance.esmeralda': 'You are filling in the Emerald Package form. RSVP, guest dashboard, gifts, dress code, pre-wedding and complementary information blocks have been added.',
+          'guidance.rubi': 'You are filling in the Ruby Package form. In addition to the Emerald blocks, this flow collects details for video, check-in, entry code and the premium experience.'
+        }
+      };
+
+      function getFormLang() {
+        try {
+          return ((window.LirandzoI18n && window.LirandzoI18n.currentLang) || localStorage.getItem('lirandzo-language')) === 'en' ? 'en' : 'pt';
+        } catch (error) {
+          return 'pt';
+        }
+      }
+
+      function formT(key) {
+        const lang = getFormLang();
+        return (formCopy[lang] && formCopy[lang][key]) || formCopy.pt[key] || key;
+      }
+
+      function getActivePackage() {
+        const selected = packageRadios.find((radio) => radio.checked);
+        return selected ? selected.dataset.packageRadio : '';
+      }
+
+      function setDisabled(container, disabled) {
+        container.querySelectorAll('input, select, textarea, button').forEach((field) => {
+          field.disabled = disabled;
+        });
+      }
+
+      function applyPackageVisibility(scrollToForm = false) {
+        const activePackage = getActivePackage();
+        packageCards.forEach((card) => card.classList.toggle('is-selected', card.dataset.packageCard === activePackage));
+
+        packageSections.forEach((section) => {
+          const allowed = activePackage && String(section.dataset.packages || '').split(/\s+/).includes(activePackage);
+          section.classList.toggle('package-only-hidden', !allowed);
+          setDisabled(section, !allowed);
+          if (!allowed) section.open = false;
+        });
+
+        packageFields.forEach((fieldWrap) => {
+          const allowed = activePackage && String(fieldWrap.dataset.fieldPackages || '').split(/\s+/).includes(activePackage);
+          fieldWrap.dataset.fieldHidden = allowed ? 'false' : 'true';
+          setDisabled(fieldWrap, !allowed);
+        });
+
+        if (finalCard) {
+          finalCard.classList.toggle('package-only-hidden', !activePackage);
+          setDisabled(finalCard, !activePackage);
+        }
+
+        if (packagePill) packagePill.textContent = activePackage ? formT(`package.${activePackage}.label`) : formT('noPackage');
+        if (packageGuidance) {
+          packageGuidance.textContent = activePackage ? formT(`guidance.${activePackage}`) : formT('choosePackage');
+          packageGuidance.classList.toggle('is-visible', Boolean(activePackage));
+        }
+
+        updateProgress();
+        if (scrollToForm && packageGuidance) packageGuidance.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function getEligibleFields() {
+        return Array.from(form.querySelectorAll('input, select, textarea')).filter((field) => {
+          if (field.disabled) return false;
+          if (['hidden', 'submit', 'button'].includes(field.type)) return false;
+          return true;
+        });
+      }
+
+      function getFilledFields() {
+        return getEligibleFields().filter((field) => {
+          if (field.type === 'checkbox' || field.type === 'radio') return field.checked;
+          return String(field.value || '').trim().length > 0;
+        }).length;
+      }
+
+      function updateProgress() {
+        if (!progressPill) return;
+        const fields = getEligibleFields();
+        const percentage = fields.length ? Math.round((getFilledFields() / fields.length) * 100) : 0;
+        progressPill.textContent = `${percentage}% ${formT('filled')}`;
+      }
+
+      function buildSummary(formData) {
+        const entries = [];
+        const grouped = {};
+        for (const [key, value] of formData.entries()) {
+          const clean = String(value || '').trim();
+          if (!clean || key.startsWith('_') || key === 'Resumo organizado do briefing') continue;
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push(clean);
+        }
+        Object.entries(grouped).forEach(([key, values]) => entries.push(`${key}: ${values.join(' | ')}`));
+        return entries.join('\n');
+      }
+
+      form.addEventListener('input', updateProgress);
+      form.addEventListener('change', updateProgress);
+      packageRadios.forEach((radio) => radio.addEventListener('change', () => applyPackageVisibility(true)));
+      applyPackageVisibility(false);
+
+      const refreshFormLanguage = () => {
+        applyPackageVisibility(false);
+        updateProgress();
+      };
+      window.addEventListener('lirandzo:language-change', refreshFormLanguage);
+      window.addEventListener('lirandzo:languagechange', refreshFormLanguage);
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        if (!getActivePackage()) {
+          if (status) {
+            status.textContent = formT('selectPackageError');
+            status.className = 'form-status is-error';
+          }
+          packageRadios[0]?.focus();
+          return;
+        }
+
+        if (!termsAccepted || !termsAccepted.checked) {
+          if (status) {
+            status.textContent = formT('termsError');
+            status.className = 'form-status is-error';
+          }
+          termsAccepted?.focus();
+          return;
+        }
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const formData = new FormData(form);
+        if (summaryField) {
+          summaryField.value = buildSummary(formData);
+          formData.set('Resumo organizado do briefing', summaryField.value);
+        }
+
+        if (status) {
+          status.textContent = formT('sending');
+          status.className = 'form-status';
+        }
+        if (submitBtn) submitBtn.disabled = true;
+
+        try {
+          const response = await fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: formData });
+          let data = {};
+          try { data = await response.json(); } catch (error) { data = {}; }
+          if (!response.ok || data.success === 'false') throw new Error('Falha no envio');
+
+          form.reset();
+          applyPackageVisibility(false);
+          if (packageGuidance) {
+            packageGuidance.textContent = formT('success');
+            packageGuidance.classList.add('is-visible');
+          }
+          if (status) {
+            status.textContent = formT('success');
+            status.className = 'form-status is-success';
+          }
+          document.querySelector('.form-shell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } catch (error) {
+          if (status) {
+            status.textContent = formT('sendError');
+            status.className = 'form-status is-error';
+          }
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
+    })();
+  </script>
+
+  <script src="theme.js?v=form-v1"></script>
+  <script src="chatbot-unified.js?v=form-v1"></script>
+  <script src="motion-refinement.js?v=form-v1"></script>
+  <script src="lang-currency.js?v=form-v2"></script>
+  <script src="loading-logo.js?v=form-v1"></script>
+  <script src="mobile-immersive.js?v=form-v1"></script>
+</body>
+</html>
