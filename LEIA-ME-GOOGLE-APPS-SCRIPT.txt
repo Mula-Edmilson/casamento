@@ -1,0 +1,43 @@
+LIRANDZO — CONFIGURAÇÃO DO FORMULÁRIO COM GOOGLE APPS SCRIPT
+
+Este site está preparado para funcionar no GitHub Pages sem PHP e sem FormSubmit.
+O envio do formulário será feito através de Google Apps Script.
+
+PASSO 1 — Criar o Google Apps Script
+1. Aceda a: https://script.google.com/
+2. Clique em Novo projecto.
+3. Apague o conteúdo do ficheiro Code.gs.
+4. Copie todo o conteúdo do ficheiro google-apps-script-lirandzo.gs.
+5. Cole no Code.gs e guarde o projecto com o nome: Lirandzo Forms.
+
+PASSO 2 — Publicar como Web App
+1. Clique em Deploy / Implementar.
+2. Clique em New deployment / Nova implementação.
+3. Escolha o tipo: Web app.
+4. Em Execute as / Executar como, escolha: Me / Eu.
+5. Em Who has access / Quem tem acesso, escolha: Anyone / Qualquer pessoa.
+6. Clique em Deploy / Implementar.
+7. Autorize as permissões solicitadas.
+8. Copie o URL do Web App terminado em /exec.
+
+PASSO 3 — Ligar o site ao Apps Script
+1. Abra o ficheiro form-config.js.
+2. Substitua:
+   COLE_AQUI_O_URL_DO_GOOGLE_APPS_SCRIPT_EXEC
+   pelo URL real do Web App terminado em /exec.
+3. Guarde o ficheiro.
+4. Envie todos os ficheiros actualizados para o GitHub.
+
+PASSO 4 — Testar
+1. Abra a página form.html no site publicado.
+2. Preencha um formulário de teste.
+3. Submeta.
+4. O Google Apps Script vai:
+   - enviar email para lirandzo.mz@gmail.com;
+   - criar automaticamente uma Google Sheet chamada “Lirandzo — Briefings e Formulários” no Google Drive;
+   - guardar cada submissão na aba “Submissões”.
+
+NOTA IMPORTANTE
+Sempre que alterar o código do Google Apps Script depois de publicado, deve ir a:
+Deploy > Manage deployments > Edit > New version > Deploy.
+Caso contrário, a versão pública pode continuar antiga.

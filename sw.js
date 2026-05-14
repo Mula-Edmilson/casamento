@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lirandzo-lang-clean-v8';
+const CACHE_NAME = 'lirandzo-gas-forms-v1';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -9,6 +9,9 @@ const CORE_ASSETS = [
   './chatbot-unified.js?v=lang-clean-v8',
   './chatbot-styles.css?v=lang-clean-v8',
   './lang-currency.js?v=lang-clean-v8',
+  './form.html',
+  './form-config.js?v=gas-v1',
+  './apps-script-submit.js?v=gas-v1',
   './loading-logo.js?v=logo-loading-v4',
   './mobile-immersive.js?v=lang-clean-v8',
   './assets/lirandzo-logo.svg'

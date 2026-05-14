@@ -616,11 +616,10 @@
           <p class="briefing-kicker">Orçamento Corporate</p><h3 id="briefingModalTitle">Briefing compacto</h3><p>Preencha os pontos essenciais do projecto. O formulário será enviado para análise comercial inicial.</p>
       </div></div>
 
-      <form id="corporateBriefingForm" class="briefing-form" action="https://formsubmit.co/ajax/lirandzo.mz@gmail.com" method="POST">
-        <input type="hidden" name="_subject" value="Novo briefing Corporate — Lirandzo">
-        <input type="hidden" name="_template" value="table">
+      <form id="corporateBriefingForm" class="briefing-form" action="" method="POST">
+        <input type="hidden" name="Tipo de formulário" value="Briefing compacto — Lirandzo">
+        <input type="hidden" name="Assunto do email" value="Novo briefing recebido — Lirandzo">
         <input type="hidden" name="pacote" value="Corporate">
-        <input type="hidden" name="_captcha" value="false">
         <input type="text" name="_honey" class="honeypot-field" tabindex="-1" autocomplete="off">
 
         <div class="briefing-grid">
@@ -708,6 +707,9 @@
 
   </main>
   
+  <script src="form-config.js?v=gas-v1"></script>
+  <script src="apps-script-submit.js?v=gas-v1"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const body = document.body;
@@ -1125,13 +1127,15 @@ function setupBriefingForm() {
     if (submitBriefingBtn) submitBriefingBtn.disabled = true;
 
     try {
-      const response = await fetch(briefingForm.action, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: formData
+      if (!window.LirandzoAppsScript || !window.LirandzoAppsScript.isConfigured()) {
+        throw new Error('apps-script-not-configured');
+      }
+
+      formData.set('Tipo de formulário', 'Briefing compacto — Lirandzo');
+      formData.set('Assunto do email', 'Novo briefing recebido — Lirandzo');
+      await window.LirandzoAppsScript.send(briefingForm, formData, {
+        'Origem técnica': 'GitHub Pages + Google Apps Script'
       });
-      const data = await response.json();
-      if (!response.ok || data.success === 'false') throw new Error('Falha no envio');
 
       briefingForm.reset();
       const packageInput = briefingForm.querySelector('input[name="pacote"]');
@@ -1142,7 +1146,7 @@ function setupBriefingForm() {
       }
     } catch (error) {
       if (briefingStatus) {
-        briefingStatus.textContent = 'Não foi possível enviar agora. Tente novamente ou contacte-nos por WhatsApp.';
+        briefingStatus.textContent = error && error.message === 'apps-script-not-configured' ? 'O envio ainda não está ligado ao Google Apps Script. Cole o URL do Web App no ficheiro form-config.js.' : 'Não foi possível enviar agora. Verifique a ligação e tente novamente.';
         briefingStatus.className = 'briefing-status is-error';
       }
     } finally {

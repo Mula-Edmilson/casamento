@@ -922,11 +922,11 @@
         <span class="form-progress-pill" id="formProgressPill">0% preenchido</span>
       </div>
 
-      <form id="lirandzoClientForm" class="client-form" action="https://formsubmit.co/ajax/lirandzo.mz@gmail.com" method="POST">
-        <input type="hidden" name="_subject" value="Novo formulário de adesão — Lirandzo">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
+      <form id="lirandzoClientForm" class="client-form" action="" method="POST">
+        <input type="hidden" name="Tipo de formulário" value="Formulário de adesão — Convite digital Lirandzo">
+        <input type="hidden" name="Assunto do email" value="Novo formulário de adesão — Lirandzo">
         <input type="hidden" name="Resumo organizado do briefing" id="briefingSummaryField" value="">
+        <input type="text" name="website" class="honeypot-field" tabindex="-1" autocomplete="off" aria-hidden="true">
 
         <section class="package-picker-card" aria-label="Escolha do pacote Lirandzo">
           <div class="package-picker-head">
@@ -1151,6 +1151,9 @@
   </div>
 </footer>
   
+  <script src="form-config.js?v=gas-v1"></script>
+  <script src="apps-script-submit.js?v=gas-v1"></script>
+
   <script>
     (() => {
       const form = document.getElementById('lirandzoClientForm');
@@ -1177,7 +1180,8 @@
           termsError: 'Antes de enviar, confirme que leu e aceita os Termos e Condições da Lirandzo.',
           sending: 'A enviar o formulário...',
           success: 'Formulário enviado com sucesso. A equipa da Lirandzo recebeu os dados e irá analisar as informações do convite.',
-          sendError: 'Não foi possível enviar agora. Tente novamente ou envie as informações pelo WhatsApp da Lirandzo.',
+          sendError: 'Não foi possível enviar agora. Verifique a ligação e tente novamente.',
+          configError: 'O envio ainda não está ligado ao Google Apps Script. Cole o URL do Web App no ficheiro form-config.js.',
           'package.perola.label': 'Pacote Pérola',
           'package.esmeralda.label': 'Pacote Esmeralda',
           'package.rubi.label': 'Pacote Rubi',
@@ -1193,7 +1197,8 @@
           termsError: 'Before submitting, confirm that you have read and accepted Lirandzo’s Terms and Conditions.',
           sending: 'Sending the form...',
           success: 'Form submitted successfully. The Lirandzo team has received the details and will review the invitation information.',
-          sendError: 'Unable to send right now. Please try again or send the information through Lirandzo WhatsApp.',
+          sendError: 'Unable to send right now. Check your connection and try again.',
+          configError: 'The form is not connected to Google Apps Script yet. Paste the Web App URL in form-config.js.',
           'package.perola.label': 'Pearl Package',
           'package.esmeralda.label': 'Emerald Package',
           'package.rubi.label': 'Ruby Package',
@@ -1368,10 +1373,15 @@
         if (submitBtn) submitBtn.disabled = true;
 
         try {
-          const response = await fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: formData });
-          let data = {};
-          try { data = await response.json(); } catch (error) { data = {}; }
-          if (!response.ok || data.success === 'false') throw new Error('Falha no envio');
+          if (!window.LirandzoAppsScript || !window.LirandzoAppsScript.isConfigured()) {
+            throw new Error('apps-script-not-configured');
+          }
+
+          formData.set('Tipo de formulário', 'Formulário de adesão — Convite digital Lirandzo');
+          formData.set('Assunto do email', 'Novo formulário de adesão — Lirandzo');
+          await window.LirandzoAppsScript.send(form, formData, {
+            'Origem técnica': 'GitHub Pages + Google Apps Script'
+          });
 
           form.reset();
           applyPackageVisibility(false);
@@ -1386,7 +1396,7 @@
           document.querySelector('.form-shell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } catch (error) {
           if (status) {
-            status.textContent = formT('sendError');
+            status.textContent = error && error.message === 'apps-script-not-configured' ? formT('configError') : formT('sendError');
             status.className = 'form-status is-error';
           }
         } finally {
@@ -1396,11 +1406,11 @@
     })();
   </script>
 
-  <script src="theme.js?v=form-v1"></script>
-  <script src="chatbot-unified.js?v=form-v1"></script>
-  <script src="motion-refinement.js?v=form-v1"></script>
-  <script src="lang-currency.js?v=form-route-v1"></script>
-  <script src="loading-logo.js?v=form-v1"></script>
-  <script src="mobile-immersive.js?v=compact-v2"></script>
+  <script src="theme.js?v=form-gas-v1"></script>
+  <script src="chatbot-unified.js?v=form-gas-v1"></script>
+  <script src="motion-refinement.js?v=form-gas-v1"></script>
+  <script src="lang-currency.js?v=form-gas-v1"></script>
+  <script src="loading-logo.js?v=form-gas-v1"></script>
+  <script src="mobile-immersive.js?v=gas-v1"></script>
 </body>
 </html>
