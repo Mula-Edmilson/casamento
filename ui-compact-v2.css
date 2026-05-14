@@ -1,0 +1,537 @@
+/* ==========================================================
+   LIRANDZO — UI COMPACT V2
+   Pedido: menu mobile minimalista, botões unificados e bottom bar estilo pill.
+   ========================================================== */
+:root {
+  --lz-pill-bg: rgba(255,255,255,.055);
+  --lz-pill-bg-hover: rgba(176,137,104,.12);
+  --lz-pill-border: rgba(235,214,196,.18);
+  --lz-pill-text: rgba(255,247,238,.88);
+  --lz-pill-muted: rgba(255,247,238,.68);
+  --lz-pill-accent: #b9906f;
+  --lz-pill-accent-strong: #c39a78;
+  --lz-pill-dark-text: #fffaf5;
+}
+html[data-theme="light"] {
+  --lz-pill-bg: rgba(255,255,255,.74);
+  --lz-pill-bg-hover: rgba(176,137,104,.12);
+  --lz-pill-border: rgba(117,77,48,.17);
+  --lz-pill-text: rgba(48,37,30,.82);
+  --lz-pill-muted: rgba(48,37,30,.62);
+  --lz-pill-accent: #9a6b4c;
+  --lz-pill-accent-strong: #b08968;
+  --lz-pill-dark-text: #fffaf5;
+}
+
+/* 1) Sistema geral de botões — inspirado nos pills do rodapé/contacto */
+:where(.btn, .form-submit-btn, .form-secondary-btn, .not-found-btn, .footer-corp-contact, .footer-corp-btn, .lz-panel-action, .lz-dock-btn, .lz-mobile-menu-actions a, .header-cta) {
+  min-height: 44px !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: .55rem !important;
+  padding: 0 1.15rem !important;
+  border: 1px solid var(--lz-pill-border) !important;
+  background: var(--lz-pill-bg) !important;
+  color: var(--lz-pill-text) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055) !important;
+  text-decoration: none !important;
+  font-weight: 750 !important;
+  letter-spacing: -.01em !important;
+  line-height: 1 !important;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease !important;
+}
+:where(.btn, .form-submit-btn, .form-secondary-btn, .not-found-btn, .footer-corp-contact, .footer-corp-btn, .lz-panel-action, .lz-dock-btn, .lz-mobile-menu-actions a, .header-cta):hover,
+:where(.btn, .form-submit-btn, .form-secondary-btn, .not-found-btn, .footer-corp-contact, .footer-corp-btn, .lz-panel-action, .lz-dock-btn, .lz-mobile-menu-actions a, .header-cta):focus-visible {
+  transform: translateY(-1px) !important;
+  background: var(--lz-pill-bg-hover) !important;
+  border-color: color-mix(in srgb, var(--lz-pill-accent) 55%, transparent) !important;
+  box-shadow: 0 12px 28px rgba(25,17,12,.16), inset 0 1px 0 rgba(255,255,255,.08) !important;
+}
+:where(.btn-primary, .package-solid, .form-submit-btn, .not-found-btn.is-primary, .footer-corp-btn, .lz-panel-action.primary, .lz-dock-btn.primary, .lz-mobile-menu-actions a.is-primary) {
+  background: var(--lz-pill-accent-strong) !important;
+  border-color: var(--lz-pill-accent-strong) !important;
+  color: var(--lz-pill-dark-text) !important;
+  box-shadow: 0 14px 34px rgba(176,137,104,.22) !important;
+}
+:where(.btn-primary, .package-solid, .form-submit-btn, .not-found-btn.is-primary, .footer-corp-btn, .lz-panel-action.primary, .lz-dock-btn.primary, .lz-mobile-menu-actions a.is-primary):hover,
+:where(.btn-primary, .package-solid, .form-submit-btn, .not-found-btn.is-primary, .footer-corp-btn, .lz-panel-action.primary, .lz-dock-btn.primary, .lz-mobile-menu-actions a.is-primary):focus-visible {
+  background: color-mix(in srgb, var(--lz-pill-accent-strong) 88%, #fff 12%) !important;
+  border-color: color-mix(in srgb, var(--lz-pill-accent-strong) 88%, #fff 12%) !important;
+}
+.btn::before, .btn::after, .header-cta::before, .header-cta::after { border-radius: inherit !important; }
+.btn-small { min-height: 38px !important; padding-inline: .9rem !important; font-size: .78rem !important; }
+
+/* Rodapé: contactos em pills largos, exatamente na lógica do modelo verde */
+.footer-corp-actions { align-items: stretch !important; }
+.footer-corp-contact, .footer-corp-btn { min-height: 42px !important; }
+.footer-corp-contact svg { opacity: .9 !important; }
+@media (max-width: 560px) {
+  .footer-corp-actions { gap: 9px !important; }
+  .footer-corp-contact, .footer-corp-btn {
+    width: 100% !important;
+    min-height: 42px !important;
+    justify-content: center !important;
+    font-size: .82rem !important;
+  }
+}
+
+/* 2) Hamburger menu mobile — mais curto, prático e limpo */
+.lz-mobile-menu-toggle {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,.07) !important;
+  border: 1px solid rgba(255,255,255,.13) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 22px rgba(0,0,0,.16) !important;
+}
+html[data-theme="light"] .lz-mobile-menu-toggle {
+  background: rgba(255,255,255,.78) !important;
+  border-color: rgba(117,77,48,.16) !important;
+  box-shadow: 0 10px 22px rgba(74,44,30,.10) !important;
+}
+.lz-mobile-menu-toggle__line { width: 16px !important; height: 1.7px !important; }
+.lz-mobile-menu-sheet {
+  top: calc(var(--lz-header-live, 66px) + 8px) !important;
+  right: max(10px, env(safe-area-inset-right, 0px)) !important;
+  width: min(318px, calc(100vw - 20px)) !important;
+  max-height: calc(100svh - var(--lz-header-live, 66px) - 22px) !important;
+  padding: 10px !important;
+  border-radius: 24px !important;
+  background: rgba(36,29,25,.94) !important;
+  border: 1px solid rgba(235,214,196,.13) !important;
+  box-shadow: 0 26px 72px rgba(0,0,0,.42) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+html[data-theme="light"] .lz-mobile-menu-sheet {
+  background: rgba(255,250,245,.95) !important;
+  border-color: rgba(117,77,48,.15) !important;
+  box-shadow: 0 24px 64px rgba(66,40,25,.20) !important;
+}
+.lz-mobile-menu-backdrop { background: rgba(16,11,8,.34) !important; backdrop-filter: blur(6px) !important; }
+.lz-mobile-menu-head {
+  padding: 2px 2px 9px !important;
+  border-bottom-color: rgba(235,214,196,.10) !important;
+}
+.lz-mobile-menu-brand { gap: 8px !important; }
+.lz-mobile-menu-brand img { width: 38px !important; height: 38px !important; flex-basis: 38px !important; }
+.lz-mobile-menu-brand strong { font-size: 1rem !important; }
+.lz-mobile-menu-brand span { font-size: .68rem !important; opacity: .72 !important; }
+.lz-mobile-menu-close {
+  width: 34px !important;
+  height: 34px !important;
+  background: rgba(255,255,255,.055) !important;
+  border-color: rgba(255,255,255,.11) !important;
+}
+html[data-theme="light"] .lz-mobile-menu-close { background: rgba(255,255,255,.72) !important; border-color: rgba(117,77,48,.14) !important; }
+.lz-mobile-menu-links {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+  padding: 10px 0 !important;
+}
+.lz-mobile-menu-links a {
+  min-height: 40px !important;
+  border-radius: 999px !important;
+  justify-content: center !important;
+  padding: 0 .8rem !important;
+  font-size: .78rem !important;
+  font-weight: 750 !important;
+  text-align: center !important;
+  background: var(--lz-pill-bg) !important;
+  color: var(--lz-pill-text) !important;
+  border: 1px solid var(--lz-pill-border) !important;
+}
+.lz-mobile-menu-links a::after { display: none !important; }
+.lz-mobile-menu-links a.is-active,
+.lz-mobile-menu-links a[aria-current="page"] {
+  background: rgba(176,137,104,.18) !important;
+  border-color: rgba(176,137,104,.38) !important;
+}
+.lz-mobile-menu-actions {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 7px !important;
+  padding-top: 9px !important;
+  border-top-color: rgba(235,214,196,.10) !important;
+}
+.lz-mobile-menu-actions a { min-height: 38px !important; padding: 0 .7rem !important; font-size: .74rem !important; }
+.lz-mobile-menu-actions a.is-primary { grid-column: 1 / -1 !important; min-height: 42px !important; }
+.lz-mobile-menu-note { display: none !important; }
+body.lz-mobile-menu-open .floating-nav,
+body.lz-mobile-menu-open .lz-smart-dock,
+body.lz-mobile-menu-open #backToTopBtn,
+body.lz-mobile-menu-open .chatbot-container { opacity: .18 !important; pointer-events: none !important; }
+
+/* 3) Barra inferior mobile — estilo pill com botões circulares como a referência */
+@media (max-width: 900px) {
+  body.lz-has-smart-dock .floating-nav { display: flex !important; }
+  .lz-smart-dock { display: none !important; }
+  body { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important; }
+  .floating-nav {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    padding: 7px !important;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+    border-radius: 999px !important;
+    background: rgba(235,226,215,.92) !important;
+    border: 1px solid rgba(255,255,255,.35) !important;
+    box-shadow: 0 18px 48px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.45) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    z-index: 1600 !important;
+  }
+  html[data-theme="dark"] .floating-nav,
+  html:not([data-theme]) .floating-nav {
+    background: rgba(227,216,203,.92) !important;
+    border-color: rgba(255,255,255,.22) !important;
+  }
+  .floating-nav .fab-link {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #6b4630 !important;
+    background: rgba(255,255,255,.86) !important;
+    border: 1px solid rgba(255,255,255,.72) !important;
+    box-shadow: 0 8px 18px rgba(61,40,28,.10), inset 0 1px 0 rgba(255,255,255,.65) !important;
+    overflow: hidden !important;
+  }
+  .floating-nav .fab-link span {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+  .floating-nav .fab-link svg {
+    width: 18px !important;
+    height: 18px !important;
+    stroke: currentColor !important;
+    color: currentColor !important;
+    stroke-width: 1.85 !important;
+  }
+  .floating-nav .fab-link:hover,
+  .floating-nav .fab-link:focus-visible {
+    transform: translateY(-2px) !important;
+    color: #4d3020 !important;
+    background: #fffaf5 !important;
+    box-shadow: 0 12px 24px rgba(61,40,28,.18) !important;
+  }
+}
+@media (max-width: 380px) {
+  .floating-nav { gap: 6px !important; padding: 6px !important; }
+  .floating-nav .fab-link { width: 41px !important; height: 41px !important; min-width: 41px !important; min-height: 41px !important; }
+  .lz-mobile-menu-sheet { width: calc(100vw - 16px) !important; }
+}
+
+
+/* ==========================================================
+   LIRANDZO — UI COMPACT V3
+   Pedido: cor por tema na CTA/header + bottom bar e 404 minimalista.
+   ========================================================== */
+html[data-theme="light"] {
+  --lz-cta-bg: #4a2c1e;
+  --lz-cta-bg-hover: #6f4d35;
+  --lz-cta-text: #fffaf5;
+  --lz-cta-border: rgba(74,44,30,.22);
+  --lz-dock-shell-bg: rgba(235,226,215,.92);
+  --lz-dock-shell-border: rgba(255,255,255,.46);
+  --lz-dock-btn-bg: rgba(255,255,255,.92);
+  --lz-dock-btn-bg-hover: #fffaf5;
+  --lz-dock-btn-border: rgba(255,255,255,.78);
+  --lz-dock-icon: #6b4630;
+  --lz-dock-icon-hover: #4d3020;
+}
+html[data-theme="dark"],
+html:not([data-theme]) {
+  --lz-cta-bg: #c39a78;
+  --lz-cta-bg-hover: #d5aa84;
+  --lz-cta-text: #201611;
+  --lz-cta-border: rgba(255,236,216,.18);
+  --lz-dock-shell-bg: rgba(35,28,24,.88);
+  --lz-dock-shell-border: rgba(244,221,201,.14);
+  --lz-dock-btn-bg: rgba(255,255,255,.07);
+  --lz-dock-btn-bg-hover: rgba(195,154,120,.18);
+  --lz-dock-btn-border: rgba(244,221,201,.16);
+  --lz-dock-icon: rgba(255,246,238,.86);
+  --lz-dock-icon-hover: #f3cfad;
+}
+.site-header .header-cta,
+.header-cta,
+.lz-mobile-menu-actions a.is-primary {
+  background: var(--lz-cta-bg) !important;
+  border-color: var(--lz-cta-border) !important;
+  color: var(--lz-cta-text) !important;
+  box-shadow: 0 14px 34px rgba(45,29,20,.18), inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+.site-header .header-cta:hover,
+.site-header .header-cta:focus-visible,
+.header-cta:hover,
+.header-cta:focus-visible,
+.lz-mobile-menu-actions a.is-primary:hover,
+.lz-mobile-menu-actions a.is-primary:focus-visible {
+  background: var(--lz-cta-bg-hover) !important;
+  border-color: var(--lz-cta-bg-hover) !important;
+  color: var(--lz-cta-text) !important;
+  transform: translateY(-1px) !important;
+}
+
+@media (max-width: 900px) {
+  .floating-nav {
+    background: var(--lz-dock-shell-bg) !important;
+    border-color: var(--lz-dock-shell-border) !important;
+    box-shadow: 0 18px 48px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.14) !important;
+  }
+  .floating-nav .fab-link {
+    color: var(--lz-dock-icon) !important;
+    background: var(--lz-dock-btn-bg) !important;
+    border-color: var(--lz-dock-btn-border) !important;
+    box-shadow: 0 8px 18px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.14) !important;
+  }
+  .floating-nav .fab-link svg {
+    color: var(--lz-dock-icon) !important;
+    stroke: var(--lz-dock-icon) !important;
+  }
+  .floating-nav .fab-link:hover,
+  .floating-nav .fab-link:focus-visible {
+    color: var(--lz-dock-icon-hover) !important;
+    background: var(--lz-dock-btn-bg-hover) !important;
+    border-color: color-mix(in srgb, var(--lz-dock-icon-hover) 35%, transparent) !important;
+  }
+  .floating-nav .fab-link:hover svg,
+  .floating-nav .fab-link:focus-visible svg {
+    color: var(--lz-dock-icon-hover) !important;
+    stroke: var(--lz-dock-icon-hover) !important;
+  }
+}
+
+/* 404 minimalista — substitui o layout pesado anterior apenas na página 404. */
+.not-found-minimal-page {
+  min-height: 100vh !important;
+  background:
+    radial-gradient(circle at 16% 8%, rgba(166,122,85,.16), transparent 30%),
+    radial-gradient(circle at 92% 12%, rgba(176,137,104,.11), transparent 34%),
+    var(--page-bg, #fbf5ef) !important;
+}
+html[data-theme="dark"] .not-found-minimal-page {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(195,154,120,.16), transparent 34%),
+    radial-gradient(circle at 92% 12%, rgba(255,255,255,.06), transparent 28%),
+    #18120f !important;
+}
+.not-found-minimal-main {
+  min-height: calc(100svh - var(--lz-header-live, 76px) - 96px) !important;
+  padding: calc(var(--lz-header-live, 76px) + 36px) 18px 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.not-found-minimal-card {
+  width: min(680px, 100%) !important;
+  margin: 0 auto !important;
+  padding: clamp(26px, 5vw, 46px) !important;
+  border-radius: clamp(24px, 4vw, 34px) !important;
+  border: 1px solid rgba(166,122,85,.18) !important;
+  background: rgba(255,252,248,.72) !important;
+  box-shadow: 0 24px 70px rgba(52,34,24,.10) !important;
+  backdrop-filter: blur(22px) saturate(135%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(135%) !important;
+  text-align: center !important;
+}
+html[data-theme="dark"] .not-found-minimal-card {
+  background: rgba(38,31,27,.78) !important;
+  border-color: rgba(255,255,255,.10) !important;
+  box-shadow: 0 28px 80px rgba(0,0,0,.38) !important;
+}
+.nf-kicker {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 32px !important;
+  padding: 0 13px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(166,122,85,.20) !important;
+  background: rgba(166,122,85,.10) !important;
+  color: var(--premium-caramel, #a67a55) !important;
+  font-size: .68rem !important;
+  font-weight: 850 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+.nf-code {
+  margin: 18px 0 0 !important;
+  display: block !important;
+  font-family: var(--font-heading, 'Cormorant Garamond', serif) !important;
+  font-size: clamp(4rem, 16vw, 7.2rem) !important;
+  line-height: .78 !important;
+  letter-spacing: -.055em !important;
+  color: var(--premium-brown, #4a2c1e) !important;
+}
+html[data-theme="dark"] .nf-code { color: #fff6ee !important; }
+.nf-title {
+  margin: 14px auto 10px !important;
+  max-width: 560px !important;
+  font-family: var(--font-heading, 'Cormorant Garamond', serif) !important;
+  font-size: clamp(1.85rem, 5vw, 3rem) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.025em !important;
+  color: var(--premium-brown, #4a2c1e) !important;
+}
+html[data-theme="dark"] .nf-title { color: #fff6ee !important; }
+.nf-text {
+  max-width: 520px !important;
+  margin: 0 auto 24px !important;
+  color: var(--premium-muted, #7b6a5d) !important;
+  font-size: clamp(.92rem, 2.2vw, 1.02rem) !important;
+  line-height: 1.62 !important;
+}
+html[data-theme="dark"] .nf-text { color: rgba(255,255,255,.68) !important; }
+.nf-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  margin: 0 auto !important;
+}
+.nf-actions .not-found-btn {
+  width: auto !important;
+  min-width: 142px !important;
+}
+.nf-support {
+  margin: 20px 0 0 !important;
+  font-size: .86rem !important;
+  color: var(--premium-muted, #7b6a5d) !important;
+}
+.nf-support a {
+  color: var(--premium-caramel, #a67a55) !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+}
+.nf-support a:hover,
+.nf-support a:focus-visible { text-decoration: underline !important; text-underline-offset: 4px !important; }
+html[data-theme="dark"] .nf-support { color: rgba(255,255,255,.62) !important; }
+.not-found-compact-footer {
+  padding: 18px 18px calc(28px + env(safe-area-inset-bottom,0px)) !important;
+  text-align: center !important;
+  color: var(--premium-muted, #7b6a5d) !important;
+  font-size: .82rem !important;
+}
+.not-found-compact-footer a {
+  color: inherit !important;
+  text-decoration: none !important;
+  font-weight: 700 !important;
+}
+.not-found-compact-footer a:hover { color: var(--premium-caramel, #a67a55) !important; }
+html[data-theme="dark"] .not-found-compact-footer { color: rgba(255,255,255,.58) !important; }
+.not-found-compact-footer__inner {
+  width: min(680px, 100%) !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+.not-found-compact-footer__dot { opacity: .48 !important; }
+@media (max-width: 620px) {
+  .not-found-minimal-main {
+    min-height: auto !important;
+    padding: calc(var(--lz-header-live, 66px) + 22px) 14px 22px !important;
+    align-items: flex-start !important;
+  }
+  .not-found-minimal-card {
+    padding: 24px 18px !important;
+    border-radius: 24px !important;
+  }
+  .nf-actions { display: grid !important; grid-template-columns: 1fr !important; width: 100% !important; }
+  .nf-actions .not-found-btn { width: 100% !important; min-width: 0 !important; }
+}
+
+/* ==========================================================
+   LIRANDZO — UI COMPACT V4
+   Ajuste: dock mobile em tema escuro com melhor leitura dos ícones
+   + crédito do rodapé com link sublinhado.
+   ========================================================== */
+html[data-theme="dark"],
+html:not([data-theme]) {
+  --lz-dock-shell-bg: rgba(22, 17, 14, .94);
+  --lz-dock-shell-border: rgba(195, 154, 120, .20);
+  --lz-dock-btn-bg: rgba(54, 42, 35, .96);
+  --lz-dock-btn-bg-hover: rgba(195, 154, 120, .22);
+  --lz-dock-btn-border: rgba(195, 154, 120, .28);
+  --lz-dock-icon: #c39a78;
+  --lz-dock-icon-hover: #f0c7a5;
+}
+@media (max-width: 900px) {
+  html[data-theme="dark"] .floating-nav,
+  html:not([data-theme]) .floating-nav {
+    background: var(--lz-dock-shell-bg) !important;
+    border-color: var(--lz-dock-shell-border) !important;
+    box-shadow: 0 18px 48px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.06) !important;
+  }
+  html[data-theme="dark"] .floating-nav .fab-link,
+  html:not([data-theme]) .floating-nav .fab-link {
+    color: var(--lz-dock-icon) !important;
+    background: var(--lz-dock-btn-bg) !important;
+    border-color: var(--lz-dock-btn-border) !important;
+    box-shadow: 0 8px 18px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.05) !important;
+  }
+  html[data-theme="dark"] .floating-nav .fab-link svg,
+  html:not([data-theme]) .floating-nav .fab-link svg,
+  html[data-theme="dark"] .floating-nav .fab-link svg *,
+  html:not([data-theme]) .floating-nav .fab-link svg * {
+    color: var(--lz-dock-icon) !important;
+    stroke: var(--lz-dock-icon) !important;
+  }
+  html[data-theme="dark"] .floating-nav .fab-link:hover,
+  html[data-theme="dark"] .floating-nav .fab-link:focus-visible,
+  html:not([data-theme]) .floating-nav .fab-link:hover,
+  html:not([data-theme]) .floating-nav .fab-link:focus-visible {
+    color: var(--lz-dock-icon-hover) !important;
+    background: var(--lz-dock-btn-bg-hover) !important;
+    border-color: rgba(240,199,165,.42) !important;
+  }
+  html[data-theme="dark"] .floating-nav .fab-link:hover svg,
+  html[data-theme="dark"] .floating-nav .fab-link:focus-visible svg,
+  html:not([data-theme]) .floating-nav .fab-link:hover svg,
+  html:not([data-theme]) .floating-nav .fab-link:focus-visible svg,
+  html[data-theme="dark"] .floating-nav .fab-link:hover svg *,
+  html[data-theme="dark"] .floating-nav .fab-link:focus-visible svg *,
+  html:not([data-theme]) .floating-nav .fab-link:hover svg *,
+  html:not([data-theme]) .floating-nav .fab-link:focus-visible svg * {
+    color: var(--lz-dock-icon-hover) !important;
+    stroke: var(--lz-dock-icon-hover) !important;
+  }
+}
+.footer-credit-link,
+.not-found-compact-footer .footer-credit-link {
+  color: inherit !important;
+  font-weight: 800 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px !important;
+  text-decoration-thickness: 1px !important;
+  transition: color .2s ease, opacity .2s ease !important;
+}
+.footer-credit-link:hover,
+.footer-credit-link:focus-visible {
+  color: var(--premium-caramel, #a67a55) !important;
+  opacity: 1 !important;
+}

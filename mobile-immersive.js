@@ -1055,3 +1055,196 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
+
+
+/* Lirandzo — premium compact mobile hamburger menu. */
+(() => {
+  'use strict';
+
+  const MENU_ID = 'lzMobileMenu';
+  const WHATSAPP = '258878061697';
+  const LANG_KEY = 'lirandzo-language';
+  const dict = {
+    pt: {
+      open: 'Abrir menu',
+      close: 'Fechar menu',
+      brandLine: 'Convites digitais',
+      form: 'Formulário',
+      cta: 'Escolher pacote',
+      whatsapp: 'WhatsApp',
+      call: 'Ligar',
+      email: 'Email',
+      note: '',
+      home: 'Início',
+      packages: 'Pacotes',
+      formLink: 'Formulário',
+      faq: 'FAQ',
+      blog: 'Blog',
+      contact: 'Contacto'
+    },
+    en: {
+      open: 'Open menu',
+      close: 'Close menu',
+      brandLine: 'Digital invitations',
+      form: 'Form',
+      cta: 'Choose package',
+      whatsapp: 'WhatsApp',
+      call: 'Call',
+      email: 'Email',
+      note: '',
+      home: 'Home',
+      packages: 'Packages',
+      formLink: 'Form',
+      faq: 'FAQ',
+      blog: 'Blog',
+      contact: 'Contact'
+    }
+  };
+
+  const currentLang = () => ((localStorage.getItem(LANG_KEY) === 'en') || String(document.documentElement.lang || '').startsWith('en')) ? 'en' : 'pt';
+  const t = key => (dict[currentLang()] && dict[currentLang()][key]) || dict.pt[key] || key;
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const isExternal = href => /^https?:\/\//i.test(href || '') || /^mailto:|^tel:/i.test(href || '');
+
+  function normalizedHref(href) {
+    if (!href) return 'index.html';
+    if (isExternal(href)) return href;
+    return href;
+  }
+
+  function buildLinks(panel) {
+    const linksWrap = $('.lz-mobile-menu-links', panel);
+    if (!linksWrap) return;
+    const isForm = /form\.html$/i.test(location.pathname);
+    const isBlogPage = /blog/i.test(location.pathname);
+    const compactLinks = [
+      { href: 'index.html#main-content', text: t('home'), active: !isForm && !isBlogPage && (location.hash === '' || location.hash === '#main-content') },
+      { href: 'index.html#pacotes', text: t('packages'), active: !isForm && location.hash === '#pacotes' },
+      { href: 'form.html', text: t('formLink'), active: isForm },
+      { href: 'index.html#faq', text: t('faq'), active: !isForm && location.hash === '#faq' },
+      { href: 'blog.html', text: t('blog'), active: isBlogPage },
+      { href: 'index.html#apoio', text: t('contact'), active: !isForm && location.hash === '#apoio' }
+    ];
+
+    linksWrap.innerHTML = compactLinks.map(item => `
+      <a href="${item.href.replace(/"/g, '&quot;')}"${item.active ? ' aria-current="page" class="is-active"' : ''}>${item.text}</a>
+    `).join('');
+  }
+
+  function setTexts(panel, button) {
+    if (button) button.setAttribute('aria-label', t('open'));
+    const brandLine = $('[data-lz-mobile-brand-line]', panel);
+    if (brandLine) brandLine.textContent = t('brandLine');
+    const close = $('[data-lz-mobile-close]', panel);
+    if (close) close.setAttribute('aria-label', t('close'));
+    const cta = $('[data-lz-mobile-cta]', panel);
+    if (cta) cta.textContent = t('cta');
+    const wa = $('[data-lz-mobile-whatsapp]', panel);
+    if (wa) wa.textContent = t('whatsapp');
+    const call = $('[data-lz-mobile-call]', panel);
+    if (call) call.textContent = t('call');
+    const email = $('[data-lz-mobile-email]', panel);
+    if (email) email.textContent = t('email');
+    const note = $('[data-lz-mobile-note]', panel);
+    if (note) note.textContent = t('note');
+    buildLinks(panel);
+  }
+
+  function setupMobileMenu() {
+    const header = $('.site-header');
+    const actions = $('.site-actions', header || document);
+    if (!header || !actions || $(`#${MENU_ID}`)) return;
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'lz-mobile-menu-toggle';
+    button.setAttribute('aria-controls', MENU_ID);
+    button.setAttribute('aria-expanded', 'false');
+    button.innerHTML = '<span class="lz-mobile-menu-toggle__line"></span><span class="lz-mobile-menu-toggle__line"></span><span class="lz-mobile-menu-toggle__line"></span>';
+    actions.appendChild(button);
+
+    const panel = document.createElement('div');
+    panel.className = 'lz-mobile-menu-panel';
+    panel.id = MENU_ID;
+    panel.setAttribute('aria-hidden', 'true');
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
+    panel.innerHTML = `
+      <div class="lz-mobile-menu-backdrop" data-lz-mobile-close></div>
+      <aside class="lz-mobile-menu-sheet" aria-label="Menu Lirandzo">
+        <div class="lz-mobile-menu-head">
+          <div class="lz-mobile-menu-brand">
+            <img src="assets/lirandzo-logo.svg" alt="Lirandzo">
+            <div><strong>Lirandzo</strong><span data-lz-mobile-brand-line></span></div>
+          </div>
+          <button type="button" class="lz-mobile-menu-close" data-lz-mobile-close aria-label="Fechar menu">×</button>
+        </div>
+        <nav class="lz-mobile-menu-links" aria-label="Menu mobile Lirandzo"></nav>
+        <div class="lz-mobile-menu-actions">
+          <a class="is-primary" href="form.html" data-lz-mobile-cta></a>
+          <a href="https://wa.me/${WHATSAPP}?text=Ol%C3%A1!%20Quero%20o%20meu%20convite%20digital%20Lirandzo." target="_blank" rel="noopener noreferrer" data-lz-mobile-whatsapp></a>
+          <a href="tel:+258878061697" data-lz-mobile-call></a>
+          <a href="mailto:lirandzo.mz@gmail.com" data-lz-mobile-email></a>
+        </div>
+        <p class="lz-mobile-menu-note" data-lz-mobile-note></p>
+      </aside>
+    `;
+    document.body.appendChild(panel);
+
+    let lastFocused = null;
+    const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    const openMenu = () => {
+      lastFocused = document.activeElement;
+      setTexts(panel, button);
+      panel.classList.add('is-open');
+      panel.setAttribute('aria-hidden', 'false');
+      button.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('lz-mobile-menu-open');
+      window.requestAnimationFrame(() => ($('[data-lz-mobile-close]', panel) || $('.lz-mobile-menu-links a', panel) || panel).focus?.());
+    };
+
+    const closeMenu = () => {
+      panel.classList.remove('is-open');
+      panel.setAttribute('aria-hidden', 'true');
+      button.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('lz-mobile-menu-open');
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus({ preventScroll: true });
+    };
+
+    button.addEventListener('click', () => panel.classList.contains('is-open') ? closeMenu() : openMenu());
+    panel.addEventListener('click', event => {
+      if (event.target.closest('[data-lz-mobile-close]')) closeMenu();
+      if (event.target.closest('.lz-mobile-menu-links a, .lz-mobile-menu-actions a')) closeMenu();
+    });
+    document.addEventListener('keydown', event => {
+      if (!panel.classList.contains('is-open')) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMenu();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusables = $$(focusableSelector, panel).filter(el => el.offsetParent !== null);
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+    window.addEventListener('resize', () => { if (window.innerWidth > 900) closeMenu(); }, { passive: true });
+    window.addEventListener('lirandzo:language-change', () => setTexts(panel, button));
+    window.addEventListener('lirandzo:languagechange', () => setTexts(panel, button));
+    window.addEventListener('storage', event => { if (event.key === LANG_KEY) setTexts(panel, button); });
+    setTexts(panel, button);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupMobileMenu);
+  else setupMobileMenu();
+})();
