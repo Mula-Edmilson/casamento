@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Convite de Lobolo — Rafaela & Amade</title>
+
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+
+  <meta property="og:title" content="Convite de Lobolo — Rafaela & Amade">
+  <meta property="og:description" content="Junte-se a nós para celebrar o nosso Lobolo e o início de uma nova etapa das nossas vidas.">
+  <meta property="og:type" content="lirandzo.com">
+  <meta property="og:image" content="https://i.postimg.cc/3x80jX2W/HERO.jpg">
+  <meta property="og:url" content="edmilsonmula.info">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Great+Vibes&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* =========================================================
+       INTRO OVERLAY — COM VIDA (igual à capa)
+       ========================================================= */
+
+    .intro-overlay{
+      position:fixed;
+      inset:0;
+      z-index:999;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      padding: 22px;
+      overflow:hidden;
+
+      opacity:1;
+      visibility:visible;
+      transform: translateY(0);
+      transition: opacity 0.85s var(--ease-soft), visibility 0.85s var(--ease-soft), transform 0.85s var(--ease-soft);
+    }
+
+    .intro-overlay.hide{
+      opacity:0;
+      visibility:hidden;
+      transform: translateY(-6px);
+    }
+
+    /* fundo com foto + vinheta */
+    .intro-bg{
+      position:absolute;
+      inset:0;
+      background-image:
+        radial-gradient(circle at 50% 25%, rgba(184,155,99,0.22), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,0.78), rgba(0,0,0,0.62)),
+        url('https://i.postimg.cc/3x80jX2W/HERO.jpg');
+      background-size:cover;
+      background-position:center 18%;
+      transform: scale(1.03);
+      filter: saturate(0.95) contrast(1.03);
+    }
+
+    .intro-bg::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 45%, transparent 55%, rgba(0,0,0,0.60) 100%),
+        radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: auto, 3px 3px;
+      opacity: 0.38;
+      mix-blend-mode: overlay;
+      pointer-events:none;
+    }
+
+    /* glow ambiente */
+    .intro-ambient-glow{
+      position:absolute;
+      inset:-40%;
+      z-index:1;
+      background: radial-gradient(circle at 40% 30%, rgba(184,155,99,0.14), transparent 60%);
+      filter: blur(32px);
+      animation: introGlowMove 10s ease-in-out infinite;
+      pointer-events:none;
+      opacity:0.65;
+    }
+
+    @keyframes introGlowMove{
+      0%{ transform: translate(-2%, -1%) scale(1); }
+      50%{ transform: translate(2%, 1%) scale(1.03); }
+      100%{ transform: translate(-2%, -1%) scale(1); }
+    }
+
+    /* card glass premium */
+    .intro-card{
+      position:relative;
+      z-index:2;
+
+      width: min(540px, 94vw);
+      padding: 30px 22px;
+
+      border-radius: 28px;
+
+      background: rgba(246,241,231,0.92);
+      border: 1px solid rgba(255,255,255,0.14);
+
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      box-shadow: 0 45px 120px rgba(0,0,0,0.45);
+      text-align:center;
+
+      opacity:0;
+      transform: translateY(18px) scale(0.99);
+      filter: blur(12px);
+
+      transition:
+    opacity 1.9s var(--ease-soft),
+    transform 1.9s var(--ease-soft),
+    filter 1.9s var(--ease-soft);
+    }
+    #startExperienceBtn{
+  transition: transform 0.22s var(--ease), opacity 0.35s var(--ease);
+}
+#startExperienceBtn:active{
+  transform: translateY(1px) scale(0.99);
+}
+
+    /* entra com vida (mesma lógica da capa) */
+    body.loaded .intro-card{
+      opacity:1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+
+    .intro-card::before{
+      content:"";
+      position:absolute;
+      inset: 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(184,155,99,0.28);
+      pointer-events:none;
+    }
+
+    .intro-monogram{
+      width:74px;
+      height:74px;
+      border-radius:999px;
+
+      margin: 0 auto 10px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      border: 1px solid rgba(184,155,99,0.55);
+      background: rgba(184,155,99,0.08);
+
+      box-shadow:
+        0 18px 50px rgba(0,0,0,0.18),
+        inset 0 0 0 1px rgba(255,255,255,0.30);
+    }
+
+    .intro-monogram span{
+      font-family:'Great Vibes', cursive;
+      font-size:28px;
+      color: rgba(31,31,31,0.92);
+    }
+
+    .intro-kicker{
+      font-family:'Poppins', sans-serif;
+      font-size:11px;
+      letter-spacing:0.28em;
+      text-transform:uppercase;
+      color: rgba(31,31,31,0.58);
+      margin: 6px 0 8px;
+    }
+
+    .intro-title{
+      font-family:'Great Vibes', cursive;
+      font-size:50px;
+      margin: 0 0 10px;
+      color: rgba(31,31,31,0.96);
+    }
+
+    .intro-sub{
+      font-family:'Poppins', sans-serif;
+      font-size:13px;
+      line-height:1.65;
+      color: rgba(31,31,31,0.62);
+      margin: 0 0 18px;
+    }
+
+    .intro-meta{
+      margin: 0;
+      font-size:18px;
+      color: rgba(31,31,31,0.70);
+    }
+
+    .intro-meta small{
+      display:block;
+      margin-top: 6px;
+      font-family:'Poppins', sans-serif;
+      font-size:12px;
+      letter-spacing:0.20em;
+      text-transform:uppercase;
+      color: rgba(31,31,31,0.50);
+    }
+
+    .intro-actions{
+      margin-top: 18px;
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
+    .intro-btn{
+      width:100%;
+      max-width: 260px;
+    }
+
+    .intro-foot{
+      margin-top: 18px;
+      font-family:'Poppins', sans-serif;
+      font-size:11px;
+      color: rgba(31,31,31,0.52);
+      letter-spacing:0.10em;
+    }
+
+    @media (max-width: 520px){
+      .intro-title{ font-size:42px; }
+      .intro-btn{ max-width: 100%; }
+      .intro-card{ padding: 28px 18px; }
+    }
+  </style>
+</head>
+
+<body class="loading">
+
+  <!-- INTRO OVERLAY (AGORA PREMIUM COM VIDA) -->
+  <div class="intro-overlay" id="introOverlay" aria-hidden="false">
+    <div class="intro-bg" aria-hidden="true"></div>
+    <div class="intro-ambient-glow" aria-hidden="true"></div>
+
+    <div class="intro-card">
+      <div class="intro-monogram"><span>R&A</span></div>
+
+      <p class="intro-kicker">Convite de Lobolo</p>
+      <h2 class="intro-title">Rafaela & Amade</h2>
+
+      <div class="vintage-divider" style="margin:18px auto 18px;"></div>
+
+      <p class="intro-meta">
+        <strong>21 de Março de 2026</strong> · <span style="white-space:nowrap;">14h00</span>
+        <small>Bunhiça</small>
+      </p>
+
+      <p class="intro-sub" style="margin-top:14px;">
+        A nossa união ganhou uma nova data e queremos a sua energia connosco!
+      </p>
+
+      <div class="intro-actions">
+        <button class="btn btn-primary intro-btn" id="startExperienceBtn" type="button" data-magnetic>
+          Começar
+        </button>
+      </div>
+
+      <p class="intro-foot">Dica: use o scroll para explorar.</p>
+    </div>
+  </div>
+
+  <!-- Pétalas -->
+  <div class="petals-layer">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <!-- Música -->
+  <audio id="backgroundMusic" loop src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
+
+  <!-- SFX clique (bem discreto) -->
+  <audio id="clickSfx" preload="auto" src="https://assets.mixkit.co/sfx/preview/mixkit-modern-click-box-check-1120.mp3"></audio>
+
+  <!-- Controlo da Música -->
+  <button id="musicControl" aria-label="Controlar música">
+    <svg id="musicIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
+    </svg>
+  </button>
+
+  <!-- Header fixo -->
+  <div class="sticky-header">
+    <h1 class="names">Rafaela & Amade</h1>
+  </div>
+
+  <main class="invite-wrap" role="main" aria-labelledby="inviteTitle">
+
+    <!-- HERO -->
+    <header class="hero" id="hero">
+      <div class="hero-content">
+        <p class="lead">CONVIDAMO-LO(A) A CELEBRAR O NOSSO LOBOLO</p>
+        <h1 id="inviteTitle">RAFAELA & AMADE</h1>
+
+        <div id="countdown" class="countdown-animate">
+          <div class="countdown-item">
+            <span id="days">00</span>
+            <small>Dias</small>
+          </div>
+          <div class="countdown-item">
+            <span id="hours">00</span>
+            <small>Horas</small>
+          </div>
+          <div class="countdown-item">
+            <span id="minutes">00</span>
+            <small>Minutos</small>
+          </div>
+          <div class="countdown-item">
+            <span id="seconds">00</span>
+            <small>Segundos</small>
+          </div>
+        </div>
+
+        <a href="#nossa-historia" class="btn btn-primary hero-button-pulse" data-magnetic>
+          VER O CONVITE
+        </a>
+      </div>
+    </header>
+
+    <!-- OS NOIVOS -->
+    <section class="section fade-in-section" id="nossa-historia" aria-labelledby="historyTitle">
+
+      <div class="monogram"><span>R&A</span></div>
+      <div class="pill">Sábado 21 Março 2026</div>
+
+      <p style="margin: 18px 0 10px; font-size: 20px; color: rgba(31,31,31,0.75);">
+        Para que todos vejam, e saibam, e considerem, e juntamente entendam que a mão do SENHOR fez isso.
+      </p>
+      <p style="margin: 0 0 12px; font-size: 16px; color: rgba(31,31,31,0.55); font-family:'Poppins',sans-serif;">
+        Isaías 41:20
+      </p>
+
+      <h3 class="section-title" id="historyTitle">Os Noivos</h3>
+
+      <div class="history-grid">
+        <img src="https://i.postimg.cc/dVsZR2Gy/OS_NOIVOS.jpg" alt="Foto do casal">
+      </div>
+
+      <div style="max-width:720px;margin:0 auto;text-align:center;">
+        <p style="margin:0; font-size:18px; color: rgba(31,31,31,0.70);">
+          Com a bênção de Deus e das nossas famílias, temos a honra de convidá-lo(a) para celebrar connosco este momento especial.
+        </p>
+      </div>
+
+      <div class="vintage-divider"></div>
+
+      <div class="couple-cards">
+        <div class="couple-card" data-tilt>
+          <h3>Rafaela</h3>
+          <p>
+            Filha de <strong>Victor Eduardo</strong> e de
+            <strong>Celina Bié</strong>
+          </p>
+        </div>
+
+        <div class="couple-card" data-tilt>
+          <h3>Amade</h3>
+          <p>
+            Filho de <strong>Calisto Uachiço</strong> e de
+            <strong>Marcelina Machuza</strong>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="floral-divider fade-in-section"></div>
+
+    <!-- DETALHES -->
+    <section class="section fade-in-section section-highlight" id="detalhes" aria-label="Detalhes do Lobolo">
+      <div class="monogram"><span>R&A</span></div>
+      <h2>Detalhes do Lobolo</h2>
+      <p class="text-muted">Data, local e contactos principais.</p>
+
+      <div class="vintage-divider"></div>
+
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label">Data</span>
+          <span class="detail-value">21 de Março de 2026</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Hora</span>
+          <span class="detail-value">14h00</span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">Local</span>
+          <span class="detail-value">Bunhiça</span>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-small-size" id="rsvpBtn" data-magnetic>Confirmar Presença</button>
+        <a href="#" class="btn btn-outline btn-small-size" id="mapBtn" target="_blank" rel="noopener noreferrer" data-magnetic>
+          Como Chegar
+        </a>
+      </div>
+    </section>
+
+    <div class="floral-divider fade-in-section"></div>
+
+    <!-- GALERIA -->
+    <section class="section fade-in-section" id="galeria">
+      <div class="monogram"><span>R&A</span></div>
+
+      <h2>Galeria de Momentos</h2>
+      <p class="text-muted">Alguns momentos especiais.</p>
+
+      <div class="gallery-grid">
+        <div class="gallery-image-container">
+          <img src="https://i.postimg.cc/hPb77yQ9/MOMENTO_DOIS.jpg" alt="Momentos especiais" data-src="https://i.postimg.cc/hPb77yQ9/MOMENTO_DOIS.jpg">
+        </div>
+        <div class="gallery-image-container">
+          <img src="https://i.postimg.cc/Prz883vY/MOMENTO_UM.jpg" alt="Momentos especiais" data-src="https://i.postimg.cc/Prz883vY/MOMENTO_UM.jpg">
+        </div>
+        <div class="gallery-image-container">
+          <img src="https://i.postimg.cc/L6BZZCgt/MOMENTO_TRES.jpg" alt="Momentos especiais" data-src="https://i.postimg.cc/L6BZZCgt/MOMENTO_TRES.jpg">
+        </div>
+      </div>
+    </section>
+
+    <div class="floral-divider fade-in-section"></div>
+
+    <!-- GUIA DO EVENTO -->
+    <section class="section fade-in-section section-highlight" id="guia-evento" aria-labelledby="guiaTitle">
+      <div class="monogram"><span>R&A</span></div>
+
+      <h2 id="guiaTitle">Guia do Evento</h2>
+      <p class="text-muted">Informações importantes para o dia.</p>
+
+      <div style="margin-top: 26px;">
+        <h3>Inspiração de Vestuário</h3>
+        <p class="text-muted" style="margin-bottom: 10px;">
+          Sugerimos um estilo casual elegante, com tons neutros e confortáveis.
+        </p>
+        <button class="pill interactive" id="dressCodeBtn" data-magnetic>Ver Sugestões de Traje</button>
+      </div>
+
+      <div class="vintage-divider"></div>
+
+      <div style="margin-top: 10px;">
+        <h3>Confirme a Sua Presença</h3>
+        <p class="text-muted" style="margin-bottom: 18px;">
+          Por favor, confirme para melhor organização.
+        </p>
+        <div class="action-buttons" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-small-size" id="rsvpBtn2" data-magnetic>Confirmar Presença</button>
+          <a href="#" class="btn btn-outline btn-small-size" id="mapBtn2" target="_blank" rel="noopener noreferrer" data-magnetic>
+            Como Chegar
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL -->
+    <div class="actions fade-in-section">
+      <button class="btn btn-ghost btn-small-size" id="shareBtn" data-magnetic>Partilhar Convite</button>
+      <div style="flex:1"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+        <span class="small">
+          <strong>Contactos:</strong><br>
+          84 603 0269<br>
+          84 218 9253
+        </span>
+      </div>
+    </div>
+
+    <footer class="note fade-in-section">
+      Este convite é interactivo. Esperamos por si! <br>
+      <span style="font-size: 12px; color: rgba(31,31,31,0.55);">
+        Todos direitos reservados.
+        <a href="https://lirandzo.com" target="_blank" style="color: rgba(31,31,31,0.85); text-decoration: none; font-weight: 700;">
+          Lirandzo
+        </a>
+      </span>
+    </footer>
+
+  </main>
+
+  <!-- MODAL: RSVP -->
+  <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
+    <div class="modal-card">
+      <h3 id="rsvpTitle" style="text-align: center;">Confirmar Presença</h3>
+      <p class="small" style="text-align: center;">Preencha os dados e escolha como enviar a confirmação.</p>
+      <form id="rsvpForm">
+        <div style="margin-top:12px">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" required placeholder="Ex: Edmilson Mula">
+        </div>
+        <div style="margin-top:12px" class="form-row">
+          <div style="flex:1">
+            <label for="guests">Nº de convidados</label>
+            <select id="guests">
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </select>
+          </div>
+          <div style="flex:1">
+            <label for="phone">Telefone (opcional)</label>
+            <input id="phone" placeholder="+258 84X XXX XXX">
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <label for="message">Mensagem (opcional)</label>
+          <textarea id="message" placeholder="Ex: Parabéns!"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap">
+          <button type="submit" class="btn btn-primary btn-small-size" data-magnetic>Enviar por Email</button>
+          <button type="button" class="btn btn-outline btn-small-size" id="sendWhatsapp" data-magnetic>Enviar por WhatsApp</button>
+          <button type="button" class="btn btn-ghost btn-small-size" data-close-modal data-magnetic>Fechar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DRESS CODE -->
+  <div class="modal" id="dressCodeModal" role="dialog" aria-modal="true" aria-labelledby="dressCodeTitle">
+    <div class="modal-card" style="max-width: 580px;">
+      <h3 id="dressCodeTitle" style="text-align: center;">Inspiração: Casual Elegante</h3>
+      <p class="small" style="text-align: center;">
+        O objetivo é o conforto sofisticado. Sugerimos tons neutros.
+      </p>
+      <div class="dresscode-grid">
+        <img src="https://i.postimg.cc/ZY9nwDqf/f93df53647dc07cb00ab458e4b8c4c20.jpg" alt="Mulher com vestido floral midi.">
+        <img src="https://i.postimg.cc/056jVHNr/R.jpg" alt="Homem com calças de linho e camisa de botões.">
+        <img src="https://i.postimg.cc/PfLJSFq1/52670e4fe4737f60850c6b657b1dd18e.jpg" alt="Mulher com saia plissada e blusa de seda.">
+      </div>
+      <button type="button" class="btn btn-ghost" data-close-modal data-magnetic style="width:100%; margin-top:15px">
+        Entendi
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: LIGHTBOX -->
+  <div class="modal" id="lightboxModal" role="dialog" aria-modal="true">
+    <div class="modal-card" data-close-modal>
+      <img id="lightboxImage" src="" alt="Imagem em destaque da galeria">
+    </div>
+  </div>
+
+  <!-- BOTÃO VOLTAR AO TOPO -->
+  <button id="backToTop" aria-label="Voltar ao topo">
+    <svg viewBox="0 0 24 24">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+
+  <!-- SCRIPT -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      const HOST_WHATSAPP_NUMBER = '+258846030269';
+      const ADDRESS_EVENTO = 'Bunhiça';
+      const EVENT_DATE = "2026-03-21T14:00:00";
+      const RSVP_EMAIL = "rafaelamavie9@gmail.com";
+
+      const music = document.getElementById('backgroundMusic');
+      const musicControl = document.getElementById('musicControl');
+      const rsvpForm = document.getElementById('rsvpForm');
+
+      const mapBtnGeral = document.getElementById('mapBtn');
+      const mapBtn2 = document.getElementById('mapBtn2');
+
+      const shareBtn = document.getElementById('shareBtn');
+      const stickyHeader = document.querySelector('.sticky-header');
+      const galleryImages = document.querySelectorAll('.gallery-grid img');
+
+      const lightboxModal = document.getElementById('lightboxModal');
+      const lightboxImage = document.getElementById('lightboxImage');
+
+      const body = document.body;
+      const backToTopBtn = document.getElementById('backToTop');
+
+      const introOverlay = document.getElementById('introOverlay');
+      const startExperienceBtn = document.getElementById('startExperienceBtn');
+
+      const hero = document.getElementById('hero');
+
+      const clickSfx = document.getElementById('clickSfx');
+
+      // Fade-in inicial (para o intro entrar igual à capa)
+      window.onload = () => {
+        body.classList.remove('loading');
+        body.classList.add('loaded');
+      };
+      setTimeout(() => {
+        if (body.classList.contains('loading')) {
+          body.classList.remove('loading');
+          body.classList.add('loaded');
+        }
+      }, 500);
+
+      // ===== Click SFX (bem discreto) =====
+      const playClick = () => {
+        try{
+          clickSfx.currentTime = 0;
+          clickSfx.volume = 0.12;
+          clickSfx.play().catch(()=>{});
+        }catch(e){}
+      };
+
+      document.querySelectorAll('button, .btn').forEach(el => {
+        el.addEventListener('click', () => playClick(), { passive:true });
+      });
+
+      // ===== EXPERIÊNCIA DE ABERTURA =====
+      let isPlaying = false;
+
+      const startExperience = async () => {
+  // evita duplo clique
+  startExperienceBtn.disabled = true;
+  startExperienceBtn.style.opacity = "0.92";
+
+  // saída cinematográfica
+  introOverlay.classList.add('hide');
+
+  // música (tenta tocar logo no clique)
+  try {
+    await music.play();
+    isPlaying = true;
+    musicControl.classList.add('playing');
+  } catch (e) {}
+
+  // dá tempo para o overlay desaparecer sem cortar a animação
+  setTimeout(() => {
+    introOverlay.style.display = "none";
+    window.scrollTo({ top: 1, behavior: 'smooth' });
+  }, 950);
+};
+
+      startExperienceBtn.addEventListener('click', startExperience);
+
+      introOverlay.addEventListener('click', (e) => {
+        if (e.target === introOverlay) startExperience();
+      });
+
+      // Música toggle
+      musicControl.addEventListener('click', () => {
+        if (!isPlaying) {
+          music.play().then(() => {
+            isPlaying = true;
+            musicControl.classList.add('playing');
+          }).catch(() => {});
+        } else {
+          music.pause();
+          isPlaying = false;
+          musicControl.classList.remove('playing');
+        }
+      });
+
+      // Countdown
+      const tickCountdown = () => {
+        const now = new Date().getTime();
+        const eventTime = new Date(EVENT_DATE).getTime();
+        const distance = eventTime - now;
+
+        const format = (n) => String(n).padStart(2, '0');
+
+        if (distance < 0) {
+          document.getElementById("days").innerText = "00";
+          document.getElementById("hours").innerText = "00";
+          document.getElementById("minutes").innerText = "00";
+          document.getElementById("seconds").innerText = "00";
+          return;
+        }
+
+        document.getElementById("days").innerText = format(Math.floor(distance / (1000 * 60 * 60 * 24)));
+        document.getElementById("hours").innerText = format(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        document.getElementById("minutes").innerText = format(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+        document.getElementById("seconds").innerText = format(Math.floor((distance % (1000 * 60)) / 1000));
+
+        const c = document.getElementById('countdown');
+        c.classList.remove('pulse-once');
+        void c.offsetWidth;
+        c.classList.add('pulse-once');
+      };
+
+      tickCountdown();
+      setInterval(tickCountdown, 1000);
+
+      // Header fixo ao scroll
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 160) stickyHeader.classList.add('is-scrolled');
+        else stickyHeader.classList.remove('is-scrolled');
+      });
+
+      // Back to top
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 600) backToTopBtn.classList.add('show');
+        else backToTopBtn.classList.remove('show');
+      });
+      backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Parallax suave no hero
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        if (y < 800) {
+          hero.style.backgroundPosition = `center ${18 + (y * 0.02)}%`;
+        }
+      });
+
+      // Mapas
+      const openMap = (address) => {
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        window.open(url, '_blank');
+      };
+
+      if (mapBtnGeral) {
+        mapBtnGeral.addEventListener('click', (e) => {
+          e.preventDefault();
+          openMap(ADDRESS_EVENTO);
+        });
+      }
+      if (mapBtn2) {
+        mapBtn2.addEventListener('click', (e) => {
+          e.preventDefault();
+          openMap(ADDRESS_EVENTO);
+        });
+      }
+
+      // Setup modal
+      const setupModal = (buttonId, modalId) => {
+        const button = document.getElementById(buttonId);
+        const modal = document.getElementById(modalId);
+        if (!button || !modal) return;
+
+        button.addEventListener('click', () => {
+          modal.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        });
+
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal || e.target.closest('[data-close-modal]')) {
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+          }
+        });
+      };
+
+      setupModal('rsvpBtn', 'rsvpModal');
+      setupModal('rsvpBtn2', 'rsvpModal');
+      setupModal('dressCodeBtn', 'dressCodeModal');
+
+      // Fechar modais no ESC
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+          document.body.style.overflow = '';
+        }
+      });
+
+      // RSVP
+      const getRsvpData = () => ({
+        nome: document.getElementById('nome').value.trim(),
+        guests: document.getElementById('guests').value,
+        phone: document.getElementById('phone').value.trim(),
+        message: document.getElementById('message').value.trim()
+      });
+
+      rsvpForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = getRsvpData();
+        if (!data.nome) {
+          alert('Por favor, preencha o seu nome completo.');
+          document.getElementById('nome').focus();
+          return;
+        }
+        const subject = encodeURIComponent('RSVP — Confirmação de Presença Rafaela & Amade');
+        const bodyMsg = `Nome: ${data.nome}%0D%0AConvidados: ${data.guests}%0D%0ATelefone: ${data.phone}%0D%0AMensagem: ${data.message}`;
+        window.location.href = `mailto:${RSVP_EMAIL}?subject=${subject}&body=${bodyMsg}`;
+        document.getElementById('rsvpModal').classList.remove('open');
+        document.body.style.overflow = '';
+      });
+
+      document.getElementById('sendWhatsapp').addEventListener('click', () => {
+        const data = getRsvpData();
+        if (!data.nome) {
+          alert('Por favor, preencha o seu nome completo.');
+          document.getElementById('nome').focus();
+          return;
+        }
+        const text = `RSVP - Olá! Confirmo a minha presença. Nome: ${data.nome}, Convidados: ${data.guests}. Mensagem: ${data.message}`;
+        const waUrl = `https://wa.me/${HOST_WHATSAPP_NUMBER.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, '_blank');
+        document.getElementById('rsvpModal').classList.remove('open');
+        document.body.style.overflow = '';
+      });
+
+      // Lightbox
+      galleryImages.forEach(img => {
+        img.addEventListener('click', () => {
+          const src = img.getAttribute('data-src') || img.src;
+          lightboxImage.src = src;
+          document.getElementById('lightboxModal').classList.add('open');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      lightboxModal.addEventListener('click', (e) => {
+        if (e.target === lightboxModal || e.target.closest('[data-close-modal]')) {
+          lightboxModal.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      });
+
+      // Partilhar
+      shareBtn.addEventListener('click', async () => {
+        const shareData = {
+          title: 'Convite de Lobolo — Rafaela & Amade',
+          text: 'Junte-se a nós para celebrar o nosso Lobolo! Veja os detalhes aqui:',
+          url: window.location.href
+        };
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+            alert('Link do convite copiado para a área de transferência.');
+          }
+        } catch (err) {}
+      });
+
+      // Fade in sections
+      const animatedSections = document.querySelectorAll('.fade-in-section');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      animatedSections.forEach(section => observer.observe(section));
+
+      // Magnetic buttons
+      const magnetic = document.querySelectorAll('[data-magnetic]');
+      magnetic.forEach(el => {
+        el.addEventListener('mousemove', (e) => {
+          const rect = el.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          el.style.transform = `translate(${x * 0.06}px, ${y * 0.10}px)`;
+        });
+        el.addEventListener('mouseleave', () => {
+          el.style.transform = '';
+        });
+      });
+
+      // Tilt cards
+      const tiltEls = document.querySelectorAll('[data-tilt]');
+      tiltEls.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width;
+          const py = (e.clientY - r.top) / r.height;
+          const rx = (py - 0.5) * -6;
+          const ry = (px - 0.5) * 8;
+          card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-2px)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+        });
+      });
+
+      // Segurança mobile inline grid
+      const applyResponsiveInlineFix = () => {
+        const grids = document.querySelectorAll('[style*="grid-template-columns:repeat(2"]');
+        grids.forEach(g => {
+          if (window.innerWidth <= 768) g.style.gridTemplateColumns = '1fr';
+          else g.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+        });
+      };
+      applyResponsiveInlineFix();
+      window.addEventListener('resize', applyResponsiveInlineFix);
+
+    });
+  </script>
+</body>
+</html>
+

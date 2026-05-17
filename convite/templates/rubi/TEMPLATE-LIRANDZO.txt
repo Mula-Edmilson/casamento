@@ -1,0 +1,3 @@
+Template oficial Lirandzo: rubi
+Este directório é usado pelo AdminManager para gerar novos convites.
+Não colocar dados reais fixos neste template.
