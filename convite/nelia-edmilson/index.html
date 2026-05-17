@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Nélia & Edmilson — O Nosso Noivado</title>
+
+<link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Great+Vibes&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Estilos do index.html necessários para as cores */
+    :root{
+      --bg:#faf8f5;
+      --accent:#b0775c; /* Dourado */
+      --text-dark: #b0775c;
+      --muted: #363535;
+    }
+    body {
+      margin: 0; min-height: 100vh; background-color: var(--bg);
+      font-family: 'Cormorant Garamond', serif;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px; color: var(--text-dark);
+      text-align: center;
+      background-image:
+        url("https://i.postimg.cc/BbmmgqHs/15680936-5660126.jpg");
+    }
+    .cover-container {
+      max-width: 400px;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(176, 143, 92, 0.15);
+    }
+    .couple-photo {
+      width: 100%;
+      height: 400px; 
+      margin-bottom: 25px;
+      border-radius: 8px;
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      border: 1px solid rgba(176, 143, 92, 0.3);
+    }
+    .names {
+        font-family: 'Great Vibes', cursive;
+        font-size: 50px;
+        color: var(--accent);
+        margin: 0 0 10px;
+    }
+    .btn-cover {
+        border:0;padding:15px 25px;border-radius:8px;font-weight:700;cursor:pointer;
+        display:inline-flex;align-items:center;justify-content:center;
+        gap:10px;font-family:'Poppins',sans-serif;font-size:16px;transition:all .2s ease;
+        background:var(--accent);color:white;box-shadow:0 8px 18px rgba(176, 143, 92, 0.22);
+        width: 100%;
+        max-width: 250px;
+        margin-top: 15px;
+    }
+    .btn-cover:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(176, 143, 92, 0.28)}
+  </style>
+</head>
+<body>
+  
+  <audio id="backgroundMusic" loop src="https://static.wixstatic.com/mp3/819ea0_d5df02790a874b229711c5110321cf00.mp3"></audio>
+  
+  <div class="cover-container">
+    <h1 class="names">Nélia & Edmilson</h1>
+    <p style="font-family: 'Poppins', sans-serif; color: var(--muted); font-size: 14px; margin-top: -10px;">Com Carinho, o Nosso Noivado</p>
+    
+    <div class="couple-photo" style="background-image: url('https://i.postimg.cc/c1KGJCyv/Gemini-Generated-Image-8wgen38wgen38wge.jpg')">
+    </div>
+    
+    <button class="btn-cover" id="openInviteBtn">Abrir Convite</button>
+  </div>
+
+  <script>
+    const music = document.getElementById('backgroundMusic');
+    const openInviteBtn = document.getElementById('openInviteBtn');
+    
+    openInviteBtn.addEventListener('click', function() {
+      // 1. Toca a música. O clique permite a reprodução no browser.
+      music.play().then(() => {
+        // 2. CORREÇÃO CRÍTICA: Abre o convite.html (antigo index.html) numa NOVA ABA (_blank). 
+        window.open('convite.html', '_blank'); // <-- LINK CORRIGIDO
+      }).catch(error => {
+        // Se a reprodução falhar por qualquer motivo (ex: browser), abre na mesma.
+        console.warn("Falha ao tentar tocar a música, abrindo o convite na mesma:", error);
+        window.open('convite.html', '_blank'); // <-- LINK CORRIGIDO
+      });
+    });
+  </script>
+</body>
+</html>
