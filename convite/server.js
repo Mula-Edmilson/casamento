@@ -68,6 +68,102 @@ function slugify(value) {
     .slice(0, 80);
 }
 function escapeRegex(value) { return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function cleanHeaderKey(value) {
+  return normalizeText(value)
+    .replace(/[^a-z0-9]+/g, '')
+    .trim();
+}
+function detectDelimiter(line) {
+  const options = [';', '\t', ','];
+  let best = ';';
+  let bestCount = -1;
+  for (const delimiter of options) {
+    const count = String(line || '').split(delimiter).length - 1;
+    if (count > bestCount) { best = delimiter; bestCount = count; }
+  }
+  return best;
+}
+function parseDelimitedLine(line, delimiter = ';') {
+  const out = [];
+  let current = '';
+  let inQuotes = false;
+  const d = delimiter === '\t' ? '\t' : delimiter;
+  for (let i = 0; i < String(line || '').length; i += 1) {
+    const char = line[i];
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') { current += '"'; i += 1; }
+      else inQuotes = !inQuotes;
+      continue;
+    }
+    if (char === d && !inQuotes) { out.push(current.trim()); current = ''; continue; }
+    current += char;
+  }
+  out.push(current.trim());
+  return out;
+}
+function looksLikeGuestHeader(fields) {
+  const keys = fields.map(cleanHeaderKey);
+  return keys.some(k => ['nome', 'name', 'convidado', 'guest', 'guestname'].includes(k)) ||
+    keys.some(k => ['mesa', 'table'].includes(k)) ||
+    keys.some(k => ['acompanhantes', 'companions', 'pessoas'].includes(k));
+}
+function getHeaderValue(row, headers, aliases, fallbackIndex = -1) {
+  for (const alias of aliases) {
+    const idx = headers.indexOf(alias);
+    if (idx >= 0) return row[idx] || '';
+  }
+  return fallbackIndex >= 0 ? (row[fallbackIndex] || '') : '';
+}
+function parseGuestImportText(text) {
+  const rawLines = String(text || '')
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(line => line && !line.startsWith('#'));
+  if (!rawLines.length) return [];
+  const delimiter = detectDelimiter(rawLines[0]);
+  let rows = rawLines.map(line => parseDelimitedLine(line, delimiter));
+  let headers = [];
+  if (looksLikeGuestHeader(rows[0])) {
+    headers = rows.shift().map(cleanHeaderKey);
+  }
+  return rows.map((row, index) => {
+    if (headers.length) {
+      const name = getHeaderValue(row, headers, ['nome', 'name', 'convidado', 'guest', 'guestname'], 0);
+      const table = getHeaderValue(row, headers, ['mesa', 'table'], 1);
+      const companionsRaw = getHeaderValue(row, headers, ['acompanhantes', 'companions', 'pessoas', 'acompanhante'], 2);
+      const phone = getHeaderValue(row, headers, ['telefone', 'phone', 'contacto', 'contato', 'celular'], 3);
+      const notes = getHeaderValue(row, headers, ['notas', 'notes', 'observacoes', 'observacao'], 4);
+      const category = getHeaderValue(row, headers, ['categoria', 'category', 'tipo'], 5);
+      const numberRaw = getHeaderValue(row, headers, ['numero', 'n', 'nº', 'no', 'ordem', 'id'], 6);
+      const oldToken = getHeaderValue(row, headers, ['tokenantigo', 'token', 'oldtoken'], 7);
+      return { lineNumber: index + 1, raw: row.join(delimiter), name, table, companionsRaw, phone, notes, category, numberRaw, oldToken };
+    }
+    // Formato sem cabeçalho: Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo
+    return {
+      lineNumber: index + 1,
+      raw: row.join(delimiter),
+      name: row[0] || '',
+      table: row[1] || '',
+      companionsRaw: row[2] || '0',
+      phone: row[3] || '',
+      notes: row[4] || '',
+      category: row[5] || '',
+      numberRaw: row[6] || '',
+      oldToken: row[7] || ''
+    };
+  });
+}
+function buildGuestNotes({ notes, number, category, oldToken }) {
+  const parts = [];
+  if (notes) parts.push(String(notes).trim());
+  const meta = [];
+  if (number) meta.push(`Nº ${number}`);
+  if (category) meta.push(`Categoria: ${category}`);
+  if (oldToken) meta.push(`Token antigo: ${oldToken}`);
+  if (meta.length) parts.push(meta.join(' · '));
+  return Array.from(new Set(parts.filter(Boolean))).join(' — ');
+}
+
 function base64url(input) { return Buffer.from(input).toString('base64url'); }
 function generateGuestPublicToken() {
   return 'g_' + crypto.randomBytes(18).toString('hex');
@@ -533,34 +629,206 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
 app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
-  const lines = String(req.body.text || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-  const results = { inserted: 0, updated: 0, failed: [] };
-  for (const line of lines) {
-    const [nameRaw, tableRaw = '', companionsRaw = '0', phoneRaw = '', notesRaw = ''] = line.split(';').map(v => v.trim());
-    if (!nameRaw) continue;
+
+  const parsedGuests = parseGuestImportText(req.body.text || '');
+  if (!parsedGuests.length) {
+    return res.status(400).json({ status: 'error', message: 'Nenhum convidado válido foi enviado.' });
+  }
+
+  const results = { inserted: 0, updated: 0, failed: [], total: parsedGuests.length };
+
+  for (const entry of parsedGuests) {
+    const nameRaw = String(entry.name || '').trim();
+    if (!nameRaw) {
+      results.failed.push({ line: entry.raw || '', error: `Linha ${entry.lineNumber}: nome vazio.` });
+      continue;
+    }
+
     const normalizedName = normalizeText(nameRaw);
-    const companions = Math.max(0, Number.parseInt(companionsRaw, 10) || 0);
+    const companions = Math.max(0, Number.parseInt(entry.companionsRaw, 10) || 0);
+    const number = Math.max(0, Number.parseInt(entry.numberRaw, 10) || 0);
+    const category = String(entry.category || '').trim();
+    const oldToken = String(entry.oldToken || '').trim();
+    const notes = buildGuestNotes({ notes: entry.notes, number, category, oldToken });
+
     try {
       const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
       if (existing) {
         existing.name = nameRaw;
-        existing.table = tableRaw;
+        existing.slug = invite.slug;
+        existing.table = String(entry.table || '').trim();
         existing.companions = companions;
         existing.maxGuests = Math.max(1, 1 + companions);
-        existing.phone = phoneRaw;
-        existing.notes = notesRaw;
+        existing.phone = String(entry.phone || '').trim();
+        existing.notes = notes;
+        existing.category = category || existing.category || '';
+        existing.number = number || existing.number || 0;
+        if (!existing.status) existing.status = 'Não aberto';
         if (!existing.inviteToken) existing.inviteToken = generateGuestPublicToken();
         await existing.save();
         results.updated += 1;
-      }
-      else {
-        await Guest.create({ inviteId: invite._id, slug: invite.slug, name: nameRaw, normalizedName, table: tableRaw, companions, maxGuests: Math.max(1, 1 + companions), phone: phoneRaw, notes: notesRaw, inviteToken: generateGuestPublicToken() });
+      } else {
+        await Guest.create({
+          inviteId: invite._id,
+          slug: invite.slug,
+          name: nameRaw,
+          normalizedName,
+          status: 'Não aberto',
+          deviceToken: '',
+          table: String(entry.table || '').trim(),
+          companions,
+          maxGuests: Math.max(1, 1 + companions),
+          phone: String(entry.phone || '').trim(),
+          notes,
+          category,
+          number,
+          inviteToken: generateGuestPublicToken()
+        });
         results.inserted += 1;
       }
-    } catch (err) { results.failed.push({ line, error: err.message }); }
+    } catch (err) {
+      results.failed.push({ line: entry.raw || nameRaw, error: err.message });
+    }
   }
-  await logActivity({ invite, type: 'guests', title: 'Lista de convidados importada', detail: `${results.inserted} novos · ${results.updated} actualizados` });
-  res.json({ status: 'success', data: results });
+
+  await logActivity({
+    invite,
+    type: 'guests',
+    title: 'Lista de convidados importada',
+    detail: `${results.inserted} novos · ${results.updated} actualizados · ${results.failed.length} falhas`
+  });
+
+  return res.json({ status: 'success', data: results });
+});
+
+app.post('/manager/invites/:id/guests/reset-access', requireManager, async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+
+  const openedReset = await Guest.updateMany(
+    { inviteId: invite._id, status: /^Convite Aberto$/i },
+    { $set: { deviceToken: '', status: 'Não aberto' } }
+  );
+  const othersReset = await Guest.updateMany(
+    { inviteId: invite._id, status: { $not: /^Convite Aberto$/i } },
+    { $set: { deviceToken: '' } }
+  );
+  const total = Number(openedReset.modifiedCount || 0) + Number(othersReset.modifiedCount || 0);
+
+  await logActivity({
+    invite,
+    type: 'guests',
+    title: 'Acesso dos convidados reiniciado',
+    detail: `${total} registo(s) actualizados`
+  });
+
+  return res.json({
+    status: 'success',
+    message: 'Acesso reiniciado. Os convidados poderão abrir novamente a partir de outro dispositivo.',
+    data: { modified: total }
+  });
+});
+
+app.post('/manager/invites/:id/gifts/reset-reservations', requireManager, async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+
+  const result = await GiftItem.updateMany(
+    { inviteId: invite._id },
+    { $set: { reserved: false, reservedBy: '', reservedAt: null } }
+  );
+
+  await logActivity({
+    invite,
+    type: 'gift',
+    title: 'Reservas de presentes reiniciadas',
+    detail: `${result.modifiedCount || 0} presente(s) livres novamente`
+  });
+
+  return res.json({
+    status: 'success',
+    message: 'Reservas de presentes reiniciadas com sucesso.',
+    data: { matched: result.matchedCount || 0, modified: result.modifiedCount || 0 }
+  });
+});
+
+app.delete('/manager/invites/:id/gifts', requireManager, async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+
+  const result = await GiftItem.deleteMany({ inviteId: invite._id });
+
+  await logActivity({
+    invite,
+    type: 'gift',
+    title: 'Lista de presentes limpa',
+    detail: `${result.deletedCount || 0} presente(s) removido(s)`
+  });
+
+  return res.json({
+    status: 'success',
+    message: 'Lista de presentes eliminada deste convite.',
+    data: { deleted: result.deletedCount || 0 }
+  });
+});
+
+app.post('/manager/invites/:id/gifts/seed-defaults', requireManager, async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+
+  await seedDefaultGifts(invite);
+  const total = await GiftItem.countDocuments({ inviteId: invite._id });
+
+  await logActivity({
+    invite,
+    type: 'gift',
+    title: 'Presentes padrão restaurados',
+    detail: `${total} presente(s) disponíveis`
+  });
+
+  return res.json({
+    status: 'success',
+    message: 'Presentes padrão restaurados com sucesso.',
+    data: { total }
+  });
+});
+
+app.delete('/manager/invites/:id/purge', requireManager, async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+
+  const inviteId = invite._id;
+  const slug = invite.slug;
+  const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities] = await Promise.all([
+    Guest.deleteMany({ inviteId }),
+    Rsvp.deleteMany({ inviteId }),
+    Message.deleteMany({ inviteId }),
+    GiftItem.deleteMany({ inviteId }),
+    Contribution.deleteMany({ inviteId }),
+    CheckIn.deleteMany({ inviteId }),
+    CapsulePhoto.deleteMany({ inviteId }),
+    Activity.deleteMany({ inviteId })
+  ]);
+  await Invite.deleteOne({ _id: inviteId });
+
+  return res.json({
+    status: 'success',
+    message: `Convite ${slug} eliminado do MongoDB. A pasta no GitHub não foi apagada.`,
+    data: {
+      slug,
+      deleted: {
+        guests: guests.deletedCount || 0,
+        rsvps: rsvps.deletedCount || 0,
+        messages: messages.deletedCount || 0,
+        gifts: gifts.deletedCount || 0,
+        contributions: contributions.deletedCount || 0,
+        checkins: checkins.deletedCount || 0,
+        photos: photos.deletedCount || 0,
+        activities: activities.deletedCount || 0,
+        invites: 1
+      }
+    }
+  });
 });
 
 async function getInviteFromRequest(req) {

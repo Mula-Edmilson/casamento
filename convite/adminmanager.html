@@ -7,584 +7,390 @@
   <meta name="robots" content="noindex,nofollow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/feather-icons"></script>
+  <script src="adminmanager.config.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #241f1c;
-      --bg-2: #2b2623;
-      --surface: #332d29;
-      --surface-2: #3a332f;
-      --surface-3: #211c19;
-      --line: rgba(224,203,184,.14);
-      --line-strong: rgba(224,203,184,.25);
-      --accent: #b08968;
-      --accent-2: #d0ad8f;
-      --accent-soft: rgba(176,137,104,.15);
-      --text: #f6efe9;
-      --text-2: #d8cec6;
-      --muted: #a79b92;
-      --green: #18b783;
-      --blue: #6aa5ff;
-      --orange: #f2a84a;
-      --red: #ef5b5b;
-      --radius-lg: 22px;
-      --radius-md: 16px;
-      --radius-sm: 12px;
-      --shadow: 0 18px 50px rgba(0,0,0,.24);
-      --font-heading: 'Cormorant Garamond', serif;
-      --font-body: 'Inter', sans-serif;
-      --sidebar: 244px;
-      --topbar: 66px;
+      --bg:#241f1c; --bg-2:#2b2623; --surface:#332d29; --surface-2:#3a332f; --surface-3:#211c19;
+      --line:rgba(224,203,184,.14); --line-strong:rgba(224,203,184,.25);
+      --accent:#b08968; --accent-2:#d0ad8f; --accent-soft:rgba(176,137,104,.15);
+      --text:#f6efe9; --text-2:#d8cec6; --muted:#a79b92;
+      --green:#18b783; --blue:#6aa5ff; --orange:#f2a84a; --red:#ef5b5b;
+      --radius-lg:22px; --radius-md:16px; --radius-sm:12px;
+      --shadow:0 18px 50px rgba(0,0,0,.24);
+      --font-heading:'Cormorant Garamond',serif; --font-body:'Inter',sans-serif;
+      --sidebar:236px; --topbar:62px; --safe-top:env(safe-area-inset-top); --safe-bottom:env(safe-area-inset-bottom);
     }
-    body.light {
-      --bg: #f7f2ed;
-      --bg-2: #efe5dc;
-      --surface: #fffaf6;
-      --surface-2: #f5ece5;
-      --surface-3: #ffffff;
-      --line: rgba(70,54,43,.13);
-      --line-strong: rgba(70,54,43,.23);
-      --accent-soft: rgba(176,137,104,.18);
-      --text: #251f1b;
-      --text-2: #4d423b;
-      --muted: #7c6d63;
-      --shadow: 0 18px 45px rgba(92,64,45,.13);
+    html[data-theme="light"] {
+      --bg:#f5eee7; --bg-2:#fffaf5; --surface:#fffaf5; --surface-2:#f2e7dc; --surface-3:#fff;
+      --line:rgba(97,72,55,.14); --line-strong:rgba(97,72,55,.24);
+      --accent:#9a6b48; --accent-2:#7c5439; --accent-soft:rgba(154,107,72,.12);
+      --text:#2f2723; --text-2:#564a43; --muted:#81736a;
+      --green:#0f9f70; --blue:#2563eb; --orange:#c77721; --red:#c73e3e;
+      --shadow:0 18px 50px rgba(80,55,35,.14);
     }
     html { scroll-behavior: smooth; }
     body {
       min-height: 100vh;
-      background:
-        radial-gradient(circle at 14% -8%, rgba(176,137,104,.20), transparent 32%),
-        radial-gradient(circle at 100% 10%, rgba(208,173,143,.10), transparent 30%),
-        linear-gradient(145deg, var(--bg), var(--bg-2));
-      color: var(--text-2);
-      font-family: var(--font-body);
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
+      width: 100%; max-width: 100%; overflow-x: hidden;
+      background: radial-gradient(circle at 16% -5%, rgba(176,137,104,.18), transparent 34%), radial-gradient(circle at 100% 10%, rgba(208,173,143,.10), transparent 30%), linear-gradient(145deg,var(--bg),var(--bg-2));
+      color: var(--text-2); font-family: var(--font-body); line-height: 1.45; -webkit-font-smoothing: antialiased;
     }
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; }
+    button,input,select,textarea { font: inherit; }
+    button { cursor: pointer; } a { color: inherit; }
     .hidden { display: none !important; }
-    .login-screen { min-height: 100vh; display:grid; place-items:center; padding: 20px; }
-    .login-card {
-      width: min(430px,100%);
-      border: 1px solid var(--line-strong);
-      background: color-mix(in srgb, var(--surface) 94%, transparent);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow);
-    }
-    .brand { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
-    .brand-mark {
-      width: 44px; height: 44px; border-radius: 50%; display:grid; place-items:center;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#211c19; font-family:var(--font-heading); font-weight:800; font-size:1.1rem;
-      box-shadow: 0 12px 30px rgba(176,137,104,.22);
-    }
-    .brand h1, .page-title h1 { color:var(--text); font-family:var(--font-heading); font-size:2rem; line-height:1; }
-    .brand p, .page-title p { color:var(--muted); font-size:.86rem; margin-top:5px; }
-    .field { display:grid; gap:7px; margin-bottom: 13px; }
-    .field label { color:var(--text); font-size:.78rem; text-transform: uppercase; letter-spacing:.09em; font-weight:800; }
-    .field input, .field select, .field textarea {
-      width:100%; border:1px solid var(--line-strong); border-radius: 14px; background: var(--surface-3); color:var(--text); padding: 12px 13px; outline:none;
-    }
-    .field textarea { min-height: 130px; resize: vertical; line-height: 1.5; }
-    .field input:focus, .field select:focus, .field textarea:focus { border-color: color-mix(in srgb, var(--accent) 75%, white); box-shadow: 0 0 0 4px var(--accent-soft); }
-    .hint { color: var(--muted); font-size: .78rem; line-height:1.45; }
-    .error, .notice { border-radius: 14px; padding: 12px; margin-top: 12px; font-size: .88rem; line-height:1.45; }
-    .error { background: rgba(239,91,91,.14); border:1px solid rgba(239,91,91,.28); color:#ffb7b7; }
-    body.light .error { color:#8f1e1e; }
-    .notice { background: var(--accent-soft); border:1px solid var(--line-strong); color:var(--text-2); }
-    .btn {
-      border:1px solid var(--line-strong); background: var(--surface-2); color:var(--text); border-radius: 999px; padding: 10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:8px; font-weight:800; font-size:.86rem; transition: .22s ease;
-    }
-    .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
-    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#211c19; border-color: transparent; }
-    .btn-danger { color:#ffd5d5; background: rgba(239,91,91,.13); border-color: rgba(239,91,91,.26); }
-    body.light .btn-danger { color:#8f1e1e; }
+    .sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
+
+    .btn { min-height:38px; border:1px solid var(--line-strong); border-radius:999px; padding:0 13px; display:inline-flex; align-items:center; justify-content:center; gap:8px; background:rgba(58,51,47,.86); color:var(--text-2); font-weight:900; font-size:12px; text-decoration:none; transition:transform .18s ease,border-color .18s ease,background .18s ease; }
+    .btn:hover { transform:translateY(-1px); border-color:var(--accent); }
+    .btn:active { transform:translateY(0) scale(.99); }
+    .btn.primary { background:linear-gradient(135deg,var(--accent),#916848); color:#fff; border-color:transparent; box-shadow:0 10px 24px rgba(176,137,104,.18); }
+    .btn.danger { background:rgba(239,91,91,.13); border-color:rgba(239,91,91,.28); color:#ffd5d5; }
+    html[data-theme="light"] .btn.danger { color:#8f1e1e; }
+    .btn.ghost { background:transparent; color:var(--accent-2); }
+    .btn.icon-only { width:38px; padding:0; }
     .btn.full { width:100%; }
-    .app { display:grid; grid-template-columns: var(--sidebar) minmax(0,1fr); min-height:100vh; }
-    .sidebar { position: sticky; top:0; height:100vh; border-right:1px solid var(--line); background: rgba(33,28,25,.54); backdrop-filter: blur(18px); padding: 18px 14px; display:flex; flex-direction:column; gap:16px; }
-    body.light .sidebar { background: rgba(255,250,246,.72); }
-    .nav { display:grid; gap:6px; }
-    .nav button { border:0; background:transparent; color:var(--text-2); padding: 11px 12px; border-radius: 14px; display:flex; align-items:center; gap:10px; text-align:left; font-weight:800; }
-    .nav button.active, .nav button:hover { background: var(--accent-soft); color:var(--text); }
-    .side-footer { margin-top:auto; display:grid; gap:10px; }
-    .main { min-width:0; }
-    .topbar { min-height: var(--topbar); position: sticky; top:0; z-index: 20; display:flex; align-items:center; justify-content:space-between; gap:14px; padding: 12px 22px; border-bottom:1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(16px); }
-    .topbar strong { color: var(--text); }
-    .top-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-    .content { padding: 22px; max-width: 1380px; margin:0 auto; }
-    .page-title { display:flex; justify-content:space-between; gap:16px; align-items:flex-end; margin-bottom:18px; }
-    .grid { display:grid; gap:14px; }
-    .grid.cards { grid-template-columns: repeat(4, minmax(0,1fr)); }
-    .grid.two { grid-template-columns: 1fr 1fr; }
-    .card { border:1px solid var(--line); background: color-mix(in srgb, var(--surface) 94%, transparent); border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow:hidden; }
-    .card-pad { padding: 18px; }
-    .metric { display:grid; gap:10px; }
-    .metric .icon { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; background:var(--accent-soft); color:var(--accent-2); }
-    .metric small { color:var(--muted); text-transform:uppercase; letter-spacing:.09em; font-weight:900; font-size:.72rem; }
-    .metric b { color:var(--text); font-size: 1.65rem; }
+    .btn.small { min-height:31px; padding:0 10px; font-size:11px; }
+    .btn .feather { width:16px; height:16px; }
+    .btn[disabled] { cursor:not-allowed; opacity:.84; transform:none !important; }
+    .btn-loader {
+      width:17px; height:17px; border-radius:50%; display:none;
+      border:2px solid rgba(33,28,25,.28); border-top-color:#211c19;
+      animation:spinLoader .72s linear infinite; flex:0 0 auto;
+    }
+    .btn.is-loading .btn-loader { display:inline-block; }
+    .btn.is-loading .login-icon { display:none; }
+    html[data-theme="light"] .btn-loader { border-color:rgba(33,28,25,.22); border-top-color:#211c19; }
+    @keyframes spinLoader { to { transform:rotate(360deg); } }
+
+    .field { display:grid; gap:7px; margin-bottom:12px; }
+    .field label { color:var(--accent-2); font-size:10px; font-weight:900; letter-spacing:.09em; text-transform:uppercase; }
+    .field input,.field select,.field textarea,.search-input { width:100%; border:1px solid var(--line-strong); border-radius:14px; outline:none; background:rgba(33,28,25,.82); color:var(--text); padding:11px 12px; transition:border-color .2s ease,box-shadow .2s ease; }
+    html[data-theme="light"] .field input, html[data-theme="light"] .field select, html[data-theme="light"] .field textarea, html[data-theme="light"] .search-input, html[data-theme="light"] .btn { background:rgba(255,255,255,.78); color:var(--text-2); }
+    .field textarea { min-height:140px; resize:vertical; line-height:1.45; }
+    .field input:focus,.field select:focus,.field textarea:focus,.search-input:focus { border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); }
+    .hint { color:var(--muted); font-size:11px; line-height:1.45; }
+
+    .login-screen { min-height:100vh; display:grid; place-items:center; padding:20px; }
+    .login-card { width:min(410px,100%); background:rgba(51,45,41,.94); border:1px solid var(--line-strong); box-shadow:var(--shadow); border-radius:28px; padding:26px; }
+    html[data-theme="light"] .login-card { background:rgba(255,250,245,.94); }
+    .brand { display:flex; align-items:center; gap:11px; margin-bottom:17px; min-width:0; }
+    .brand-mark { width:46px; height:46px; border-radius:16px; display:grid; place-items:center; color:#fff; background:linear-gradient(135deg,var(--accent),#916848); font-family:var(--font-heading); font-size:24px; font-weight:900; box-shadow:0 12px 28px rgba(176,137,104,.22); flex:0 0 auto; }
+    .brand h1 { color:var(--text); font-family:var(--font-heading); font-size:31px; line-height:1; letter-spacing:-.02em; }
+    .brand p { color:var(--muted); font-size:12px; margin-top:3px; }
+    .feedback { border-radius:15px; padding:11px 12px; margin-top:11px; font-size:12px; line-height:1.45; border:1px solid var(--line-strong); background:var(--accent-soft); color:var(--text-2); }
+    .feedback.error { background:rgba(239,91,91,.13); border-color:rgba(239,91,91,.30); color:#ffb7b7; }
+    html[data-theme="light"] .feedback.error { color:#8f1e1e; }
+
+    .app { display:none; min-height:100vh; }
+    .app.active { display:block; }
+    .sidebar { position:fixed; inset:0 auto 0 0; width:var(--sidebar); background:rgba(51,45,41,.96); border-right:1px solid var(--line); z-index:1000; padding:16px 12px; transform:translateX(-104%); transition:transform .24s ease; overflow-y:auto; box-shadow:8px 0 32px rgba(0,0,0,.25); }
+    .sidebar.open { transform:translateX(0); }
+    html[data-theme="light"] .sidebar { background:rgba(255,250,245,.95); }
+    .sidebar .brand { padding:4px 8px 14px; border-bottom:1px solid var(--line); margin-bottom:12px; }
+    .sidebar .brand-mark { width:42px; height:42px; border-radius:14px; font-size:22px; }
+    .nav { display:grid; gap:5px; }
+    .nav-item { width:100%; min-height:42px; border:0; border-radius:14px; background:transparent; color:var(--text-2); display:flex; align-items:center; gap:10px; padding:0 11px; font-weight:900; font-size:13px; text-align:left; transition:background .18s ease,color .18s ease; }
+    .nav-item:hover { background:var(--accent-soft); color:var(--text); }
+    .nav-item.active { background:linear-gradient(135deg,var(--accent),#916848); color:#fff; }
+    .nav-item .feather { width:18px; height:18px; flex:0 0 auto; }
+    .sidebar-footer { margin-top:14px; padding-top:12px; border-top:1px solid var(--line); display:grid; gap:7px; }
+    .overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); opacity:0; visibility:hidden; z-index:900; transition:.22s ease; }
+    .overlay.active { opacity:1; visibility:visible; }
+
+    .topbar { position:fixed; top:0; left:0; right:0; min-height:calc(var(--topbar) + var(--safe-top)); padding:var(--safe-top) 14px 0; display:flex; align-items:center; justify-content:space-between; gap:12px; background:rgba(51,45,41,.88); border-bottom:1px solid var(--line); backdrop-filter:blur(16px); z-index:800; }
+    html[data-theme="light"] .topbar { background:rgba(255,250,245,.90); }
+    .topbar-left { display:flex; align-items:center; gap:10px; min-width:0; }
+    .topbar-title { min-width:0; }
+    .topbar-title strong { display:block; color:var(--text); font-family:var(--font-heading); font-size:22px; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .topbar-title span { color:var(--muted); font-size:11px; display:block; margin-top:3px; white-space:nowrap; max-width:58vw; overflow:hidden; text-overflow:ellipsis; }
+    .topbar-actions { display:flex; align-items:center; gap:7px; flex-shrink:0; }
+    .sync-pill { min-height:34px; display:inline-flex; align-items:center; gap:7px; border:1px solid var(--line); border-radius:999px; padding:0 10px; color:var(--muted); font-weight:900; font-size:11px; background:rgba(33,28,25,.42); white-space:nowrap; }
+    .sync-dot { width:8px; height:8px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px rgba(242,168,74,.12); }
+    .sync-dot.ok { background:var(--green); box-shadow:0 0 0 4px rgba(24,183,131,.12); }
+
+    .main { width:100%; padding:calc(var(--topbar) + var(--safe-top) + 16px) 14px calc(24px + var(--safe-bottom)); min-width:0; max-width:100%; overflow-x:clip; }
+    .content { max-width:1360px; margin:0 auto; }
+    .mobile-tabs { display:none; position:sticky; top:calc(var(--topbar) + var(--safe-top)); z-index:90; margin:-6px -14px 12px; padding:8px 14px; background:rgba(36,31,28,.92); border-bottom:1px solid var(--line); backdrop-filter:blur(12px); overflow-x:auto; gap:7px; scrollbar-width:none; }
+    .mobile-tabs::-webkit-scrollbar { display:none; }
+    html[data-theme="light"] .mobile-tabs { background:rgba(245,238,231,.94); }
+    .mobile-tab { flex:0 0 auto; min-height:34px; border:1px solid var(--line); border-radius:999px; background:rgba(51,45,41,.86); color:var(--text-2); padding:0 11px; font-size:12px; font-weight:900; display:inline-flex; align-items:center; gap:6px; }
+    .mobile-tab.active { color:#fff; background:linear-gradient(135deg,var(--accent),#916848); }
+    .mobile-tab .feather { width:14px; height:14px; }
+
     .section { display:none; }
-    .section.active { display:block; animation: fadeIn .25s ease both; }
-    @keyframes fadeIn { from{ opacity:0; transform: translateY(6px);} to{ opacity:1; transform:translateY(0);} }
-    .filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom: 14px; }
-    .filters input, .filters select { min-width: 160px; border:1px solid var(--line-strong); border-radius:999px; background:var(--surface-3); color:var(--text); padding:10px 13px; outline:none; }
-    .table-wrap { overflow:auto; border-radius: var(--radius-lg); border:1px solid var(--line); background: var(--surface); }
-    table { width:100%; border-collapse: collapse; min-width: 920px; }
-    th, td { padding: 13px 14px; border-bottom:1px solid var(--line); text-align:left; vertical-align: middle; font-size:.88rem; }
-    th { color:var(--muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; font-weight:900; background: color-mix(in srgb, var(--surface-2) 72%, transparent); }
-    td strong { color: var(--text); }
-    .badge { display:inline-flex; align-items:center; gap:6px; padding:6px 9px; border-radius:999px; font-weight:900; font-size:.72rem; border:1px solid var(--line-strong); background:var(--surface-2); color:var(--text-2); white-space:nowrap; }
-    .badge.green { background: rgba(24,183,131,.14); color:#72e2bd; border-color: rgba(24,183,131,.28); }
-    .badge.orange { background: rgba(242,168,74,.14); color:#ffc679; border-color: rgba(242,168,74,.28); }
-    .badge.blue { background: rgba(106,165,255,.14); color:#aad0ff; border-color: rgba(106,165,255,.28); }
-    body.light .badge.green { color:#0a8059; } body.light .badge.orange { color:#8d5104; } body.light .badge.blue { color:#1e5ba8; }
-    .split-form { display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
-    .span-2 { grid-column: 1 / -1; }
-    .activity { display:grid; gap:10px; }
-    .activity-item { display:flex; gap:11px; align-items:flex-start; padding:12px; border:1px solid var(--line); border-radius:16px; background:var(--surface-3); }
-    .activity-item i { color: var(--accent-2); width:18px; flex:0 0 auto; margin-top:1px; }
-    .activity-item b { color:var(--text); display:block; font-size:.88rem; }
-    .activity-item small { color:var(--muted); display:block; margin-top:3px; }
-    .modal { position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:18px; background: rgba(0,0,0,.52); backdrop-filter: blur(8px); }
+    .section.active { display:block; animation:fadeUp .22s ease both; }
+    @keyframes fadeUp { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+    .section-title { display:flex; align-items:flex-end; justify-content:space-between; gap:14px; margin-bottom:12px; }
+    .section-title h1 { color:var(--text); font-family:var(--font-heading); font-size:clamp(27px,4vw,38px); line-height:.98; letter-spacing:-.02em; }
+    .section-title p { color:var(--muted); font-size:12px; margin-top:5px; }
+
+    .metrics-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-bottom:10px; }
+    .metric-card { min-height:75px; border:1px solid var(--line); border-radius:17px; background:rgba(51,45,41,.92); padding:10px 11px; overflow:hidden; }
+    html[data-theme="light"] .metric-card, html[data-theme="light"] .panel-card, html[data-theme="light"] .mobile-card { background:rgba(255,250,245,.92); box-shadow:var(--shadow); }
+    .metric-card span { display:block; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.08em; font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .metric-card strong { display:block; color:var(--text); font-family:var(--font-heading); font-size:29px; line-height:.95; margin-top:7px; }
+    .metric-card small { display:block; color:var(--accent-2); font-size:11px; margin-top:5px; font-weight:800; }
+
+    .dashboard-grid { display:grid; grid-template-columns:minmax(0,1fr) 390px; gap:10px; align-items:start; }
+    .grid-two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .panel-card { border:1px solid var(--line); border-radius:var(--radius-lg); background:rgba(51,45,41,.94); overflow:hidden; box-shadow:0 14px 36px rgba(0,0,0,.12); margin-bottom:10px; min-width:0; max-width:100%; }
+    .panel-head { min-height:48px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 13px; border-bottom:1px solid var(--line); background:rgba(58,51,47,.48); }
+    .panel-head h2 { color:var(--text); font-family:var(--font-heading); font-size:21px; line-height:1; display:inline-flex; align-items:center; gap:8px; }
+    .panel-head h2 .feather { color:var(--accent-2); width:18px; height:18px; }
+    .panel-body { padding:12px; min-width:0; }
+
+    .activity-list { display:grid; gap:8px; max-height:268px; overflow:auto; padding-right:2px; }
+    .activity-item { display:grid; grid-template-columns:34px minmax(0,1fr); gap:9px; align-items:start; border:1px solid var(--line); border-radius:15px; background:rgba(33,28,25,.36); padding:9px; }
+    .activity-icon { width:34px; height:34px; border-radius:12px; display:grid; place-items:center; background:var(--accent-soft); color:var(--accent-2); }
+    .activity-icon .feather { width:17px; height:17px; }
+    .activity-item strong { display:block; color:var(--text); font-size:12px; line-height:1.25; }
+    .activity-item p { color:var(--muted); font-size:11px; margin-top:3px; line-height:1.35; }
+
+    .info-list { display:grid; gap:8px; }
+    .info-row { display:grid; grid-template-columns:126px minmax(0,1fr); gap:10px; align-items:start; border:1px solid var(--line); border-radius:14px; background:rgba(33,28,25,.30); padding:9px 10px; }
+    .info-row span { color:var(--muted); font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; }
+    .info-row strong { color:var(--text-2); font-size:12px; font-weight:700; overflow-wrap:anywhere; }
+
+    .toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .toolbar-left,.toolbar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .search-input { width:min(360px,100%); min-height:40px; font-size:13px; }
+    .table-wrap { width:100%; max-width:100%; overflow:auto; border-radius:16px; border:1px solid var(--line); background:rgba(33,28,25,.18); }
+    table { width:100%; border-collapse:collapse; min-width:900px; }
+    th { position:sticky; top:0; z-index:1; background:#302a26; color:var(--muted); text-align:left; padding:10px 11px; font-size:10px; text-transform:uppercase; letter-spacing:.08em; font-weight:900; border-bottom:1px solid var(--line); white-space:nowrap; }
+    html[data-theme="light"] th { background:rgba(242,231,220,.88); }
+    td { padding:10px 11px; color:var(--text-2); font-size:12px; border-bottom:1px solid rgba(224,203,184,.08); vertical-align:top; }
+    tr:hover td { background:rgba(176,137,104,.06); }
+    td strong { color:var(--text); font-size:13px; }
+    td small { color:var(--muted); overflow-wrap:anywhere; }
+    .table-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .badge { display:inline-flex; align-items:center; gap:5px; min-height:25px; padding:0 9px; border-radius:999px; font-size:10px; font-weight:900; letter-spacing:.04em; background:var(--accent-soft); color:var(--accent-2); white-space:nowrap; border:1px solid var(--line); }
+    .badge.ok { background:rgba(24,183,131,.12); color:var(--green); }
+    .badge.warn { background:rgba(242,168,74,.12); color:var(--orange); }
+    .badge.red { background:rgba(239,91,91,.12); color:var(--red); }
+    .badge.blue { background:rgba(106,165,255,.12); color:var(--blue); }
+    .mobile-list { display:none; gap:8px; }
+    .mobile-card { border:1px solid var(--line); border-radius:16px; background:rgba(33,28,25,.34); padding:10px; }
+    .mobile-card strong { display:block; color:var(--text); font-size:13px; margin-bottom:3px; }
+    .mobile-card span { display:block; color:var(--muted); font-size:12px; line-height:1.4; }
+    .mobile-card .table-actions { margin-top:9px; }
+
+    .form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .span-2 { grid-column:1/-1; }
+    .action-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
+    .action-card { border:1px solid var(--line); border-radius:16px; background:rgba(33,28,25,.32); padding:11px; display:grid; gap:8px; align-content:start; }
+    .action-card strong { color:var(--text); font-size:13px; }
+    .action-card p { color:var(--muted); font-size:11px; line-height:1.4; }
+    .dropzone { border:1px dashed var(--line-strong); border-radius:18px; background:rgba(33,28,25,.32); padding:14px; display:grid; gap:10px; text-align:center; }
+    .dropzone input { display:none; }
+    .dropzone strong { color:var(--text); }
+    .dropzone p { color:var(--muted); font-size:12px; }
+    .preview-box { border:1px solid var(--line); border-radius:15px; background:rgba(33,28,25,.30); padding:10px; color:var(--muted); font-size:12px; line-height:1.5; max-height:120px; overflow:auto; }
+
+    .modal { position:fixed; inset:0; z-index:2000; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.62); backdrop-filter:blur(8px); }
     .modal.open { display:flex; }
-    .modal-card { width:min(820px,100%); max-height: 88vh; overflow:auto; border:1px solid var(--line-strong); background:var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow); }
-    .modal-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 16px 18px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--surface); z-index:2; }
-    .modal-head h3 { color:var(--text); font-family:var(--font-heading); font-size:1.55rem; }
-    .mobile-menu { display:none; }
-    @media (max-width: 980px) {
-      .app { grid-template-columns: 1fr; }
-      .sidebar { position: fixed; left:0; top:0; bottom:0; z-index:80; width: min(290px, 86vw); transform: translateX(-105%); transition:.25s ease; }
-      .sidebar.open { transform: translateX(0); }
-      .mobile-menu { display:inline-flex; }
-      .grid.cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
-      .grid.two, .split-form { grid-template-columns: 1fr; }
-      .span-2 { grid-column:auto; }
-      .page-title { align-items:flex-start; flex-direction:column; }
-    }
-    @media (max-width: 560px) {
-      .content { padding: 16px; }
-      .topbar { padding: 10px 14px; }
-      .grid.cards { grid-template-columns: 1fr; }
-      .brand h1, .page-title h1 { font-size:1.65rem; }
-    }
+    .modal-card { width:min(760px,100%); max-height:88dvh; overflow:auto; border:1px solid var(--line-strong); background:var(--surface); border-radius:22px; box-shadow:var(--shadow); }
+    .modal-head { min-height:54px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--surface); z-index:2; }
+    .modal-head h3 { color:var(--text); font-family:var(--font-heading); font-size:25px; line-height:1; }
+    .modal-body { padding:14px; }
+
+    .skeleton-line,.skeleton-card,.skeleton-cell { position:relative; overflow:hidden; background:rgba(224,203,184,.10); border-radius:10px; color:transparent !important; }
+    .skeleton-line::after,.skeleton-card::after,.skeleton-cell::after { content:""; position:absolute; inset:0; transform:translateX(-100%); background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent); animation:skeletonMove 1.1s infinite; }
+    @keyframes skeletonMove { to { transform:translateX(100%); } }
+    .skeleton-card { min-height:75px; border:1px solid var(--line); }
+    .skeleton-line { min-height:14px; }
+    .skeleton-cell { display:block; width:100%; height:14px; }
+
+    ::-webkit-scrollbar { width:8px; height:8px; }
+    ::-webkit-scrollbar-track { background:rgba(33,28,25,.6); }
+    ::-webkit-scrollbar-thumb { background:rgba(176,137,104,.58); border-radius:999px; }
+
+    @media (min-width:1050px) { .sidebar{transform:none;box-shadow:none;} .topbar{left:var(--sidebar);} .main{margin-left:var(--sidebar); width:calc(100% - var(--sidebar)); max-width:calc(100% - var(--sidebar)); padding-left:18px; padding-right:18px;} .menu-trigger{display:none;} .overlay{display:none;} }
+    @media (max-width:1180px) { .metrics-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .dashboard-grid{grid-template-columns:1fr;} .action-grid{grid-template-columns:1fr 1fr;} }
+    @media (max-width:760px) { .main{padding-left:12px;padding-right:12px;} .mobile-tabs{display:flex;margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px;} .sync-pill{display:none;} .section-title{align-items:flex-start;flex-direction:column;gap:8px;} .metrics-grid{grid-template-columns:1fr 1fr;gap:7px;} .metric-card{min-height:69px;padding:9px;border-radius:15px;} .metric-card strong{font-size:26px;} .panel-head{min-height:46px;padding:10px 11px;} .panel-body{padding:10px;} .desktop-table{display:none;} .mobile-list{display:grid;} .toolbar{align-items:stretch;} .toolbar-left,.toolbar-right,.search-input{width:100%;} .toolbar-right .btn{flex:1;} .info-row{grid-template-columns:1fr;gap:3px;} .form-grid{grid-template-columns:1fr;} .span-2{grid-column:auto;} .action-grid{grid-template-columns:1fr;} .topbar-title span{max-width:180px;} }
+    @media (max-width:420px) { .topbar{padding-left:10px;padding-right:10px;} .btn.icon-only{width:37px;} .metrics-grid{grid-template-columns:1fr 1fr;} .login-card{padding:23px 19px;border-radius:24px;} }
   </style>
-  <script src="adminmanager.config.js"></script>
 </head>
 <body>
   <section class="login-screen" id="loginScreen">
     <form class="login-card" id="loginForm">
-      <div class="brand">
-        <div class="brand-mark">L</div>
-        <div>
-          <h1>AdminManager</h1>
-          <p>Centro de gestão e conexão de convites Lirandzo.</p>
-        </div>
-      </div>
-      <div class="field">
-        <label>URL da API Render</label>
-        <input id="apiBaseInput" placeholder="https://seu-backend.onrender.com" autocomplete="off">
-        <p class="hint">Este HTML pode ficar em <b>lirandzo.com/convite/adminmanager.html</b>, mas a gestão usa a API publicada no Render.</p>
-      </div>
-      <div class="field">
-        <label>Senha do gestor</label>
-        <input id="passwordInput" type="password" placeholder="Senha do AdminManager" autocomplete="current-password">
-      </div>
-      <button class="btn btn-primary full" type="submit"><i data-feather="lock"></i> Entrar no centro de gestão</button>
-      <div id="loginError" class="error hidden"></div>
+      <div class="brand"><div class="brand-mark">L</div><div><h1>AdminManager</h1><p>Centro de gestão de convites Lirandzo.</p></div></div>
+      <div class="field"><label for="passwordInput">Senha do gestor</label><input id="passwordInput" type="password" placeholder="Senha do AdminManager" autocomplete="current-password" required autofocus></div>
+      <button id="loginSubmitBtn" class="btn primary full" type="submit"><span class="btn-loader" aria-hidden="true"></span><i class="login-icon" data-feather="lock"></i><span class="login-btn-text">Entrar no centro de gestão</span></button>
+      <div id="loginError" class="feedback error hidden" role="alert"></div>
     </form>
   </section>
 
-  <div class="app hidden" id="app">
+  <div class="app" id="app">
+    <div id="overlay" class="overlay"></div>
     <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-mark">L</div>
-        <div>
-          <h1>AdminManager</h1>
-          <p>Convites · MongoDB · Render · GitHub</p>
-        </div>
-      </div>
-      <nav class="nav">
-        <button class="nav-btn active" data-section="dashboard"><i data-feather="layout"></i> Dashboard</button>
-        <button class="nav-btn" data-section="invites"><i data-feather="folder"></i> Convites</button>
-        <button class="nav-btn" data-section="newInvite"><i data-feather="plus-circle"></i> Novo cliente</button>
-        <button class="nav-btn" data-section="github"><i data-feather="git-branch"></i> GitHub</button>
-        <button class="nav-btn" data-section="guests"><i data-feather="users"></i> Convidados</button>
-      </nav>
-      <div class="side-footer">
-        <button class="btn" id="themeBtn" type="button"><i data-feather="moon"></i> Mudar tema</button>
-        <button class="btn btn-danger" id="logoutBtn" type="button"><i data-feather="log-out"></i> Sair</button>
+      <div class="brand"><div class="brand-mark">L</div><div><h1>Admin</h1><p>MongoDB · Render · GitHub</p></div></div>
+      <nav id="sideNav" class="nav"></nav>
+      <div class="sidebar-footer">
+        <button class="btn ghost" id="themeBtn" type="button"><i data-feather="sun"></i> Tema claro</button>
+        <button class="btn danger" id="logoutBtn" type="button"><i data-feather="log-out"></i> Sair</button>
       </div>
     </aside>
 
-    <main class="main">
-      <header class="topbar">
-        <button class="btn mobile-menu" id="menuBtn" type="button"><i data-feather="menu"></i></button>
-        <div><strong id="currentTitle">Dashboard</strong><br><small id="connectionLabel">API não ligada</small></div>
-        <div class="top-actions">
-          <button class="btn" id="refreshBtn" type="button"><i data-feather="refresh-cw"></i> Actualizar</button>
-          <a class="btn" href="/" target="_blank"><i data-feather="external-link"></i> Site principal</a>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="menuBtn" class="btn icon-only menu-trigger" type="button" aria-label="Abrir menu"><i data-feather="menu"></i></button>
+        <div class="topbar-title"><strong id="topbarTitle">Dashboard</strong><span id="connectionLabel">API não ligada</span></div>
+      </div>
+      <div class="topbar-actions">
+        <div class="sync-pill"><span id="syncDot" class="sync-dot"></span><span id="syncText">Offline</span></div>
+        <button class="btn icon-only" id="refreshBtn" type="button" aria-label="Actualizar"><i data-feather="refresh-cw"></i></button>
+        <a class="btn icon-only" href="/" target="_blank" aria-label="Site principal"><i data-feather="external-link"></i></a>
+      </div>
+    </header>
+
+    <main class="main"><div class="content"><div id="mobileTabs" class="mobile-tabs"></div>
+      <section class="section active" id="dashboardPanel">
+        <div class="section-title"><div><h1>Visão geral</h1><p>Resumo operacional dos convites Lirandzo conectados ao MongoDB e Render.</p></div><span class="badge blue">Multi-cliente</span></div>
+        <div class="metrics-grid" id="metricsGrid"></div>
+        <div class="dashboard-grid">
+          <div>
+            <section class="panel-card"><div class="panel-head"><h2><i data-feather="activity"></i> Actividade recente</h2><span id="activityBadge" class="badge blue">0 registos</span></div><div class="panel-body"><div id="activityList" class="activity-list"></div></div></section>
+          </div>
+          <aside>
+            <section class="panel-card"><div class="panel-head"><h2><i data-feather="shield"></i> Estado técnico</h2></div><div class="panel-body"><div id="systemInfo" class="info-list"></div></div></section>
+            <section class="panel-card"><div class="panel-head"><h2><i data-feather="info"></i> Regra central</h2></div><div class="panel-body"><div class="feedback">Todos os convites usam o mesmo Render e o mesmo MongoDB. A separação é feita por <b>slug</b> e <b>inviteId</b>.</div></div></section>
+          </aside>
         </div>
-      </header>
+      </section>
 
-      <div class="content">
-        <section class="section active" id="dashboard">
-          <div class="page-title">
-            <div>
-              <h1>Visão geral</h1>
-              <p>Controlo centralizado dos convites Lirandzo já existentes e novos clientes.</p>
-            </div>
-          </div>
-          <div class="grid cards" id="metricsGrid">
-            <article class="card card-pad metric"><div class="icon"><i data-feather="folder"></i></div><small>Total de convites</small><b id="mTotal">0</b></article>
-            <article class="card card-pad metric"><div class="icon"><i data-feather="check-circle"></i></div><small>Publicados</small><b id="mPublished">0</b></article>
-            <article class="card card-pad metric"><div class="icon"><i data-feather="users"></i></div><small>Convidados</small><b id="mGuests">0</b></article>
-            <article class="card card-pad metric"><div class="icon"><i data-feather="heart"></i></div><small>RSVP</small><b id="mRsvps">0</b></article>
-          </div>
-          <div class="grid two" style="margin-top:14px;">
-            <article class="card card-pad">
-              <h2 style="color:var(--text);font-family:var(--font-heading);margin-bottom:12px;">Actividade recente</h2>
-              <div class="activity" id="activityList"></div>
-            </article>
-            <article class="card card-pad">
-              <h2 style="color:var(--text);font-family:var(--font-heading);margin-bottom:12px;">Regras técnicas deste sistema</h2>
-              <div class="notice">
-                Cada convite precisa de um <b>slug único</b>, por exemplo <b>maria-joao</b>. Todas as chamadas públicas da API devem enviar esse slug, porque o mesmo MongoDB e o mesmo Render vão sustentar vários clientes.
-              </div>
-            </article>
-          </div>
-        </section>
+      <section class="section" id="invitesPanel">
+        <div class="section-title"><div><h1>Convites</h1><p>Clientes criados ou conectados ao centro de gestão.</p></div><button class="btn primary" data-goto="newInvite"><i data-feather="plus"></i> Novo cliente</button></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="folder"></i> Lista de convites</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="searchInput" class="search-input" placeholder="Pesquisar casal, cliente ou slug"><select id="statusFilter" class="search-input"><option value="all">Todos estados</option><option value="draft">Rascunho</option><option value="published">Publicado</option><option value="archived">Arquivado</option></select><select id="packageFilter" class="search-input"><option value="all">Todos pacotes</option><option value="perola">Pérola</option><option value="esmeralda">Esmeralda</option><option value="rubi">Rubi</option></select></div><div class="toolbar-right"><button class="btn" id="filterBtn" type="button"><i data-feather="search"></i> Filtrar</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Cliente</th><th>Pacote</th><th>Estado</th><th>Slug / URL</th><th>Convidados</th><th>RSVP</th><th>Acções</th></tr></thead><tbody id="invitesTbody"></tbody></table></div><div id="invitesMobile" class="mobile-list"></div></div></section>
+      </section>
 
-        <section class="section" id="invites">
-          <div class="page-title">
-            <div><h1>Convites</h1><p>Lista de clientes criados ou conectados ao centro Lirandzo.</p></div>
-            <button class="btn btn-primary" data-goto="newInvite"><i data-feather="plus"></i> Novo cliente</button>
-          </div>
-          <div class="filters">
-            <input id="searchInput" placeholder="Pesquisar por casal, cliente ou slug">
-            <select id="statusFilter"><option value="all">Todos estados</option><option value="draft">Rascunho</option><option value="published">Publicado</option></select>
-            <select id="packageFilter"><option value="all">Todos pacotes</option><option value="perola">Pérola</option><option value="esmeralda">Esmeralda</option><option value="rubi">Rubi</option></select>
-            <button class="btn" id="filterBtn"><i data-feather="search"></i> Filtrar</button>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Cliente</th><th>Pacote</th><th>Estado</th><th>Slug / URL</th><th>Convidados</th><th>RSVP</th><th>Acções</th></tr></thead>
-              <tbody id="invitesTbody"></tbody>
-            </table>
-          </div>
-        </section>
+      <section class="section" id="newInvitePanel">
+        <div class="section-title"><div><h1>Novo cliente</h1><p>Cria um convite novo a partir de um pacote existente no GitHub.</p></div></div>
+        <form class="panel-card" id="newInviteForm"><div class="panel-head"><h2><i data-feather="plus-circle"></i> Dados do convite</h2></div><div class="panel-body form-grid"><div class="field"><label>Nome do cliente / referência interna</label><input name="clientName" placeholder="Maria João" required></div><div class="field"><label>Nomes do casal</label><input name="coupleNames" placeholder="Maria & João" required></div><div class="field"><label>Noiva</label><input name="bride" placeholder="Maria"></div><div class="field"><label>Noivo</label><input name="groom" placeholder="João"></div><div class="field"><label>Pacote</label><select name="packageKey" required><option value="perola">Pérola</option><option value="esmeralda">Esmeralda</option><option value="rubi">Rubi</option></select></div><div class="field"><label>Slug / pasta</label><input name="slug" placeholder="maria-joao"><p class="hint">Será usado em /convite/<b>slug</b>/</p></div><div class="field"><label>Data do evento</label><input name="eventDateISO" type="datetime-local"></div><div class="field"><label>Prazo RSVP</label><input name="rsvpDeadline" placeholder="20 de Junho de 2026"></div><div class="field span-2"><label>Opções de criação</label><div style="display:flex;gap:9px;flex-wrap:wrap"><label class="badge"><input type="checkbox" name="createAsPublished"> Criar como publicado</label><label class="badge"><input type="checkbox" name="copyToGithub" checked> Copiar template para GitHub</label></div></div><div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="reset">Limpar</button><button class="btn primary" type="submit"><i data-feather="plus-circle"></i> Criar convite</button></div><div id="createResult" class="feedback hidden span-2"></div></div></form>
+      </section>
 
-        <section class="section" id="newInvite">
-          <div class="page-title"><div><h1>Novo cliente</h1><p>Cria um convite novo a partir de um pacote existente no GitHub.</p></div></div>
-          <form class="card card-pad split-form" id="newInviteForm">
-            <div class="field"><label>Nome do cliente / referência interna</label><input name="clientName" placeholder="Maria João" required></div>
-            <div class="field"><label>Nomes do casal</label><input name="coupleNames" placeholder="Maria & João" required></div>
-            <div class="field"><label>Noiva</label><input name="bride" placeholder="Maria"></div>
-            <div class="field"><label>Noivo</label><input name="groom" placeholder="João"></div>
-            <div class="field"><label>Pacote</label><select name="packageKey" required><option value="perola">Pérola</option><option value="esmeralda">Esmeralda</option><option value="rubi">Rubi</option></select></div>
-            <div class="field"><label>Slug / pasta no GitHub</label><input name="slug" placeholder="maria-joao"><p class="hint">Será usado em /convite/<b>maria-joao</b>/</p></div>
-            <div class="field"><label>Data do evento</label><input name="eventDateISO" type="datetime-local"></div>
-            <div class="field"><label>Prazo RSVP</label><input name="rsvpDeadline" placeholder="20 de Junho de 2026"></div>
-            <div class="field span-2">
-              <label>Opções de criação</label>
-              <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-                <label class="badge"><input type="checkbox" name="createAsPublished"> Criar como publicado</label>
-                <label class="badge"><input type="checkbox" name="copyToGithub" checked> Copiar template para o GitHub</label>
-              </div>
-            </div>
-            <div class="span-2" style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;">
-              <button class="btn" type="reset">Limpar</button>
-              <button class="btn btn-primary" type="submit"><i data-feather="plus-circle"></i> Criar convite</button>
-            </div>
-            <div id="createResult" class="notice hidden span-2"></div>
-          </form>
-        </section>
+      <section class="section" id="managePanel">
+        <div class="section-title"><div><h1>Gestão por convite</h1><p>Reset de acesso, limpeza de presentes e eliminação controlada por cliente.</p></div></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="settings"></i> Seleccionar convite</h2><button class="btn small" id="loadManageBtn" type="button"><i data-feather="refresh-cw"></i> Carregar</button></div><div class="panel-body"><div class="field"><label>Convite</label><select id="manageInviteSelect"></select></div><div id="manageStats" class="metrics-grid"></div><div class="action-grid">
+          <article class="action-card"><strong>Reset de acesso</strong><p>Limpa o deviceToken dos convidados deste convite. Quem abriu noutro dispositivo poderá abrir novamente.</p><button class="btn primary" id="resetAccessBtn" type="button"><i data-feather="unlock"></i> Resetar acessos</button></article>
+          <article class="action-card"><strong>Reset de presentes</strong><p>Remove reservas dos presentes, mas mantém a lista de presentes registada.</p><button class="btn" id="resetGiftsBtn" type="button"><i data-feather="rotate-ccw"></i> Resetar reservas</button></article>
+          <article class="action-card"><strong>Limpar presentes</strong><p>Elimina todos os presentes deste convite no MongoDB. Pode restaurar os presentes padrão depois.</p><button class="btn danger" id="clearGiftsBtn" type="button"><i data-feather="trash-2"></i> Limpar presentes</button></article>
+          <article class="action-card"><strong>Restaurar presentes padrão</strong><p>Recria a lista padrão de presentes para este convite.</p><button class="btn" id="seedGiftsBtn" type="button"><i data-feather="gift"></i> Restaurar padrão</button></article>
+          <article class="action-card"><strong>Arquivar convite</strong><p>Oculta o convite do painel sem apagar dados do MongoDB.</p><button class="btn" id="archiveBtn" type="button"><i data-feather="archive"></i> Arquivar</button></article>
+          <article class="action-card"><strong>Eliminar definitivamente</strong><p>Apaga convite e dados relacionados do MongoDB. Não apaga a pasta no GitHub.</p><button class="btn danger" id="purgeInviteBtn" type="button"><i data-feather="x-circle"></i> Eliminar convite</button></article>
+        </div><div id="manageResult" class="feedback hidden"></div></div></section>
+      </section>
 
-        <section class="section" id="github">
-          <div class="page-title"><div><h1>Ligação GitHub</h1><p>Estado da conexão usada para criar pastas dos clientes a partir dos pacotes.</p></div></div>
-          <article class="card card-pad">
-            <div id="githubStatus" class="notice">A carregar estado do GitHub...</div>
-          </article>
-        </section>
+      <section class="section" id="guestsPanel">
+        <div class="section-title"><div><h1>Importar convidados</h1><p>Importação uniforme por ficheiro ou escrita manual, ligada ao convite escolhido.</p></div></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><form id="guestForm"><div class="field"><label>Convite</label><select id="guestInviteSelect" required></select></div><div class="grid-two"><label class="dropzone" for="guestFile"><i data-feather="upload-cloud"></i><strong>Importar ficheiro</strong><p>CSV, TXT ou TSV. O conteúdo será colocado no campo para conferência antes de enviar.</p><input id="guestFile" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain"></label><div class="preview-box" id="guestPreview">Formato recomendado:<br><b>Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo</b><br><br>Exemplo:<br>Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel</div></div><div class="field"><label>Lista de convidados</label><textarea id="guestBulkText" placeholder="Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo&#10;Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel"></textarea><p class="hint">Também aceita ficheiros com cabeçalho: nome, mesa, acompanhantes, telefone, notas, categoria, número, token antigo.</p></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="sampleGuestsBtn"><i data-feather="file-text"></i> Inserir exemplo</button><button class="btn primary" type="submit"><i data-feather="upload-cloud"></i> Importar / actualizar convidados</button></div><div id="guestResult" class="feedback hidden"></div></form></div></section>
+      </section>
 
-        <section class="section" id="guests">
-          <div class="page-title"><div><h1>Importar convidados</h1><p>Adiciona convidados a um convite já criado.</p></div></div>
-          <form class="card card-pad" id="guestForm">
-            <div class="field">
-              <label>Convite</label>
-              <select id="guestInviteSelect" required></select>
-            </div>
-            <div class="field">
-              <label>Lista de convidados</label>
-              <textarea id="guestBulkText" placeholder="Nome do Convidado;Mesa;Acompanhantes;Telefone&#10;Ana Manuel;Mesa 3;1;+25884...&#10;Carlos Simango;Mesa 6;0;"></textarea>
-              <p class="hint">Formato: <b>Nome;Mesa;Acompanhantes;Telefone</b>. Uma linha por convidado.</p>
-            </div>
-            <button class="btn btn-primary" type="submit"><i data-feather="upload-cloud"></i> Importar / actualizar convidados</button>
-            <div id="guestResult" class="notice hidden"></div>
-          </form>
-        </section>
-      </div>
-    </main>
+      <section class="section" id="githubPanel">
+        <div class="section-title"><div><h1>Ligação GitHub</h1><p>Estado da conexão usada para criar pastas dos clientes a partir dos templates.</p></div></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="git-branch"></i> Configuração</h2><button class="btn small" id="reloadGithubBtn" type="button"><i data-feather="refresh-cw"></i> Actualizar</button></div><div class="panel-body"><div id="githubStatus" class="feedback">A carregar estado do GitHub...</div></div></section>
+      </section>
+    </div></main>
   </div>
 
-  <div class="modal" id="inviteModal">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3 id="modalTitle">Detalhes</h3>
-        <button class="btn" id="closeModal" type="button"><i data-feather="x"></i></button>
-      </div>
-      <div class="card-pad" id="modalBody"></div>
-    </div>
-  </div>
+  <div class="modal" id="detailsModal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Detalhes</h3><button class="btn icon-only" id="closeModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body" id="modalBody"></div></div></div>
 
   <script>
+    const panels = [
+      { id:'dashboard', label:'Dashboard', icon:'layout' }, { id:'invites', label:'Convites', icon:'folder' }, { id:'newInvite', label:'Novo cliente', icon:'plus-circle' }, { id:'manage', label:'Gestão', icon:'settings' }, { id:'guests', label:'Convidados', icon:'users' }, { id:'github', label:'GitHub', icon:'git-branch' }
+    ];
     const DEFAULT_API = window.LIRANDZO_MANAGER_API_BASE || localStorage.getItem('lirandzo_manager_api') || 'https://SEU-BACKEND-RENDER.onrender.com';
     let API_BASE = DEFAULT_API.replace(/\/+$/, '');
     let token = sessionStorage.getItem('lirandzo_manager_token') || '';
     let invites = [];
-
+    let selectedInviteDetails = null;
     const $ = id => document.getElementById(id);
     const esc = v => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-    const fmtDate = value => value ? new Date(value).toLocaleString('pt-PT', { dateStyle:'short', timeStyle:'short' }) : '-';
-
-    function iconRefresh(){ if (window.feather) feather.replace(); }
-    function show(el, msg, type='notice') { el.className = `${type}`; el.textContent = msg; el.classList.remove('hidden'); }
-    function hide(el){ el.classList.add('hidden'); }
+    const fmtDate = value => { if(!value) return '-'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString('pt-PT',{dateStyle:'short',timeStyle:'short'}); };
+    const iconRefresh = () => window.feather && feather.replace();
+    const showMsg = (el, msg, error=false) => { el.className = 'feedback' + (error ? ' error' : ''); el.innerHTML = msg; el.classList.remove('hidden'); };
+    const hideMsg = el => el.classList.add('hidden');
 
     async function api(path, options = {}) {
-      const res = await fetch(`${API_BASE}${path}`, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          ...(options.headers || {})
-        }
-      });
+      const res = await fetch(`${API_BASE}${path}`, { ...options, headers:{ 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}), ...(options.headers || {}) } });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.message || `Erro ${res.status}`);
       return data;
     }
-
-    function setSection(id) {
-      document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === id));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.section === id));
-      const btn = document.querySelector(`.nav-btn[data-section="${id}"]`);
-      $('currentTitle').textContent = btn ? btn.textContent.trim() : 'AdminManager';
-      $('sidebar').classList.remove('open');
+    function setLoading(on) { document.body.classList.toggle('is-loading', !!on); }
+    function renderSkeletons() {
+      $('metricsGrid').innerHTML = Array.from({length:4}).map(()=>'<article class="metric-card"><span class="skeleton-line" style="width:70%"></span><strong class="skeleton-line" style="width:38%;height:28px;margin-top:9px"></strong><small class="skeleton-line" style="width:56%;height:12px;margin-top:8px"></small></article>').join('');
+      $('activityList').innerHTML = Array.from({length:5}).map(()=>'<article class="activity-item"><div class="skeleton-card" style="width:34px;min-height:34px"></div><div style="display:grid;gap:7px"><span class="skeleton-line" style="width:72%"></span><span class="skeleton-line" style="width:92%;height:12px"></span></div></article>').join('');
+      $('invitesTbody').innerHTML = Array.from({length:5}).map(()=>'<tr>'+Array.from({length:7}).map(()=>'<td><span class="skeleton-cell"></span></td>').join('')+'</tr>').join('');
+    }
+    function buildNav() {
+      $('sideNav').innerHTML = panels.map(p=>`<button class="nav-item ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
+      $('mobileTabs').innerHTML = panels.map(p=>`<button class="mobile-tab ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
+      document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.panel)));
+      iconRefresh();
+    }
+    function showPanel(id) {
+      document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active', s.id === `${id}Panel`));
+      document.querySelectorAll('[data-panel]').forEach(b=>b.classList.toggle('active', b.dataset.panel === id));
+      const p = panels.find(x=>x.id===id); $('topbarTitle').textContent = p ? p.label : 'AdminManager'; $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); iconRefresh();
+      if (id === 'manage') renderManageSelect();
+      if (id === 'guests') renderGuestSelect();
+    }
+    function loginView(){ $('loginScreen').classList.remove('hidden'); $('app').classList.remove('active'); iconRefresh(); }
+    function appView(){ $('loginScreen').classList.add('hidden'); $('app').classList.add('active'); $('connectionLabel').textContent = API_BASE; loadAll(); iconRefresh(); }
+    async function loadAll(){ renderSkeletons(); setLoading(true); try { await Promise.allSettled([loadSummary(), loadInvites(), loadGithubStatus()]); $('syncDot').classList.add('ok'); $('syncText').textContent = 'Online'; } finally { setLoading(false); iconRefresh(); } }
+    async function loadSummary(){ const out = await api('/manager/summary'); const d = out.data || {}; renderMetrics(d); renderActivity((d.activities || []).slice(0,5)); renderSystemInfo(d); }
+    function renderMetrics(d){ const items=[['Total de convites',d.totalInvites||0,'activos','folder'],['Publicados',d.published||0,'online','check-circle'],['Convidados',d.guests||0,'geral','users'],['RSVP',d.rsvps||0,'confirmados','heart']]; $('metricsGrid').innerHTML = items.map(([label,value,small,icon])=>`<article class="metric-card"><span>${esc(label)}</span><strong>${esc(value)}</strong><small><i data-feather="${icon}"></i> ${esc(small)}</small></article>`).join(''); }
+    function renderActivity(list){ $('activityBadge').textContent = `${list.length} registos`; $('activityList').innerHTML = list.length ? list.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.type==='warning'?'alert-triangle':a.type==='github'?'git-commit':a.type==='gift'?'gift':a.type==='guests'?'users':'activity'}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail||'')} · ${fmtDate(a.timestamp)}</p></div></article>`).join('') : '<div class="feedback">Ainda não há actividade registada.</div>'; }
+    function renderSystemInfo(d){ $('systemInfo').innerHTML = `<div class="info-row"><span>API</span><strong>${esc(API_BASE)}</strong></div><div class="info-row"><span>Convites</span><strong>${esc(d.totalInvites||0)} activos · ${esc(d.draft||0)} rascunho(s)</strong></div><div class="info-row"><span>Dados</span><strong>${esc(d.messages||0)} mensagens · ${esc(d.contributions||0)} contribuições</strong></div>`; }
+    async function loadInvites(){ const q=encodeURIComponent($('searchInput')?.value||''); const status=encodeURIComponent($('statusFilter')?.value||'all'); const packageKey=encodeURIComponent($('packageFilter')?.value||'all'); const out=await api(`/manager/invites?q=${q}&status=${status}&packageKey=${packageKey}`); invites=out.data||[]; renderInvites(); renderGuestSelect(); renderManageSelect(); }
+    function badgeStatus(s){ if(s==='published') return '<span class="badge ok">Publicado</span>'; if(s==='draft') return '<span class="badge warn">Rascunho</span>'; if(s==='archived') return '<span class="badge red">Arquivado</span>'; return `<span class="badge">${esc(s)}</span>`; }
+    function pkgLabel(p){ return p==='perola'?'Pérola':p==='esmeralda'?'Esmeralda':'Rubi'; }
+    function renderInvites(){ const rows = invites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td>${badgeStatus(inv.status)}</td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="syncGithub('${inv.id}')"><i data-feather="git-branch"></i></button><button class="btn small" onclick="copyUrl('${esc(inv.publicUrl||'')}')"><i data-feather="copy"></i></button><button class="btn small" onclick="selectManageInvite('${inv.id}')"><i data-feather="settings"></i></button></div></td></tr>`).join(''); $('invitesTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convite encontrado.</td></tr>'; $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')">Ver</button><button class="btn small" onclick="syncGithub('${inv.id}')">GitHub</button><button class="btn small" onclick="selectManageInvite('${inv.id}')">Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>'; iconRefresh(); }
+    function renderGuestSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('guestInviteSelect').innerHTML = html; }
+    function renderManageSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('manageInviteSelect').innerHTML = html; if(invites.length && !selectedInviteDetails) loadManageDetails(); }
+    async function loadGithubStatus(){ try { const out = await api('/manager/github/status'); const d=out.data||{}; $('githubStatus').innerHTML = d.configured ? `<b>GitHub configurado correctamente.</b><br><br>Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>Branch: <b>${esc(d.branch)}</b><br>Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br>Templates:<br>Pérola: <b>${esc(d.templates?.perola||'-')}</b><br>Esmeralda: <b>${esc(d.templates?.esmeralda||'-')}</b><br>Rubi: <b>${esc(d.templates?.rubi||'-')}</b>` : `<b>GitHub ainda não está configurado.</b><br><br>Configure no Render: <b>GITHUB_TOKEN</b>, <b>GITHUB_OWNER</b>, <b>GITHUB_REPO</b>, <b>GITHUB_BRANCH</b> e os caminhos dos templates.`; } catch(e){ $('githubStatus').textContent = e.message; } }
+    async function loadManageDetails(){ const id=$('manageInviteSelect').value; if(!id) return; const out=await api(`/manager/invites/${id}`); selectedInviteDetails=out.data; const d=out.data; $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small>registos</small></article>`; iconRefresh(); }
+    async function managerAction(path, method, confirmText, successMsg){ if(confirmText && !confirm(confirmText)) return; hideMsg($('manageResult')); try { const out=await api(path,{method,body:JSON.stringify({})}); showMsg($('manageResult'), out.message || successMsg || 'Operação concluída.'); await Promise.allSettled([loadManageDetails(),loadSummary(),loadInvites()]); } catch(e){ showMsg($('manageResult'), e.message, true); } }
+    function selectedManageId(){ return $('manageInviteSelect').value; }
+    function setLoginLoading(active){
+      const btn = $('loginSubmitBtn');
+      const label = btn?.querySelector('.login-btn-text');
+      if (!btn) return;
+      btn.disabled = !!active;
+      btn.classList.toggle('is-loading', !!active);
+      if (label) label.textContent = active ? 'A entrar...' : 'Entrar no centro de gestão';
       iconRefresh();
     }
 
-    function loginView() {
-      $('loginScreen').classList.remove('hidden');
-      $('app').classList.add('hidden');
-      $('apiBaseInput').value = API_BASE;
-      iconRefresh();
+    window.openInvite = async function(id){ const out=await api(`/manager/invites/${id}`); const d=out.data; $('modalTitle').textContent=d.invite.coupleNames; $('modalBody').innerHTML=`<div class="info-list"><div class="info-row"><span>Slug</span><strong>${esc(d.invite.slug)}</strong></div><div class="info-row"><span>URL</span><strong>${esc(d.invite.publicUrl)}</strong></div><div class="info-row"><span>GitHub</span><strong>${esc(d.invite.githubPath || '-')}</strong></div></div><div class="metrics-grid" style="margin-top:12px"><article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>MongoDB</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmados</small></article><article class="metric-card"><span>Mensagens</span><strong>${d.messages.length}</strong><small>mural</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article></div>`; $('detailsModal').classList.add('open'); iconRefresh(); };
+    window.copyUrl = async function(url){ if(!url) return; await navigator.clipboard.writeText(url); alert('URL copiada.'); };
+    window.syncGithub = async function(id){ if(!confirm('Criar/sincronizar a pasta deste convite no GitHub?')) return; try { const out=await api(`/manager/invites/${id}/github-sync`,{method:'POST',body:JSON.stringify({})}); alert(out.message || 'GitHub sincronizado com sucesso.'); await loadAll(); } catch(e){ alert('Erro GitHub: '+e.message); } };
+    window.selectManageInvite = function(id){ showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); };
+
+    function bindEvents(){
+      $('loginForm').addEventListener('submit', async e=>{ e.preventDefault(); hideMsg($('loginError')); API_BASE=(window.LIRANDZO_MANAGER_API_BASE || API_BASE || '').trim().replace(/\/+$/,''); setLoginLoading(true); try{ const out=await api('/manager/login',{method:'POST',body:JSON.stringify({password:$('passwordInput').value})}); token=out.token; sessionStorage.setItem('lirandzo_manager_token',token); appView(); }catch(err){ showMsg($('loginError'),err.message,true); } finally { setLoginLoading(false); } });
+      $('menuBtn').addEventListener('click',()=>{ $('sidebar').classList.add('open'); $('overlay').classList.add('active'); }); $('overlay').addEventListener('click',()=>{ $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); });
+      $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); token=''; loginView(); }); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto)));
+      $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
+      $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
+      $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); showMsg($('createResult'), out.message || `Convite criado: ${out.data.publicUrl}`); e.currentTarget.reset(); await loadAll(); }catch(err){ showMsg($('createResult'),err.message,true); } });
+      $('manageInviteSelect').addEventListener('change',loadManageDetails); $('loadManageBtn').addEventListener('click',loadManageDetails);
+      $('resetAccessBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/guests/reset-access`,'POST','Resetar o acesso de todos os convidados deste convite?','Acessos reiniciados.'));
+      $('resetGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/reset-reservations`,'POST','Remover todas as reservas de presentes deste convite?','Reservas reiniciadas.'));
+      $('clearGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts`,'DELETE','Eliminar todos os presentes deste convite no MongoDB?','Presentes eliminados.'));
+      $('seedGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/seed-defaults`,'POST','Restaurar presentes padrão deste convite?','Presentes padrão restaurados.'));
+      $('archiveBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}`,'DELETE','Arquivar este convite?','Convite arquivado.'));
+      $('purgeInviteBtn').addEventListener('click',()=>{ const inv=invites.find(i=>i.id===selectedManageId()); const phrase=prompt(`Para eliminar definitivamente ${inv?.slug || 'este convite'} do MongoDB, escreva ELIMINAR:`); if(phrase!=='ELIMINAR') return; managerAction(`/manager/invites/${selectedManageId()}/purge`,'DELETE',null,'Convite eliminado.'); });
+      $('guestFile').addEventListener('change', async e=>{ const file=e.target.files?.[0]; if(!file) return; const text=await file.text(); $('guestBulkText').value=text; $('guestPreview').innerHTML=`Ficheiro carregado: <b>${esc(file.name)}</b><br>${text.split(/\r?\n/).filter(Boolean).length} linha(s) detectada(s). Confere o campo abaixo antes de importar.`; });
+      $('sampleGuestsBtn').addEventListener('click',()=>{ $('guestBulkText').value='Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo\nPrísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel\nAna Manuel;Mesa 3;1;+258840000000;Família da noiva;Família;153;'; });
+      $('guestForm').addEventListener('submit', async e=>{ e.preventDefault(); const id=$('guestInviteSelect').value; if(!id) return; hideMsg($('guestResult')); try{ const out=await api(`/manager/invites/${id}/guests/bulk`,{method:'POST',body:JSON.stringify({text:$('guestBulkText').value})}); const d=out.data; const fail=d.failed?.length||0; showMsg($('guestResult'),`Importação concluída: <b>${d.inserted}</b> novos, <b>${d.updated}</b> actualizados, <b>${fail}</b> falha(s).`); await loadAll(); }catch(err){ showMsg($('guestResult'),err.message,true); } });
     }
-
-    function appView() {
-      $('loginScreen').classList.add('hidden');
-      $('app').classList.remove('hidden');
-      $('connectionLabel').textContent = API_BASE;
-      iconRefresh();
-      loadAll();
-    }
-
-    async function loadAll() {
-      await Promise.allSettled([loadSummary(), loadInvites(), loadGithubStatus()]);
-      iconRefresh();
-    }
-
-    async function loadSummary() {
-      const out = await api('/manager/summary');
-      const d = out.data || {};
-      $('mTotal').textContent = d.totalInvites || 0;
-      $('mPublished').textContent = d.published || 0;
-      $('mGuests').textContent = d.guests || 0;
-      $('mRsvps').textContent = d.rsvps || 0;
-      const list = d.activities || [];
-      $('activityList').innerHTML = list.length ? list.map(a => `
-        <div class="activity-item">
-          <i data-feather="${a.type === 'warning' ? 'alert-triangle' : a.type === 'github' ? 'git-commit' : 'activity'}"></i>
-          <div><b>${esc(a.title)}</b><small>${esc(a.detail || '')} · ${fmtDate(a.timestamp)}</small></div>
-        </div>
-      `).join('') : '<div class="notice">Ainda não há actividade registada.</div>';
-    }
-
-    async function loadInvites() {
-      const q = encodeURIComponent($('searchInput')?.value || '');
-      const status = encodeURIComponent($('statusFilter')?.value || 'all');
-      const packageKey = encodeURIComponent($('packageFilter')?.value || 'all');
-      const out = await api(`/manager/invites?q=${q}&status=${status}&packageKey=${packageKey}`);
-      invites = out.data || [];
-      renderInvites();
-      renderGuestSelect();
-    }
-
-    function badgeForStatus(status) {
-      if (status === 'published') return '<span class="badge green">Publicado</span>';
-      if (status === 'draft') return '<span class="badge orange">Rascunho</span>';
-      return `<span class="badge">${esc(status)}</span>`;
-    }
-
-    function packageBadge(pkg) {
-      const label = pkg === 'perola' ? 'Pérola' : pkg === 'esmeralda' ? 'Esmeralda' : 'Rubi';
-      return `<span class="badge blue">${label}</span>`;
-    }
-
-    function renderInvites() {
-      $('invitesTbody').innerHTML = invites.length ? invites.map(inv => `
-        <tr>
-          <td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td>
-          <td>${packageBadge(inv.packageKey)}</td>
-          <td>${badgeForStatus(inv.status)}</td>
-          <td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td>
-          <td>${inv.stats?.guests || 0}</td>
-          <td>${inv.stats?.rsvps || 0}</td>
-          <td>
-            <button class="btn" type="button" onclick="openInvite('${inv.id}')"><i data-feather="eye"></i> Ver</button>
-            <button class="btn" type="button" onclick="syncGithub('${inv.id}')"><i data-feather="git-branch"></i></button>
-            <button class="btn" type="button" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="copy"></i></button>
-            <button class="btn btn-danger" type="button" onclick="archiveInvite('${inv.id}')"><i data-feather="archive"></i></button>
-          </td>
-        </tr>
-      `).join('') : '<tr><td colspan="7">Nenhum convite encontrado.</td></tr>';
-      iconRefresh();
-    }
-
-    function renderGuestSelect() {
-      const select = $('guestInviteSelect');
-      select.innerHTML = invites.length ? invites.map(inv => `<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>';
-    }
-
-    async function loadGithubStatus() {
-      const out = await api('/manager/github/status');
-      const d = out.data || {};
-      $('githubStatus').innerHTML = d.configured ? `
-        <b>GitHub configurado correctamente.</b><br><br>
-        Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>
-        Branch: <b>${esc(d.branch)}</b><br>
-        Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br>
-        Templates:<br>
-        Pérola: <b>${esc(d.templates.perola || '-')}</b><br>
-        Esmeralda: <b>${esc(d.templates.esmeralda || '-')}</b><br>
-        Rubi: <b>${esc(d.templates.rubi || '-')}</b>
-      ` : `
-        <b>GitHub ainda não está configurado.</b><br><br>
-        Configure no Render: <b>GITHUB_TOKEN</b>, <b>GITHUB_OWNER</b>, <b>GITHUB_REPO</b>, <b>GITHUB_BRANCH</b> e os caminhos dos templates.
-      `;
-    }
-
-    window.openInvite = async function(id) {
-      const out = await api(`/manager/invites/${id}`);
-      const d = out.data;
-      $('modalTitle').textContent = d.invite.coupleNames;
-      $('modalBody').innerHTML = `
-        <div class="grid two">
-          <div class="notice"><b>Slug:</b> ${esc(d.invite.slug)}<br><b>Pacote:</b> ${esc(d.invite.packageKey)}<br><b>Estado:</b> ${esc(d.invite.status)}</div>
-          <div class="notice"><b>URL:</b> ${esc(d.invite.publicUrl)}<br><b>GitHub:</b> ${esc(d.invite.githubPath || '-')}</div>
-        </div>
-        <div class="grid cards" style="margin-top:14px;">
-          <article class="card card-pad metric"><small>Convidados</small><b>${d.guests.length}</b></article>
-          <article class="card card-pad metric"><small>RSVP</small><b>${d.rsvps.length}</b></article>
-          <article class="card card-pad metric"><small>Mensagens</small><b>${d.messages.length}</b></article>
-          <article class="card card-pad metric"><small>Presentes</small><b>${d.gifts.length}</b></article>
-        </div>
-      `;
-      $('inviteModal').classList.add('open');
-      iconRefresh();
-    }
-
-    window.copyUrl = async function(url) {
-      if (!url) return;
-      await navigator.clipboard.writeText(url);
-      alert('URL copiada.');
-    }
-
-    window.syncGithub = async function(id) {
-      if (!confirm('Criar/sincronizar a pasta deste convite no GitHub?')) return;
-      try {
-        const out = await api(`/manager/invites/${id}/github-sync`, { method:'POST', body: JSON.stringify({}) });
-        alert(out.message || 'GitHub sincronizado com sucesso.');
-        await loadAll();
-      } catch (err) {
-        alert('Erro GitHub: ' + err.message);
-      }
-    }
-
-    window.archiveInvite = async function(id) {
-      if (!confirm('Arquivar este convite no AdminManager? A pasta pública no GitHub não será apagada.')) return;
-      try {
-        await api(`/manager/invites/${id}`, { method:'DELETE' });
-        await loadAll();
-      } catch (err) {
-        alert('Erro ao arquivar: ' + err.message);
-      }
-    }
-
-    $('loginForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      hide($('loginError'));
-      API_BASE = $('apiBaseInput').value.trim().replace(/\/+$/, '');
-      localStorage.setItem('lirandzo_manager_api', API_BASE);
-      try {
-        const out = await api('/manager/login', {
-          method: 'POST',
-          body: JSON.stringify({ password: $('passwordInput').value })
-        });
-        token = out.token;
-        sessionStorage.setItem('lirandzo_manager_token', token);
-        appView();
-      } catch (err) {
-        show($('loginError'), err.message, 'error');
-      }
-    });
-
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => setSection(btn.dataset.section)));
-    document.querySelectorAll('[data-goto]').forEach(btn => btn.addEventListener('click', () => setSection(btn.dataset.goto)));
-    $('menuBtn').addEventListener('click', () => $('sidebar').classList.toggle('open'));
-    $('refreshBtn').addEventListener('click', loadAll);
-    $('filterBtn').addEventListener('click', loadInvites);
-    $('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') loadInvites(); });
-    $('closeModal').addEventListener('click', () => $('inviteModal').classList.remove('open'));
-    $('logoutBtn').addEventListener('click', () => { sessionStorage.removeItem('lirandzo_manager_token'); token=''; loginView(); });
-    $('themeBtn').addEventListener('click', () => { document.body.classList.toggle('light'); localStorage.setItem('lirandzo_manager_theme', document.body.classList.contains('light') ? 'light' : 'dark'); });
-
-    $('newInviteForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const fd = new FormData(e.currentTarget);
-      const payload = Object.fromEntries(fd.entries());
-      payload.copyToGithub = fd.get('copyToGithub') === 'on';
-      payload.createAsPublished = fd.get('createAsPublished') === 'on';
-      hide($('createResult'));
-      try {
-        const out = await api('/manager/invites', { method:'POST', body: JSON.stringify(payload) });
-        show($('createResult'), out.message || `Convite criado: ${out.data.publicUrl}`);
-        e.currentTarget.reset();
-        await loadAll();
-      } catch (err) {
-        show($('createResult'), err.message, 'error');
-      }
-    });
-
-    $('guestForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const id = $('guestInviteSelect').value;
-      if (!id) return;
-      try {
-        const out = await api(`/manager/invites/${id}/guests/bulk`, { method:'POST', body: JSON.stringify({ text: $('guestBulkText').value }) });
-        const d = out.data;
-        show($('guestResult'), `Importação concluída: ${d.inserted} novos, ${d.updated} actualizados, ${d.failed.length} falhas.`);
-        await loadAll();
-      } catch (err) {
-        show($('guestResult'), err.message, 'error');
-      }
-    });
-
-    if (localStorage.getItem('lirandzo_manager_theme') === 'light') document.body.classList.add('light');
-    $('apiBaseInput').value = API_BASE;
-    token ? appView() : loginView();
+    function applyTheme(theme){ const selected=theme==='light'?'light':'dark'; document.documentElement.setAttribute('data-theme',selected); localStorage.setItem('lirandzo_manager_theme',selected); $('themeBtn').innerHTML=`<i data-feather="${selected==='light'?'moon':'sun'}"></i> ${selected==='light'?'Tema escuro':'Tema claro'}`; iconRefresh(); }
+    function init(){ applyTheme(localStorage.getItem('lirandzo_manager_theme')||'dark'); buildNav(); bindEvents(); token ? appView() : loginView(); iconRefresh(); }
+    init();
   </script>
 </body>
 </html>
