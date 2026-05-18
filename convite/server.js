@@ -14,18 +14,42 @@ app.set('trust proxy', 1);
 app.use(express.json({ limit: process.env.JSON_LIMIT || '12mb' }));
 app.use(express.urlencoded({ extended: true, limit: process.env.JSON_LIMIT || '12mb' }));
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
-  .split(',')
-  .map(v => v.trim())
-  .filter(Boolean);
+const allowedOrigins = Array.from(new Set([
+  ...(process.env.ALLOWED_ORIGINS || '').split(','),
+  process.env.PUBLIC_SITE_URL || '',
+  'https://lirandzo.com',
+  'https://www.lirandzo.com'
+]
+  .map(v => String(v || '').trim().replace(/\/+$/, ''))
+  .filter(Boolean)));
 
-app.use(cors({
+const corsOptions = {
   origin(origin, cb) {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) return cb(null, true);
+    const cleanOrigin = origin ? String(origin).replace(/\/+$/, '') : '';
+
+    // Permite chamadas server-to-server, health checks e ferramentas internas sem Origin.
+    if (!origin) return cb(null, true);
+
+    if (allowedOrigins.includes(cleanOrigin)) {
+      return cb(null, true);
+    }
+
+    // Não deixa a app rebentar por CORS; devolve erro controlado.
     return cb(new Error(`Origem não autorizada: ${origin}`));
   },
-  credentials: true
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Invite-Slug']
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+function asyncRoute(fn) {
+  return function wrappedAsyncRoute(req, res, next) {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -389,14 +413,69 @@ app.delete('/manager/invites/:id', requireManager, async (req, res) => {
   await logActivity({ invite, type: 'invite', title: 'Convite arquivado', detail: invite.slug });
   res.json({ status: 'success', data: cleanInviteDoc(invite) });
 });
-app.post('/manager/invites/:id/github-sync', requireManager, async (req, res) => {
+app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
-  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
-  const github = await copyPackageTemplateToClient({ invite, allowOverwrite: false });
-  invite.githubPath = github.path; invite.githubLastCommitSha = github.commitSha; await invite.save();
-  await logActivity({ invite, type: 'github', title: 'Pasta sincronizada no GitHub', detail: github.path, meta: github });
-  res.json({ status: 'success', message: 'Pasta criada no GitHub com sucesso.', data: cleanInviteDoc(invite), github });
-});
+
+  if (!invite) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Convite não encontrado.'
+    });
+  }
+
+  try {
+    const github = await copyPackageTemplateToClient({ invite, allowOverwrite: false });
+
+    invite.githubPath = github.path;
+    invite.githubLastCommitSha = github.commitSha;
+    await invite.save();
+
+    await logActivity({
+      invite,
+      type: 'github',
+      title: 'Pasta sincronizada no GitHub',
+      detail: github.path,
+      meta: github
+    });
+
+    return res.json({
+      status: 'success',
+      message: 'Pasta criada no GitHub com sucesso.',
+      data: cleanInviteDoc(invite),
+      github
+    });
+  } catch (err) {
+    console.error('[github-sync] Falhou:', err);
+
+    await logActivity({
+      invite,
+      type: 'warning',
+      title: 'Falha ao sincronizar com GitHub',
+      detail: err.message,
+      meta: {
+        slug: invite.slug,
+        packageKey: invite.packageKey,
+        githubPath: invite.githubPath,
+        message: err.message
+      }
+    });
+
+    return res.status(500).json({
+      status: 'error',
+      code: 'GITHUB_SYNC_FAILED',
+      message: err.message || 'Erro ao criar a pasta no GitHub.',
+      debug: {
+        owner: process.env.GITHUB_OWNER || '',
+        repo: process.env.GITHUB_REPO || '',
+        branch: process.env.GITHUB_BRANCH || '',
+        invitesBasePath: getInvitesBasePath(),
+        templatePath: getTemplatePath(invite.packageKey),
+        targetPath: `${getInvitesBasePath()}/${invite.slug}`,
+        githubConfigured: githubReady()
+      }
+    });
+  }
+}));
 app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
@@ -557,6 +636,22 @@ async function handleSaveGifts(req, res, invite) {
   if (results.success.length) return res.json({ status: 'success', data: results, message: 'Presentes reservados com sucesso.' });
   res.status(409).json({ status: 'error', data: results, message: 'Nenhum presente pôde ser reservado.' });
 }
+
+app.use((err, req, res, next) => {
+  console.error('[server-error]', err);
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  const isCorsError = String(err.message || '').includes('Origem não autorizada');
+
+  return res.status(isCorsError ? 403 : 500).json({
+    status: 'error',
+    code: isCorsError ? 'CORS_BLOCKED' : 'SERVER_ERROR',
+    message: err.message || 'Erro interno no servidor.'
+  });
+});
 
 async function start() {
   if (!process.env.MONGODB_URI) throw new Error('MONGODB_URI não configurado.');
