@@ -480,7 +480,7 @@ async function seedDefaultGifts(invite) {
   }
 }
 
-app.get('/health', async (req, res) => res.json({ status: 'ok', service: 'lirandzo-adminmanager', mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not_connected', githubConfigured: githubReady(), publicApiBaseUrl: PUBLIC_API_BASE_URL }));
+app.get('/health', async (req, res) => res.json({ status: 'ok', service: 'lirandzo-adminmanager', mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not_connected', githubConfigured: githubReady() }));
 
 app.post('/manager/login', (req, res) => {
   const { password } = req.body || {};
