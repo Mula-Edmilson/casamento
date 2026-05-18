@@ -448,7 +448,6 @@
   
   <!-- Feather Icons -->
   <script src="https://unpkg.com/feather-icons"></script>
-  <script src="./client-config.js"></script>
 </head>
 <body>
   <div class="loading-overlay" id="loadingOverlay">
@@ -542,7 +541,7 @@
   </div>
 
   <script>
-    const API_URL = "https://api-casamento-mj.onrender.com/api";
+    const API_URL = '#demo-offline';
     const ADMIN_TOKEN = 'DEMO_ADMIN_TOKEN'; // Token demo
 
     let currentGuest = null;
@@ -618,7 +617,7 @@
       showLoading();
       
       try {
-        const result = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest_by_token&token=${encodeURIComponent(token)}&admin_token=${ADMIN_TOKEN}`);
+        const result = await jsonpRequest(`${API_URL}?action=get_guest_by_token&token=${encodeURIComponent(token)}&admin_token=${ADMIN_TOKEN}`);
         
         hideLoading();
         
@@ -686,7 +685,7 @@
         
         if (result.status === 'success') {
           // Recarregar informações do convidado
-          const updatedGuest = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest_by_token&token=${currentGuest.token}&admin_token=${ADMIN_TOKEN}`);
+          const updatedGuest = await jsonpRequest(`${API_URL}?action=get_guest_by_token&token=${currentGuest.token}&admin_token=${ADMIN_TOKEN}`);
           currentGuest = updatedGuest;
           displayGuestInfo(updatedGuest);
           addToHistory(updatedGuest, true);

@@ -2,11 +2,11 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <title>Convite de Casamento — Ana & Miguel</title>
+  <title>Convite de Casamento — Rosalina & Monteiro</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
 
   <link rel="icon" type="image/png" href="assets/media/lirandzo-logo.svg">
-  <meta property="og:title" content="Convite de Casamento — Ana & Miguel">
+  <meta property="og:title" content="Convite de Casamento — Rosalina & Monteiro">
   <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/media/PG2.jpg">
@@ -536,7 +536,9 @@
       .login-hero { min-height: 156px; }
     }
   </style>
-  <script src="./client-config.js"></script>
+  <script src="event-data.js"></script>
+  <script src="client-config.js"></script>
+  <script src="lirandzo-api.js"></script>
 </head>
 <body class="loading">
 
@@ -576,8 +578,8 @@
         </div>
       </div>
 
-      <h1 class="names">Ana & Miguel</h1>
-      <div class="date-text">20 DE DEZEMBRO 2026</div>
+      <h1 class="names">Rosalina & Monteiro</h1>
+      <div class="date-text">08 DE AGOSTO 2026</div>
       
       <button class="btn-open" id="openLoginBtn">
         ABRIR CONVITE
@@ -596,7 +598,7 @@
       </div>
       <div class="login-body">
         <span class="login-kicker">Acesso ao convite</span>
-        <h2 class="names">Ana & Miguel</h2>
+        <h2 class="names">Rosalina & Monteiro</h2>
         <p class="login-subtitle">Por favor, identifique-se para entrar no convite</p>
         
         <form id="loginForm">
@@ -627,8 +629,8 @@
     // ============================================
     // CONFIGURAÇÕES
     // ============================================
-    const API_URL = "https://api-casamento-mj.onrender.com/api";
-    const WEDDING_DATE = new Date("2026-12-20T15:00:00");
+    const API_URL = window.LIRANDZO_APPS_SCRIPT_URL || '#demo-offline';
+    const WEDDING_DATE = new Date("2026-08-08T09:00:00+02:00");
 
     // ============================================
     // ELEMENTOS DO DOM
@@ -741,12 +743,13 @@
     // ============================================
     // Substitua a função jsonpRequest por esta:
 async function postRequest(data) {
-  const response = await fetch(API_URL, { method: 'POST',
-    mode: 'cors',
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    mode: 'no-cors',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ ...data, slug: window.LIRANDZO_INVITE_SLUG || "rosalina-monteiro" })
+    body: JSON.stringify(data)
   });
   return { status: "success" }; // Com no-cors, não podemos ler a resposta
 }
@@ -768,19 +771,29 @@ async function performLogin(name) {
   submitBtn.disabled = true;
   loginError.textContent = '';
 
-  // MODO DEMO: qualquer nome introduzido abre o convite.
-  const demoToken = `demo-${cleanName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'convidado'}`;
-
-  localStorage.setItem('guestName', cleanName);
-  localStorage.setItem('guestToken', demoToken);
-  localStorage.setItem('guestMesa', 'Mesa Demo');
-  localStorage.setItem('guestMaxGuests', '4');
-  localStorage.setItem('deviceToken', deviceToken);
-  localStorage.setItem('demoMode', 'true');
-
-  setTimeout(() => {
-    window.location.href = `convite.html?t=${encodeURIComponent(demoToken)}`;
-  }, 350);
+  try {
+    const result = await window.LirandzoAPI.get('find_guest', { name: cleanName, deviceToken });
+    if (!result || result.status !== 'success') {
+      throw new Error(result && result.message ? result.message : 'Convidado não encontrado.');
+    }
+    const guest = result.data || result;
+    const token = guest.token;
+    localStorage.setItem('guestName', guest.name || guest.nome || cleanName);
+    localStorage.setItem('guestToken', token);
+    localStorage.setItem('guestMesa', guest.mesa || 'A definir');
+    localStorage.setItem('guestMaxGuests', guest.maxGuests || '1');
+    localStorage.setItem('guestCompanions', guest.companions || Math.max((Number(guest.maxGuests)||1)-1,0));
+    localStorage.setItem('guestNumber', guest.number || '');
+    localStorage.setItem('deviceToken', deviceToken);
+    localStorage.setItem('demoMode', window.LirandzoAPI.isConfigured() ? 'false' : 'true');
+    await window.LirandzoAPI.post({ action: 'open_invite', token, nome: guest.name || guest.nome || cleanName, deviceToken, userAgent: getUserAgentInfo(), timestamp: new Date().toISOString() });
+    window.location.href = `convite.html?t=${encodeURIComponent(token)}`;
+  } catch (err) {
+    loginError.textContent = err.message || 'Não foi possível encontrar este nome na lista.';
+    btnText.style.display = 'inline';
+    spinner.style.display = 'none';
+    submitBtn.disabled = false;
+  }
 }
 
     // ============================================
@@ -788,7 +801,7 @@ async function performLogin(name) {
     // ============================================
     async function checkExistingLogin() {
       const guestToken = localStorage.getItem('guestToken');
-      if (guestToken && localStorage.getItem('demoMode') === 'true') {
+      if (guestToken) {
         window.location.href = `convite.html?t=${encodeURIComponent(guestToken)}`;
       }
     }

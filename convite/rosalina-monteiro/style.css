@@ -4596,3 +4596,63 @@ body.modal-open {
     max-height: 60px;
   }
 }
+
+
+/* Lirandzo ajuste final — contribuição monetária única */
+.tab-buttons.single-tab { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+.tab-buttons.single-tab .tab-btn { width: 100%; pointer-events: none; }
+
+/* =========================================================
+   AJUSTES FINAIS — LOADING EM BOTÕES + SELECT DE CONTRIBUIÇÃO
+   ========================================================= */
+.btn.is-loading,
+button.is-loading {
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.btn.is-loading::before,
+button.is-loading::before {
+  content: "";
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  display: inline-block;
+  flex: 0 0 auto;
+  animation: lirandzoButtonSpin .75s linear infinite;
+}
+
+.btn.is-confirmed {
+  background: #18a86f !important;
+  border-color: #18a86f !important;
+  color: #fff !important;
+}
+
+@keyframes lirandzoButtonSpin {
+  to { transform: rotate(360deg); }
+}
+
+#comprovativoForm select {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  min-height: 46px;
+  padding: 0 14px;
+  color: var(--text-dark);
+  background: rgba(255,255,255,.82);
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+}
+
+#comprovativoForm select:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(176, 137, 104, .14);
+}

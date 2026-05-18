@@ -1,0 +1,1612 @@
+{
+  "event": {
+    "coupleNames": "Rosalina & Monteiro",
+    "displayNames": "Rosalina e Monteiro",
+    "bride": "Rosalina Ezequiel",
+    "groom": "Monteiro Francisco",
+    "monogram": "R&M",
+    "eventType": "Casamento",
+    "language": "Português",
+    "visualStyle": "Elegante e romântico",
+    "colors": "Branco e dourado",
+    "dateISO": "2026-08-08T09:00:00+02:00",
+    "eventDateLong": "08 de agosto de 2026",
+    "rsvpDeadline": "20 de junho de 2026",
+    "timezone": "Africa/Maputo",
+    "verse": "É melhor serem dois do que um, porque têm melhor recompensa pelo seu trabalho. E o cordão de três dobras não se quebra tão depressa.",
+    "verseReference": "Eclesiastes 4:9 e 12",
+    "brideParents": "Armindo Ezequiel e Esperança Nhassengo",
+    "groomParents": "Vasco Monteiro e Laura Mahota",
+    "ceremonyTitle": "Cerimónia Religiosa",
+    "ceremonyPlace": "Paróquia São Gabriel Arcanjo, Cidade da Matola",
+    "ceremonyTime": "09:00",
+    "receptionTitle": "Cerimónia Civil",
+    "receptionPlace": "Hotel Polana",
+    "receptionTime": "13:00",
+    "additionalTitle": "Copo de Água",
+    "additionalPlace": "Hotel Glória, Salão Ballroom",
+    "additionalTime": "14:30",
+    "supportContacts": "Clemente: +258 87 060 3070 | Nelson: +258 84 056 5714",
+    "supportWhatsapp": "+258870603070",
+    "estimatedGuests": 220,
+    "guestRows": 152,
+    "giftSectionType": "Apenas contribuição monetária",
+    "bankAccounts": [
+      {
+        "label": "Conta Bancária (Millennium BIM)",
+        "holder": "Monteiro Francisco",
+        "account": "203709119",
+        "nib": "000100000020370911957",
+        "logo": "assets/payment/bim.jpg"
+      },
+      {
+        "label": "Conta Bancária (BCI)",
+        "holder": "Rosalina João Armindo Ezequiel",
+        "account": "33051159310001",
+        "nib": "000800003051159310128",
+        "logo": "assets/payment/bci-placeholder.svg"
+      }
+    ],
+    "mobilePayments": [
+      {
+        "label": "M-Pesa",
+        "number": "853243064",
+        "holder": "Rosalina João Armindo Ezequiel",
+        "logo": "assets/payment/m-pesa.jpg"
+      },
+      {
+        "label": "e-Mola",
+        "number": "860535181",
+        "holder": "Rosalina João Armindo Ezequiel",
+        "logo": "assets/payment/e-mola.jpg"
+      }
+    ],
+    "story": {
+      "encontro": "Um dia comum virou especial sem a gente perceber. Foi em 14 de julho de 2023, durante uma chamada de vídeo com uma amiga-prima. Do outro lado da tela, pela primeira vez, os nossos olhares cruzaram-se, ainda que por meio de pixels. Ali começou algo que o coração já guardava.",
+      "amizade": "Depois vieram longas conversas virtuais. Dias viraram noites e noites viraram madrugadas. A distância era geográfica e tinha fuso horário, mas nunca foi de alma. A amizade cresceu tão forte que virou saudade de quem ainda não tinha sido abraçado.",
+      "crescimento": "O maior desafio foi esperar. Um ano inteiro apenas com vozes, telas e coração apertado. Mas cada conversa era um tijolo, cada desabafo um alicerce. Aprendemos que confiança se constrói também no silêncio da espera.",
+      "promessa": "No dia 19 de julho de 2024 aconteceu o primeiro encontro real. Depois de 12 meses de palavras, chegou o primeiro abraço. Ali nasceu a promessa de nunca mais deixar que a distância nos definisse. Hoje, esse compromisso tem nome, data e testemunhas: vocês."
+    },
+    "letter": "Depois de toda a história desafiadora da construção do nosso amor, com distâncias, fusos e esperas, chegamos a um dos momentos mais importantes e transformadores das nossas vidas. E para nos ajudar a celebrar este momento, nós vos escolhemos como testemunhas.\n\nQueridos, não chegamos aqui sozinhos. Teve uma amiga-prima que, sem querer, nos apresentou. Teve uma tela que nos uniu. E teve cada um de vocês que, de perto ou de longe, torceu, perguntou, acolheu ou apenas sorriu quando contamos esta história.\n\nPor isso, o nosso maior presente é ter vocês neste dia. Não para assistir a uma celebração, mas para completá-la e, de certa forma, para testemunhar que o amor que nasceu virtual se fez real.\n\nCom todo o nosso coração,\nRosalina e Monteiro"
+  },
+  "guests": [
+    {
+      "number": 1,
+      "category": "Couple",
+      "name": "Armindo Ezequiel & Esposa",
+      "token": "rm-2026-001-armindo-ezequiel-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 2,
+      "category": "Couple",
+      "name": "Carlos Macamo & Esposa",
+      "token": "rm-2026-002-carlos-macamo-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 3,
+      "category": "Couple",
+      "name": "Arnaldo Bimbe & Esposa",
+      "token": "rm-2026-003-arnaldo-bimbe-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 4,
+      "category": "Couple",
+      "name": "Amaral José & Esposa",
+      "token": "rm-2026-004-amaral-jose-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 5,
+      "category": "Couple",
+      "name": "Maurício Ezequiel & Esposa",
+      "token": "rm-2026-005-mauricio-ezequiel-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 6,
+      "category": "Couple",
+      "name": "Gilberto Manhiça & Esposa",
+      "token": "rm-2026-006-gilberto-manhica-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 7,
+      "category": "Couple",
+      "name": "Castilho Ezequiel & Esposa",
+      "token": "rm-2026-007-castilho-ezequiel-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 8,
+      "category": "Couple",
+      "name": "Alexandre Muianga & Esposa",
+      "token": "rm-2026-008-alexandre-muianga-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 9,
+      "category": "Couple",
+      "name": "Alcídio Chilengue & Esposa",
+      "token": "rm-2026-009-alcidio-chilengue-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 10,
+      "category": "Couple",
+      "name": "Américo Branco & Esposa",
+      "token": "rm-2026-010-americo-branco-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 11,
+      "category": "Couple",
+      "name": "Edgar Gemo & Esposa",
+      "token": "rm-2026-011-edgar-gemo-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 12,
+      "category": "Couple",
+      "name": "Cleide Branco & Esposo",
+      "token": "rm-2026-012-cleide-branco-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 13,
+      "category": "Couple",
+      "name": "Rolando Ezequiel & Esposa",
+      "token": "rm-2026-013-rolando-ezequiel-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 14,
+      "category": "Couple",
+      "name": "Ivan Bimbe & Esposa",
+      "token": "rm-2026-014-ivan-bimbe-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 15,
+      "category": "Couple",
+      "name": "Paulo Bimbe & Esposa",
+      "token": "rm-2026-015-paulo-bimbe-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 16,
+      "category": "Couple",
+      "name": "Hélio Simone & Esposa",
+      "token": "rm-2026-016-helio-simone-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 17,
+      "category": "Couple",
+      "name": "Ivan Miambo & Esposa",
+      "token": "rm-2026-017-ivan-miambo-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 18,
+      "category": "Couple",
+      "name": "Milondre Manhique & Esposa",
+      "token": "rm-2026-018-milondre-manhique-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 19,
+      "category": "Couple",
+      "name": "Rosa Manjate & Esposo",
+      "token": "rm-2026-019-rosa-manjate-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 20,
+      "category": "Couple",
+      "name": "Custódia Zacarias & Esposo",
+      "token": "rm-2026-020-custodia-zacarias-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 21,
+      "category": "Couple",
+      "name": "Celsa Rangel & Esposo",
+      "token": "rm-2026-021-celsa-rangel-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 22,
+      "category": "Couple",
+      "name": "Vitória António & Esposo",
+      "token": "rm-2026-022-vitoria-antonio-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 23,
+      "category": "Couple",
+      "name": "Inocêncio Mucumbi & Esposa",
+      "token": "rm-2026-023-inocencio-mucumbi-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 24,
+      "category": "Couple",
+      "name": "Simões Chico & Esposa",
+      "token": "rm-2026-024-simoes-chico-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 25,
+      "category": "Couple",
+      "name": "Nézia Amaral & Esposo",
+      "token": "rm-2026-025-nezia-amaral-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 26,
+      "category": "Couple",
+      "name": "Vasco Rangel & Esposa",
+      "token": "rm-2026-026-vasco-rangel-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 27,
+      "category": "Couple",
+      "name": "Adelina Ezequiel & Esposo",
+      "token": "rm-2026-027-adelina-ezequiel-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 28,
+      "category": "Couple",
+      "name": "Silvestre Constantino & Esposa",
+      "token": "rm-2026-028-silvestre-constantino-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 29,
+      "category": "Couple",
+      "name": "Manuel Bila & Esposa",
+      "token": "rm-2026-029-manuel-bila-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 30,
+      "category": "Couple",
+      "name": "Paulino Marote & Esposa",
+      "token": "rm-2026-030-paulino-marote-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 31,
+      "category": "Couple",
+      "name": "Estevão Camacho & Esposa",
+      "token": "rm-2026-031-estevao-camacho-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 32,
+      "category": "Couple",
+      "name": "Filipe Tembe & Esposa",
+      "token": "rm-2026-032-filipe-tembe-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 33,
+      "category": "Couple",
+      "name": "Ana Ivânia & Esposo",
+      "token": "rm-2026-033-ana-ivania-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 34,
+      "category": "Couple",
+      "name": "Abiba Jamal & Esposo",
+      "token": "rm-2026-034-abiba-jamal-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 35,
+      "category": "Couple",
+      "name": "Aguinelda Marote & Esposo",
+      "token": "rm-2026-035-aguinelda-marote-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 36,
+      "category": "Couple",
+      "name": "Helder Langa & Esposa",
+      "token": "rm-2026-036-helder-langa-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 37,
+      "category": "Couple",
+      "name": "Francisco Ricardo & Esposa",
+      "token": "rm-2026-037-francisco-ricardo-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 38,
+      "category": "Couple",
+      "name": "Vasco Monteiro & Esposa",
+      "token": "rm-2026-038-vasco-monteiro-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 39,
+      "category": "Couple",
+      "name": "Agostinho Monteiro & Esposa",
+      "token": "rm-2026-039-agostinho-monteiro-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 40,
+      "category": "Couple",
+      "name": "Vasco Macamo & Esposa",
+      "token": "rm-2026-040-vasco-macamo-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 41,
+      "category": "Couple",
+      "name": "Albertina Monteiro & Esposo",
+      "token": "rm-2026-041-albertina-monteiro-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 42,
+      "category": "Couple",
+      "name": "Nércia Monteiro & Esposo",
+      "token": "rm-2026-042-nercia-monteiro-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 43,
+      "category": "Couple",
+      "name": "Júlia Monteiro & Esposo",
+      "token": "rm-2026-043-julia-monteiro-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 44,
+      "category": "Couple",
+      "name": "Júlio Mahota & Esposa",
+      "token": "rm-2026-044-julio-mahota-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 45,
+      "category": "Couple",
+      "name": "Florência Come & Esposo",
+      "token": "rm-2026-045-florencia-come-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 46,
+      "category": "Couple",
+      "name": "Catija Musselo & Esposo",
+      "token": "rm-2026-046-catija-musselo-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 47,
+      "category": "Couple",
+      "name": "Lucia Banze & Esposo",
+      "token": "rm-2026-047-lucia-banze-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 48,
+      "category": "Couple",
+      "name": "Ivete Dos Santos & Esposo",
+      "token": "rm-2026-048-ivete-dos-santos-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 49,
+      "category": "Couple",
+      "name": "Maria Damião & Esposo",
+      "token": "rm-2026-049-maria-damiao-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 50,
+      "category": "Couple",
+      "name": "Avelino Chilengue & Esposa",
+      "token": "rm-2026-050-avelino-chilengue-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 51,
+      "category": "Couple",
+      "name": "Avelino Gujamo & Esposa",
+      "token": "rm-2026-051-avelino-gujamo-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 52,
+      "category": "Couple",
+      "name": "Francisco Cossa & Esposa",
+      "token": "rm-2026-052-francisco-cossa-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 53,
+      "category": "Couple",
+      "name": "Dércio Zitha & Esposa",
+      "token": "rm-2026-053-dercio-zitha-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 54,
+      "category": "Couple",
+      "name": "Armando Ndava & Esposa",
+      "token": "rm-2026-054-armando-ndava-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 55,
+      "category": "Couple",
+      "name": "Gizelda Chirindza & Esposo",
+      "token": "rm-2026-055-gizelda-chirindza-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 56,
+      "category": "Couple",
+      "name": "Luisa Mahota & Esposo",
+      "token": "rm-2026-056-luisa-mahota-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 57,
+      "category": "Couple",
+      "name": "Lazaro Magaia & Esposa",
+      "token": "rm-2026-057-lazaro-magaia-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 58,
+      "category": "Couple",
+      "name": "Alice Magaia & Esposo",
+      "token": "rm-2026-058-alice-magaia-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 59,
+      "category": "Couple",
+      "name": "Silvia Juma & Esposo",
+      "token": "rm-2026-059-silvia-juma-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 60,
+      "category": "Couple",
+      "name": "Vladimir & Esposa",
+      "token": "rm-2026-060-vladimir-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 61,
+      "category": "Couple",
+      "name": "Hugo Chichava & Esposa",
+      "token": "rm-2026-061-hugo-chichava-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 62,
+      "category": "Couple",
+      "name": "Gil & Esposa",
+      "token": "rm-2026-062-gil-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 63,
+      "category": "Couple",
+      "name": "Cândido Vinte & Esposa",
+      "token": "rm-2026-063-candido-vinte-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 64,
+      "category": "Couple",
+      "name": "Panguana & Esposa",
+      "token": "rm-2026-064-panguana-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 65,
+      "category": "Couple",
+      "name": "Nelson Cuna & Esposa",
+      "token": "rm-2026-065-nelson-cuna-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 66,
+      "category": "Couple",
+      "name": "Rostina & Esposo",
+      "token": "rm-2026-066-rostina-esposo",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 67,
+      "category": "Couple",
+      "name": "Lino Vigo & Esposa",
+      "token": "rm-2026-067-lino-vigo-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 68,
+      "category": "Couple",
+      "name": "Mauro & Esposa",
+      "token": "rm-2026-068-mauro-esposa",
+      "mesa": "A definir",
+      "maxGuests": 2,
+      "companions": 1,
+      "checkedIn": false
+    },
+    {
+      "number": 69,
+      "category": "Single",
+      "name": "Graça Branco",
+      "token": "rm-2026-069-graca-branco",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 70,
+      "category": "Single",
+      "name": "Felizarda Naife",
+      "token": "rm-2026-070-felizarda-naife",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 71,
+      "category": "Single",
+      "name": "Deolinda Ezequiel",
+      "token": "rm-2026-071-deolinda-ezequiel",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 72,
+      "category": "Single",
+      "name": "Maria Leonor Ezequiel",
+      "token": "rm-2026-072-maria-leonor-ezequiel",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 73,
+      "category": "Single",
+      "name": "Lurdes Nhatugués",
+      "token": "rm-2026-073-lurdes-nhatugues",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 74,
+      "category": "Single",
+      "name": "Maria Nhatugués",
+      "token": "rm-2026-074-maria-nhatugues",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 75,
+      "category": "Single",
+      "name": "Anina Menganhela",
+      "token": "rm-2026-075-anina-menganhela",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 76,
+      "category": "Single",
+      "name": "Esperança Chilengue",
+      "token": "rm-2026-076-esperanca-chilengue",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 77,
+      "category": "Single",
+      "name": "Rosa Naife",
+      "token": "rm-2026-077-rosa-naife",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 78,
+      "category": "Single",
+      "name": "Eugênia Naife",
+      "token": "rm-2026-078-eugenia-naife",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 79,
+      "category": "Single",
+      "name": "Esmeralda Cossa",
+      "token": "rm-2026-079-esmeralda-cossa",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 80,
+      "category": "Single",
+      "name": "Cláudia Bispo",
+      "token": "rm-2026-080-claudia-bispo",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 81,
+      "category": "Single",
+      "name": "Albertina Matine",
+      "token": "rm-2026-081-albertina-matine",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 82,
+      "category": "Single",
+      "name": "Ana Lurdes",
+      "token": "rm-2026-082-ana-lurdes",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 83,
+      "category": "Single",
+      "name": "Edna Bimbe",
+      "token": "rm-2026-083-edna-bimbe",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 84,
+      "category": "Single",
+      "name": "Adriana Macamo",
+      "token": "rm-2026-084-adriana-macamo",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 85,
+      "category": "Single",
+      "name": "Isilda Chau",
+      "token": "rm-2026-085-isilda-chau",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 86,
+      "category": "Single",
+      "name": "Mirele Ezequiel",
+      "token": "rm-2026-086-mirele-ezequiel",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 87,
+      "category": "Single",
+      "name": "Jéssica Bila",
+      "token": "rm-2026-087-jessica-bila",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 88,
+      "category": "Single",
+      "name": "Chelta Baptista",
+      "token": "rm-2026-088-chelta-baptista",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 89,
+      "category": "Single",
+      "name": "Gessica Dinas",
+      "token": "rm-2026-089-gessica-dinas",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 90,
+      "category": "Single",
+      "name": "Ana Langa",
+      "token": "rm-2026-090-ana-langa",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 91,
+      "category": "Single",
+      "name": "Vanessa Da Silva",
+      "token": "rm-2026-091-vanessa-da-silva",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 92,
+      "category": "Single",
+      "name": "Queila Jalane",
+      "token": "rm-2026-092-queila-jalane",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 93,
+      "category": "Single",
+      "name": "Ruth Paulino",
+      "token": "rm-2026-093-ruth-paulino",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 94,
+      "category": "Single",
+      "name": "Arináquina Mole",
+      "token": "rm-2026-094-arinaquina-mole",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 95,
+      "category": "Single",
+      "name": "Cynthia Lorena",
+      "token": "rm-2026-095-cynthia-lorena",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 96,
+      "category": "Single",
+      "name": "Joyce Bimbe",
+      "token": "rm-2026-096-joyce-bimbe",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 97,
+      "category": "Single",
+      "name": "Isabel Tangune",
+      "token": "rm-2026-097-isabel-tangune",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 98,
+      "category": "Single",
+      "name": "Etelvina Dimande",
+      "token": "rm-2026-098-etelvina-dimande",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 99,
+      "category": "Single",
+      "name": "Nicole Bimbe",
+      "token": "rm-2026-099-nicole-bimbe",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 100,
+      "category": "Single",
+      "name": "Luzia Amélia",
+      "token": "rm-2026-100-luzia-amelia",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 101,
+      "category": "Single",
+      "name": "Ermelinda Zinda",
+      "token": "rm-2026-101-ermelinda-zinda",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 102,
+      "category": "Single",
+      "name": "Rebeca Fátima",
+      "token": "rm-2026-102-rebeca-fatima",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 103,
+      "category": "Single",
+      "name": "Elton Simões",
+      "token": "rm-2026-103-elton-simoes",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 104,
+      "category": "Single",
+      "name": "Diney Simões",
+      "token": "rm-2026-104-diney-simoes",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 105,
+      "category": "Single",
+      "name": "Ana Dimas",
+      "token": "rm-2026-105-ana-dimas",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 106,
+      "category": "Single",
+      "name": "Cemina Paulino",
+      "token": "rm-2026-106-cemina-paulino",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 107,
+      "category": "Single",
+      "name": "Clecia Paulino",
+      "token": "rm-2026-107-clecia-paulino",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 108,
+      "category": "Single",
+      "name": "Jorge Mahota",
+      "token": "rm-2026-108-jorge-mahota",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 109,
+      "category": "Single",
+      "name": "Gerson Mahota",
+      "token": "rm-2026-109-gerson-mahota",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 110,
+      "category": "Single",
+      "name": "Manuela Dos Santos",
+      "token": "rm-2026-110-manuela-dos-santos",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 111,
+      "category": "Single",
+      "name": "Filomena Dos Santos",
+      "token": "rm-2026-111-filomena-dos-santos",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 112,
+      "category": "Single",
+      "name": "Anabela Matine",
+      "token": "rm-2026-112-anabela-matine",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 113,
+      "category": "Single",
+      "name": "Tina Mathe",
+      "token": "rm-2026-113-tina-mathe",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 114,
+      "category": "Single",
+      "name": "Felicidade Chibure",
+      "token": "rm-2026-114-felicidade-chibure",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 115,
+      "category": "Single",
+      "name": "Marcelina",
+      "token": "rm-2026-115-marcelina",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 116,
+      "category": "Single",
+      "name": "Hawagy Zeinadine",
+      "token": "rm-2026-116-hawagy-zeinadine",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 117,
+      "category": "Single",
+      "name": "Anifa",
+      "token": "rm-2026-117-anifa",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 118,
+      "category": "Single",
+      "name": "Zita Langa",
+      "token": "rm-2026-118-zita-langa",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 119,
+      "category": "Single",
+      "name": "Tina",
+      "token": "rm-2026-119-tina",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 120,
+      "category": "Single",
+      "name": "Lurdes Viegas",
+      "token": "rm-2026-120-lurdes-viegas",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 121,
+      "category": "Single",
+      "name": "Lurdes Savela",
+      "token": "rm-2026-121-lurdes-savela",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 122,
+      "category": "Single",
+      "name": "Rabeca",
+      "token": "rm-2026-122-rabeca",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 123,
+      "category": "Single",
+      "name": "Judite",
+      "token": "rm-2026-123-judite",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 124,
+      "category": "Single",
+      "name": "Filomena",
+      "token": "rm-2026-124-filomena",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 125,
+      "category": "Single",
+      "name": "Gina",
+      "token": "rm-2026-125-gina",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 126,
+      "category": "Single",
+      "name": "Ines Marcos",
+      "token": "rm-2026-126-ines-marcos",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 127,
+      "category": "Single",
+      "name": "Opra Tembe",
+      "token": "rm-2026-127-opra-tembe",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 128,
+      "category": "Single",
+      "name": "Arsénio Da Laura",
+      "token": "rm-2026-128-arsenio-da-laura",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 129,
+      "category": "Single",
+      "name": "Gabriela Francisco",
+      "token": "rm-2026-129-gabriela-francisco",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 130,
+      "category": "Single",
+      "name": "Teresa Tristeza",
+      "token": "rm-2026-130-teresa-tristeza",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 131,
+      "category": "Single",
+      "name": "Nelson Nhantsave",
+      "token": "rm-2026-131-nelson-nhantsave",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 132,
+      "category": "Single",
+      "name": "Darcilio Macarringue",
+      "token": "rm-2026-132-darcilio-macarringue",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 133,
+      "category": "Single",
+      "name": "Falar Luis",
+      "token": "rm-2026-133-falar-luis",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 134,
+      "category": "Single",
+      "name": "Tito Samussone",
+      "token": "rm-2026-134-tito-samussone",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 135,
+      "category": "Single",
+      "name": "Agostinho Maunze",
+      "token": "rm-2026-135-agostinho-maunze",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 136,
+      "category": "Single",
+      "name": "Arone Manjate",
+      "token": "rm-2026-136-arone-manjate",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 137,
+      "category": "Single",
+      "name": "João Julay",
+      "token": "rm-2026-137-joao-julay",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 138,
+      "category": "Single",
+      "name": "Tito Samissone",
+      "token": "rm-2026-138-tito-samissone",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 139,
+      "category": "Single",
+      "name": "Alves Simoes",
+      "token": "rm-2026-139-alves-simoes",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 140,
+      "category": "Single",
+      "name": "Ornilo Tunes",
+      "token": "rm-2026-140-ornilo-tunes",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 141,
+      "category": "Single",
+      "name": "Mussagi Fernando",
+      "token": "rm-2026-141-mussagi-fernando",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 142,
+      "category": "Single",
+      "name": "Jorge Lipanga",
+      "token": "rm-2026-142-jorge-lipanga",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 143,
+      "category": "Single",
+      "name": "Jose Homo",
+      "token": "rm-2026-143-jose-homo",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 144,
+      "category": "Single",
+      "name": "Gabriel Munguambe",
+      "token": "rm-2026-144-gabriel-munguambe",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 145,
+      "category": "Single",
+      "name": "Micael Dambo",
+      "token": "rm-2026-145-micael-dambo",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 146,
+      "category": "Single",
+      "name": "Castelo Rolão",
+      "token": "rm-2026-146-castelo-rolao",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 147,
+      "category": "Single",
+      "name": "Adolfo Nhareluga",
+      "token": "rm-2026-147-adolfo-nhareluga",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 148,
+      "category": "Single",
+      "name": "Charles Manuel",
+      "token": "rm-2026-148-charles-manuel",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 149,
+      "category": "Single",
+      "name": "Santos Samussone",
+      "token": "rm-2026-149-santos-samussone",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 150,
+      "category": "Single",
+      "name": "Santos Sitoe",
+      "token": "rm-2026-150-santos-sitoe",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 151,
+      "category": "Single",
+      "name": "Gideão Sithole",
+      "token": "rm-2026-151-gideao-sithole",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    },
+    {
+      "number": 152,
+      "category": "Single",
+      "name": "Prisca Daniel",
+      "token": "rm-2026-152-prisca-daniel",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    }
+  ],
+  "giftOptions": [
+    {
+      "name": "Contribuição monetária - Millennium BIM",
+      "reserved": false
+    },
+    {
+      "name": "Contribuição monetária - BCI",
+      "reserved": false
+    },
+    {
+      "name": "Contribuição via M-Pesa",
+      "reserved": false
+    },
+    {
+      "name": "Contribuição via e-Mola",
+      "reserved": false
+    }
+  ]
+}
