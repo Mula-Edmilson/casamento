@@ -88,6 +88,21 @@
     .brand h1 { color:var(--text); font-family:var(--font-heading); font-size:31px; line-height:1; letter-spacing:-.02em; }
     .brand p { color:var(--muted); font-size:12px; margin-top:3px; }
     .feedback { border-radius:15px; padding:11px 12px; margin-top:11px; font-size:12px; line-height:1.45; border:1px solid var(--line-strong); background:var(--accent-soft); color:var(--text-2); }
+
+    .import-progress { display:none; margin-top:12px; border:1px solid var(--line-strong); border-radius:16px; padding:11px 12px; background:rgba(33,28,25,.34); animation:fadeInUp .18s ease both; }
+    html[data-theme="light"] .import-progress { background:rgba(255,255,255,.58); }
+    .import-progress.active { display:block; }
+    .import-progress-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; }
+    .import-progress-title { display:flex; align-items:center; gap:8px; color:var(--text); font-size:12px; font-weight:900; }
+    .import-progress-title .mini-spinner { width:16px; height:16px; border-radius:50%; border:2px solid rgba(208,173,143,.24); border-top-color:var(--accent-2); animation:spinLoader .72s linear infinite; flex:0 0 auto; }
+    .import-progress-percent { color:var(--accent-2); font-size:11px; font-weight:900; min-width:38px; text-align:right; }
+    .import-progress-track { width:100%; height:8px; border-radius:999px; overflow:hidden; background:rgba(224,203,184,.10); border:1px solid var(--line); }
+    .import-progress-bar { width:0%; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .28s ease; }
+    .import-progress-note { margin-top:8px; color:var(--muted); font-size:11px; line-height:1.4; }
+    .import-progress.done .mini-spinner { animation:none; border-color:rgba(24,183,131,.20); border-top-color:var(--green); background:rgba(24,183,131,.14); }
+    .import-progress.done .import-progress-bar { background:linear-gradient(90deg,var(--green),#7be3bd); }
+    .btn.is-loading .guest-import-icon { display:none; }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
     .feedback.error { background:rgba(239,91,91,.13); border-color:rgba(239,91,91,.30); color:#ffb7b7; }
     html[data-theme="light"] .feedback.error { color:#8f1e1e; }
 
@@ -298,7 +313,7 @@
 
       <section class="section" id="guestsPanel">
         <div class="section-title"><div><h1>Importar convidados</h1><p>Importação uniforme por ficheiro ou escrita manual, ligada ao convite escolhido.</p></div></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><form id="guestForm"><div class="field"><label>Convite</label><select id="guestInviteSelect" required></select></div><div class="grid-two"><label class="dropzone" for="guestFile"><i data-feather="upload-cloud"></i><strong>Importar ficheiro</strong><p>CSV, TXT ou TSV. O conteúdo será colocado no campo para conferência antes de enviar.</p><input id="guestFile" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain"></label><div class="preview-box" id="guestPreview">Formato recomendado:<br><b>Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo</b><br><br>Exemplo:<br>Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel</div></div><div class="field"><label>Lista de convidados</label><textarea id="guestBulkText" placeholder="Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo&#10;Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel"></textarea><p class="hint">Também aceita ficheiros com cabeçalho: nome, mesa, acompanhantes, telefone, notas, categoria, número, token antigo.</p></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="sampleGuestsBtn" title="Inserir exemplo de convidados"><i data-feather="file-text"></i> Inserir exemplo</button><button class="btn primary" type="submit"><i data-feather="upload-cloud"></i> Importar / actualizar convidados</button></div><div id="guestResult" class="feedback hidden"></div></form></div></section>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><form id="guestForm"><div class="field"><label>Convite</label><select id="guestInviteSelect" required></select></div><div class="grid-two"><label class="dropzone" for="guestFile"><i data-feather="upload-cloud"></i><strong>Importar ficheiro</strong><p>CSV, TXT ou TSV. O conteúdo será colocado no campo para conferência antes de enviar.</p><input id="guestFile" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain"></label><div class="preview-box" id="guestPreview">Formato recomendado:<br><b>Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo</b><br><br>Exemplo:<br>Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel</div></div><div class="field"><label>Lista de convidados</label><textarea id="guestBulkText" placeholder="Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo&#10;Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel"></textarea><p class="hint">Também aceita ficheiros com cabeçalho: nome, mesa, acompanhantes, telefone, notas, categoria, número, token antigo.</p></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="sampleGuestsBtn" title="Inserir exemplo de convidados"><i data-feather="file-text"></i> Inserir exemplo</button><button class="btn primary" type="submit" id="importGuestsBtn" title="Importar ou actualizar convidados"><span class="btn-loader"></span><i data-feather="upload-cloud" class="guest-import-icon"></i> <span class="guest-import-label">Importar / actualizar convidados</span></button></div><div id="guestImportProgress" class="import-progress" aria-live="polite"><div class="import-progress-top"><div class="import-progress-title"><span class="mini-spinner"></span><span id="guestImportStage">A preparar importação...</span></div><span id="guestImportPercent" class="import-progress-percent">0%</span></div><div class="import-progress-track"><div id="guestImportBar" class="import-progress-bar"></div></div><div id="guestImportNote" class="import-progress-note">Estamos a validar o ficheiro e a enviar os convidados para o MongoDB.</div></div><div id="guestResult" class="feedback hidden"></div></form></div></section>
       </section>
 
       <section class="section" id="githubPanel">
@@ -400,6 +415,34 @@
         if (label) btn.dataset.tooltip = label;
       });
     }
+    function setGuestImportLoading(active, stage = 'A preparar importação...', percent = 0, done = false) {
+      const progress = $('guestImportProgress');
+      const bar = $('guestImportBar');
+      const pct = $('guestImportPercent');
+      const label = $('guestImportStage');
+      const note = $('guestImportNote');
+      const btn = $('importGuestsBtn');
+      const btnLabel = btn?.querySelector('.guest-import-label');
+      const controls = [$('guestInviteSelect'), $('guestFile'), $('guestBulkText'), $('sampleGuestsBtn')].filter(Boolean);
+      const cleanPercent = Math.max(0, Math.min(100, Number(percent) || 0));
+
+      if (progress) {
+        progress.classList.toggle('active', !!active || !!done);
+        progress.classList.toggle('done', !!done);
+      }
+      if (bar) bar.style.width = `${cleanPercent}%`;
+      if (pct) pct.textContent = `${Math.round(cleanPercent)}%`;
+      if (label) label.textContent = stage;
+      if (note) note.textContent = done ? 'Importação concluída. O campo foi limpo e a lista foi actualizada.' : 'Não feche esta página enquanto os convidados estão a ser enviados.';
+
+      if (btn) {
+        btn.disabled = !!active;
+        btn.classList.toggle('is-loading', !!active);
+      }
+      if (btnLabel) btnLabel.textContent = active ? 'A importar convidados...' : 'Importar / actualizar convidados';
+      controls.forEach(el => { el.disabled = !!active; });
+      iconRefresh();
+    }
     document.addEventListener('click', event => {
       const btn = event.target.closest('.btn');
       if (!btn) return;
@@ -450,7 +493,39 @@
       $('publishInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'published')); $('draftInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'draft')); $('purgeInviteBtn').addEventListener('click',()=>purgeInviteStrict(selectedManageId()));
       $('guestFile').addEventListener('change', async e=>{ const file=e.target.files?.[0]; if(!file) return; const text=await file.text(); $('guestBulkText').value=text; $('guestPreview').innerHTML=`Ficheiro carregado: <b>${esc(file.name)}</b><br>${text.split(/\r?\n/).filter(Boolean).length} linha(s) detectada(s). Confere o campo abaixo antes de importar.`; });
       $('sampleGuestsBtn').addEventListener('click',()=>{ $('guestBulkText').value='Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo\nPrísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel\nAna Manuel;Mesa 3;1;+258840000000;Família da noiva;Família;153;'; });
-      $('guestForm').addEventListener('submit', async e=>{ e.preventDefault(); const id=$('guestInviteSelect').value; if(!id) return; hideMsg($('guestResult')); try{ const out=await api(`/manager/invites/${id}/guests/bulk`,{method:'POST',body:JSON.stringify({text:$('guestBulkText').value})}); const d=out.data; const fail=d.failed?.length||0; showMsg($('guestResult'),`Importação concluída: <b>${d.inserted}</b> novos, <b>${d.updated}</b> actualizados, <b>${fail}</b> falha(s).`); await loadAll(); }catch(err){ showMsg($('guestResult'),err.message,true); } });
+      $('guestForm').addEventListener('submit', async e=>{
+        e.preventDefault();
+        const id = $('guestInviteSelect').value;
+        const text = $('guestBulkText').value.trim();
+        if (!id) return showMsg($('guestResult'), 'Seleccione primeiro o convite onde pretende importar os convidados.', true);
+        if (!text) return showMsg($('guestResult'), 'Adicione um ficheiro ou escreva a lista de convidados antes de importar.', true);
+        hideMsg($('guestResult'));
+        setGuestImportLoading(true, 'A validar lista de convidados...', 18);
+        try {
+          await new Promise(resolve => setTimeout(resolve, 120));
+          setGuestImportLoading(true, 'A enviar convidados para o MongoDB...', 46);
+          const out = await api(`/manager/invites/${id}/guests/bulk`, {
+            method: 'POST',
+            body: JSON.stringify({ text })
+          });
+          setGuestImportLoading(true, 'A actualizar resumo e tabelas...', 78);
+          await loadAll();
+          const d = out.data || {};
+          const fail = d.failed?.length || 0;
+          $('guestBulkText').value = '';
+          $('guestFile').value = '';
+          $('guestPreview').innerHTML = 'Importação concluída com sucesso.<br>O campo foi limpo e já pode importar uma nova lista.';
+          setGuestImportLoading(false, 'Importação concluída', 100, true);
+          showMsg($('guestResult'), `Importação concluída: <b>${d.inserted || 0}</b> novos, <b>${d.updated || 0}</b> actualizados, <b>${fail}</b> falha(s).`);
+          setTimeout(() => {
+            const progress = $('guestImportProgress');
+            if (progress && progress.classList.contains('done')) progress.classList.remove('active', 'done');
+          }, 4200);
+        } catch(err) {
+          setGuestImportLoading(false, 'Importação interrompida', 100, false);
+          showMsg($('guestResult'), err.message, true);
+        }
+      });
     }
     function applyTheme(theme){ const selected=theme==='light'?'light':'dark'; document.documentElement.setAttribute('data-theme',selected); localStorage.setItem('lirandzo_manager_theme',selected); $('themeBtn').innerHTML=`<i data-feather="${selected==='light'?'moon':'sun'}"></i> ${selected==='light'?'Tema escuro':'Tema claro'}`; iconRefresh(); }
     function init(){ applyTheme(localStorage.getItem('lirandzo_manager_theme')||'dark'); buildNav(); bindEvents(); token ? appView() : loginView(); iconRefresh(); }
