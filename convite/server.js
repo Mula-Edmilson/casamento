@@ -140,7 +140,13 @@ const GuestSchema = new mongoose.Schema({
   table: { type: String, default: '' },
   companions: { type: Number, default: 0, min: 0 },
   phone: { type: String, default: '' },
-  notes: { type: String, default: '' }
+  notes: { type: String, default: '' },
+  inviteToken: { type: String, default: '', index: true },
+  number: { type: Number, default: 0, index: true },
+  category: { type: String, default: '' },
+  maxGuests: { type: Number, default: 1 },
+  checkedIn: { type: Boolean, default: false },
+  checkedInAt: { type: Date }
 }, { timestamps: true });
 GuestSchema.index({ inviteId: 1, normalizedName: 1 }, { unique: true });
 
@@ -190,6 +196,35 @@ const ContributionSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 }, { timestamps: true });
 
+
+const CheckInSchema = new mongoose.Schema({
+  inviteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invite', required: true, index: true },
+  slug: { type: String, required: true, index: true },
+  guestId: { type: mongoose.Schema.Types.ObjectId, ref: 'Guest', index: true },
+  token: { type: String, default: '', index: true },
+  nome: { type: String, required: true },
+  guests: { type: Number, default: 1 },
+  mesa: { type: String, default: '' },
+  operator: { type: String, default: '' },
+  status: { type: String, default: 'checked-in' },
+  timestamp: { type: Date, default: Date.now }
+}, { timestamps: true });
+CheckInSchema.index({ inviteId: 1, guestId: 1 }, { unique: true, sparse: true });
+
+const CapsulePhotoSchema = new mongoose.Schema({
+  inviteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invite', required: true, index: true },
+  slug: { type: String, required: true, index: true },
+  nome: { type: String, default: 'Convidado' },
+  caption: { type: String, default: '' },
+  fileName: { type: String, default: '' },
+  originalName: { type: String, default: '' },
+  mimeType: { type: String, default: '' },
+  size: { type: Number, default: 0 },
+  fileBase64: { type: String, default: '' },
+  fileUrl: { type: String, default: '' },
+  timestamp: { type: Date, default: Date.now }
+}, { timestamps: true });
+
 const ActivitySchema = new mongoose.Schema({
   inviteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invite', index: true },
   slug: { type: String, default: '', index: true },
@@ -206,6 +241,8 @@ const Rsvp = mongoose.model('Rsvp', RsvpSchema);
 const Message = mongoose.model('Message', MessageSchema);
 const GiftItem = mongoose.model('GiftItem', GiftItemSchema);
 const Contribution = mongoose.model('Contribution', ContributionSchema);
+const CheckIn = mongoose.model('CheckIn', CheckInSchema);
+const CapsulePhoto = mongoose.model('CapsulePhoto', CapsulePhotoSchema);
 const Activity = mongoose.model('Activity', ActivitySchema);
 
 function cleanInviteDoc(doc) {
@@ -511,9 +548,16 @@ app.get('/api', async (req, res) => {
     const invite = await getInviteFromRequest(req);
     if (!invite) return sendJson(req, res, { status: 'error', message: 'Slug do convite não enviado ou convite inexistente.' }, 400);
     const action = req.query.action;
-    if (action === 'messages' || action === 'get_messages') return listMessages(req, res, invite);
-    if (action === 'gifts' || action === 'get_gift_items') return listGifts(req, res, invite);
+    if (action === 'stats') return getPublicStats(req, res, invite);
+    if (action === 'list_guests') return listGuests(req, res, invite);
+    if (action === 'list_rsvps') return listRsvps(req, res, invite);
+    if (action === 'list_gift_records') return listContributions(req, res, invite);
+    if (action === 'list_messages' || action === 'messages' || action === 'get_messages') return listMessages(req, res, invite);
+    if (action === 'list_checkins') return listCheckins(req, res, invite);
+    if (action === 'list_capsule_photos') return listCapsulePhotos(req, res, invite);
+    if (action === 'list_gifts' || action === 'gifts' || action === 'get_gift_items') return listGifts(req, res, invite);
     if (action === 'get_guest' || action === 'get_guest_details') return getGuestDetails(req, res, invite);
+    if (action === 'get_rsvp_status') return getRsvpStatus(req, res, invite);
     return sendJson(req, res, { status: 'error', message: 'Ação GET não reconhecida.' }, 400);
   } catch (err) { sendJson(req, res, { status: 'error', message: err.message }, 500); }
 });
@@ -523,10 +567,14 @@ app.post('/api', upload.any(), async (req, res) => {
     if (!invite) return res.status(400).json({ status: 'error', message: 'Slug do convite não enviado ou convite inexistente.' });
     const action = req.body?.action;
     if (action === 'login') return handleLogin(req, res, invite);
-    if (action === 'rsvp') return handleRsvp(req, res, invite);
+    if (action === 'open_invite') return handleOpenInvite(req, res, invite);
+    if (action === 'rsvp' || action === 'submit_rsvp') return handleRsvp(req, res, invite);
+    if (action === 'rsvp_choice') return handleRsvpChoice(req, res, invite);
     if (action === 'post_message') return handlePostMessage(req, res, invite);
     if (action === 'save_gifts') return handleSaveGifts(req, res, invite);
-    if (action === 'upload_comprovativo') return handleUploadComprovativo(req, res, invite);
+    if (action === 'upload_comprovativo' || action === 'submit_contribution') return handleUploadComprovativo(req, res, invite);
+    if (action === 'checkin_guest') return handleCheckinGuest(req, res, invite);
+    if (action === 'save_capsule_photo' || action === 'upload_capsule_photo') return handleSaveCapsulePhoto(req, res, invite);
     return res.status(400).json({ status: 'error', message: 'Ação não reconhecida.' });
   } catch (err) { console.error('Erro /api:', err); return res.status(500).json({ status: 'error', message: 'Erro no servidor: ' + err.message }); }
 });
@@ -556,62 +604,135 @@ app.post('/admin-api', async (req, res) => {
   if (data.action === 'get_gifts') return res.json({ status: 'success', data: await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 }) });
   if (data.action === 'get_comprovativos') return res.json({ status: 'success', data: await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64') });
   if (data.action === 'get_messages') return res.json({ status: 'success', data: await Message.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
-  if (data.action === 'get_guests') return res.json({ status: 'success', data: await Guest.find({ inviteId: invite._id }).sort({ name: 1 }) });
+  if (data.action === 'get_guests') return res.json({ status: 'success', data: await Guest.find({ inviteId: invite._id }).sort({ number: 1, name: 1 }) });
+  if (data.action === 'get_checkins') return res.json({ status: 'success', data: await CheckIn.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
+  if (data.action === 'get_capsule_photos') return res.json({ status: 'success', data: await CapsulePhoto.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64') });
   res.status(400).json({ status: 'error', message: 'Ação de admin não reconhecida.' });
 });
 
 
-async function handleUploadComprovativo(req, res, invite) {
-  const { nome = '', canal = '' } = req.body || {};
-  if (!nome) return res.status(400).json({ status: 'error', message: 'Nome não enviado.' });
-  const file = req.file || (Array.isArray(req.files) ? req.files.find(f => f.fieldname === 'comprovativoFile') || req.files[0] : null);
-  if (!file) return res.status(400).json({ status: 'error', message: 'Ficheiro não recebido.' });
-  const doc = await Contribution.create({
-    inviteId: invite._id,
-    slug: invite.slug,
-    nome,
-    canal,
-    fileName: `${Date.now()}-${file.originalname}`,
-    originalName: file.originalname,
-    mimeType: file.mimetype,
-    size: file.size,
-    fileBase64: file.buffer.toString('base64'),
-    timestamp: new Date()
-  });
-  doc.fileUrl = `${PUBLIC_API_BASE_URL}/api/contributions/${doc._id}/file`;
-  await doc.save();
-  await logActivity({ invite, type: 'contribution', title: 'Comprovativo recebido', detail: `${nome} · ${canal}` });
-  return res.json({ status: 'success', message: 'Comprovativo enviado.', data: { id: doc._id, fileUrl: doc.fileUrl } });
+function cleanGuestForPublic(guest) {
+  const total = Number(guest.maxGuests) || (1 + (Number(guest.companions) || 0));
+  return {
+    id: String(guest._id),
+    number: guest.number || 0,
+    category: guest.category || '',
+    name: guest.name,
+    nome: guest.name,
+    token: guest.inviteToken || '',
+    mesa: guest.table || 'A definir',
+    table: guest.table || '',
+    maxGuests: total,
+    maxGuestsTotal: total,
+    companions: Math.max(total - 1, Number(guest.companions) || 0),
+    phone: guest.phone || '',
+    notes: guest.notes || '',
+    status: guest.status || '',
+    guestStatus: guest.status || '',
+    checkedIn: Boolean(guest.checkedIn),
+    checkedInAt: guest.checkedInAt || null
+  };
 }
-
+async function findGuestByIdentity(invite, { nome, name, token } = {}) {
+  const rawName = nome || name;
+  let guest = null;
+  if (token) guest = await Guest.findOne({ inviteId: invite._id, $or: [{ inviteToken: String(token) }, { deviceToken: String(token) }] });
+  if (!guest && rawName) guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(rawName) });
+  return guest;
+}
+async function getPublicStats(req, res, invite) {
+  const [guests, rsvps, contributions, messages, checkins, photos] = await Promise.all([
+    Guest.find({ inviteId: invite._id }).select('maxGuests companions checkedIn'),
+    Rsvp.find({ inviteId: invite._id }).select('guests'),
+    Contribution.countDocuments({ inviteId: invite._id }),
+    Message.countDocuments({ inviteId: invite._id }),
+    CheckIn.find({ inviteId: invite._id }).select('guests'),
+    CapsulePhoto.countDocuments({ inviteId: invite._id })
+  ]);
+  const totalPeople = guests.reduce((sum, g) => sum + (Number(g.maxGuests) || (1 + (Number(g.companions) || 0))), 0);
+  const confirmed = rsvps.reduce((sum, r) => sum + (Number(r.guests) || 1), 0);
+  const checkedPeople = checkins.reduce((sum, c) => sum + (Number(c.guests) || 1), 0);
+  sendJson(req, res, { status: 'success', data: { guestsCount: guests.length, totalPeople, confirmed, confirmedRows: rsvps.length, checkedPeople, checkedIn: checkins.length, contributions, messages, photos } });
+}
+async function listGuests(req, res, invite) {
+  const guests = await Guest.find({ inviteId: invite._id }).sort({ number: 1, name: 1 });
+  sendJson(req, res, { status: 'success', data: guests.map(cleanGuestForPublic) });
+}
+async function listRsvps(req, res, invite) {
+  const rows = await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 });
+  sendJson(req, res, { status: 'success', data: rows });
+}
+async function listContributions(req, res, invite) {
+  const rows = await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64');
+  const data = rows.map(doc => {
+    const o = doc.toObject ? doc.toObject() : doc;
+    const fileUrl = o.fileUrl || (o._id ? `${PUBLIC_API_BASE_URL}/api/contributions/${o._id}/file` : '');
+    return { ...o, filename: o.originalName || o.fileName || '', viewUrl: fileUrl, previewUrl: fileUrl, downloadUrl: fileUrl, thumbnailUrl: fileUrl };
+  });
+  sendJson(req, res, { status: 'success', data });
+}
+async function listCheckins(req, res, invite) {
+  const rows = await CheckIn.find({ inviteId: invite._id }).sort({ timestamp: -1 });
+  sendJson(req, res, { status: 'success', data: rows });
+}
+async function listCapsulePhotos(req, res, invite) {
+  const rows = await CapsulePhoto.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64');
+  const data = rows.map(doc => {
+    const o = doc.toObject ? doc.toObject() : doc;
+    const fileUrl = o.fileUrl || (o._id ? `${PUBLIC_API_BASE_URL}/api/capsule/${o._id}/file` : '');
+    return { ...o, filename: o.originalName || o.fileName || '', src: fileUrl, viewUrl: fileUrl, downloadUrl: fileUrl, thumbnailUrl: fileUrl };
+  });
+  sendJson(req, res, { status: 'success', data });
+}
 async function listMessages(req, res, invite) { const messages = await Message.find({ inviteId: invite._id }).sort({ timestamp: -1 }).limit(200); sendJson(req, res, { status: 'success', data: messages }); }
 async function listGifts(req, res, invite) { await seedDefaultGifts(invite); const gifts = await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 }); sendJson(req, res, { status: 'success', data: gifts }); }
 async function getGuestDetails(req, res, invite) {
-  const nome = req.body?.nome || req.query?.nome || req.query?.name;
-  const token = req.body?.token || req.query?.token;
-  let guest = null;
-  if (nome) guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(nome) });
-  if (!guest && token) guest = await Guest.findOne({ inviteId: invite._id, deviceToken: token });
+  const guest = await findGuestByIdentity(invite, { nome: req.body?.nome || req.query?.nome || req.query?.name, name: req.query?.name, token: req.body?.token || req.query?.token });
   if (!guest) return sendJson(req, res, { status: 'error', message: 'Convidado não encontrado.' }, 404);
-  sendJson(req, res, { status: 'success', guestName: guest.name, guestStatus: guest.status, Mesa: guest.table || 'A definir', maxGuestsTotal: 1 + (Number(guest.companions) || 0), token: guest.deviceToken || '' });
+  const data = cleanGuestForPublic(guest);
+  sendJson(req, res, { status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
+}
+async function getRsvpStatus(req, res, invite) {
+  const guest = await findGuestByIdentity(invite, { nome: req.body?.nome || req.query?.nome || req.query?.name, token: req.body?.token || req.query?.token });
+  if (!guest) return sendJson(req, res, { status: 'success', data: { confirmed: false } });
+  const rsvp = await Rsvp.findOne({ inviteId: invite._id, guestId: guest._id });
+  sendJson(req, res, { status: 'success', data: { confirmed: Boolean(rsvp), rsvp } });
+}
+async function handleOpenInvite(req, res, invite) {
+  const { token, nome = '', deviceToken = '' } = req.body || {};
+  const guest = await findGuestByIdentity(invite, { nome, token });
+  if (guest && !String(guest.status || '').toLowerCase().includes('confirmado')) {
+    guest.status = 'Convite Aberto';
+    if (deviceToken && !guest.deviceToken) guest.deviceToken = String(deviceToken);
+    await guest.save();
+    await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name });
+  }
+  res.json({ status: 'success' });
 }
 async function handleLogin(req, res, invite) {
   const { name, loginToken } = req.body || {};
   if (!name || !loginToken) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
   const guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(name) });
   if (!guest) return res.status(401).json({ status: 'error', message: 'Nome não encontrado na lista.' });
-  if (!guest.deviceToken) { guest.deviceToken = String(loginToken); guest.status = 'Convite Aberto'; await guest.save(); await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name }); }
+  if (!guest.deviceToken) { guest.deviceToken = String(loginToken); if (!String(guest.status || '').toLowerCase().includes('confirmado')) guest.status = 'Convite Aberto'; await guest.save(); await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name }); }
   else if (guest.deviceToken !== String(loginToken)) return res.status(403).json({ status: 'error', message: 'Este convite já foi aberto noutro dispositivo.' });
-  res.json({ status: 'success', guestName: guest.name, guestStatus: guest.status, Mesa: guest.table || 'A definir', maxGuestsTotal: 1 + (Number(guest.companions) || 0), token: guest.deviceToken });
+  const data = cleanGuestForPublic(guest);
+  res.json({ status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
+}
+async function handleRsvpChoice(req, res, invite) {
+  const choice = String(req.body?.choice || '').toLowerCase();
+  if (choice === 'confirmed' || choice === 'sim' || choice.includes('confirm')) return handleRsvp(req, res, invite);
+  const guest = await findGuestByIdentity(invite, { nome: req.body?.nome, token: req.body?.token });
+  if (guest) { guest.status = 'Ainda por confirmar'; await guest.save(); await logActivity({ invite, type: 'rsvp', title: 'Ainda por confirmar', detail: guest.name }); }
+  res.json({ status: 'success', message: 'Estado registado.' });
 }
 async function handleRsvp(req, res, invite) {
-  const { nome, phone = '', message = '' } = req.body || {};
-  if (!nome) return res.status(400).json({ status: 'error', message: 'Nome não enviado.' });
-  const guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(nome) });
+  const { nome, phone = '', message = '', token = '' } = req.body || {};
+  const guest = await findGuestByIdentity(invite, { nome, token });
   if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
   const already = await Rsvp.findOne({ inviteId: invite._id, guestId: guest._id });
   if (already) return res.status(409).json({ status: 'error', code: 'RSVP_ALREADY_CONFIRMED', message: 'Esta presença já foi confirmada anteriormente.' });
-  const totalGuests = 1 + (Number(guest.companions) || 0);
+  const totalGuests = Number(guest.maxGuests) || (1 + (Number(guest.companions) || 0));
   await Rsvp.create({ inviteId: invite._id, slug: invite.slug, guestId: guest._id, nome: guest.name, guests: totalGuests, phone, message, mesa: guest.table || '' });
   guest.status = `Confirmado (${totalGuests})`; guest.phone = phone || guest.phone; await guest.save();
   await logActivity({ invite, type: 'rsvp', title: 'Presença confirmada', detail: `${guest.name} · ${totalGuests} pessoa(s)` });
@@ -636,6 +757,64 @@ async function handleSaveGifts(req, res, invite) {
   if (results.success.length) return res.json({ status: 'success', data: results, message: 'Presentes reservados com sucesso.' });
   res.status(409).json({ status: 'error', data: results, message: 'Nenhum presente pôde ser reservado.' });
 }
+async function handleCheckinGuest(req, res, invite) {
+  const { token = '', nome = '', guests = 1, mesa = '', operator = '' } = req.body || {};
+  const guest = await findGuestByIdentity(invite, { nome, token });
+  if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
+  const total = Number(guests) || Number(guest.maxGuests) || (1 + (Number(guest.companions) || 0));
+  const row = await CheckIn.findOneAndUpdate(
+    { inviteId: invite._id, guestId: guest._id },
+    { $set: { inviteId: invite._id, slug: invite.slug, guestId: guest._id, token: token || guest.inviteToken || '', nome: guest.name, guests: total, mesa: mesa || guest.table || '', operator, status: 'checked-in', timestamp: new Date() } },
+    { upsert: true, new: true }
+  );
+  guest.checkedIn = true; guest.checkedInAt = new Date(); await guest.save();
+  await logActivity({ invite, type: 'checkin', title: 'Check-in confirmado', detail: `${guest.name} · ${total} pessoa(s)` });
+  res.json({ status: 'success', data: row, message: 'Entrada confirmada.' });
+}
+async function handleSaveCapsulePhoto(req, res, invite) {
+  const body = req.body || {};
+  const nome = body.nome || body.name || 'Convidado';
+  const caption = body.caption || body.message || '';
+  const base64 = body.photoBase64 || body.fileBase64 || body.imageBase64 || body.dataUrl || body.photo || '';
+  const mimeType = body.mimeType || body.photoType || 'image/jpeg';
+  const originalName = body.originalName || body.filename || `capsula-${Date.now()}.jpg`;
+  if (!base64) return res.status(400).json({ status: 'error', message: 'Fotografia não recebida.' });
+  const cleanBase64 = String(base64).replace(/^data:[^,]+,/, '');
+  const doc = await CapsulePhoto.create({ inviteId: invite._id, slug: invite.slug, nome, caption, fileName: `${Date.now()}-${originalName}`, originalName, mimeType, size: Math.ceil(cleanBase64.length * 0.75), fileBase64: cleanBase64, timestamp: new Date() });
+  doc.fileUrl = `${PUBLIC_API_BASE_URL}/api/capsule/${doc._id}/file`;
+  await doc.save();
+  await logActivity({ invite, type: 'capsule', title: 'Nova foto na cápsula', detail: nome });
+  res.json({ status: 'success', data: { id: doc._id, fileUrl: doc.fileUrl }, message: 'Fotografia guardada.' });
+}
+async function handleUploadComprovativo(req, res, invite) {
+  const { nome = '', canal = '' } = req.body || {};
+  if (!nome) return res.status(400).json({ status: 'error', message: 'Nome não enviado.' });
+  const file = req.file || (Array.isArray(req.files) ? req.files.find(f => f.fieldname === 'comprovativoFile') || req.files[0] : null);
+  if (!file) return res.status(400).json({ status: 'error', message: 'Ficheiro não recebido.' });
+  const doc = await Contribution.create({
+    inviteId: invite._id,
+    slug: invite.slug,
+    nome,
+    canal,
+    fileName: `${Date.now()}-${file.originalname}`,
+    originalName: file.originalname,
+    mimeType: file.mimetype,
+    size: file.size,
+    fileBase64: file.buffer.toString('base64'),
+    timestamp: new Date()
+  });
+  doc.fileUrl = `${PUBLIC_API_BASE_URL}/api/contributions/${doc._id}/file`;
+  await doc.save();
+  await logActivity({ invite, type: 'contribution', title: 'Comprovativo recebido', detail: `${nome} · ${canal}` });
+  return res.json({ status: 'success', message: 'Comprovativo enviado.', data: { id: doc._id, fileUrl: doc.fileUrl } });
+}
+
+app.get('/api/capsule/:id/file', async (req, res) => {
+  const doc = await CapsulePhoto.findById(req.params.id);
+  if (!doc || !doc.fileBase64) return res.status(404).send('Ficheiro não encontrado.');
+  res.setHeader('Content-Type', doc.mimeType || 'application/octet-stream');
+  res.send(Buffer.from(doc.fileBase64, 'base64'));
+});
 
 app.use((err, req, res, next) => {
   console.error('[server-error]', err);
