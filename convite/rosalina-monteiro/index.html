@@ -778,6 +778,9 @@ async function performLogin(name) {
     }
     const guest = result.data || result;
     const token = guest.token;
+    if (!token) {
+      throw new Error('O servidor abriu o convite, mas não devolveu o token de acesso. Actualize o backend e tente novamente.');
+    }
     localStorage.setItem('guestName', guest.name || guest.nome || cleanName);
     localStorage.setItem('guestToken', token);
     localStorage.setItem('guestMesa', guest.mesa || 'A definir');

@@ -45,7 +45,7 @@
   function normalizeGuestResponse(data, fallbackName) {
     const d = data && (data.data || data) || {};
     const total = Number(d.maxGuests || d.maxGuestsTotal || d.guests || 1) || 1;
-    const token = d.token || d.inviteToken || d.deviceToken || localStorage.getItem('guestToken') || '';
+    const token = d.token || d.inviteToken || d.publicToken || d.id || d._id || d.deviceToken || localStorage.getItem('guestToken') || '';
     return Object.assign({}, d, {
       name: d.name || d.nome || d.guestName || fallbackName || '',
       nome: d.nome || d.name || d.guestName || fallbackName || '',

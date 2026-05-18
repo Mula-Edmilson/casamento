@@ -69,6 +69,23 @@ function slugify(value) {
 }
 function escapeRegex(value) { return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function base64url(input) { return Buffer.from(input).toString('base64url'); }
+function generateGuestPublicToken() {
+  return 'g_' + crypto.randomBytes(18).toString('hex');
+}
+async function ensureGuestInviteToken(invite, guest) {
+  if (!guest) return '';
+  if (!guest.inviteToken) {
+    let token = generateGuestPublicToken();
+    // Evita colisões raríssimas dentro do mesmo convite.
+    // eslint-disable-next-line no-await-in-loop
+    while (await Guest.exists({ inviteId: invite._id, inviteToken: token })) {
+      token = generateGuestPublicToken();
+    }
+    guest.inviteToken = token;
+    await guest.save();
+  }
+  return guest.inviteToken;
+}
 function nowIso() { return new Date().toISOString(); }
 function parseBool(v) { return v === true || v === 'true' || v === '1' || v === 'on'; }
 function packageLabel(key) { return key === 'perola' ? 'Pérola' : key === 'esmeralda' ? 'Esmeralda' : key === 'rubi' ? 'Rubi' : key; }
@@ -525,8 +542,21 @@ app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) =>
     const companions = Math.max(0, Number.parseInt(companionsRaw, 10) || 0);
     try {
       const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
-      if (existing) { existing.name = nameRaw; existing.table = tableRaw; existing.companions = companions; existing.phone = phoneRaw; existing.notes = notesRaw; await existing.save(); results.updated += 1; }
-      else { await Guest.create({ inviteId: invite._id, slug: invite.slug, name: nameRaw, normalizedName, table: tableRaw, companions, phone: phoneRaw, notes: notesRaw }); results.inserted += 1; }
+      if (existing) {
+        existing.name = nameRaw;
+        existing.table = tableRaw;
+        existing.companions = companions;
+        existing.maxGuests = Math.max(1, 1 + companions);
+        existing.phone = phoneRaw;
+        existing.notes = notesRaw;
+        if (!existing.inviteToken) existing.inviteToken = generateGuestPublicToken();
+        await existing.save();
+        results.updated += 1;
+      }
+      else {
+        await Guest.create({ inviteId: invite._id, slug: invite.slug, name: nameRaw, normalizedName, table: tableRaw, companions, maxGuests: Math.max(1, 1 + companions), phone: phoneRaw, notes: notesRaw, inviteToken: generateGuestPublicToken() });
+        results.inserted += 1;
+      }
     } catch (err) { results.failed.push({ line, error: err.message }); }
   }
   await logActivity({ invite, type: 'guests', title: 'Lista de convidados importada', detail: `${results.inserted} novos · ${results.updated} actualizados` });
@@ -619,7 +649,7 @@ function cleanGuestForPublic(guest) {
     category: guest.category || '',
     name: guest.name,
     nome: guest.name,
-    token: guest.inviteToken || '',
+    token: guest.inviteToken || String(guest._id || ''),
     mesa: guest.table || 'A definir',
     table: guest.table || '',
     maxGuests: total,
@@ -636,7 +666,21 @@ function cleanGuestForPublic(guest) {
 async function findGuestByIdentity(invite, { nome, name, token } = {}) {
   const rawName = nome || name;
   let guest = null;
-  if (token) guest = await Guest.findOne({ inviteId: invite._id, $or: [{ inviteToken: String(token) }, { deviceToken: String(token) }] });
+  const cleanToken = String(token || '').trim();
+
+  if (cleanToken) {
+    const tokenFilters = [
+      { inviteToken: cleanToken },
+      { deviceToken: cleanToken }
+    ];
+
+    if (mongoose.Types.ObjectId.isValid(cleanToken)) {
+      tokenFilters.push({ _id: cleanToken });
+    }
+
+    guest = await Guest.findOne({ inviteId: invite._id, $or: tokenFilters });
+  }
+
   if (!guest && rawName) guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(rawName) });
   return guest;
 }
@@ -689,6 +733,7 @@ async function listGifts(req, res, invite) { await seedDefaultGifts(invite); con
 async function getGuestDetails(req, res, invite) {
   const guest = await findGuestByIdentity(invite, { nome: req.body?.nome || req.query?.nome || req.query?.name, name: req.query?.name, token: req.body?.token || req.query?.token });
   if (!guest) return sendJson(req, res, { status: 'error', message: 'Convidado não encontrado.' }, 404);
+  await ensureGuestInviteToken(invite, guest);
   const data = cleanGuestForPublic(guest);
   sendJson(req, res, { status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
 }
@@ -702,6 +747,7 @@ async function handleOpenInvite(req, res, invite) {
   const { token, nome = '', deviceToken = '' } = req.body || {};
   const guest = await findGuestByIdentity(invite, { nome, token });
   if (guest && !String(guest.status || '').toLowerCase().includes('confirmado')) {
+    if (!guest.inviteToken) guest.inviteToken = generateGuestPublicToken();
     guest.status = 'Convite Aberto';
     if (deviceToken && !guest.deviceToken) guest.deviceToken = String(deviceToken);
     await guest.save();
@@ -712,10 +758,36 @@ async function handleOpenInvite(req, res, invite) {
 async function handleLogin(req, res, invite) {
   const { name, loginToken } = req.body || {};
   if (!name || !loginToken) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
+
   const guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(name) });
   if (!guest) return res.status(401).json({ status: 'error', message: 'Nome não encontrado na lista.' });
-  if (!guest.deviceToken) { guest.deviceToken = String(loginToken); if (!String(guest.status || '').toLowerCase().includes('confirmado')) guest.status = 'Convite Aberto'; await guest.save(); await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name }); }
-  else if (guest.deviceToken !== String(loginToken)) return res.status(403).json({ status: 'error', message: 'Este convite já foi aberto noutro dispositivo.' });
+
+  if (guest.deviceToken && guest.deviceToken !== String(loginToken)) {
+    return res.status(403).json({ status: 'error', message: 'Este convite já foi aberto noutro dispositivo.' });
+  }
+
+  let shouldSave = false;
+
+  if (!guest.inviteToken) {
+    guest.inviteToken = generateGuestPublicToken();
+    shouldSave = true;
+  }
+
+  if (!guest.deviceToken) {
+    guest.deviceToken = String(loginToken);
+    shouldSave = true;
+  }
+
+  if (!String(guest.status || '').toLowerCase().includes('confirmado')) {
+    guest.status = 'Convite Aberto';
+    shouldSave = true;
+  }
+
+  if (shouldSave) {
+    await guest.save();
+    await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name });
+  }
+
   const data = cleanGuestForPublic(guest);
   res.json({ status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
 }

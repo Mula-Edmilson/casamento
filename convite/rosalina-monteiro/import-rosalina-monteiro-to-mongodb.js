@@ -9,6 +9,7 @@
 
 require('dotenv').config();
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const seed = require('./mongodb-seed-data.json');
 
 const SLUG = process.env.INVITE_SLUG || 'rosalina-monteiro';
@@ -16,6 +17,9 @@ const PUBLIC_SITE_URL = (process.env.PUBLIC_SITE_URL || 'https://lirandzo.com').
 
 function normalizeText(value) {
   return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
+}
+function generateGuestPublicToken() {
+  return 'g_' + crypto.randomBytes(18).toString('hex');
 }
 
 const InviteSchema = new mongoose.Schema({
@@ -113,14 +117,14 @@ async function main() {
       slug: SLUG,
       name: g.name,
       normalizedName,
-      inviteToken: g.token || '',
+      inviteToken: g.token || (existing && existing.inviteToken) || generateGuestPublicToken(),
       number: Number(g.number) || 0,
       category: g.category || '',
       table: g.mesa || g.table || 'A definir',
       companions: Number(g.companions) || Math.max((Number(g.maxGuests) || 1) - 1, 0),
       maxGuests: Number(g.maxGuests) || 1,
       checkedIn: Boolean(g.checkedIn),
-      status: 'Não aberto'
+      status: existing ? existing.status : 'Não aberto'
     };
     if (existing) { await Guest.updateOne({ _id: existing._id }, { $set: payload }); updated += 1; }
     else { await Guest.create(payload); inserted += 1; }
