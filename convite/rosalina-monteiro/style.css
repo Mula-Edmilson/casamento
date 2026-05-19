@@ -106,7 +106,7 @@ p:last-child {
 .hero {
   position: relative;
   min-height: 100vh;
-  background-image: url('assets/media/PG2.jpg');
+  background-image: url('assets/media/CAPA HERO.png');
   background-size: cover;
   background-position: center 30%;
   display: flex;
@@ -2294,16 +2294,16 @@ html[data-scroll-direction="up"] .magic-reveal[data-reveal="slide"]:not(.is-visi
   height: 28px;
 }
 
-.modal-hero-rsvp { background-image: url('assets/media/fundo-flores.jpg'); }
+.modal-hero-rsvp { background-image: url('assets/media/TR-ET.png'); }
 .modal-hero-dress { background-image: url('assets/media/vestido_branco.jpg'); }
-.modal-hero-gifts { background-image: url('assets/media/PG2.jpg'); }
-.modal-hero-letter { background-image: url('assets/media/fundo-flores.jpg'); }
-.modal-hero-honor { background-image: url('assets/media/PG4.jpg'); }
-.modal-hero-family { background-image: url('assets/media/PG1.jpg'); }
-.modal-hero-menu { background-image: url('assets/media/PG3.jpg'); }
-.modal-hero-etiquette { background-image: url('assets/media/PG2.jpg'); }
-.modal-hero-travel { background-image: url('assets/media/PG1.jpg'); }
-.modal-hero-guest { background-image: url('assets/media/PG5.jpg'); }
+.modal-hero-gifts { background-image: url('assets/media/CAPA FUNDO.png'); }
+.modal-hero-letter { background-image: url('assets/media/TR-ET.png'); }
+.modal-hero-honor { background-image: url('assets/media/CAPA FUNDO.png'); }
+.modal-hero-family { background-image: url('assets/media/CAPA FUNDO.png'); }
+.modal-hero-menu { background-image: url('assets/media/CAPA FUNDO.png'); }
+.modal-hero-etiquette { background-image: url('assets/media/CAPA FUNDO.png'); }
+.modal-hero-travel { background-image: url('assets/media/CAPA FUNDO.png'); }
+.modal-hero-guest { background-image: url('assets/media/CAPA FUNDO.png'); }
 .modal-hero-mapchooser { background-image: url('assets/media/mapa-pin.jpg'); }
 
 .modal-card.has-modal-hero p:not(.small-modal-text) {
