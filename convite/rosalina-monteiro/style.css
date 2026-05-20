@@ -6122,3 +6122,103 @@ body.convite-white-gold-theme .location-choice-overlay {
 body.convite-white-gold-theme .location-choice-preview {
   background-color: #ffffff !important;
 }
+
+/* =========================================================
+   QA — REMOVER LINHA/RETÂNGULO INTERNO SOBREPOSTO NOS POPUPS
+   A moldura absoluta de .vintage-modal-card::before estava a passar por cima
+   dos cards/listas dentro dos modais. Mantém as bordas dos próprios cards,
+   remove apenas o rectângulo decorativo interno.
+   ========================================================= */
+body.convite-white-gold-theme .vintage-modal-card::before,
+body.convite-white-gold-theme .modal-card.has-modal-hero::before {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+body.convite-white-gold-theme .modal-menu-list,
+body.convite-white-gold-theme .modal-etiquette-list,
+body.convite-white-gold-theme .modal-travel-grid,
+body.convite-white-gold-theme .honor-modal-list {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* =========================================================
+   QA FINAL — REMOVER MOLDURA/RETÂNGULO QUE CORTA OS CARDS DOS POPUPS
+   Corrige a linha dourada sobreposta nos modais Menu e Recomendações.
+   Mantém apenas a borda individual de cada card.
+   ========================================================= */
+body.convite-white-gold-theme .modal-card.has-modal-hero,
+body.convite-white-gold-theme .vintage-modal-card.has-modal-hero,
+body.convite-white-gold-theme .wide-modal.has-modal-hero {
+  background: #ffffff !important;
+  border: 1px solid rgba(212, 175, 55, 0.26) !important;
+  box-shadow: 0 26px 80px rgba(20, 18, 12, 0.18) !important;
+  outline: none !important;
+}
+
+body.convite-white-gold-theme .modal-card.has-modal-hero::before,
+body.convite-white-gold-theme .modal-card.has-modal-hero::after,
+body.convite-white-gold-theme .vintage-modal-card::before,
+body.convite-white-gold-theme .vintage-modal-card::after,
+body.convite-white-gold-theme .wide-modal::before,
+body.convite-white-gold-theme .wide-modal::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  outline: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+body.convite-white-gold-theme .modal-menu-list,
+body.convite-white-gold-theme .modal-etiquette-list,
+body.convite-white-gold-theme .modal-travel-grid,
+body.convite-white-gold-theme .honor-modal-list {
+  position: relative !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  overflow: visible !important;
+  isolation: isolate !important;
+}
+
+body.convite-white-gold-theme .modal-menu-list::before,
+body.convite-white-gold-theme .modal-menu-list::after,
+body.convite-white-gold-theme .modal-etiquette-list::before,
+body.convite-white-gold-theme .modal-etiquette-list::after,
+body.convite-white-gold-theme .modal-travel-grid::before,
+body.convite-white-gold-theme .modal-travel-grid::after,
+body.convite-white-gold-theme .honor-modal-list::before,
+body.convite-white-gold-theme .honor-modal-list::after {
+  content: none !important;
+  display: none !important;
+}
+
+body.convite-white-gold-theme .modal-menu-list > div,
+body.convite-white-gold-theme .modal-travel-grid > div,
+body.convite-white-gold-theme .modal-etiquette-list > p,
+body.convite-white-gold-theme .honor-modal-list > span {
+  position: relative !important;
+  z-index: 2 !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(212, 175, 55, 0.30) !important;
+  outline: none !important;
+  box-shadow: 0 12px 28px rgba(17, 16, 12, 0.035) !important;
+}
+
+body.convite-white-gold-theme .modal-card.has-modal-hero > :not(.modal-hero) {
+  max-width: calc(100% - 64px) !important;
+}
+
+@media (max-width: 768px) {
+  body.convite-white-gold-theme .modal-card.has-modal-hero > :not(.modal-hero) {
+    max-width: calc(100% - 40px) !important;
+  }
+}
