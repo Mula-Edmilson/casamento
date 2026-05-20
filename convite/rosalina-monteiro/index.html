@@ -813,12 +813,194 @@
       stroke-linejoin: round;
     }
 
+
+    /* =========================================================
+       TEMA FINAL PREMIUM — CAPA BRANCO PURO + OURO METÁLICO
+       Camada visual apenas. Mantém login e validações existentes.
+       ========================================================= */
+    :root {
+      --gold-dark: #7a5300;
+      --gold-deep: #a87505;
+      --gold-main: #d4af37;
+      --gold-light: #f2d76a;
+      --gold-shine: #fff1a8;
+      --gold-metal: linear-gradient(135deg,
+        #7a5300 0%,
+        #a87505 18%,
+        #d4af37 34%,
+        #fff1a8 49%,
+        #d4af37 62%,
+        #9a6b06 80%,
+        #f2d76a 100%
+      );
+      --bg: #ffffff;
+      --accent: #d4af37;
+      --accent-dark: #8a6400;
+      --text-dark: #171717;
+      --text-light: #424242;
+      --text-muted: #6a6a6a;
+      --border-color: rgba(212, 175, 55, 0.40);
+      --card: #ffffff;
+      --card-soft: rgba(255,255,255,0.96);
+    }
+
+    body {
+      background: #ffffff !important;
+      color: var(--text-light) !important;
+    }
+
+    .overlay {
+      background:
+        linear-gradient(to bottom,
+          rgba(255,255,255,0.00) 0%,
+          rgba(255,255,255,0.08) 34%,
+          rgba(255,255,255,0.55) 58%,
+          rgba(255,255,255,0.92) 82%,
+          #ffffff 100%
+        ),
+        linear-gradient(90deg, rgba(212,175,55,0.13), rgba(255,255,255,0.02)) !important;
+    }
+
+    .content,
+    .login-container,
+    .input-shell,
+    .info-line {
+      background-color: rgba(255,255,255,0.96) !important;
+    }
+
+    .content {
+      border-radius: 30px;
+      padding: 28px 22px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.06);
+      border: 1px solid rgba(212,175,55,0.22);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .login-container {
+      background:
+        linear-gradient(#ffffff, #ffffff) padding-box,
+        linear-gradient(135deg, rgba(122,83,0,0.42), rgba(255,241,168,0.72), rgba(212,175,55,0.42)) border-box !important;
+      border: 1px solid transparent !important;
+      box-shadow: 0 28px 84px rgba(0,0,0,0.18) !important;
+    }
+
+    .login-hero-overlay {
+      background:
+        linear-gradient(to bottom,
+          rgba(255,255,255,0.04) 0%,
+          rgba(255,255,255,0.28) 35%,
+          rgba(255,255,255,0.70) 68%,
+          #ffffff 100%
+        ),
+        linear-gradient(90deg, rgba(212,175,55,0.18), rgba(255,255,255,0.02)) !important;
+    }
+
+    .names,
+    .login-container .names,
+    .date-line,
+    .script-text {
+      color: #d4af37 !important;
+      background: var(--gold-metal) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      text-shadow: none !important;
+    }
+
+    .subtitle,
+    .quotation,
+    .time-row,
+    .days-text,
+    .login-subtitle,
+    .info-line,
+    .login-footer,
+    .login-hint,
+    .venue {
+      color: var(--text-light) !important;
+      text-shadow: none !important;
+    }
+
+    .days-number,
+    .date-text,
+    .time-value,
+    .login-container h2,
+    .info-line strong,
+    #loginForm input {
+      color: var(--text-dark) !important;
+      text-shadow: none !important;
+    }
+
+    .login-kicker,
+    #loginForm label,
+    .info-line svg,
+    .input-shell svg,
+    .time-label {
+      color: #a87505 !important;
+    }
+
+    .divider {
+      background: var(--gold-metal) !important;
+      height: 1px !important;
+    }
+
+    .input-shell,
+    .info-line {
+      border-color: rgba(212,175,55,0.38) !important;
+      background:
+        linear-gradient(#ffffff, #ffffff) padding-box,
+        linear-gradient(135deg, rgba(122,83,0,0.20), rgba(255,241,168,0.48), rgba(212,175,55,0.24)) border-box !important;
+      border: 1px solid transparent !important;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.045) !important;
+    }
+
+    .login-badge,
+    .btn-open,
+    .btn-close {
+      color: #8a6400 !important;
+      background:
+        linear-gradient(#ffffff, #ffffff) padding-box,
+        var(--gold-metal) border-box !important;
+      border: 1px solid transparent !important;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.055), 0 0 22px rgba(212,175,55,0.12) !important;
+    }
+
+    .btn-open:hover,
+    .btn-primary,
+    #submitBtn {
+      background: var(--gold-metal) !important;
+      border: 1px solid rgba(122,83,0,0.34) !important;
+      color: #171300 !important;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.42) !important;
+      box-shadow: 0 14px 30px rgba(112,78,0,0.24), inset 0 1px 0 rgba(255,255,255,0.48) !important;
+    }
+
+    .btn-primary:hover:not(:disabled),
+    #submitBtn:hover:not(:disabled) {
+      background: linear-gradient(135deg, #9a6b06 0%, #d4af37 38%, #fff1a8 55%, #a87505 100%) !important;
+      color: #171300 !important;
+    }
+
+    svg:not(.no-theme),
+    svg:not(.no-theme) path,
+    svg:not(.no-theme) circle,
+    svg:not(.no-theme) rect,
+    svg:not(.no-theme) line,
+    svg:not(.no-theme) polyline,
+    svg:not(.no-theme) polygon,
+    svg:not(.no-theme) ellipse {
+      fill: none !important;
+      stroke: currentColor !important;
+      stroke-linecap: round !important;
+      stroke-linejoin: round !important;
+    }
+
   </style>
   <script src="event-data.js"></script>
   <script src="client-config.js"></script>
   <script src="lirandzo-api.js"></script>
 </head>
-<body class="loading">
+<body class="loading convite-white-gold-theme">
 
   <!-- PÁGINA PRINCIPAL -->
   <div class="page">

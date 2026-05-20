@@ -5513,3 +5513,612 @@ body.convite-white-gold-theme #comprovativoForm select:focus {
   border-color: #C9A227 !important;
   box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.14) !important;
 }
+
+/* =========================================================
+   CORRECÇÃO FINAL — FUNDO INTERNO DOS POPUPS COM SCROLL
+   O fundo dourado anterior estava preso num pseudo-elemento absoluto
+   e, ao rolar o popup, deixava os cards fora do contentor visual.
+   Esta correcção mantém o tema branco/dourado e não altera nenhuma função.
+   ========================================================= */
+body.convite-white-gold-theme .vintage-detail-modal .vintage-modal-card.has-modal-hero,
+body.convite-white-gold-theme .vintage-detail-modal .modal-card.has-modal-hero {
+  background:
+    linear-gradient(180deg, rgba(201, 162, 39, 0.27) 0%, rgba(201, 162, 39, 0.18) 100%) center 12px / calc(100% - 24px) calc(100% - 24px) no-repeat,
+    #ffffff !important;
+  border-color: rgba(201, 162, 39, 0.42) !important;
+}
+
+body.convite-white-gold-theme .vintage-detail-modal .vintage-modal-card.has-modal-hero::before {
+  background: transparent !important;
+  border: 1px solid rgba(201, 162, 39, 0.48) !important;
+  inset: 12px !important;
+  z-index: 5 !important;
+}
+
+body.convite-white-gold-theme .vintage-detail-modal .vintage-modal-card.has-modal-hero::after {
+  background: transparent !important;
+  height: auto !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+}
+
+body.convite-white-gold-theme .vintage-detail-modal .modal-card.has-modal-hero > :not(.modal-hero),
+body.convite-white-gold-theme .vintage-detail-modal .modal-card.has-modal-hero .modal-menu-list,
+body.convite-white-gold-theme .vintage-detail-modal .modal-card.has-modal-hero .modal-etiquette-list,
+body.convite-white-gold-theme .vintage-detail-modal .modal-card.has-modal-hero .modal-travel-grid,
+body.convite-white-gold-theme .vintage-detail-modal .modal-card.has-modal-hero .honor-modal-list {
+  position: relative;
+  z-index: 3;
+}
+
+body.convite-white-gold-theme .vintage-detail-modal .modal-menu-list div,
+body.convite-white-gold-theme .vintage-detail-modal .modal-travel-grid div,
+body.convite-white-gold-theme .vintage-detail-modal .modal-etiquette-list p,
+body.convite-white-gold-theme .vintage-detail-modal .honor-modal-list span,
+body.convite-white-gold-theme .vintage-detail-modal .modal-note {
+  background: #ffffff !important;
+  border-color: rgba(201, 162, 39, 0.34) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.052) !important;
+}
+
+body.convite-white-gold-theme .vintage-detail-modal .modal-menu-list div strong,
+body.convite-white-gold-theme .vintage-detail-modal .modal-travel-grid div strong,
+body.convite-white-gold-theme .vintage-detail-modal .modal-etiquette-list strong {
+  color: var(--text-dark) !important;
+}
+
+/* =========================================================
+   QA CORRECÇÃO VISUAL — CONTRASTE DOS CARDS + ÍCONES CENTRADOS
+   Corrige apenas a camada visual dos cards de Padrinhos/Menu.
+   Não altera JavaScript, login, RSVP, mapas, presentes ou API.
+   ========================================================= */
+body.convite-white-gold-theme .honor-card,
+body.convite-white-gold-theme .menu-preview-card {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fffdf7 100%) !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(201, 162, 39, 0.44) !important;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.075) !important;
+  color: #383838 !important;
+}
+
+body.convite-white-gold-theme .honor-card::before,
+body.convite-white-gold-theme .menu-preview-card::before {
+  background: transparent !important;
+}
+
+body.convite-white-gold-theme .honor-card::after {
+  background: transparent !important;
+  border-color: rgba(201, 162, 39, 0.32) !important;
+}
+
+body.convite-white-gold-theme .honor-card h3,
+body.convite-white-gold-theme .menu-preview-card h3 {
+  color: #1f1f1f !important;
+  text-shadow: none !important;
+  font-weight: 700 !important;
+}
+
+body.convite-white-gold-theme .honor-card p,
+body.convite-white-gold-theme .menu-preview-card p {
+  color: #4a4a4a !important;
+  text-shadow: none !important;
+  font-weight: 400 !important;
+  line-height: 1.68 !important;
+}
+
+body.convite-white-gold-theme .honor-number,
+body.convite-white-gold-theme .menu-preview-card span {
+  color: #8f6f10 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  font-weight: 700 !important;
+}
+
+body.convite-white-gold-theme .honor-card .btn-outline,
+body.convite-white-gold-theme .menu-preview-card .btn-outline {
+  color: #8f6f10 !important;
+  border-color: rgba(201, 162, 39, 0.62) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+}
+
+body.convite-white-gold-theme .has-icon {
+  padding-top: 82px !important;
+}
+
+body.convite-white-gold-theme .card-icon {
+  position: absolute !important;
+  top: 22px !important;
+  left: 50% !important;
+  right: auto !important;
+  margin-left: -23px !important;
+  width: 46px !important;
+  height: 46px !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  color: #C9A227 !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(201, 162, 39, 0.42) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 12px 28px rgba(201, 162, 39, 0.16) !important;
+}
+
+body.convite-white-gold-theme .card-icon svg {
+  width: 22px !important;
+  height: 22px !important;
+  display: block !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+
+body.convite-white-gold-theme .card-icon svg,
+body.convite-white-gold-theme .card-icon svg * {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.55 !important;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (max-width: 768px) {
+  body.convite-white-gold-theme .honor-card,
+  body.convite-white-gold-theme .menu-preview-card {
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.07) !important;
+  }
+
+  body.convite-white-gold-theme .has-icon {
+    padding-top: 84px !important;
+  }
+}
+
+/* =========================================================
+   TEMA FINAL PREMIUM — BRANCO PURO + DOURADO METÁLICO REAL
+   Aplicação visual estrutural. Não altera JS, login, RSVP, API,
+   mapas, presentes ou qualquer fluxo funcional do convite.
+   ========================================================= */
+body.convite-white-gold-theme {
+  --white-pure: #ffffff;
+  --white-soft: #fefefe;
+  --white-paper: #fffdf8;
+  --ink: #171717;
+  --ink-soft: #424242;
+  --ink-muted: #6a6a6a;
+  --gold-shadow: rgba(112, 78, 0, 0.18);
+  --gold-line: rgba(206, 168, 49, 0.48);
+  --gold-dark: #7a5300;
+  --gold-deep: #a87505;
+  --gold-main: #d4af37;
+  --gold-light: #f2d76a;
+  --gold-shine: #fff1a8;
+  --gold-metal: linear-gradient(135deg,
+    #7a5300 0%,
+    #a87505 18%,
+    #d4af37 34%,
+    #fff1a8 49%,
+    #d4af37 62%,
+    #9a6b06 80%,
+    #f2d76a 100%
+  );
+  --gold-metal-soft: linear-gradient(135deg,
+    rgba(122, 83, 0, 0.10) 0%,
+    rgba(212, 175, 55, 0.18) 38%,
+    rgba(255, 241, 168, 0.32) 50%,
+    rgba(212, 175, 55, 0.14) 72%,
+    rgba(122, 83, 0, 0.08) 100%
+  );
+  --bg: #ffffff !important;
+  --card: #ffffff !important;
+  --section-bg: #ffffff !important;
+  --accent: #d4af37 !important;
+  --accent-dark: #8a6400 !important;
+  --text-dark: #171717 !important;
+  --text-light: #424242 !important;
+  --muted-readable: #6a6a6a !important;
+  --border-color: rgba(212, 175, 55, 0.36) !important;
+  background: #ffffff !important;
+  color: var(--ink-soft) !important;
+}
+
+body.convite-white-gold-theme .invite-wrap,
+body.convite-white-gold-theme .section,
+body.convite-white-gold-theme .section-highlight,
+body.convite-white-gold-theme .footer,
+body.convite-white-gold-theme .etiquette-section {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+}
+
+body.convite-white-gold-theme .invite-wrap {
+  border: 1px solid rgba(212, 175, 55, 0.42) !important;
+  box-shadow:
+    0 28px 76px rgba(0, 0, 0, 0.10),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.82) !important;
+}
+
+body.convite-white-gold-theme .hero-gradient-overlay,
+body.convite-white-gold-theme .gallery-gradient,
+body.convite-white-gold-theme .location-choice-overlay {
+  background:
+    linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.00) 0%,
+      rgba(255, 255, 255, 0.08) 34%,
+      rgba(255, 255, 255, 0.55) 58%,
+      rgba(255, 255, 255, 0.92) 82%,
+      #ffffff 100%
+    ),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.12), rgba(255,255,255,0.02)) !important;
+}
+
+body.convite-white-gold-theme .vintage-scene-overlay,
+body.convite-white-gold-theme .vintage-scene-overlay.soft-dark,
+body.convite-white-gold-theme .vintage-scene-overlay.warm-light {
+  background:
+    linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.58) 36%,
+      rgba(255, 255, 255, 0.88) 68%,
+      #ffffff 100%
+    ),
+    radial-gradient(circle at 50% 8%, rgba(255, 241, 168, 0.22), transparent 42%) !important;
+}
+
+body.convite-white-gold-theme .section-title,
+body.convite-white-gold-theme h1,
+body.convite-white-gold-theme h2,
+body.convite-white-gold-theme h3,
+body.convite-white-gold-theme h4,
+body.convite-white-gold-theme .event-title,
+body.convite-white-gold-theme .modal-card h2,
+body.convite-white-gold-theme .modal-card h3,
+body.convite-white-gold-theme .honor-card h3,
+body.convite-white-gold-theme .menu-preview-card h3,
+body.convite-white-gold-theme .travel-card h3,
+body.convite-white-gold-theme .info-block strong,
+body.convite-white-gold-theme .payment-method-header strong {
+  color: var(--ink) !important;
+  text-shadow: none !important;
+}
+
+body.convite-white-gold-theme p,
+body.convite-white-gold-theme li,
+body.convite-white-gold-theme label,
+body.convite-white-gold-theme small,
+body.convite-white-gold-theme .section-subtitle,
+body.convite-white-gold-theme .hero-bottom-content .lead,
+body.convite-white-gold-theme .welcome-guest,
+body.convite-white-gold-theme .guide-item p,
+body.convite-white-gold-theme .honor-card p,
+body.convite-white-gold-theme .menu-preview-card p,
+body.convite-white-gold-theme .etiquette-item p,
+body.convite-white-gold-theme .travel-card p,
+body.convite-white-gold-theme .modal-card p,
+body.convite-white-gold-theme .small-modal-text,
+body.convite-white-gold-theme .modal-menu-list p,
+body.convite-white-gold-theme .modal-travel-grid p,
+body.convite-white-gold-theme #guestbook-feed,
+body.convite-white-gold-theme .footer-contact {
+  color: var(--ink-soft) !important;
+  text-shadow: none !important;
+}
+
+body.convite-white-gold-theme .hero-bottom-content .names,
+body.convite-white-gold-theme .names,
+body.convite-white-gold-theme .script-heading,
+body.convite-white-gold-theme .chapter-title,
+body.convite-white-gold-theme .event-location,
+body.convite-white-gold-theme .footer .names,
+body.convite-white-gold-theme .letter-signature,
+body.convite-white-gold-theme .modal-signature {
+  color: #d4af37 !important;
+  background: var(--gold-metal) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+
+body.convite-white-gold-theme .vintage-section-kicker,
+body.convite-white-gold-theme .modal-kicker,
+body.convite-white-gold-theme .verse-reference,
+body.convite-white-gold-theme .chapter-number,
+body.convite-white-gold-theme .agenda-date,
+body.convite-white-gold-theme .agenda-time,
+body.convite-white-gold-theme .honor-number,
+body.convite-white-gold-theme .menu-preview-card span,
+body.convite-white-gold-theme .etiquette-item span:not(.etiquette-icon),
+body.convite-white-gold-theme .travel-map-mark,
+body.convite-white-gold-theme .section-icon,
+body.convite-white-gold-theme .icon,
+body.convite-white-gold-theme .scroll-down-indicator,
+body.convite-white-gold-theme .agenda-icon-small,
+body.convite-white-gold-theme .agenda-icon-divider,
+body.convite-white-gold-theme .location-choice-pin {
+  color: #b88908 !important;
+  text-shadow: none !important;
+}
+
+body.convite-white-gold-theme .vintage-icon-badge,
+body.convite-white-gold-theme .card-icon,
+body.convite-white-gold-theme .etiquette-icon,
+body.convite-white-gold-theme #musicControl,
+body.convite-white-gold-theme .fab-item,
+body.convite-white-gold-theme .modal-hero-badge {
+  color: #b88908 !important;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    var(--gold-metal) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.07),
+    0 0 22px rgba(212, 175, 55, 0.14) !important;
+}
+
+body.convite-white-gold-theme .card-icon {
+  position: absolute !important;
+  top: 22px !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  border-radius: 999px !important;
+}
+
+body.convite-white-gold-theme .has-icon {
+  padding-top: 84px !important;
+}
+
+body.convite-white-gold-theme .card-icon svg,
+body.convite-white-gold-theme .vintage-icon-badge svg,
+body.convite-white-gold-theme .etiquette-icon svg,
+body.convite-white-gold-theme .modal-hero-badge svg {
+  display: block !important;
+  width: 22px !important;
+  height: 22px !important;
+  margin: 0 !important;
+  overflow: visible !important;
+}
+
+body.convite-white-gold-theme svg:not(.no-theme),
+body.convite-white-gold-theme svg:not(.no-theme) path,
+body.convite-white-gold-theme svg:not(.no-theme) circle,
+body.convite-white-gold-theme svg:not(.no-theme) rect,
+body.convite-white-gold-theme svg:not(.no-theme) line,
+body.convite-white-gold-theme svg:not(.no-theme) polyline,
+body.convite-white-gold-theme svg:not(.no-theme) polygon,
+body.convite-white-gold-theme svg:not(.no-theme) ellipse {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+body.convite-white-gold-theme .story-chapter,
+body.convite-white-gold-theme .guide-item,
+body.convite-white-gold-theme .honor-card,
+body.convite-white-gold-theme .menu-preview-card,
+body.convite-white-gold-theme .etiquette-item,
+body.convite-white-gold-theme .travel-card,
+body.convite-white-gold-theme .vintage-letter-preview,
+body.convite-white-gold-theme .agenda-event,
+body.convite-white-gold-theme .gallery-image-container,
+body.convite-white-gold-theme .modal-card,
+body.convite-white-gold-theme #messageForm,
+body.convite-white-gold-theme #guestbook-feed,
+body.convite-white-gold-theme .info-block,
+body.convite-white-gold-theme .gift-item,
+body.convite-white-gold-theme .location-choice-card,
+body.convite-white-gold-theme .payment-method-block,
+body.convite-white-gold-theme .modal-note,
+body.convite-white-gold-theme .modal-menu-list div,
+body.convite-white-gold-theme .modal-travel-grid div,
+body.convite-white-gold-theme .modal-etiquette-list p,
+body.convite-white-gold-theme .honor-modal-list span,
+body.convite-white-gold-theme .qr-checkin-card {
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(135deg, rgba(122,83,0,0.34), rgba(255,241,168,0.64), rgba(212,175,55,0.36)) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.060),
+    0 0 0 1px rgba(255,255,255,0.72) inset !important;
+}
+
+body.convite-white-gold-theme .honor-card,
+body.convite-white-gold-theme .menu-preview-card,
+body.convite-white-gold-theme .travel-card,
+body.convite-white-gold-theme .etiquette-item {
+  color: var(--ink-soft) !important;
+}
+
+body.convite-white-gold-theme .honor-card::before,
+body.convite-white-gold-theme .menu-preview-card::before {
+  background: linear-gradient(180deg, rgba(255, 241, 168, 0.10), rgba(255,255,255,0)) !important;
+}
+
+body.convite-white-gold-theme .honor-card::after,
+body.convite-white-gold-theme .vintage-letter-preview::before,
+body.convite-white-gold-theme .vintage-modal-card::before {
+  border-color: rgba(212, 175, 55, 0.32) !important;
+  background: transparent !important;
+}
+
+body.convite-white-gold-theme .btn-primary,
+body.convite-white-gold-theme button.btn-primary,
+body.convite-white-gold-theme a.btn-primary,
+body.convite-white-gold-theme .vintage-action.btn-primary,
+body.convite-white-gold-theme .tab-btn.active,
+body.convite-white-gold-theme input[type="file"]::file-selector-button:hover {
+  background: var(--gold-metal) !important;
+  background-color: #d4af37 !important;
+  border: 1px solid rgba(122, 83, 0, 0.34) !important;
+  color: #171300 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.42) !important;
+  box-shadow:
+    0 14px 30px rgba(112, 78, 0, 0.24),
+    inset 0 1px 0 rgba(255,255,255,0.48) !important;
+}
+
+body.convite-white-gold-theme .btn-primary:hover:not(:disabled),
+body.convite-white-gold-theme button.btn-primary:hover:not(:disabled),
+body.convite-white-gold-theme a.btn-primary:hover:not(:disabled),
+body.convite-white-gold-theme .vintage-action.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9a6b06 0%, #d4af37 38%, #fff1a8 55%, #a87505 100%) !important;
+  color: #171300 !important;
+  border-color: rgba(122, 83, 0, 0.46) !important;
+  box-shadow:
+    0 16px 34px rgba(112, 78, 0, 0.30),
+    inset 0 1px 0 rgba(255,255,255,0.54) !important;
+}
+
+body.convite-white-gold-theme .btn-outline,
+body.convite-white-gold-theme button.btn-outline,
+body.convite-white-gold-theme a.btn-outline,
+body.convite-white-gold-theme .map-link-button,
+body.convite-white-gold-theme .tab-btn,
+body.convite-white-gold-theme input[type="file"]::file-selector-button,
+body.convite-white-gold-theme .btn-ghost,
+body.convite-white-gold-theme button.btn-ghost {
+  color: #8a6400 !important;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    var(--gold-metal) border-box !important;
+  border: 1px solid transparent !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.045) !important;
+}
+
+body.convite-white-gold-theme .btn-outline:hover:not(:disabled),
+body.convite-white-gold-theme button.btn-outline:hover:not(:disabled),
+body.convite-white-gold-theme a.btn-outline:hover:not(:disabled),
+body.convite-white-gold-theme .map-link-button:hover,
+body.convite-white-gold-theme .tab-btn:hover,
+body.convite-white-gold-theme .btn-ghost:hover:not(:disabled),
+body.convite-white-gold-theme button.btn-ghost:hover:not(:disabled),
+body.convite-white-gold-theme #musicControl:hover,
+body.convite-white-gold-theme .fab-item:hover {
+  background:
+    linear-gradient(rgba(255, 251, 230, 0.94), rgba(255,255,255,0.96)) padding-box,
+    var(--gold-metal) border-box !important;
+  color: #7a5300 !important;
+  border-color: transparent !important;
+}
+
+body.convite-white-gold-theme .modal-hero-overlay {
+  background:
+    linear-gradient(to bottom,
+      rgba(255,255,255,0.00) 0%,
+      rgba(255,255,255,0.18) 34%,
+      rgba(255,255,255,0.72) 68%,
+      #ffffff 100%
+    ),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.16), rgba(255,255,255,0.03)) !important;
+}
+
+body.convite-white-gold-theme .modal-hero-top-accent,
+body.convite-white-gold-theme .location-choice-top-accent,
+body.convite-white-gold-theme .modal-divider,
+body.convite-white-gold-theme .agenda-icon-divider .divider,
+body.convite-white-gold-theme .divider {
+  background: var(--gold-metal) !important;
+}
+
+body.convite-white-gold-theme .vintage-detail-modal .vintage-modal-card.has-modal-hero,
+body.convite-white-gold-theme .vintage-detail-modal .modal-card.has-modal-hero {
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(135deg, rgba(122,83,0,0.42), rgba(255,241,168,0.72), rgba(212,175,55,0.42)) border-box !important;
+  border: 1px solid transparent !important;
+}
+
+body.convite-white-gold-theme .modal-note {
+  border-left: 3px solid #d4af37 !important;
+}
+
+body.convite-white-gold-theme input,
+body.convite-white-gold-theme textarea,
+body.convite-white-gold-theme select,
+body.convite-white-gold-theme #comprovativoForm select {
+  color: var(--ink) !important;
+  background: #ffffff !important;
+  border-color: rgba(212, 175, 55, 0.44) !important;
+}
+
+body.convite-white-gold-theme input:focus,
+body.convite-white-gold-theme textarea:focus,
+body.convite-white-gold-theme select:focus,
+body.convite-white-gold-theme #comprovativoForm select:focus {
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.16) !important;
+}
+
+@media (max-width: 768px) {
+  body.convite-white-gold-theme .card-icon {
+    top: 22px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+}
+
+/* =========================================================
+   CORRECÇÃO FINAL — REMOVER OVERLAY DOURADO NO TOPO DOS POPUPS
+   Mantém o tema branco/dourado, mas elimina a faixa/overlay metálica
+   que ficava por cima da imagem no topo dos modais.
+   Não altera JS, login, RSVP, mapas, presentes ou API.
+   ========================================================= */
+body.convite-white-gold-theme .modal-hero-top-accent {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  background: none !important;
+}
+
+body.convite-white-gold-theme .modal-hero-overlay {
+  background:
+    linear-gradient(to bottom,
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.18) 32%,
+      rgba(255,255,255,0.64) 68%,
+      #ffffff 100%
+    ) !important;
+}
+
+body.convite-white-gold-theme .modal-hero {
+  background-color: #ffffff !important;
+}
+
+body.convite-white-gold-theme .modal-hero::before {
+  filter: none !important;
+}
+
+/* =========================================================
+   QA — REMOVER FAIXA/OVERLAY DOURADO NO TOPO DOS CARDS DE MAPAS
+   Corrige especificamente o popup dos mapas, onde a classe
+   .location-choice-top-accent ainda aplicava uma faixa dourada.
+   Não altera HTML, JS, login, RSVP, presentes ou API.
+   ========================================================= */
+body.convite-white-gold-theme .location-choice-top-accent {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  background: none !important;
+}
+
+body.convite-white-gold-theme .location-choice-overlay {
+  background:
+    linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.02) 0%,
+      rgba(255, 255, 255, 0.14) 36%,
+      rgba(255, 255, 255, 0.62) 68%,
+      rgba(255, 255, 255, 0.96) 100%
+    ) !important;
+}
+
+body.convite-white-gold-theme .location-choice-preview {
+  background-color: #ffffff !important;
+}
