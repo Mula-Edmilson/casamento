@@ -45,7 +45,7 @@
   function normalizeGuestResponse(data, fallbackName) {
     const d = data && (data.data || data) || {};
     const total = Number(d.maxGuests || d.maxGuestsTotal || d.guests || 1) || 1;
-    const token = d.token || d.inviteToken || d.publicToken || d.id || d._id || d.deviceToken || localStorage.getItem('guestToken') || '';
+    const token = d.token || d.inviteToken || d.publicToken || d.id || d._id || localStorage.getItem('guestToken') || '';
     return Object.assign({}, d, {
       name: d.name || d.nome || d.guestName || fallbackName || '',
       nome: d.nome || d.name || d.guestName || fallbackName || '',
@@ -110,16 +110,42 @@
       if (!isConfigured()) return Local.get(action, p);
 
       if (action === 'find_guest') {
-        const loginToken = p.deviceToken || localStorage.getItem('deviceToken') || ('dev-' + Math.random().toString(36).slice(2));
-        const result = await postApi({ action: 'login', name: p.name, loginToken: loginToken });
-        const guest = normalizeGuestResponse(result, p.name);
-        return { status: 'success', data: guest, nome: guest.name, token: guest.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+        try {
+          const result = await postApi({ action: 'login', name: p.name });
+          let guest = normalizeGuestResponse(result, p.name);
+          if (!guest.token) {
+            const localGuest = findLocalGuestByName(p.name);
+            if (localGuest) {
+              const localData = normalizeGuestResponse(localGuest, p.name);
+              guest = Object.assign({}, localData, guest, { token: localData.token || guest.token });
+            }
+          }
+          return { status: 'success', data: guest, nome: guest.name, token: guest.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+        } catch (err) {
+          const message = String(err && err.message || '');
+          const isDeviceRestriction = /(dispositivo|device|loginToken|token.*login|login.*token|convite.*aberto|outro dispositivo|já foi aberto|ja foi aberto|acesso restrito|bloque)/i.test(message);
+          const localGuest = findLocalGuestByName(p.name);
+          if (isDeviceRestriction && localGuest) {
+            const guest = normalizeGuestResponse(localGuest, p.name);
+            return { status: 'success', data: guest, nome: guest.name, token: guest.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+          }
+          throw err;
+        }
       }
 
       if (action === 'get_guest') {
-        const result = await getApi('get_guest', { token: p.token || '', nome: p.nome || p.name || '' });
-        const guest = normalizeGuestResponse(result, 'Convidado');
-        return { status: 'success', data: guest, nome: guest.name, token: guest.token || p.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+        try {
+          const result = await getApi('get_guest', { token: p.token || '', nome: p.nome || p.name || '' });
+          const guest = normalizeGuestResponse(result, 'Convidado');
+          return { status: 'success', data: guest, nome: guest.name, token: guest.token || p.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+        } catch (err) {
+          const localGuest = findLocalGuestByToken(p.token);
+          if (localGuest) {
+            const guest = normalizeGuestResponse(localGuest, 'Convidado');
+            return { status: 'success', data: guest, nome: guest.name, token: guest.token || p.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+          }
+          throw err;
+        }
       }
 
       if (action === 'get_rsvp_status') return getApi('get_rsvp_status', { token: p.token || '', nome: p.nome || p.name || '' });

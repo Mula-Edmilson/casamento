@@ -170,24 +170,18 @@
         </svg>
       </div>
       
-      <h1>Acesso Restrito</h1>
+      <h1>Restrição removida</h1>
       
       <p class="message">
-        Este convite já foi aberto em outro dispositivo.
+        A restrição por dispositivo foi removida.
       </p>
       
-      <div class="details" id="details" style="display: none;">
-        <p><strong>📱 Dispositivo original:</strong> <span id="deviceInfo">Carregando...</span></p>
-        <p><strong>🕐 Aberto em:</strong> <span id="openedAt">Carregando...</span></p>
-      </div>
-      
       <p style="margin-bottom: 24px; color: var(--text-muted); font-size: 0.9rem;">
-        Por questões de segurança, cada convite só pode ser acessado em UM dispositivo.
-        Este acesso já foi usado noutro dispositivo. Para proteger a organização do convite, contacte a equipa de apoio caso precise de ajuda.
+        Agora qualquer dispositivo pode abrir o convite, desde que o convidado informe correctamente o nome no formulário de entrada.
       </p>
       
       <button class="btn btn-primary" onclick="clearAndRedirect()">
-        Tentar novamente
+        Entrar no convite
       </button>
       
       <a href="https://lirandzo.com" target="_blank">
@@ -200,40 +194,19 @@
       </div>
       
       <div class="device-info">
-        <p>Token do dispositivo atual: <span id="currentDeviceToken"></span></p>
+        <p>Estado do bloqueio por dispositivo: <span id="currentDeviceToken"></span></p>
       </div>
     </div>
   </div>
 
   <script>
-    function getDeviceToken() {
-      let token = localStorage.getItem('deviceToken');
-      if (!token) {
-        token = Math.random().toString(36).substring(2) + Date.now().toString(36);
-        localStorage.setItem('deviceToken', token);
-      }
-      return token;
-    }
-
     function clearAndRedirect() {
       localStorage.clear();
       sessionStorage.clear();
       window.location.href = 'index.html';
     }
 
-    document.getElementById('currentDeviceToken').textContent = 
-      getDeviceToken().substring(0, 20) + '...';
-
-    // Tentar obter informações do convite (opcional)
-    const urlParams = new URLSearchParams(window.location.search);
-    const deviceInfo = urlParams.get('device');
-    const openedAt = urlParams.get('opened');
-    
-    if (deviceInfo || openedAt) {
-      document.getElementById('details').style.display = 'block';
-      if (deviceInfo) document.getElementById('deviceInfo').textContent = decodeURIComponent(deviceInfo);
-      if (openedAt) document.getElementById('openedAt').textContent = decodeURIComponent(openedAt);
-    }
+    document.getElementById('currentDeviceToken').textContent = 'removido';
   </script>
 </body>
 </html>

@@ -962,10 +962,10 @@
 <script>
 
     // ============================================
-// VERIFICAÇÃO DE DISPOSITIVO (ADICIONAR NO INÍCIO)
+// VERIFICAÇÃO DE ACESSO DO CONVIDADO
 // ============================================
 
-// Coloca isto no TOPO absoluto da tua tag <script> no convite.html
+// Configuração base de acesso ao convite
 const API_URL = window.LIRANDZO_APPS_SCRIPT_URL || '#demo-offline';
 const DEMO_MODE = !(window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured());
 const DEMO_GIFTS = [
@@ -990,7 +990,7 @@ function jsonpRequest(url) {
   if (window.LirandzoAPI) return window.LirandzoAPI.get(action, params);
   return Promise.resolve({ status: 'error', message: 'API não carregada' });
 }
-async function verifyDeviceAccess() {
+async function verifyInviteAccess() {
   const urlParams = new URLSearchParams(window.location.search);
   let currentToken = urlParams.get("t");
 
@@ -1024,9 +1024,9 @@ async function verifyDeviceAccess() {
   }
 }
 
-// Modificar o DOMContentLoaded para incluir a verificação
+// Verificar acesso antes de iniciar o convite
 document.addEventListener('DOMContentLoaded', async () => {
-  const hasAccess = await verifyDeviceAccess();
+  const hasAccess = await verifyInviteAccess();
   if (!hasAccess) return;
 
   // Resto do código existente...
