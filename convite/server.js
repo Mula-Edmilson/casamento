@@ -1012,37 +1012,27 @@ async function getRsvpStatus(req, res, invite) {
   sendJson(req, res, { status: 'success', data: { confirmed: Boolean(rsvp), rsvp } });
 }
 async function handleOpenInvite(req, res, invite) {
-  const { token, nome = '', deviceToken = '' } = req.body || {};
+  const { token, nome = '' } = req.body || {};
   const guest = await findGuestByIdentity(invite, { nome, token });
   if (guest && !String(guest.status || '').toLowerCase().includes('confirmado')) {
     if (!guest.inviteToken) guest.inviteToken = generateGuestPublicToken();
     guest.status = 'Convite Aberto';
-    if (deviceToken && !guest.deviceToken) guest.deviceToken = String(deviceToken);
     await guest.save();
     await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name });
   }
   res.json({ status: 'success' });
 }
 async function handleLogin(req, res, invite) {
-  const { name, loginToken } = req.body || {};
-  if (!name || !loginToken) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
+  const { name } = req.body || {};
+  if (!name) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
 
   const guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(name) });
   if (!guest) return res.status(401).json({ status: 'error', message: 'Nome não encontrado na lista.' });
-
-  if (guest.deviceToken && guest.deviceToken !== String(loginToken)) {
-    return res.status(403).json({ status: 'error', message: 'Este convite já foi aberto noutro dispositivo.' });
-  }
 
   let shouldSave = false;
 
   if (!guest.inviteToken) {
     guest.inviteToken = generateGuestPublicToken();
-    shouldSave = true;
-  }
-
-  if (!guest.deviceToken) {
-    guest.deviceToken = String(loginToken);
     shouldSave = true;
   }
 
