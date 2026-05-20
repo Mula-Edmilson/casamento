@@ -106,7 +106,7 @@ p:last-child {
 .hero {
   position: relative;
   min-height: 100vh;
-  background-image: url('assets/media/CAPA HERO.png');
+  background-image: url('assets/media/CAPA HERO.jpg');
   background-size: cover;
   background-position: center 30%;
   display: flex;
@@ -2296,14 +2296,14 @@ html[data-scroll-direction="up"] .magic-reveal[data-reveal="slide"]:not(.is-visi
 
 .modal-hero-rsvp { background-image: url('assets/media/TR-ET.png'); }
 .modal-hero-dress { background-image: url('assets/media/dress-code-paleta.jpeg'); background-position: center; }
-.modal-hero-gifts { background-image: url('assets/media/CAPA FUNDO.png'); }
+.modal-hero-gifts { background-image: url('assets/media/CAPA FUNDO.jpg'); }
 .modal-hero-letter { background-image: url('assets/media/TR-ET.png'); }
-.modal-hero-honor { background-image: url('assets/media/CAPA FUNDO.png'); }
-.modal-hero-family { background-image: url('assets/media/CAPA FUNDO.png'); }
-.modal-hero-menu { background-image: url('assets/media/CAPA FUNDO.png'); }
-.modal-hero-etiquette { background-image: url('assets/media/CAPA FUNDO.png'); }
-.modal-hero-travel { background-image: url('assets/media/CAPA FUNDO.png'); }
-.modal-hero-guest { background-image: url('assets/media/CAPA FUNDO.png'); }
+.modal-hero-honor { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-family { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-menu { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-etiquette { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-travel { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-guest { background-image: url('assets/media/CAPA FUNDO.jpg'); }
 .modal-hero-mapchooser { background-image: url('assets/media/mapa-pin.jpg'); }
 
 .modal-card.has-modal-hero p:not(.small-modal-text) {
