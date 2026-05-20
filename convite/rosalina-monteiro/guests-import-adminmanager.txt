@@ -1,153 +1,161 @@
 Nome;Mesa;Acompanhantes;Telefone;Notas
-Armindo Ezequiel & Esposa;A definir;1;;Token: rm-2026-001-armindo-ezequiel-esposa | Categoria: Couple | Nº: 1
-Carlos Macamo & Esposa;A definir;1;;Token: rm-2026-002-carlos-macamo-esposa | Categoria: Couple | Nº: 2
-Arnaldo Bimbe & Esposa;A definir;1;;Token: rm-2026-003-arnaldo-bimbe-esposa | Categoria: Couple | Nº: 3
-Amaral José & Esposa;A definir;1;;Token: rm-2026-004-amaral-jose-esposa | Categoria: Couple | Nº: 4
-Maurício Ezequiel & Esposa;A definir;1;;Token: rm-2026-005-mauricio-ezequiel-esposa | Categoria: Couple | Nº: 5
-Gilberto Manhiça & Esposa;A definir;1;;Token: rm-2026-006-gilberto-manhica-esposa | Categoria: Couple | Nº: 6
-Castilho Ezequiel & Esposa;A definir;1;;Token: rm-2026-007-castilho-ezequiel-esposa | Categoria: Couple | Nº: 7
-Alexandre Muianga & Esposa;A definir;1;;Token: rm-2026-008-alexandre-muianga-esposa | Categoria: Couple | Nº: 8
-Alcídio Chilengue & Esposa;A definir;1;;Token: rm-2026-009-alcidio-chilengue-esposa | Categoria: Couple | Nº: 9
-Américo Branco & Esposa;A definir;1;;Token: rm-2026-010-americo-branco-esposa | Categoria: Couple | Nº: 10
-Edgar Gemo & Esposa;A definir;1;;Token: rm-2026-011-edgar-gemo-esposa | Categoria: Couple | Nº: 11
-Cleide Branco & Esposo;A definir;1;;Token: rm-2026-012-cleide-branco-esposo | Categoria: Couple | Nº: 12
-Rolando Ezequiel & Esposa;A definir;1;;Token: rm-2026-013-rolando-ezequiel-esposa | Categoria: Couple | Nº: 13
-Ivan Bimbe & Esposa;A definir;1;;Token: rm-2026-014-ivan-bimbe-esposa | Categoria: Couple | Nº: 14
-Paulo Bimbe & Esposa;A definir;1;;Token: rm-2026-015-paulo-bimbe-esposa | Categoria: Couple | Nº: 15
-Hélio Simone & Esposa;A definir;1;;Token: rm-2026-016-helio-simone-esposa | Categoria: Couple | Nº: 16
-Ivan Miambo & Esposa;A definir;1;;Token: rm-2026-017-ivan-miambo-esposa | Categoria: Couple | Nº: 17
-Milondre Manhique & Esposa;A definir;1;;Token: rm-2026-018-milondre-manhique-esposa | Categoria: Couple | Nº: 18
-Rosa Manjate & Esposo;A definir;1;;Token: rm-2026-019-rosa-manjate-esposo | Categoria: Couple | Nº: 19
-Custódia Zacarias & Esposo;A definir;1;;Token: rm-2026-020-custodia-zacarias-esposo | Categoria: Couple | Nº: 20
-Celsa Rangel & Esposo;A definir;1;;Token: rm-2026-021-celsa-rangel-esposo | Categoria: Couple | Nº: 21
-Vitória António & Esposo;A definir;1;;Token: rm-2026-022-vitoria-antonio-esposo | Categoria: Couple | Nº: 22
-Inocêncio Mucumbi & Esposa;A definir;1;;Token: rm-2026-023-inocencio-mucumbi-esposa | Categoria: Couple | Nº: 23
-Simões Chico & Esposa;A definir;1;;Token: rm-2026-024-simoes-chico-esposa | Categoria: Couple | Nº: 24
-Nézia Amaral & Esposo;A definir;1;;Token: rm-2026-025-nezia-amaral-esposo | Categoria: Couple | Nº: 25
-Vasco Rangel & Esposa;A definir;1;;Token: rm-2026-026-vasco-rangel-esposa | Categoria: Couple | Nº: 26
-Adelina Ezequiel & Esposo;A definir;1;;Token: rm-2026-027-adelina-ezequiel-esposo | Categoria: Couple | Nº: 27
-Silvestre Constantino & Esposa;A definir;1;;Token: rm-2026-028-silvestre-constantino-esposa | Categoria: Couple | Nº: 28
-Manuel Bila & Esposa;A definir;1;;Token: rm-2026-029-manuel-bila-esposa | Categoria: Couple | Nº: 29
-Paulino Marote & Esposa;A definir;1;;Token: rm-2026-030-paulino-marote-esposa | Categoria: Couple | Nº: 30
-Estevão Camacho & Esposa;A definir;1;;Token: rm-2026-031-estevao-camacho-esposa | Categoria: Couple | Nº: 31
-Filipe Tembe & Esposa;A definir;1;;Token: rm-2026-032-filipe-tembe-esposa | Categoria: Couple | Nº: 32
-Ana Ivânia & Esposo;A definir;1;;Token: rm-2026-033-ana-ivania-esposo | Categoria: Couple | Nº: 33
-Abiba Jamal & Esposo;A definir;1;;Token: rm-2026-034-abiba-jamal-esposo | Categoria: Couple | Nº: 34
-Aguinelda Marote & Esposo;A definir;1;;Token: rm-2026-035-aguinelda-marote-esposo | Categoria: Couple | Nº: 35
-Helder Langa & Esposa;A definir;1;;Token: rm-2026-036-helder-langa-esposa | Categoria: Couple | Nº: 36
-Francisco Ricardo & Esposa;A definir;1;;Token: rm-2026-037-francisco-ricardo-esposa | Categoria: Couple | Nº: 37
-Vasco Monteiro & Esposa;A definir;1;;Token: rm-2026-038-vasco-monteiro-esposa | Categoria: Couple | Nº: 38
-Agostinho Monteiro & Esposa;A definir;1;;Token: rm-2026-039-agostinho-monteiro-esposa | Categoria: Couple | Nº: 39
-Vasco Macamo & Esposa;A definir;1;;Token: rm-2026-040-vasco-macamo-esposa | Categoria: Couple | Nº: 40
-Albertina Monteiro & Esposo;A definir;1;;Token: rm-2026-041-albertina-monteiro-esposo | Categoria: Couple | Nº: 41
-Nércia Monteiro & Esposo;A definir;1;;Token: rm-2026-042-nercia-monteiro-esposo | Categoria: Couple | Nº: 42
-Júlia Monteiro & Esposo;A definir;1;;Token: rm-2026-043-julia-monteiro-esposo | Categoria: Couple | Nº: 43
-Júlio Mahota & Esposa;A definir;1;;Token: rm-2026-044-julio-mahota-esposa | Categoria: Couple | Nº: 44
-Florência Come & Esposo;A definir;1;;Token: rm-2026-045-florencia-come-esposo | Categoria: Couple | Nº: 45
-Catija Musselo & Esposo;A definir;1;;Token: rm-2026-046-catija-musselo-esposo | Categoria: Couple | Nº: 46
-Lucia Banze & Esposo;A definir;1;;Token: rm-2026-047-lucia-banze-esposo | Categoria: Couple | Nº: 47
-Ivete Dos Santos & Esposo;A definir;1;;Token: rm-2026-048-ivete-dos-santos-esposo | Categoria: Couple | Nº: 48
-Maria Damião & Esposo;A definir;1;;Token: rm-2026-049-maria-damiao-esposo | Categoria: Couple | Nº: 49
-Avelino Chilengue & Esposa;A definir;1;;Token: rm-2026-050-avelino-chilengue-esposa | Categoria: Couple | Nº: 50
-Avelino Gujamo & Esposa;A definir;1;;Token: rm-2026-051-avelino-gujamo-esposa | Categoria: Couple | Nº: 51
-Francisco Cossa & Esposa;A definir;1;;Token: rm-2026-052-francisco-cossa-esposa | Categoria: Couple | Nº: 52
-Dércio Zitha & Esposa;A definir;1;;Token: rm-2026-053-dercio-zitha-esposa | Categoria: Couple | Nº: 53
-Armando Ndava & Esposa;A definir;1;;Token: rm-2026-054-armando-ndava-esposa | Categoria: Couple | Nº: 54
-Gizelda Chirindza & Esposo;A definir;1;;Token: rm-2026-055-gizelda-chirindza-esposo | Categoria: Couple | Nº: 55
-Luisa Mahota & Esposo;A definir;1;;Token: rm-2026-056-luisa-mahota-esposo | Categoria: Couple | Nº: 56
-Lazaro Magaia & Esposa;A definir;1;;Token: rm-2026-057-lazaro-magaia-esposa | Categoria: Couple | Nº: 57
-Alice Magaia & Esposo;A definir;1;;Token: rm-2026-058-alice-magaia-esposo | Categoria: Couple | Nº: 58
-Silvia Juma & Esposo;A definir;1;;Token: rm-2026-059-silvia-juma-esposo | Categoria: Couple | Nº: 59
-Vladimir & Esposa;A definir;1;;Token: rm-2026-060-vladimir-esposa | Categoria: Couple | Nº: 60
-Hugo Chichava & Esposa;A definir;1;;Token: rm-2026-061-hugo-chichava-esposa | Categoria: Couple | Nº: 61
-Gil & Esposa;A definir;1;;Token: rm-2026-062-gil-esposa | Categoria: Couple | Nº: 62
-Cândido Vinte & Esposa;A definir;1;;Token: rm-2026-063-candido-vinte-esposa | Categoria: Couple | Nº: 63
-Panguana & Esposa;A definir;1;;Token: rm-2026-064-panguana-esposa | Categoria: Couple | Nº: 64
-Nelson Cuna & Esposa;A definir;1;;Token: rm-2026-065-nelson-cuna-esposa | Categoria: Couple | Nº: 65
-Rostina & Esposo;A definir;1;;Token: rm-2026-066-rostina-esposo | Categoria: Couple | Nº: 66
-Lino Vigo & Esposa;A definir;1;;Token: rm-2026-067-lino-vigo-esposa | Categoria: Couple | Nº: 67
-Mauro & Esposa;A definir;1;;Token: rm-2026-068-mauro-esposa | Categoria: Couple | Nº: 68
-Graça Branco;A definir;0;;Token: rm-2026-069-graca-branco | Categoria: Single | Nº: 69
-Felizarda Naife;A definir;0;;Token: rm-2026-070-felizarda-naife | Categoria: Single | Nº: 70
-Deolinda Ezequiel;A definir;0;;Token: rm-2026-071-deolinda-ezequiel | Categoria: Single | Nº: 71
-Maria Leonor Ezequiel;A definir;0;;Token: rm-2026-072-maria-leonor-ezequiel | Categoria: Single | Nº: 72
-Lurdes Nhatugués;A definir;0;;Token: rm-2026-073-lurdes-nhatugues | Categoria: Single | Nº: 73
-Maria Nhatugués;A definir;0;;Token: rm-2026-074-maria-nhatugues | Categoria: Single | Nº: 74
-Anina Menganhela;A definir;0;;Token: rm-2026-075-anina-menganhela | Categoria: Single | Nº: 75
-Esperança Chilengue;A definir;0;;Token: rm-2026-076-esperanca-chilengue | Categoria: Single | Nº: 76
-Rosa Naife;A definir;0;;Token: rm-2026-077-rosa-naife | Categoria: Single | Nº: 77
-Eugênia Naife;A definir;0;;Token: rm-2026-078-eugenia-naife | Categoria: Single | Nº: 78
-Esmeralda Cossa;A definir;0;;Token: rm-2026-079-esmeralda-cossa | Categoria: Single | Nº: 79
-Cláudia Bispo;A definir;0;;Token: rm-2026-080-claudia-bispo | Categoria: Single | Nº: 80
-Albertina Matine;A definir;0;;Token: rm-2026-081-albertina-matine | Categoria: Single | Nº: 81
-Ana Lurdes;A definir;0;;Token: rm-2026-082-ana-lurdes | Categoria: Single | Nº: 82
-Edna Bimbe;A definir;0;;Token: rm-2026-083-edna-bimbe | Categoria: Single | Nº: 83
-Adriana Macamo;A definir;0;;Token: rm-2026-084-adriana-macamo | Categoria: Single | Nº: 84
-Isilda Chau;A definir;0;;Token: rm-2026-085-isilda-chau | Categoria: Single | Nº: 85
-Mirele Ezequiel;A definir;0;;Token: rm-2026-086-mirele-ezequiel | Categoria: Single | Nº: 86
-Jéssica Bila;A definir;0;;Token: rm-2026-087-jessica-bila | Categoria: Single | Nº: 87
-Chelta Baptista;A definir;0;;Token: rm-2026-088-chelta-baptista | Categoria: Single | Nº: 88
-Gessica Dinas;A definir;0;;Token: rm-2026-089-gessica-dinas | Categoria: Single | Nº: 89
-Ana Langa;A definir;0;;Token: rm-2026-090-ana-langa | Categoria: Single | Nº: 90
-Vanessa Da Silva;A definir;0;;Token: rm-2026-091-vanessa-da-silva | Categoria: Single | Nº: 91
-Queila Jalane;A definir;0;;Token: rm-2026-092-queila-jalane | Categoria: Single | Nº: 92
-Ruth Paulino;A definir;0;;Token: rm-2026-093-ruth-paulino | Categoria: Single | Nº: 93
-Arináquina Mole;A definir;0;;Token: rm-2026-094-arinaquina-mole | Categoria: Single | Nº: 94
-Cynthia Lorena;A definir;0;;Token: rm-2026-095-cynthia-lorena | Categoria: Single | Nº: 95
-Joyce Bimbe;A definir;0;;Token: rm-2026-096-joyce-bimbe | Categoria: Single | Nº: 96
-Isabel Tangune;A definir;0;;Token: rm-2026-097-isabel-tangune | Categoria: Single | Nº: 97
-Etelvina Dimande;A definir;0;;Token: rm-2026-098-etelvina-dimande | Categoria: Single | Nº: 98
-Nicole Bimbe;A definir;0;;Token: rm-2026-099-nicole-bimbe | Categoria: Single | Nº: 99
-Luzia Amélia;A definir;0;;Token: rm-2026-100-luzia-amelia | Categoria: Single | Nº: 100
-Ermelinda Zinda;A definir;0;;Token: rm-2026-101-ermelinda-zinda | Categoria: Single | Nº: 101
-Rebeca Fátima;A definir;0;;Token: rm-2026-102-rebeca-fatima | Categoria: Single | Nº: 102
-Elton Simões;A definir;0;;Token: rm-2026-103-elton-simoes | Categoria: Single | Nº: 103
-Diney Simões;A definir;0;;Token: rm-2026-104-diney-simoes | Categoria: Single | Nº: 104
-Ana Dimas;A definir;0;;Token: rm-2026-105-ana-dimas | Categoria: Single | Nº: 105
-Cemina Paulino;A definir;0;;Token: rm-2026-106-cemina-paulino | Categoria: Single | Nº: 106
-Clecia Paulino;A definir;0;;Token: rm-2026-107-clecia-paulino | Categoria: Single | Nº: 107
-Jorge Mahota;A definir;0;;Token: rm-2026-108-jorge-mahota | Categoria: Single | Nº: 108
-Gerson Mahota;A definir;0;;Token: rm-2026-109-gerson-mahota | Categoria: Single | Nº: 109
-Manuela Dos Santos;A definir;0;;Token: rm-2026-110-manuela-dos-santos | Categoria: Single | Nº: 110
-Filomena Dos Santos;A definir;0;;Token: rm-2026-111-filomena-dos-santos | Categoria: Single | Nº: 111
-Anabela Matine;A definir;0;;Token: rm-2026-112-anabela-matine | Categoria: Single | Nº: 112
-Tina Mathe;A definir;0;;Token: rm-2026-113-tina-mathe | Categoria: Single | Nº: 113
-Felicidade Chibure;A definir;0;;Token: rm-2026-114-felicidade-chibure | Categoria: Single | Nº: 114
-Marcelina;A definir;0;;Token: rm-2026-115-marcelina | Categoria: Single | Nº: 115
-Hawagy Zeinadine;A definir;0;;Token: rm-2026-116-hawagy-zeinadine | Categoria: Single | Nº: 116
-Anifa;A definir;0;;Token: rm-2026-117-anifa | Categoria: Single | Nº: 117
-Zita Langa;A definir;0;;Token: rm-2026-118-zita-langa | Categoria: Single | Nº: 118
-Tina;A definir;0;;Token: rm-2026-119-tina | Categoria: Single | Nº: 119
-Lurdes Viegas;A definir;0;;Token: rm-2026-120-lurdes-viegas | Categoria: Single | Nº: 120
-Lurdes Savela;A definir;0;;Token: rm-2026-121-lurdes-savela | Categoria: Single | Nº: 121
-Rabeca;A definir;0;;Token: rm-2026-122-rabeca | Categoria: Single | Nº: 122
-Judite;A definir;0;;Token: rm-2026-123-judite | Categoria: Single | Nº: 123
-Filomena;A definir;0;;Token: rm-2026-124-filomena | Categoria: Single | Nº: 124
-Gina;A definir;0;;Token: rm-2026-125-gina | Categoria: Single | Nº: 125
-Ines Marcos;A definir;0;;Token: rm-2026-126-ines-marcos | Categoria: Single | Nº: 126
-Opra Tembe;A definir;0;;Token: rm-2026-127-opra-tembe | Categoria: Single | Nº: 127
-Arsénio Da Laura;A definir;0;;Token: rm-2026-128-arsenio-da-laura | Categoria: Single | Nº: 128
-Gabriela Francisco;A definir;0;;Token: rm-2026-129-gabriela-francisco | Categoria: Single | Nº: 129
-Teresa Tristeza;A definir;0;;Token: rm-2026-130-teresa-tristeza | Categoria: Single | Nº: 130
-Nelson Nhantsave;A definir;0;;Token: rm-2026-131-nelson-nhantsave | Categoria: Single | Nº: 131
-Darcilio Macarringue;A definir;0;;Token: rm-2026-132-darcilio-macarringue | Categoria: Single | Nº: 132
-Falar Luis;A definir;0;;Token: rm-2026-133-falar-luis | Categoria: Single | Nº: 133
-Tito Samussone;A definir;0;;Token: rm-2026-134-tito-samussone | Categoria: Single | Nº: 134
-Agostinho Maunze;A definir;0;;Token: rm-2026-135-agostinho-maunze | Categoria: Single | Nº: 135
-Arone Manjate;A definir;0;;Token: rm-2026-136-arone-manjate | Categoria: Single | Nº: 136
-João Julay;A definir;0;;Token: rm-2026-137-joao-julay | Categoria: Single | Nº: 137
-Tito Samissone;A definir;0;;Token: rm-2026-138-tito-samissone | Categoria: Single | Nº: 138
-Alves Simoes;A definir;0;;Token: rm-2026-139-alves-simoes | Categoria: Single | Nº: 139
-Ornilo Tunes;A definir;0;;Token: rm-2026-140-ornilo-tunes | Categoria: Single | Nº: 140
-Mussagi Fernando;A definir;0;;Token: rm-2026-141-mussagi-fernando | Categoria: Single | Nº: 141
-Jorge Lipanga;A definir;0;;Token: rm-2026-142-jorge-lipanga | Categoria: Single | Nº: 142
-Jose Homo;A definir;0;;Token: rm-2026-143-jose-homo | Categoria: Single | Nº: 143
-Gabriel Munguambe;A definir;0;;Token: rm-2026-144-gabriel-munguambe | Categoria: Single | Nº: 144
-Micael Dambo;A definir;0;;Token: rm-2026-145-micael-dambo | Categoria: Single | Nº: 145
-Castelo Rolão;A definir;0;;Token: rm-2026-146-castelo-rolao | Categoria: Single | Nº: 146
-Adolfo Nhareluga;A definir;0;;Token: rm-2026-147-adolfo-nhareluga | Categoria: Single | Nº: 147
-Charles Manuel;A definir;0;;Token: rm-2026-148-charles-manuel | Categoria: Single | Nº: 148
-Santos Samussone;A definir;0;;Token: rm-2026-149-santos-samussone | Categoria: Single | Nº: 149
-Santos Sitoe;A definir;0;;Token: rm-2026-150-santos-sitoe | Categoria: Single | Nº: 150
-Gideão Sithole;A definir;0;;Token: rm-2026-151-gideao-sithole | Categoria: Single | Nº: 151
-Prisca Daniel;A definir;0;;Token: rm-2026-152-prisca-daniel | Categoria: Single | Nº: 152
+Armindo & Esposa;A definir;1;;Token: rm-2026-001-armindo-ezequiel-esposa | Categoria: Couple | Nº: 1
+Carlos & Esposa;A definir;1;;Token: rm-2026-002-carlos-macamo-esposa | Categoria: Couple | Nº: 2
+Arnaldo & Esposa;A definir;1;;Token: rm-2026-003-arnaldo-bimbe-esposa | Categoria: Couple | Nº: 3
+Américo-1 & Esposa;A definir;1;;Token: rm-2026-004-americo-machai-esposa | Categoria: Couple | Nº: 4
+Amaral & Esposa;A definir;1;;Token: rm-2026-005-amaral-jose-esposa | Categoria: Couple | Nº: 5
+Maurício & Esposa;A definir;1;;Token: rm-2026-006-mauricio-ezequiel-esposa | Categoria: Couple | Nº: 6
+Gilberto & Esposa;A definir;1;;Token: rm-2026-007-gilberto-manhica-esposa | Categoria: Couple | Nº: 7
+Castilho & Esposa;A definir;1;;Token: rm-2026-008-castilho-ezequiel-esposa | Categoria: Couple | Nº: 8
+Feliciano & Esposa;A definir;1;;Token: rm-2026-009-feliciano-mahalambe-esposa | Categoria: Couple | Nº: 9
+Alexandre & Esposa;A definir;1;;Token: rm-2026-010-alexandre-muianga-esposa | Categoria: Couple | Nº: 10
+Alcídio & Esposa;A definir;1;;Token: rm-2026-011-alcidio-chilengue-esposa | Categoria: Couple | Nº: 11
+Américo & Esposa;A definir;1;;Token: rm-2026-012-americo-branco-esposa | Categoria: Couple | Nº: 12
+Edgar & Esposa;A definir;1;;Token: rm-2026-013-edgar-gemo-esposa | Categoria: Couple | Nº: 13
+Cleide & Esposo;A definir;1;;Token: rm-2026-014-cleide-branco-esposo | Categoria: Couple | Nº: 14
+Rolando & Esposa;A definir;1;;Token: rm-2026-015-rolando-ezequiel-esposa | Categoria: Couple | Nº: 15
+Ivan-1 & Esposa;A definir;1;;Token: rm-2026-016-ivan-bimbe-esposa | Categoria: Couple | Nº: 16
+Paulo & Esposa;A definir;1;;Token: rm-2026-017-paulo-bimbe-esposa | Categoria: Couple | Nº: 17
+Januario & Esposa;A definir;1;;Token: rm-2026-018-januario-dos-santos-esposa | Categoria: Couple | Nº: 18
+Hélio & Esposa;A definir;1;;Token: rm-2026-019-helio-simone-esposa | Categoria: Couple | Nº: 19
+Ivan & Esposa;A definir;1;;Token: rm-2026-020-ivan-miambo-esposa | Categoria: Couple | Nº: 20
+Filipe-1 & Esposa;A definir;1;;Token: rm-2026-021-filipe-impira-esposa | Categoria: Couple | Nº: 21
+Milondre & Esposa;A definir;1;;Token: rm-2026-022-milondre-manhique-esposa | Categoria: Couple | Nº: 22
+Rosa-1 & Esposo;A definir;1;;Token: rm-2026-023-rosa-manjate-esposo | Categoria: Couple | Nº: 23
+Custódia & Esposo;A definir;1;;Token: rm-2026-024-custodia-zacarias-esposo | Categoria: Couple | Nº: 24
+Celsa & Esposo;A definir;1;;Token: rm-2026-025-celsa-rangel-esposo | Categoria: Couple | Nº: 25
+Parafino & Esposa;A definir;1;;Token: rm-2026-026-parafino-esposa | Categoria: Couple | Nº: 26
+Vitória & Esposo;A definir;1;;Token: rm-2026-027-vitoria-antonio-esposo | Categoria: Couple | Nº: 27
+Inocêncio & Esposa;A definir;1;;Token: rm-2026-028-inocencio-mucumbi-esposa | Categoria: Couple | Nº: 28
+Simões & Esposa;A definir;1;;Token: rm-2026-029-simoes-chico-esposa | Categoria: Couple | Nº: 29
+Nézia & Esposo;A definir;1;;Token: rm-2026-030-nezia-amaral-esposo | Categoria: Couple | Nº: 30
+Vasco-1 & Esposa;A definir;1;;Token: rm-2026-031-vasco-rangel-esposa | Categoria: Couple | Nº: 31
+Adelina & Esposo;A definir;1;;Token: rm-2026-032-adelina-ezequiel-esposo | Categoria: Couple | Nº: 32
+Silvestre & Esposa;A definir;1;;Token: rm-2026-033-silvestre-constantino-esposa | Categoria: Couple | Nº: 33
+Manuel & Esposa;A definir;1;;Token: rm-2026-034-manuel-bila-esposa | Categoria: Couple | Nº: 34
+Paulino & Esposa;A definir;1;;Token: rm-2026-035-paulino-marote-esposa | Categoria: Couple | Nº: 35
+Estevão & Esposa;A definir;1;;Token: rm-2026-036-estevao-camacho-esposa | Categoria: Couple | Nº: 36
+Filipe & Esposa;A definir;1;;Token: rm-2026-037-filipe-tembe-esposa | Categoria: Couple | Nº: 37
+Ana-1 & Esposo;A definir;1;;Token: rm-2026-038-ana-ivania-esposo | Categoria: Couple | Nº: 38
+Abiba & Esposo;A definir;1;;Token: rm-2026-039-abiba-jamal-esposo | Categoria: Couple | Nº: 39
+Aguinelda & Esposo;A definir;1;;Token: rm-2026-040-aguinelda-marote-esposo | Categoria: Couple | Nº: 40
+Helder & Esposa;A definir;1;;Token: rm-2026-041-helder-langa-esposa | Categoria: Couple | Nº: 41
+Francisco-1 & Esposa;A definir;1;;Token: rm-2026-042-francisco-ricardo-esposa | Categoria: Couple | Nº: 42
+Vasco-2 & Esposa;A definir;1;;Token: rm-2026-043-vasco-monteiro-esposa | Categoria: Couple | Nº: 43
+Agostinho-1 & Esposa;A definir;1;;Token: rm-2026-044-agostinho-monteiro-esposa | Categoria: Couple | Nº: 44
+Vasco & Esposa;A definir;1;;Token: rm-2026-045-vasco-macamo-esposa | Categoria: Couple | Nº: 45
+Albertina-1 & Esposo;A definir;1;;Token: rm-2026-046-albertina-monteiro-esposo | Categoria: Couple | Nº: 46
+Nércia & Esposo;A definir;1;;Token: rm-2026-047-nercia-monteiro-esposo | Categoria: Couple | Nº: 47
+Júlia & Esposo;A definir;1;;Token: rm-2026-048-julia-monteiro-esposo | Categoria: Couple | Nº: 48
+Júlio & Esposa;A definir;1;;Token: rm-2026-049-julio-mahota-esposa | Categoria: Couple | Nº: 49
+Florência & Esposo;A definir;1;;Token: rm-2026-050-florencia-come-esposo | Categoria: Couple | Nº: 50
+Catija & Esposo;A definir;1;;Token: rm-2026-051-catija-musselo-esposo | Categoria: Couple | Nº: 51
+Lucia & Esposo;A definir;1;;Token: rm-2026-052-lucia-banze-esposo | Categoria: Couple | Nº: 52
+Ivete & Esposo;A definir;1;;Token: rm-2026-053-ivete-dos-santos-esposo | Categoria: Couple | Nº: 53
+Maria-1 & Esposo;A definir;1;;Token: rm-2026-054-maria-damiao-esposo | Categoria: Couple | Nº: 54
+Avelino-1 & Esposa;A definir;1;;Token: rm-2026-055-avelino-chilengue-esposa | Categoria: Couple | Nº: 55
+Avelino & Esposa;A definir;1;;Token: rm-2026-056-avelino-gujamo-esposa | Categoria: Couple | Nº: 56
+Francisco & Esposa;A definir;1;;Token: rm-2026-057-francisco-cossa-esposa | Categoria: Couple | Nº: 57
+Dércio & Esposa;A definir;1;;Token: rm-2026-058-dercio-zitha-esposa | Categoria: Couple | Nº: 58
+Armando & Esposa;A definir;1;;Token: rm-2026-059-armando-ndava-esposa | Categoria: Couple | Nº: 59
+Gizelda & Esposo;A definir;1;;Token: rm-2026-060-gizelda-chirindza-esposo | Categoria: Couple | Nº: 60
+Luisa & Esposo;A definir;1;;Token: rm-2026-061-luisa-mahota-esposo | Categoria: Couple | Nº: 61
+Lazaro & Esposa;A definir;1;;Token: rm-2026-062-lazaro-magaia-esposa | Categoria: Couple | Nº: 62
+Alice & Esposo;A definir;1;;Token: rm-2026-063-alice-magaia-esposo | Categoria: Couple | Nº: 63
+Silvia & Esposo;A definir;1;;Token: rm-2026-064-silvia-juma-esposo | Categoria: Couple | Nº: 64
+Vladimir & Esposa;A definir;1;;Token: rm-2026-065-vladimir-esposa | Categoria: Couple | Nº: 65
+Hugo & Esposa;A definir;1;;Token: rm-2026-066-hugo-chichava-esposa | Categoria: Couple | Nº: 66
+Gil & Esposa;A definir;1;;Token: rm-2026-067-gil-esposa | Categoria: Couple | Nº: 67
+Cândido & Esposa;A definir;1;;Token: rm-2026-068-candido-vinte-esposa | Categoria: Couple | Nº: 68
+Panguana & Esposa;A definir;1;;Token: rm-2026-069-panguana-esposa | Categoria: Couple | Nº: 69
+Nelson-1 & Esposa;A definir;1;;Token: rm-2026-070-nelson-cuna-esposa | Categoria: Couple | Nº: 70
+Rostina & Esposo;A definir;1;;Token: rm-2026-071-rostina-esposo | Categoria: Couple | Nº: 71
+Lino & Esposa;A definir;1;;Token: rm-2026-072-lino-vigo-esposa | Categoria: Couple | Nº: 72
+Mauro & Esposa;A definir;1;;Token: rm-2026-073-mauro-esposa | Categoria: Couple | Nº: 73
+Last & Esposa;A definir;1;;Token: rm-2026-074-last-miranda-esposa | Categoria: Couple | Nº: 74
+Graça;A definir;0;;Token: rm-2026-075-graca-branco | Categoria: Single | Nº: 75
+Felizarda;A definir;0;;Token: rm-2026-076-felizarda-naife | Categoria: Single | Nº: 76
+Deolinda;A definir;0;;Token: rm-2026-077-deolinda-ezequiel | Categoria: Single | Nº: 77
+Maria-2;A definir;0;;Token: rm-2026-078-maria-leonor-ezequiel | Categoria: Single | Nº: 78
+Lurdes-1;A definir;0;;Token: rm-2026-079-lurdes-nhatugues | Categoria: Single | Nº: 79
+Maria;A definir;0;;Token: rm-2026-080-maria-nhatugues | Categoria: Single | Nº: 80
+Anina;A definir;0;;Token: rm-2026-081-anina-menganhela | Categoria: Single | Nº: 81
+Esperança;A definir;0;;Token: rm-2026-082-esperanca-chilengue | Categoria: Single | Nº: 82
+Rosa;A definir;0;;Token: rm-2026-083-rosa-naife | Categoria: Single | Nº: 83
+Eugênia;A definir;0;;Token: rm-2026-084-eugenia-naife | Categoria: Single | Nº: 84
+Esmeralda;A definir;0;;Token: rm-2026-085-esmeralda-cossa | Categoria: Single | Nº: 85
+Cláudia;A definir;0;;Token: rm-2026-086-claudia-bispo | Categoria: Single | Nº: 86
+Albertina;A definir;0;;Token: rm-2026-087-albertina-matine | Categoria: Single | Nº: 87
+Ana-2;A definir;0;;Token: rm-2026-088-ana-lurdes | Categoria: Single | Nº: 88
+Edna;A definir;0;;Token: rm-2026-089-edna-bimbe | Categoria: Single | Nº: 89
+Adriana;A definir;0;;Token: rm-2026-090-adriana-macamo | Categoria: Single | Nº: 90
+Isilda;A definir;0;;Token: rm-2026-091-isilda-chau | Categoria: Single | Nº: 91
+Mirele;A definir;0;;Token: rm-2026-092-mirele-ezequiel | Categoria: Single | Nº: 92
+Jéssica;A definir;0;;Token: rm-2026-093-jessica-bila | Categoria: Single | Nº: 93
+Chelta;A definir;0;;Token: rm-2026-094-chelta-baptista | Categoria: Single | Nº: 94
+Gessica;A definir;0;;Token: rm-2026-095-gessica-dinas | Categoria: Single | Nº: 95
+Ana-3;A definir;0;;Token: rm-2026-096-ana-langa | Categoria: Single | Nº: 96
+Vanessa;A definir;0;;Token: rm-2026-097-vanessa-da-silva | Categoria: Single | Nº: 97
+Queila;A definir;0;;Token: rm-2026-098-queila-jalane | Categoria: Single | Nº: 98
+Ruth;A definir;0;;Token: rm-2026-099-ruth-paulino | Categoria: Single | Nº: 99
+Arináquina;A definir;0;;Token: rm-2026-100-arinaquina-mole | Categoria: Single | Nº: 100
+Cynthia;A definir;0;;Token: rm-2026-101-cynthia-lorena | Categoria: Single | Nº: 101
+Joyce;A definir;0;;Token: rm-2026-102-joyce-bimbe | Categoria: Single | Nº: 102
+Isabel;A definir;0;;Token: rm-2026-103-isabel-tangune | Categoria: Single | Nº: 103
+Etelvina;A definir;0;;Token: rm-2026-104-etelvina-dimande | Categoria: Single | Nº: 104
+Nicole;A definir;0;;Token: rm-2026-105-nicole-bimbe | Categoria: Single | Nº: 105
+Luzia;A definir;0;;Token: rm-2026-106-luzia-amelia | Categoria: Single | Nº: 106
+Ermelinda;A definir;0;;Token: rm-2026-107-ermelinda-zinda | Categoria: Single | Nº: 107
+Rebeca;A definir;0;;Token: rm-2026-108-rebeca-fatima | Categoria: Single | Nº: 108
+Elton;A definir;0;;Token: rm-2026-109-elton-simoes | Categoria: Single | Nº: 109
+Diney;A definir;0;;Token: rm-2026-110-diney-simoes | Categoria: Single | Nº: 110
+Ana;A definir;0;;Token: rm-2026-111-ana-dimas | Categoria: Single | Nº: 111
+Cemina;A definir;0;;Token: rm-2026-112-cemina-paulino | Categoria: Single | Nº: 112
+Clecia;A definir;0;;Token: rm-2026-113-clecia-paulino | Categoria: Single | Nº: 113
+Jorge-1;A definir;0;;Token: rm-2026-114-jorge-mahota | Categoria: Single | Nº: 114
+Gerson;A definir;0;;Token: rm-2026-115-gerson-mahota | Categoria: Single | Nº: 115
+Manuela;A definir;0;;Token: rm-2026-116-manuela-dos-santos | Categoria: Single | Nº: 116
+Filomena-1;A definir;0;;Token: rm-2026-117-filomena-dos-santos | Categoria: Single | Nº: 117
+Anabela;A definir;0;;Token: rm-2026-118-anabela-matine | Categoria: Single | Nº: 118
+Tina-1;A definir;0;;Token: rm-2026-119-tina-mathe | Categoria: Single | Nº: 119
+Felicidade;A definir;0;;Token: rm-2026-120-felicidade-chibure | Categoria: Single | Nº: 120
+Marcelina;A definir;0;;Token: rm-2026-121-marcelina | Categoria: Single | Nº: 121
+Hawagy;A definir;0;;Token: rm-2026-122-hawagy-zeinadine | Categoria: Single | Nº: 122
+Anifa;A definir;0;;Token: rm-2026-123-anifa | Categoria: Single | Nº: 123
+Zita;A definir;0;;Token: rm-2026-124-zita-langa | Categoria: Single | Nº: 124
+Tina;A definir;0;;Token: rm-2026-125-tina | Categoria: Single | Nº: 125
+Lurdes-2;A definir;0;;Token: rm-2026-126-lurdes-viegas | Categoria: Single | Nº: 126
+Lurdes;A definir;0;;Token: rm-2026-127-lurdes-savela | Categoria: Single | Nº: 127
+Rabeca;A definir;0;;Token: rm-2026-128-rabeca | Categoria: Single | Nº: 128
+Judite;A definir;0;;Token: rm-2026-129-judite | Categoria: Single | Nº: 129
+Filomena;A definir;0;;Token: rm-2026-130-filomena | Categoria: Single | Nº: 130
+Gina;A definir;0;;Token: rm-2026-131-gina | Categoria: Single | Nº: 131
+Ines;A definir;0;;Token: rm-2026-132-ines-marcos | Categoria: Single | Nº: 132
+Opra;A definir;0;;Token: rm-2026-133-opra-tembe | Categoria: Single | Nº: 133
+Arsénio;A definir;0;;Token: rm-2026-134-arsenio-da-laura | Categoria: Single | Nº: 134
+Gabriela;A definir;0;;Token: rm-2026-135-gabriela-francisco | Categoria: Single | Nº: 135
+Teresa;A definir;0;;Token: rm-2026-136-teresa-tristeza | Categoria: Single | Nº: 136
+Nelson;A definir;0;;Token: rm-2026-137-nelson-nhantsave | Categoria: Single | Nº: 137
+Darcilio;A definir;0;;Token: rm-2026-138-darcilio-macarringue | Categoria: Single | Nº: 138
+Falar;A definir;0;;Token: rm-2026-139-falar-luis | Categoria: Single | Nº: 139
+Tito-1;A definir;0;;Token: rm-2026-140-tito-samussone | Categoria: Single | Nº: 140
+Agostinho;A definir;0;;Token: rm-2026-141-agostinho-maunze | Categoria: Single | Nº: 141
+Arone;A definir;0;;Token: rm-2026-142-arone-manjate | Categoria: Single | Nº: 142
+João;A definir;0;;Token: rm-2026-143-joao-julay | Categoria: Single | Nº: 143
+Tito;A definir;0;;Token: rm-2026-144-tito-samissone | Categoria: Single | Nº: 144
+Alves;A definir;0;;Token: rm-2026-145-alves-simoes | Categoria: Single | Nº: 145
+Ornilo;A definir;0;;Token: rm-2026-146-ornilo-tunes | Categoria: Single | Nº: 146
+Mussagi;A definir;0;;Token: rm-2026-147-mussagi-fernando | Categoria: Single | Nº: 147
+Jorge;A definir;0;;Token: rm-2026-148-jorge-lipanga | Categoria: Single | Nº: 148
+Jose;A definir;0;;Token: rm-2026-149-jose-homo | Categoria: Single | Nº: 149
+Gabriel;A definir;0;;Token: rm-2026-150-gabriel-munguambe | Categoria: Single | Nº: 150
+Micael;A definir;0;;Token: rm-2026-151-micael-dambo | Categoria: Single | Nº: 151
+Castelo;A definir;0;;Token: rm-2026-152-castelo-rolao | Categoria: Single | Nº: 152
+Adolfo;A definir;0;;Token: rm-2026-153-adolfo-nhareluga | Categoria: Single | Nº: 153
+Charles;A definir;0;;Token: rm-2026-154-charles-manuel | Categoria: Single | Nº: 154
+Santos-1;A definir;0;;Token: rm-2026-155-santos-samussone | Categoria: Single | Nº: 155
+Santos;A definir;0;;Token: rm-2026-156-santos-sitoe | Categoria: Single | Nº: 156
+Gideão;A definir;0;;Token: rm-2026-157-gideao-sithole | Categoria: Single | Nº: 157
+Prisca;A definir;0;;Token: rm-2026-158-prisca-daniel | Categoria: Single | Nº: 158
+m-kappa;A definir;0;;Token: rm-2026-159-m-kappa | Categoria: Single | Nº: 159
+e-admin;A definir;0;;Token: rm-2026-160-e-admin | Categoria: Single | Nº: 160

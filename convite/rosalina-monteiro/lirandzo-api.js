@@ -14,6 +14,20 @@
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
   }
+  function getClientLoginToken() {
+    try {
+      const key = 'lirandzoClientLoginToken';
+      let token = localStorage.getItem(key);
+      if (!token) {
+        const randomPart = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+        token = 'web-' + randomPart;
+        localStorage.setItem(key, token);
+      }
+      return token;
+    } catch (e) {
+      return 'web-' + String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+    }
+  }
   function safeJson(res) {
     return res.text().then(function (text) {
       try { return text ? JSON.parse(text) : {}; }
@@ -110,22 +124,27 @@
       if (!isConfigured()) return Local.get(action, p);
 
       if (action === 'find_guest') {
+        const localGuest = findLocalGuestByName(p.name);
         try {
-          const result = await postApi({ action: 'login', name: p.name });
+          const result = await postApi({ action: 'login', name: p.name, loginToken: getClientLoginToken() });
           let guest = normalizeGuestResponse(result, p.name);
-          if (!guest.token) {
-            const localGuest = findLocalGuestByName(p.name);
-            if (localGuest) {
-              const localData = normalizeGuestResponse(localGuest, p.name);
-              guest = Object.assign({}, localData, guest, { token: localData.token || guest.token });
-            }
+          if (localGuest) {
+            const localData = normalizeGuestResponse(localGuest, p.name);
+            guest = Object.assign({}, localData, guest, {
+              name: guest.name || localData.name,
+              nome: guest.nome || localData.nome,
+              token: guest.token || localData.token,
+              mesa: guest.mesa || localData.mesa,
+              maxGuests: guest.maxGuests || localData.maxGuests,
+              maxGuestsTotal: guest.maxGuestsTotal || localData.maxGuestsTotal,
+              companions: Number.isFinite(Number(guest.companions)) ? guest.companions : localData.companions,
+              number: guest.number || localData.number,
+              category: guest.category || localData.category
+            });
           }
           return { status: 'success', data: guest, nome: guest.name, token: guest.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
         } catch (err) {
-          const message = String(err && err.message || '');
-          const isDeviceRestriction = /(dispositivo|device|loginToken|token.*login|login.*token|convite.*aberto|outro dispositivo|já foi aberto|ja foi aberto|acesso restrito|bloque)/i.test(message);
-          const localGuest = findLocalGuestByName(p.name);
-          if (isDeviceRestriction && localGuest) {
+          if (localGuest) {
             const guest = normalizeGuestResponse(localGuest, p.name);
             return { status: 'success', data: guest, nome: guest.name, token: guest.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
           }
