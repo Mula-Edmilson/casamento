@@ -2295,7 +2295,7 @@ html[data-scroll-direction="up"] .magic-reveal[data-reveal="slide"]:not(.is-visi
 }
 
 .modal-hero-rsvp { background-image: url('assets/media/TR-ET.png'); }
-.modal-hero-dress { background-image: url('assets/media/vestido_branco.jpg'); }
+.modal-hero-dress { background-image: url('assets/media/dress-code-paleta.jpeg'); background-position: center; }
 .modal-hero-gifts { background-image: url('assets/media/CAPA FUNDO.png'); }
 .modal-hero-letter { background-image: url('assets/media/TR-ET.png'); }
 .modal-hero-honor { background-image: url('assets/media/CAPA FUNDO.png'); }
@@ -2387,6 +2387,7 @@ html[data-scroll-direction="up"] .magic-reveal[data-reveal="slide"]:not(.is-visi
 
 .religious-preview { background-image: url('assets/media/mapa.jpg'); }
 .civil-preview { background-image: url('assets/media/mapa.jpg'); }
+.copo-preview { background-image: url('assets/media/mapa.jpg'); }
 
 .location-choice-overlay {
   position: absolute;
@@ -4789,4 +4790,255 @@ body.convite-carbon-theme .btn.is-confirmed {
   background: #18a86f !important;
   border-color: #18a86f !important;
   color: #fff !important;
+}
+
+
+/* =========================================================
+   AJUSTE FINAL — DRESS CODE + TEMA BRANCO/DOURADO
+   Pedido: substituir imagens do dress code pela paleta enviada
+   e aplicar tema branco/dourado no convite e na capa.
+   ========================================================= */
+.dresscode-grid.dresscode-palette {
+  grid-template-columns: 1fr !important;
+  max-width: 620px;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.dresscode-grid.dresscode-palette .dresscode-palette-img {
+  width: 100%;
+  height: auto !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  display: block;
+  border-radius: 18px;
+}
+
+body.convite-white-gold-theme {
+  --bg: #fffdf8;
+  --accent: #b8945e;
+  --accent-dark: #8f6b35;
+  --text-dark: #2d241b;
+  --text-light: #4c4033;
+  --card: #ffffff;
+  --section-bg: #fff8ea;
+  --border-color: rgba(184, 148, 94, 0.32);
+  --muted-readable: #6b5b49;
+  --soft-readable-bg: rgba(255, 255, 255, 0.92);
+  background-color: #fffdf8 !important;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(216, 189, 128, 0.18), transparent 42%),
+    linear-gradient(180deg, #ffffff 0%, #fff9ee 100%) !important;
+  color: var(--text-light) !important;
+}
+
+body.convite-white-gold-theme .invite-wrap {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,250,239,0.92)),
+    repeating-linear-gradient(90deg, rgba(184,148,94,0.025) 0, rgba(184,148,94,0.025) 1px, transparent 1px, transparent 8px),
+    #ffffff !important;
+  border: 1px solid rgba(184, 148, 94, 0.34) !important;
+  box-shadow: 0 26px 70px rgba(142, 107, 53, 0.14) !important;
+}
+
+body.convite-white-gold-theme .section,
+body.convite-white-gold-theme .footer {
+  background-color: rgba(255,255,255,0.94) !important;
+  background-image:
+    linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,248,234,0.16)),
+    repeating-linear-gradient(90deg, rgba(184,148,94,0.018) 0, rgba(184,148,94,0.018) 1px, transparent 1px, transparent 8px),
+    repeating-linear-gradient(0deg, rgba(184,148,94,0.014) 0, rgba(184,148,94,0.014) 1px, transparent 1px, transparent 9px) !important;
+}
+
+body.convite-white-gold-theme .section-highlight,
+body.convite-white-gold-theme .footer {
+  background-color: rgba(255, 248, 234, 0.84) !important;
+}
+
+body.convite-white-gold-theme .hero-gradient-overlay {
+  background:
+    linear-gradient(to bottom,
+      rgba(255,255,255,0.00) 0%,
+      rgba(255,255,255,0.08) 36%,
+      rgba(255,248,232,0.42) 55%,
+      rgba(255,250,240,0.82) 76%,
+      rgba(255,255,255,1) 100%
+    ),
+    linear-gradient(90deg, rgba(184,148,94,0.08), rgba(255,255,255,0)) !important;
+}
+
+body.convite-white-gold-theme h1,
+body.convite-white-gold-theme h2,
+body.convite-white-gold-theme h3,
+body.convite-white-gold-theme h4,
+body.convite-white-gold-theme .section-title,
+body.convite-white-gold-theme .event-title,
+body.convite-white-gold-theme #countdown span,
+body.convite-white-gold-theme #countdown small {
+  color: var(--text-dark) !important;
+}
+
+body.convite-white-gold-theme .hero-bottom-content .names,
+body.convite-white-gold-theme .names,
+body.convite-white-gold-theme .chapter-title,
+body.convite-white-gold-theme .event-location,
+body.convite-white-gold-theme .modal-card h3,
+body.convite-white-gold-theme .guide-item h4,
+body.convite-white-gold-theme .honor-card h3,
+body.convite-white-gold-theme .menu-preview-card h3,
+body.convite-white-gold-theme .travel-card h3,
+body.convite-white-gold-theme .footer .names,
+body.convite-white-gold-theme .payment-method-header strong,
+body.convite-white-gold-theme .vintage-section-kicker,
+body.convite-white-gold-theme .modal-kicker,
+body.convite-white-gold-theme .verse {
+  color: var(--accent) !important;
+}
+
+body.convite-white-gold-theme,
+body.convite-white-gold-theme p,
+body.convite-white-gold-theme li,
+body.convite-white-gold-theme label,
+body.convite-white-gold-theme .section-subtitle,
+body.convite-white-gold-theme .hero-bottom-content .lead,
+body.convite-white-gold-theme .welcome-guest,
+body.convite-white-gold-theme .footer-contact,
+body.convite-white-gold-theme .guide-item p,
+body.convite-white-gold-theme .honor-card p,
+body.convite-white-gold-theme .menu-preview-card p,
+body.convite-white-gold-theme .etiquette-item p,
+body.convite-white-gold-theme .travel-card p,
+body.convite-white-gold-theme .modal-card p,
+body.convite-white-gold-theme .info-block p,
+body.convite-white-gold-theme .location-choice-body p,
+body.convite-white-gold-theme #guestbook-feed {
+  color: var(--text-light) !important;
+}
+
+body.convite-white-gold-theme #countdown span::before {
+  background: linear-gradient(to top, rgba(184,148,94,0.22), rgba(184,148,94,0.06)) !important;
+}
+
+body.convite-white-gold-theme .story-chapter,
+body.convite-white-gold-theme .guide-item,
+body.convite-white-gold-theme .honor-card,
+body.convite-white-gold-theme .menu-preview-card,
+body.convite-white-gold-theme .etiquette-item,
+body.convite-white-gold-theme .travel-card,
+body.convite-white-gold-theme .vintage-letter-preview,
+body.convite-white-gold-theme .agenda-event,
+body.convite-white-gold-theme .gallery-image-container,
+body.convite-white-gold-theme .modal-card,
+body.convite-white-gold-theme #messageForm,
+body.convite-white-gold-theme #guestbook-feed,
+body.convite-white-gold-theme .info-block,
+body.convite-white-gold-theme .gift-item,
+body.convite-white-gold-theme .location-choice-card,
+body.convite-white-gold-theme .payment-method-block,
+body.convite-white-gold-theme .modal-note,
+body.convite-white-gold-theme .modal-menu-list div,
+body.convite-white-gold-theme .modal-travel-grid div,
+body.convite-white-gold-theme .modal-etiquette-list p,
+body.convite-white-gold-theme .honor-modal-list span {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,250,240,0.78)),
+    var(--card) !important;
+  border-color: rgba(184, 148, 94, 0.28) !important;
+  box-shadow: 0 14px 36px rgba(142, 107, 53, 0.08) !important;
+}
+
+body.convite-white-gold-theme .btn-primary,
+body.convite-white-gold-theme button.btn-primary,
+body.convite-white-gold-theme a.btn-primary,
+body.convite-white-gold-theme .vintage-action.btn-primary,
+body.convite-white-gold-theme .tab-btn.active,
+body.convite-white-gold-theme input[type="file"]::file-selector-button:hover {
+  background: linear-gradient(135deg, #c6a66a, #a98242) !important;
+  background-color: var(--accent) !important;
+  border-color: rgba(169, 130, 66, 0.92) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 26px rgba(169, 130, 66, 0.20) !important;
+}
+
+body.convite-white-gold-theme .btn-primary:hover:not(:disabled),
+body.convite-white-gold-theme button.btn-primary:hover:not(:disabled),
+body.convite-white-gold-theme a.btn-primary:hover:not(:disabled),
+body.convite-white-gold-theme .vintage-action.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #a98242, #8f6b35) !important;
+  border-color: #8f6b35 !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 30px rgba(142, 107, 53, 0.24) !important;
+}
+
+body.convite-white-gold-theme .btn-outline,
+body.convite-white-gold-theme button.btn-outline,
+body.convite-white-gold-theme a.btn-outline,
+body.convite-white-gold-theme .map-link-button,
+body.convite-white-gold-theme .tab-btn,
+body.convite-white-gold-theme input[type="file"]::file-selector-button {
+  color: var(--accent-dark) !important;
+  border-color: rgba(184, 148, 94, 0.58) !important;
+  background-color: rgba(255,255,255,0.52) !important;
+}
+
+body.convite-white-gold-theme .btn-outline:hover:not(:disabled),
+body.convite-white-gold-theme button.btn-outline:hover:not(:disabled),
+body.convite-white-gold-theme a.btn-outline:hover:not(:disabled),
+body.convite-white-gold-theme .map-link-button:hover,
+body.convite-white-gold-theme .tab-btn:hover {
+  background: rgba(184, 148, 94, 0.12) !important;
+  color: #7b5a2d !important;
+  border-color: var(--accent) !important;
+}
+
+body.convite-white-gold-theme #musicControl,
+body.convite-white-gold-theme .fab-item {
+  color: var(--accent-dark) !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+  border-color: rgba(184, 148, 94, 0.36) !important;
+}
+
+body.convite-white-gold-theme #musicControl:hover,
+body.convite-white-gold-theme .fab-item:hover {
+  background: linear-gradient(135deg, #c6a66a, #a98242) !important;
+  border-color: rgba(169, 130, 66, 0.92) !important;
+  color: #ffffff !important;
+}
+
+body.convite-white-gold-theme .modal-hero-top-accent,
+body.convite-white-gold-theme .location-choice-top-accent {
+  background: linear-gradient(to bottom, rgba(88, 61, 25, 0.68), rgba(184, 148, 94, 0)) !important;
+}
+
+body.convite-white-gold-theme .location-choice-caption {
+  color: var(--text-dark) !important;
+  background: rgba(255, 255, 255, 0.84) !important;
+  border: 1px solid rgba(184, 148, 94, 0.26) !important;
+}
+
+body.convite-white-gold-theme input,
+body.convite-white-gold-theme textarea,
+body.convite-white-gold-theme select {
+  color: var(--text-dark) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(184, 148, 94, 0.34) !important;
+}
+
+body.convite-white-gold-theme input:focus,
+body.convite-white-gold-theme textarea:focus,
+body.convite-white-gold-theme select:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 4px rgba(184, 148, 94, 0.14) !important;
+}
+
+@media (min-width: 769px) {
+  body.convite-white-gold-theme .location-chooser-card {
+    max-width: 980px;
+  }
+
+  body.convite-white-gold-theme .location-chooser-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }

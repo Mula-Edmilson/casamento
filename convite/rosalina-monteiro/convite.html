@@ -220,7 +220,7 @@
     .qr-checkin-card small{display:block;color:var(--text-light);line-height:1.5}
   </style>
 </head>
-<body class="loading convite-carbon-theme">
+<body class="loading convite-white-gold-theme">
 <audio id="backgroundMusic" loop="" src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
 <div class="fixed-ui-container">
 <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
@@ -476,6 +476,13 @@
 </div>
 <h4 class="event-location">Hotel Glória, Salão Ballroom</h4>
 <p class="event-description">Copo de Água e celebração no Salão Ballroom.</p>
+<a class="map-link-button" href="#" id="mapBtnCopo" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+            Ver no Mapa
+          </a>
 </div>
 </div>
 </section>
@@ -681,10 +688,8 @@
 <div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-dress"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M8 4h8l1 4-2 2v10H9V10L7 8l1-4Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
 <h3 id="dressCodeTitle">Inspiração: Elegante e Romântico</h3>
 <p>O objetivo é o conforto sofisticado. Tons claros, branco, dourado e detalhes elegantes são bem-vindos.</p>
-<div class="dresscode-grid">
-<img alt="Homem com blazer bege e camisa branca." src="assets/media/fato_neutro.jpg"/>
-<img alt="Mulher com vestido branco" src="assets/media/vestido_branco.jpg"/>
-<img alt="Mulher com vestido preto." src="assets/media/vestido_preto.jpg"/>
+<div class="dresscode-grid dresscode-palette">
+<img class="dresscode-palette-img" alt="Paleta de cores do dress code com tons neutros, dourados, verdes e castanhos." src="assets/media/dress-code-paleta.jpeg"/>
 </div>
 <button class="btn btn-ghost" data-close-modal="" type="button">Entendi</button>
 </div>
@@ -895,6 +900,23 @@
 <div class="location-choice-body">
 <p>Cerimónia civil e recepção, com rota directa para o destino.</p>
 <a class="btn btn-outline" href="#" id="locationMapCivil" rel="noopener noreferrer" target="_blank">Abrir mapa do Hotel Polana</a>
+</div>
+</article>
+<article class="location-choice-card">
+<div class="location-choice-preview copo-preview">
+<div class="location-choice-overlay"></div>
+<div class="location-choice-top-accent"></div>
+<div aria-hidden="true" class="location-choice-pin">
+<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+<div class="location-choice-caption">
+<span>Copo de Água</span>
+<strong>Hotel Glória, Salão Ballroom</strong>
+</div>
+</div>
+<div class="location-choice-body">
+<p>Rota directa para o local do Copo de Água e celebração.</p>
+<a class="btn btn-primary" href="#" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa do Hotel Glória</a>
 </div>
 </article>
 </div>
@@ -1245,7 +1267,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Constantes
       const HOST_WHATSAPP_NUMBER = '+258870603070';
       const ADDRESS_RELIGIOSA = 'Paróquia São Gabriel Arcanjo, Cidade da Matola';
-      const ADDRESS_CIVIL_COPO_DE_AGUA = 'Hotel Polana, Maputo'; 
+      const ADDRESS_CIVIL = 'Hotel Polana, Maputo';
+      const ADDRESS_COPO_DE_AGUA = 'Hotel Glória, Salão Ballroom, Maputo'; 
       const EVENT_DATE = "2026-08-08T09:00:00+02:00"; 
       const body = document.body;
       const music = document.getElementById('backgroundMusic');
@@ -1261,6 +1284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
       const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
       const mapBtnCivil = document.getElementById('mapBtnCivil');
+      const mapBtnCopo = document.getElementById('mapBtnCopo');
       const galleryImages = document.querySelectorAll('.gallery-grid img');
       const lightboxModal = document.getElementById('lightboxModal');
       const lightboxImage = document.getElementById('lightboxImage');
@@ -1405,15 +1429,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       const locationMapReligiosa = document.getElementById('locationMapReligiosa');
       const locationMapCivil = document.getElementById('locationMapCivil');
+      const locationMapCopo = document.getElementById('locationMapCopo');
 
       if (mapBtnReligiosa) mapBtnReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true); 
-      if (mapBtnCivil) mapBtnCivil.href = createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true); 
+      if (mapBtnCivil) mapBtnCivil.href = createMapLink(ADDRESS_CIVIL, true);
+      if (mapBtnCopo) mapBtnCopo.href = createMapLink(ADDRESS_COPO_DE_AGUA, true); 
       if (locationMapReligiosa) locationMapReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true);
-      if (locationMapCivil) locationMapCivil.href = createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true);
+      if (locationMapCivil) locationMapCivil.href = createMapLink(ADDRESS_CIVIL, true);
+      if (locationMapCopo) locationMapCopo.href = createMapLink(ADDRESS_COPO_DE_AGUA, true);
       
       const EVENT_END_DATE = "2026-08-08T22:00:00+02:00";
       const EVENT_TITLE = "Casamento de Rosalina & Monteiro";
-      const EVENT_LOCATION = `${ADDRESS_RELIGIOSA} / ${ADDRESS_CIVIL_COPO_DE_AGUA}`;
+      const EVENT_LOCATION = `${ADDRESS_RELIGIOSA} / ${ADDRESS_CIVIL} / ${ADDRESS_COPO_DE_AGUA}`;
 
       const padCalendarValue = (value) => String(value).padStart(2, '0');
       const formatIcsDate = (date) => {

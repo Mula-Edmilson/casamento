@@ -23,16 +23,16 @@
     }
 
     :root {
-      --bg: #ede3d6;
-      --accent: #302A27;
-      --accent-dark: #2B2623;
+      --bg: #fffdf8;
+      --accent: #b8945e;
+      --accent-dark: #8f6b35;
       --text: #ffffff;
-      --text-dark: #302A27;
-      --text-light: #2B2623;
-      --text-muted: #8b7a6b;
-      --border-color: #ccb39e;
-      --card: #fbf6ef;
-      --card-soft: rgba(251, 246, 239, 0.88);
+      --text-dark: #2d241b;
+      --text-light: #4c4033;
+      --text-muted: #756653;
+      --border-color: rgba(184,148,94,0.32);
+      --card: #ffffff;
+      --card-soft: rgba(255, 255, 255, 0.92);
       --font-heading: 'Cormorant Garamond', serif;
       --font-body: 'Inter', sans-serif;
       --font-script: 'Parisienne', cursive;
@@ -535,6 +535,99 @@
       .login-container .names { font-size: 2.9rem; }
       .login-hero { min-height: 156px; }
     }
+  
+
+    /* Ajuste final — capa branca e dourada */
+    body {
+      background-color: #fffdf8;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(216, 189, 128, 0.18), transparent 44%),
+        linear-gradient(180deg, #ffffff 0%, #fff9ee 100%);
+    }
+
+    .overlay {
+      background:
+        linear-gradient(to bottom,
+          rgba(255,255,255,0.00) 0%,
+          rgba(255,255,255,0.10) 38%,
+          rgba(255,248,232,0.42) 56%,
+          rgba(255,250,240,0.84) 76%,
+          rgba(255,255,255,1) 100%
+        ),
+        linear-gradient(90deg, rgba(184,148,94,0.08), rgba(255,255,255,0.02));
+    }
+
+    .btn-open {
+      border-color: rgba(184,148,94,0.48);
+      background: rgba(255,255,255,0.76);
+      color: var(--accent-dark);
+      box-shadow: 0 12px 30px rgba(142,107,53,0.12);
+    }
+
+    .btn-open:hover,
+    .btn-primary {
+      background: linear-gradient(135deg, #c6a66a, #a98242);
+      border-color: rgba(169, 130, 66, 0.92);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #a98242, #8f6b35);
+      border-color: #8f6b35;
+    }
+
+    .login-overlay {
+      background-color: rgba(41, 31, 18, 0.46);
+    }
+
+    .login-container {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,250,240,0.82)),
+        repeating-linear-gradient(90deg, rgba(184,148,94,0.022) 0, rgba(184,148,94,0.022) 1px, transparent 1px, transparent 8px),
+        #ffffff;
+      border-color: rgba(184,148,94,0.32);
+      box-shadow: 0 26px 80px rgba(88, 61, 25, 0.22);
+    }
+
+    .login-hero-overlay {
+      background: linear-gradient(to bottom,
+        rgba(75, 52, 22, 0.56) 0%,
+        rgba(184, 148, 94, 0.28) 28%,
+        rgba(255,250,240,0.24) 58%,
+        rgba(255,255,255,0.98) 100%);
+    }
+
+    .login-badge {
+      background: rgba(255,255,255,0.24);
+      border-color: rgba(255,255,255,0.58);
+      color: #ffffff;
+    }
+
+    .divider {
+      background: rgba(184, 148, 94, 0.46);
+    }
+
+    .input-shell {
+      background: rgba(255,255,255,0.84);
+      border-color: rgba(184,148,94,0.26);
+    }
+
+    .input-shell:focus-within {
+      border-color: rgba(184,148,94,0.58);
+      box-shadow: 0 0 0 4px rgba(184,148,94,0.12);
+    }
+
+    .btn-close {
+      background-color: rgba(255,255,255,0.64);
+      color: var(--text-light);
+      border-color: rgba(184,148,94,0.28);
+    }
+
+    .btn-close:hover:not(:disabled) {
+      background-color: rgba(184,148,94,0.10);
+      color: var(--accent-dark);
+    }
+
   </style>
   <script src="event-data.js"></script>
   <script src="client-config.js"></script>
