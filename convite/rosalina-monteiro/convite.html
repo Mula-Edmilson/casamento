@@ -215,7 +215,7 @@
     }
     @keyframes drawCheck { to { stroke-dashoffset: 0; } }
 
-    .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(176,137,104,.08);text-align:center}
+    .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(201,162,39,.08);text-align:center}
     .qr-checkin-card img{width:190px;max-width:100%;border-radius:16px;background:#fff;padding:10px;margin:12px auto;display:block}
     .qr-checkin-card small{display:block;color:var(--text-light);line-height:1.5}
   </style>
@@ -1555,7 +1555,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
           }
           if (rsvpOptionsStatus) {
-            rsvpOptionsStatus.style.color = '#765038';
+            rsvpOptionsStatus.style.color = '#9E7A13';
             rsvpOptionsStatus.textContent = 'Estado guardado como “ainda por confirmar”.';
           }
         } catch (err) {
@@ -1575,7 +1575,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       addCalendarBtn?.addEventListener('click', () => {
         addEventToCalendar();
         if (rsvpOptionsStatus) {
-          rsvpOptionsStatus.style.color = '#765038';
+          rsvpOptionsStatus.style.color = '#9E7A13';
           rsvpOptionsStatus.textContent = 'O calendário foi aberto numa nova aba com o evento já preenchido. Basta confirmar para guardar.';
         }
       });
@@ -1753,7 +1753,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           if (!isSameCalendarDay(today, eventDate)) {
             if (timeCapsuleStatus) {
-              timeCapsuleStatus.style.color = '#8f684d';
+              timeCapsuleStatus.style.color = '#9E7A13';
               timeCapsuleStatus.textContent = 'A Cápsula do Tempo só fica disponível no próprio dia do casamento.';
             }
             return;
@@ -1762,7 +1762,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const files = Array.from(timeCapsuleFiles.files || []).slice(0, 8);
           if (!files.length) {
             if (timeCapsuleStatus) {
-              timeCapsuleStatus.style.color = '#8f684d';
+              timeCapsuleStatus.style.color = '#9E7A13';
               timeCapsuleStatus.textContent = 'Seleccione pelo menos uma fotografia.';
             }
             return;
