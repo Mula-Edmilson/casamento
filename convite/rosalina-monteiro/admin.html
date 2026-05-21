@@ -1071,6 +1071,22 @@
     }
 
 
+    /* AJUSTE CIRÚRGICO: remove o espaço vazio no topo do admin mobile.
+       Mantém o restante layout igual, apenas impede a dupla compensação entre .main e .mobile-tabs. */
+    @media (max-width: 760px) {
+      .main {
+        padding-top: calc(var(--topbar) + var(--safe-top)) !important;
+      }
+
+      .mobile-tabs {
+        position: relative !important;
+        top: auto !important;
+        margin-top: 0 !important;
+      }
+    }
+
+
+
   </style>
 </head>
 <body>
