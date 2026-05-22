@@ -523,7 +523,7 @@ app.get('/manager/invites', requireManager, async (req, res) => {
   res.json({ status: 'success', data: invites.map(invite => ({ ...cleanInviteDoc(invite), stats: { guests: guestMap.get(String(invite._id)) || 0, rsvps: rsvpMap.get(String(invite._id)) || 0 } })) });
 });
 
-app.post('/manager/invites', requireManager, async (req, res) => {
+app.post('/manager/invites', requireManager, requireMaster, async (req, res) => {
   const body = req.body || {};
   const packageKey = String(body.packageKey || '').toLowerCase();
   if (!['perola', 'esmeralda', 'rubi'].includes(packageKey)) return res.status(400).json({ status: 'error', message: 'Pacote inválido. Use perola, esmeralda ou rubi.' });
