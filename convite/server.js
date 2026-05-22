@@ -281,6 +281,9 @@ const MessageSchema = new mongoose.Schema({
   slug: { type: String, required: true, index: true },
   nome: { type: String, required: true },
   message: { type: String, required: true },
+  hidden: { type: Boolean, default: false, index: true },
+  hiddenAt: { type: Date },
+  hiddenBy: { type: String, default: '' },
   timestamp: { type: Date, default: Date.now }
 }, { timestamps: true });
 
@@ -893,19 +896,178 @@ app.get('/api/messages', async (req, res) => { const invite = await getInviteFro
 app.get('/api/gifts', async (req, res) => { const invite = await getInviteFromRequest(req); if (!invite) return sendJson(req, res, { status: 'error', message: 'Slug do convite não enviado.' }, 400); return listGifts(req, res, invite); });
 app.all('/api/get-guest-details', async (req, res) => { const invite = await getInviteFromRequest(req); if (!invite) return sendJson(req, res, { status: 'error', message: 'Slug do convite não enviado.' }, 400); return getGuestDetails(req, res, invite); });
 
+function validObjectId(value) { return mongoose.Types.ObjectId.isValid(String(value || '')); }
+function adminIdFromPayload(data) { return String(data.id || data._id || data.messageId || data.rsvpId || data.checkinId || '').trim(); }
+function requireAdminObjectId(value, label = 'ID') {
+  const id = String(value || '').trim();
+  if (!validObjectId(id)) {
+    const err = new Error(`${label} inválido.`);
+    err.statusCode = 400;
+    throw err;
+  }
+  return id;
+}
+async function adminAddGuest(invite, data) {
+  const name = String(data.name || data.nome || '').trim();
+  if (!name) {
+    const err = new Error('Nome do convidado é obrigatório.');
+    err.statusCode = 400;
+    throw err;
+  }
+  const normalizedName = normalizeText(name);
+  const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
+  if (existing) {
+    const err = new Error('Este convidado já existe na lista.');
+    err.statusCode = 409;
+    throw err;
+  }
+  const companions = Math.max(0, Number.parseInt(data.companions ?? data.acompanhantes ?? 0, 10) || 0);
+  const maxGuests = Math.max(1, Number.parseInt(data.maxGuests ?? data.pessoas ?? 0, 10) || (1 + companions));
+  const number = Math.max(0, Number.parseInt(data.number ?? data.numero ?? 0, 10) || 0);
+  let token = generateGuestPublicToken();
+  while (await Guest.exists({ inviteId: invite._id, inviteToken: token })) token = generateGuestPublicToken();
+  const guest = await Guest.create({
+    inviteId: invite._id,
+    slug: invite.slug,
+    name,
+    normalizedName,
+    status: 'Não aberto',
+    deviceToken: '',
+    table: String(data.table || data.mesa || '').trim(),
+    companions,
+    maxGuests,
+    phone: String(data.phone || data.telefone || '').trim(),
+    notes: String(data.notes || data.notas || '').trim(),
+    inviteToken: token,
+    number,
+    category: String(data.category || data.categoria || '').trim()
+  });
+  await logActivity({ invite, type: 'guests', title: 'Convidado adicionado manualmente', detail: guest.name });
+  return guest;
+}
+async function adminHideMessage(invite, data) {
+  const id = requireAdminObjectId(adminIdFromPayload(data), 'Mensagem');
+  const message = await Message.findOneAndUpdate(
+    { _id: id, inviteId: invite._id },
+    { $set: { hidden: true, hiddenAt: new Date(), hiddenBy: 'admin' } },
+    { new: true }
+  );
+  if (!message) {
+    const err = new Error('Mensagem não encontrada.');
+    err.statusCode = 404;
+    throw err;
+  }
+  await logActivity({ invite, type: 'message', title: 'Mensagem ocultada', detail: message.nome });
+  return message;
+}
+async function adminRestoreMessage(invite, data) {
+  const id = requireAdminObjectId(adminIdFromPayload(data), 'Mensagem');
+  const message = await Message.findOneAndUpdate(
+    { _id: id, inviteId: invite._id },
+    { $set: { hidden: false }, $unset: { hiddenAt: '', hiddenBy: '' } },
+    { new: true }
+  );
+  if (!message) {
+    const err = new Error('Mensagem não encontrada.');
+    err.statusCode = 404;
+    throw err;
+  }
+  await logActivity({ invite, type: 'message', title: 'Mensagem restaurada', detail: message.nome });
+  return message;
+}
+async function adminDeleteMessage(invite, data) {
+  const id = requireAdminObjectId(adminIdFromPayload(data), 'Mensagem');
+  const message = await Message.findOne({ _id: id, inviteId: invite._id });
+  if (!message) {
+    const err = new Error('Mensagem não encontrada.');
+    err.statusCode = 404;
+    throw err;
+  }
+  await Message.deleteOne({ _id: message._id, inviteId: invite._id });
+  await logActivity({ invite, type: 'message', title: 'Mensagem eliminada', detail: message.nome });
+  return { deleted: 1, id };
+}
+async function adminRestoreRsvp(invite, data) {
+  const id = requireAdminObjectId(adminIdFromPayload(data), 'Confirmação');
+  const rsvp = await Rsvp.findOne({ _id: id, inviteId: invite._id });
+  if (!rsvp) {
+    const err = new Error('Confirmação não encontrada.');
+    err.statusCode = 404;
+    throw err;
+  }
+  const guest = rsvp.guestId ? await Guest.findOne({ _id: rsvp.guestId, inviteId: invite._id }) : await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(rsvp.nome) });
+  await Rsvp.deleteOne({ _id: rsvp._id, inviteId: invite._id });
+  if (guest) {
+    guest.status = 'Convite Aberto';
+    await guest.save();
+  }
+  await logActivity({ invite, type: 'rsvp', title: 'Confirmação restaurada', detail: rsvp.nome });
+  return { deleted: 1, guest: guest ? cleanGuestForPublic(guest) : null };
+}
+async function adminRestoreCheckin(invite, data) {
+  const id = requireAdminObjectId(adminIdFromPayload(data), 'Check-in');
+  const checkin = await CheckIn.findOne({ _id: id, inviteId: invite._id });
+  if (!checkin) {
+    const err = new Error('Check-in não encontrado.');
+    err.statusCode = 404;
+    throw err;
+  }
+  const guest = checkin.guestId ? await Guest.findOne({ _id: checkin.guestId, inviteId: invite._id }) : await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(checkin.nome) });
+  await CheckIn.deleteOne({ _id: checkin._id, inviteId: invite._id });
+  if (guest) {
+    guest.checkedIn = false;
+    guest.checkedInAt = undefined;
+    await guest.save();
+  }
+  await logActivity({ invite, type: 'checkin', title: 'Check-in restaurado', detail: checkin.nome });
+  return { deleted: 1, guest: guest ? cleanGuestForPublic(guest) : null };
+}
+
 app.post('/admin-api', async (req, res) => {
-  const data = req.body || {};
-  if (String(data.password || data.admin_password || '') !== String(process.env.MANAGER_PASSWORD || '')) return res.status(401).json({ status: 'error', message: 'Senha de admin incorreta.' });
-  const invite = await getInviteFromRequest(req);
-  if (!invite) return res.status(400).json({ status: 'error', message: 'Slug do convite não enviado.' });
-  if (data.action === 'get_rsvps') return res.json({ status: 'success', data: await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
-  if (data.action === 'get_gifts') return res.json({ status: 'success', data: await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 }) });
-  if (data.action === 'get_comprovativos') return res.json({ status: 'success', data: await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64') });
-  if (data.action === 'get_messages') return res.json({ status: 'success', data: await Message.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
-  if (data.action === 'get_guests') return res.json({ status: 'success', data: await Guest.find({ inviteId: invite._id }).sort({ number: 1, name: 1 }) });
-  if (data.action === 'get_checkins') return res.json({ status: 'success', data: await CheckIn.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
-  if (data.action === 'get_capsule_photos') return res.json({ status: 'success', data: await CapsulePhoto.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64') });
-  res.status(400).json({ status: 'error', message: 'Ação de admin não reconhecida.' });
+  try {
+    const data = req.body || {};
+    if (String(data.password || data.admin_password || '') !== String(process.env.MANAGER_PASSWORD || '')) return res.status(401).json({ status: 'error', message: 'Senha de admin incorreta.' });
+    const invite = await getInviteFromRequest(req);
+    if (!invite) return res.status(400).json({ status: 'error', message: 'Slug do convite não enviado.' });
+
+    if (data.action === 'get_rsvps') return res.json({ status: 'success', data: await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
+    if (data.action === 'get_gifts') return res.json({ status: 'success', data: await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 }) });
+    if (data.action === 'get_comprovativos') return res.json({ status: 'success', data: await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64') });
+    if (data.action === 'get_messages') return res.json({ status: 'success', data: await Message.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
+    if (data.action === 'get_guests') return res.json({ status: 'success', data: (await Guest.find({ inviteId: invite._id }).sort({ number: 1, name: 1 })).map(cleanGuestForPublic) });
+    if (data.action === 'get_checkins') return res.json({ status: 'success', data: await CheckIn.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
+    if (data.action === 'get_capsule_photos') return res.json({ status: 'success', data: await CapsulePhoto.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64') });
+
+    if (data.action === 'add_guest') {
+      const guest = await adminAddGuest(invite, data);
+      return res.status(201).json({ status: 'success', message: 'Convidado adicionado com sucesso.', data: cleanGuestForPublic(guest) });
+    }
+    if (data.action === 'hide_message') {
+      const message = await adminHideMessage(invite, data);
+      return res.json({ status: 'success', message: 'Mensagem ocultada com sucesso.', data: message });
+    }
+    if (data.action === 'restore_message') {
+      const message = await adminRestoreMessage(invite, data);
+      return res.json({ status: 'success', message: 'Mensagem restaurada com sucesso.', data: message });
+    }
+    if (data.action === 'delete_message') {
+      const result = await adminDeleteMessage(invite, data);
+      return res.json({ status: 'success', message: 'Mensagem eliminada com sucesso.', data: result });
+    }
+    if (data.action === 'restore_rsvp') {
+      const result = await adminRestoreRsvp(invite, data);
+      return res.json({ status: 'success', message: 'Confirmação restaurada. O convidado poderá confirmar novamente.', data: result });
+    }
+    if (data.action === 'restore_checkin') {
+      const result = await adminRestoreCheckin(invite, data);
+      return res.json({ status: 'success', message: 'Check-in restaurado. O convidado volta a ficar pendente na entrada.', data: result });
+    }
+
+    return res.status(400).json({ status: 'error', message: 'Ação de admin não reconhecida.' });
+  } catch (err) {
+    console.error('[admin-api]', err);
+    return res.status(err.statusCode || 500).json({ status: 'error', message: err.message || 'Erro no admin.' });
+  }
 });
 
 
@@ -957,7 +1119,7 @@ async function getPublicStats(req, res, invite) {
     Guest.find({ inviteId: invite._id }).select('maxGuests companions checkedIn'),
     Rsvp.find({ inviteId: invite._id }).select('guests'),
     Contribution.countDocuments({ inviteId: invite._id }),
-    Message.countDocuments({ inviteId: invite._id }),
+    Message.countDocuments({ inviteId: invite._id, hidden: { $ne: true } }),
     CheckIn.find({ inviteId: invite._id }).select('guests'),
     CapsulePhoto.countDocuments({ inviteId: invite._id })
   ]);
@@ -996,7 +1158,7 @@ async function listCapsulePhotos(req, res, invite) {
   });
   sendJson(req, res, { status: 'success', data });
 }
-async function listMessages(req, res, invite) { const messages = await Message.find({ inviteId: invite._id }).sort({ timestamp: -1 }).limit(200); sendJson(req, res, { status: 'success', data: messages }); }
+async function listMessages(req, res, invite) { const messages = await Message.find({ inviteId: invite._id, hidden: { $ne: true } }).sort({ timestamp: -1 }).limit(200); sendJson(req, res, { status: 'success', data: messages }); }
 async function listGifts(req, res, invite) { await seedDefaultGifts(invite); const gifts = await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 }); sendJson(req, res, { status: 'success', data: gifts }); }
 async function getGuestDetails(req, res, invite) {
   const guest = await findGuestByIdentity(invite, { nome: req.body?.nome || req.query?.nome || req.query?.name, name: req.query?.name, token: req.body?.token || req.query?.token });
