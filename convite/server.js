@@ -489,6 +489,11 @@ app.post('/manager/login', (req, res) => {
   const { password } = req.body || {};
   if (!process.env.MANAGER_PASSWORD) return res.status(500).json({ status: 'error', message: 'MANAGER_PASSWORD não configurado no Render.' });
   if (String(password || '') !== String(process.env.MANAGER_PASSWORD)) return res.status(401).json({ status: 'error', message: 'Senha incorrecta.' });
+  if (!process.env.MANAGER_SECRET) {
+    // Compatibilidade: permite o admin.html validar a senha mesmo em deployments antigos sem MANAGER_SECRET.
+    // As acções sensíveis continuam protegidas pela própria senha em /admin-api.
+    return res.json({ status: 'success', token: '', message: 'Sessão validada por senha.' });
+  }
   const token = signToken({ role: 'manager', iat: Date.now(), exp: Date.now() + 1000 * 60 * 60 * 12 });
   res.json({ status: 'success', token });
 });
@@ -1023,10 +1028,21 @@ async function adminRestoreCheckin(invite, data) {
   return { deleted: 1, guest: guest ? cleanGuestForPublic(guest) : null };
 }
 
+function adminApiAuthorized(req, data = {}) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+  const payload = verifyToken(token);
+  if (payload && payload.role === 'manager') return true;
+
+  const configuredPassword = String(process.env.MANAGER_PASSWORD || '');
+  const suppliedPassword = String(data.password || data.admin_password || '');
+  return Boolean(configuredPassword && suppliedPassword && suppliedPassword === configuredPassword);
+}
+
 app.post('/admin-api', async (req, res) => {
   try {
     const data = req.body || {};
-    if (String(data.password || data.admin_password || '') !== String(process.env.MANAGER_PASSWORD || '')) return res.status(401).json({ status: 'error', message: 'Senha de admin incorreta.' });
+    if (!adminApiAuthorized(req, data)) return res.status(401).json({ status: 'error', message: 'Sessão inválida, expirada ou senha de admin incorrecta.' });
     const invite = await getInviteFromRequest(req);
     if (!invite) return res.status(400).json({ status: 'error', message: 'Slug do convite não enviado.' });
 
