@@ -1160,9 +1160,41 @@
       .row-actions .btn { flex: 1 1 auto; }
     }
 
+    /* Correcção mobile: impede que os botões administrativos fiquem por cima das badges/textos. */
+    @media (max-width: 760px) {
+      .activity-list { max-height: none; overflow: visible; }
+      .mobile-card {
+        display: grid;
+        gap: 8px;
+        align-items: start;
+        overflow: visible;
+      }
+      .mobile-card > .status-badge {
+        display: inline-flex !important;
+        width: max-content;
+        max-width: 100%;
+        margin: 4px 0 0 !important;
+      }
+      .mobile-card .row-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-top: 4px;
+        align-items: stretch;
+      }
+      .mobile-card .row-actions .btn {
+        width: 100%;
+        min-height: 38px;
+        flex: none;
+        white-space: normal;
+        line-height: 1.15;
+      }
+      .mobile-card .row-actions .btn .feather {
+        flex: 0 0 auto;
+      }
+    }
 
-
-  </style>
 </head>
 <body>
   <div id="loginScreen" class="login-screen">
@@ -1401,24 +1433,55 @@
       const idOf = (o) => text(o && (o._id || o.id || o.messageId || o.rsvpId || o.checkinId || ''));
       const apiBase = () => String(window.LIRANDZO_API_BASE_URL || '').replace(/\/+$/, '');
       const inviteSlug = () => String(window.LIRANDZO_INVITE_SLUG || '').trim();
-      const adminPass = () => sessionStorage.getItem('rm_admin_password') || adminPassword?.value || window.LIRANDZO_ADMIN_PASSWORD || 'rm2026';
+      const adminPass = () => sessionStorage.getItem('rm_admin_password') || adminPassword?.value || window.LIRANDZO_ADMIN_PASSWORD || '';
+      const adminToken = () => sessionStorage.getItem('rm_admin_token') || '';
       async function readJsonResponse(res) {
         const raw = await res.text();
         try { return raw ? JSON.parse(raw) : {}; }
         catch (err) { return { status: 'error', message: raw || 'Resposta inválida do servidor.' }; }
       }
-      async function adminPost(action, payload = {}) {
+      async function managerLogin(password) {
         const base = apiBase();
-        if (!base) throw new Error('API do convite não configurada.');
-        const body = { ...payload, action, slug: inviteSlug(), password: adminPass(), admin_password: adminPass() };
-        const res = await fetch(`${base}/admin-api`, {
+        if (!base) return null;
+        const res = await fetch(`${base}/manager/login`, {
           method: 'POST',
           mode: 'cors',
-          headers: { 'Content-Type': 'application/json', 'X-Invite-Slug': inviteSlug() },
-          body: JSON.stringify(body)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
         });
         const data = await readJsonResponse(res);
         if (!res.ok || data.status === 'error') throw new Error(data.message || `Erro HTTP ${res.status}`);
+        return data.token || '';
+      }
+      async function validateAdminPasswordFallback(password) {
+        sessionStorage.setItem('rm_admin_password', password);
+        sessionStorage.removeItem('rm_admin_token');
+        await adminPost('get_guests', {});
+        return '';
+      }
+      async function adminPost(action, payload = {}) {
+        const base = apiBase();
+        if (!base) throw new Error('API do convite não configurada.');
+        const token = adminToken();
+        const password = adminPass();
+        const body = { ...payload, action, slug: inviteSlug(), password, admin_password: password };
+        const headers = { 'Content-Type': 'application/json', 'X-Invite-Slug': inviteSlug() };
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const res = await fetch(`${base}/admin-api`, {
+          method: 'POST',
+          mode: 'cors',
+          headers,
+          body: JSON.stringify(body)
+        });
+        const data = await readJsonResponse(res);
+        if (!res.ok || data.status === 'error') {
+          if (res.status === 401) {
+            sessionStorage.removeItem('rm_admin_logged');
+            sessionStorage.removeItem('rm_admin_token');
+            throw new Error('Sessão expirada ou senha inválida. Saia e entre novamente com a senha configurada no Render.');
+          }
+          throw new Error(data.message || `Erro HTTP ${res.status}`);
+        }
         return data;
       }
       function setButtonBusy(button, busy, label) {
@@ -1521,17 +1584,35 @@
       }
 
       function bindEvents() {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
-          const expected = window.LIRANDZO_ADMIN_PASSWORD || 'rm2026';
-          if (adminPassword.value === expected) {
+          loginError.textContent = '';
+          const password = adminPassword.value;
+          const submitBtn = loginForm.querySelector('button[type="submit"]');
+          setButtonBusy(submitBtn, true, 'A validar');
+          try {
+            let token = '';
+            if (apiBase()) {
+              try {
+                token = await managerLogin(password);
+              } catch (loginErr) {
+                // Compatibilidade com servidor antigo/sem MANAGER_SECRET: valida directamente no /admin-api.
+                token = await validateAdminPasswordFallback(password);
+              }
+            } else {
+              const expected = window.LIRANDZO_ADMIN_PASSWORD || 'rm2026';
+              if (password !== expected) throw new Error('Senha incorrecta. Verifique a senha e tente novamente.');
+            }
             sessionStorage.setItem('rm_admin_logged', '1');
-            sessionStorage.setItem('rm_admin_password', adminPassword.value);
+            sessionStorage.setItem('rm_admin_password', password);
+            if (token) sessionStorage.setItem('rm_admin_token', token);
             loginScreen.style.display = 'none';
             app.style.display = 'block';
-            loadAll();
-          } else {
-            loginError.textContent = 'Senha incorrecta. Verifique a senha e tente novamente.';
+            await loadAll();
+          } catch (err) {
+            loginError.textContent = err.message || 'Senha incorrecta. Verifique a senha e tente novamente.';
+          } finally {
+            setButtonBusy(submitBtn, false);
           }
         });
         if (sessionStorage.getItem('rm_admin_logged') === '1') {
@@ -1544,6 +1625,7 @@
         logoutBtn.addEventListener('click', () => {
           sessionStorage.removeItem('rm_admin_logged');
           sessionStorage.removeItem('rm_admin_password');
+          sessionStorage.removeItem('rm_admin_token');
           location.reload();
         });
         refreshBtn.addEventListener('click', loadAll);
@@ -1795,9 +1877,11 @@
           ...DATA.messages.map(x => ({ ...x, type: 'Mensagem', icon: 'message-circle', detail: text(x.message).slice(0, 90) })),
           ...DATA.checkins.map(x => ({ ...x, type: 'Check-in', icon: 'log-in', detail: `${num(x.guests || x.maxGuests) || 1} pessoa(s) · ${x.mesa || 'Mesa a definir'}` })),
           ...DATA.photos.map(x => ({ ...x, type: 'Cápsula', icon: 'image', detail: x.filename || 'Foto enviada' }))
-        ].sort((a, b) => new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt)).slice(0, 9);
-        $('activityBadge').textContent = `${items.length} registos`;
-        $('activityList').innerHTML = items.length ? items.map(item => `
+        ].sort((a, b) => new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt));
+        const maxItems = window.matchMedia('(max-width: 760px)').matches ? 5 : 9;
+        const visibleItems = items.slice(0, maxItems);
+        $('activityBadge').textContent = `${visibleItems.length} registos`;
+        $('activityList').innerHTML = visibleItems.length ? visibleItems.map(item => `
           <article class="activity-item">
             <div class="activity-icon"><i data-feather="${item.icon}"></i></div>
             <div><strong>${esc(item.type)} · ${esc(nameOf(item))}</strong><p>${esc(item.detail || '-')}</p></div>
