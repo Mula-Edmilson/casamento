@@ -116,7 +116,7 @@
       letter-spacing: .10em;
       text-transform: uppercase;
     }
-    .field input, .search-input {
+    .field input, .search-input, .filter-select {
       width: 100%;
       min-height: 43px;
       border: 1px solid var(--line-strong);
@@ -127,7 +127,7 @@
       padding: 0 13px;
       transition: border-color .2s ease, box-shadow .2s ease;
     }
-    .field input:focus, .search-input:focus {
+    .field input:focus, .search-input:focus, .filter-select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 4px rgba(176, 137, 104, .10);
     }
@@ -487,6 +487,7 @@
     }
     .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .search-input { width: min(360px, 100%); font-size: 13px; }
+    .filter-select { width: auto; min-width: 148px; font-size: 12px; font-weight: 800; }
 
     .table-wrap { overflow: auto; border-radius: 16px; border: 1px solid var(--line); }
     table { width: 100%; border-collapse: collapse; min-width: 760px; background: rgba(33, 28, 25, .18); }
@@ -853,7 +854,7 @@
       .desktop-table { display: none; }
       .mobile-list { display: grid; }
       .toolbar { align-items: stretch; }
-      .toolbar-left, .toolbar-right, .search-input { width: 100%; }
+      .toolbar-left, .toolbar-right, .search-input, .filter-select { width: 100%; }
       .toolbar-right .btn { flex: 1; }
       .info-row { grid-template-columns: 1fr; gap: 3px; }
       .activity-list { max-height: none; }
@@ -1086,7 +1087,8 @@
     html[data-theme="light"] .sync-pill,
     html[data-theme="light"] .backend-note,
     html[data-theme="light"] .field input,
-    html[data-theme="light"] .search-input {
+    html[data-theme="light"] .search-input,
+    html[data-theme="light"] .filter-select {
       background: rgba(255, 255, 255, .78);
       color: var(--text-2);
       border-color: var(--line-strong);
@@ -1350,7 +1352,7 @@
 
       <section id="messagesPanel" class="page-panel">
         <div class="section-title"><div><h1>Mensagens</h1><p>Mural de felicitações enviado pelos convidados.</p></div><span id="messageBadge" class="event-chip">0 mensagens</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="message-circle"></i> Felicitações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="messageSearch" class="search-input" type="search" placeholder="Pesquisar mensagem"></div><div class="toolbar-right"><button class="btn secondary small" data-export="messages" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="messageRows"></tbody></table></div><div id="messageMobile" class="mobile-list"></div></div></section>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="message-circle"></i> Felicitações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="messageSearch" class="search-input" type="search" placeholder="Pesquisar mensagem"><select id="messageVisibilityFilter" class="filter-select" aria-label="Filtrar mensagens"><option value="all">Todas</option><option value="visible">Visíveis</option><option value="hidden">Ocultas</option></select></div><div class="toolbar-right"><button class="btn secondary small" data-export="messages" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="messageRows"></tbody></table></div><div id="messageMobile" class="mobile-list"></div></div></section>
       </section>
 
       <section id="checkinsPanel" class="page-panel">
@@ -1632,6 +1634,7 @@
         refreshBtn.addEventListener('click', loadAll);
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleSidebar(false); });
         document.querySelectorAll('.search-input').forEach(input => input.addEventListener('input', renderLists));
+        $('messageVisibilityFilter')?.addEventListener('change', renderLists);
         document.querySelectorAll('[data-export]').forEach(button => {
           button.addEventListener('click', () => exportCSV(button.dataset.export));
         });
@@ -1678,6 +1681,10 @@
           confirmText = `Ocultar a mensagem de ${name}? Ela deixa de aparecer no mural público.`;
           busyText = 'A ocultar';
           successText = 'Mensagem ocultada com sucesso.';
+        } else if (action === 'restore_message') {
+          confirmText = `Restaurar a mensagem de ${name}? Ela volta a aparecer no mural público.`;
+          busyText = 'A restaurar';
+          successText = 'Mensagem restaurada com sucesso.';
         } else if (action === 'restore_rsvp') {
           confirmText = `Restaurar a confirmação de presença de ${name}? O convidado poderá confirmar novamente.`;
           busyText = 'A restaurar';
@@ -1769,12 +1776,13 @@
         app.classList.add('is-loading');
         renderSkeletons();
         try {
+          const adminMessagesPromise = adminPost('get_messages').catch(() => LirandzoAPI.get('list_messages'));
           const [stats, guests, rsvps, gifts, messages, checkins, photos] = await Promise.all([
             LirandzoAPI.get('stats'),
             LirandzoAPI.get('list_guests'),
             LirandzoAPI.get('list_rsvps'),
             LirandzoAPI.get('list_gift_records'),
-            LirandzoAPI.get('list_messages'),
+            adminMessagesPromise,
             LirandzoAPI.get('list_checkins'),
             LirandzoAPI.get('list_capsule_photos')
           ]);
@@ -1995,22 +2003,33 @@
       }
 
       function renderMessages() {
-        const list = filtered(DATA.messages, 'messageSearch');
-        $('messageBadge').textContent = `${list.length} mensagens`;
+        const all = filtered(DATA.messages, 'messageSearch');
+        const hiddenCount = all.filter(m => m.hidden === true || String(m.status || '').toLowerCase() === 'hidden').length;
+        const visibleCount = Math.max(all.length - hiddenCount, 0);
+        const mode = $('messageVisibilityFilter')?.value || 'all';
+        const list = all.filter(m => {
+          const isHidden = m.hidden === true || String(m.status || '').toLowerCase() === 'hidden';
+          if (mode === 'hidden') return isHidden;
+          if (mode === 'visible') return !isHidden;
+          return true;
+        });
+        $('messageBadge').textContent = `${visibleCount} visíveis · ${hiddenCount} ocultas`;
         $('messageRows').innerHTML = list.length ? list.map(m => {
           const id = idOf(m);
           const isHidden = m.hidden === true || String(m.status || '').toLowerCase() === 'hidden';
           const hideButton = id && !isHidden ? `<button class="btn warning small" type="button" data-admin-action="hide_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="eye-off"></i> Ocultar</button>` : '';
+          const restoreButton = id && isHidden ? `<button class="btn warning small" type="button" data-admin-action="restore_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="eye"></i> Restaurar</button>` : '';
           const deleteButton = id ? `<button class="btn danger small" type="button" data-admin-action="delete_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="trash-2"></i> Eliminar</button>` : '<span class="status-badge warn">Sem ID</span>';
-          return `<tr><td>${esc(dateFmt(m.timestamp))}</td><td><strong>${esc(nameOf(m))}</strong></td><td>${esc(m.message || '')}</td><td>${isHidden ? '<span class="status-badge hidden">Oculta</span>' : '<span class="status-badge blue">Visível</span>'}</td><td><div class="row-actions">${hideButton}${deleteButton}</div></td></tr>`;
-        }).join('') : '<tr><td colspan="5" class="empty">Ainda não há mensagens.</td></tr>';
+          return `<tr><td>${esc(dateFmt(m.timestamp))}</td><td><strong>${esc(nameOf(m))}</strong></td><td>${esc(m.message || '')}</td><td>${isHidden ? '<span class="status-badge hidden">Oculta</span>' : '<span class="status-badge blue">Visível</span>'}</td><td><div class="row-actions">${hideButton}${restoreButton}${deleteButton}</div></td></tr>`;
+        }).join('') : '<tr><td colspan="5" class="empty">Ainda não há mensagens neste filtro.</td></tr>';
         $('messageMobile').innerHTML = list.length ? list.map(m => {
           const id = idOf(m);
           const isHidden = m.hidden === true || String(m.status || '').toLowerCase() === 'hidden';
           const hideButton = id && !isHidden ? `<button class="btn warning small" type="button" data-admin-action="hide_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="eye-off"></i> Ocultar</button>` : '';
+          const restoreButton = id && isHidden ? `<button class="btn warning small" type="button" data-admin-action="restore_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="eye"></i> Restaurar mensagem</button>` : '';
           const deleteButton = id ? `<button class="btn danger small" type="button" data-admin-action="delete_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="trash-2"></i> Eliminar</button>` : '';
-          return `<article class="mobile-card"><strong>${esc(nameOf(m))}</strong><span>${esc(dateFmt(m.timestamp))}<br>${esc(m.message || '')}</span><span class="status-badge ${isHidden ? 'hidden' : 'blue'}">${isHidden ? 'Oculta' : 'Mensagem'}</span><div class="row-actions">${hideButton}${deleteButton}</div></article>`;
-        }).join('') : '<div class="empty">Sem dados para mostrar.</div>';
+          return `<article class="mobile-card"><strong>${esc(nameOf(m))}</strong><span>${esc(dateFmt(m.timestamp))}<br>${esc(m.message || '')}</span><span class="status-badge ${isHidden ? 'hidden' : 'blue'}">${isHidden ? 'Oculta' : 'Visível'}</span><div class="row-actions">${hideButton}${restoreButton}${deleteButton}</div></article>`;
+        }).join('') : '<div class="empty">Sem mensagens neste filtro.</div>';
       }
 
       function renderCheckins() {
