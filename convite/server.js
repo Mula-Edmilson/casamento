@@ -1028,23 +1028,37 @@ async function adminRestoreCheckin(invite, data) {
   return { deleted: 1, guest: guest ? cleanGuestForPublic(guest) : null };
 }
 
-function adminApiAuthorized(req, data = {}) {
+function envSlugKey(value) {
+  return slugify(value).toUpperCase().replace(/[^A-Z0-9]+/g, '_');
+}
+function adminApiPasswordsFor(invite) {
+  const slugKey = envSlugKey(invite?.slug || '');
+  const values = [
+    process.env.MANAGER_PASSWORD || '',
+    slugKey ? process.env[`CLIENT_ADMIN_PASSWORD_${slugKey}`] || '' : '',
+    slugKey ? process.env[`INVITE_ADMIN_PASSWORD_${slugKey}`] || '' : '',
+    process.env.CLIENT_ADMIN_PASSWORD || '',
+    process.env.INVITE_ADMIN_PASSWORD || ''
+  ];
+  return Array.from(new Set(values.map(v => String(v || '').trim()).filter(Boolean)));
+}
+function adminApiAuthorized(req, data = {}, invite = null) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : '';
   const payload = verifyToken(token);
   if (payload && payload.role === 'manager') return true;
 
-  const configuredPassword = String(process.env.MANAGER_PASSWORD || '');
-  const suppliedPassword = String(data.password || data.admin_password || '');
-  return Boolean(configuredPassword && suppliedPassword && suppliedPassword === configuredPassword);
+  const suppliedPassword = String(data.password || data.admin_password || '').trim();
+  if (!suppliedPassword) return false;
+  return adminApiPasswordsFor(invite).includes(suppliedPassword);
 }
 
 app.post('/admin-api', async (req, res) => {
   try {
     const data = req.body || {};
-    if (!adminApiAuthorized(req, data)) return res.status(401).json({ status: 'error', message: 'Sessão inválida, expirada ou senha de admin incorrecta.' });
     const invite = await getInviteFromRequest(req);
     if (!invite) return res.status(400).json({ status: 'error', message: 'Slug do convite não enviado.' });
+    if (!adminApiAuthorized(req, data, invite)) return res.status(401).json({ status: 'error', message: 'Sessão inválida, expirada ou senha de admin incorrecta.' });
 
     if (data.action === 'get_rsvps') return res.json({ status: 'success', data: await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
     if (data.action === 'get_gifts') return res.json({ status: 'success', data: await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 }) });
