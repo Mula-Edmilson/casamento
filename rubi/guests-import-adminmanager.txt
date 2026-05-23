@@ -1,0 +1,25 @@
+Nome;Mesa;Acompanhantes;Telefone;Notas
+Família Demo 01;Mesa 01;1;;Token: demo-2026-001 | Categoria: Couple | Nº: 1
+Família Demo 02;Mesa 02;1;;Token: demo-2026-002 | Categoria: Couple | Nº: 2
+Convidado Demo 03;Mesa 03;0;;Token: demo-2026-003 | Categoria: Single | Nº: 3
+Família Demo 04;Mesa 04;1;;Token: demo-2026-004 | Categoria: Couple | Nº: 4
+Família Demo 05;Mesa 05;1;;Token: demo-2026-005 | Categoria: Couple | Nº: 5
+Convidado Demo 06;Mesa 06;0;;Token: demo-2026-006 | Categoria: Single | Nº: 6
+Família Demo 07;Mesa 07;1;;Token: demo-2026-007 | Categoria: Couple | Nº: 7
+Família Demo 08;Mesa 08;1;;Token: demo-2026-008 | Categoria: Couple | Nº: 8
+Convidado Demo 09;Mesa 01;0;;Token: demo-2026-009 | Categoria: Single | Nº: 9
+Família Demo 10;Mesa 02;1;;Token: demo-2026-010 | Categoria: Couple | Nº: 10
+Família Demo 11;Mesa 03;1;;Token: demo-2026-011 | Categoria: Couple | Nº: 11
+Convidado Demo 12;Mesa 04;0;;Token: demo-2026-012 | Categoria: Single | Nº: 12
+Família Demo 13;Mesa 05;1;;Token: demo-2026-013 | Categoria: Couple | Nº: 13
+Família Demo 14;Mesa 06;1;;Token: demo-2026-014 | Categoria: Couple | Nº: 14
+Convidado Demo 15;Mesa 07;0;;Token: demo-2026-015 | Categoria: Single | Nº: 15
+Família Demo 16;Mesa 08;1;;Token: demo-2026-016 | Categoria: Couple | Nº: 16
+Família Demo 17;Mesa 01;1;;Token: demo-2026-017 | Categoria: Couple | Nº: 17
+Convidado Demo 18;Mesa 02;0;;Token: demo-2026-018 | Categoria: Single | Nº: 18
+Família Demo 19;Mesa 03;1;;Token: demo-2026-019 | Categoria: Couple | Nº: 19
+Família Demo 20;Mesa 04;1;;Token: demo-2026-020 | Categoria: Couple | Nº: 20
+Convidado Demo 21;Mesa 05;0;;Token: demo-2026-021 | Categoria: Single | Nº: 21
+Família Demo 22;Mesa 06;1;;Token: demo-2026-022 | Categoria: Couple | Nº: 22
+Família Demo 23;Mesa 07;1;;Token: demo-2026-023 | Categoria: Couple | Nº: 23
+Convidado Demo 24;Mesa 08;0;;Token: demo-2026-024 | Categoria: Single | Nº: 24

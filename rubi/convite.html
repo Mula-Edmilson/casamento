@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+
+<html lang="pt">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Convite de Casamento — Amara &amp; Daniel</title>
+<link href="assets/media/lirandzo-logo.svg" rel="icon" type="image/png"/>
+<meta content="Convite de Casamento — Amara &amp; Daniel" property="og:title"/>
+<meta content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="assets/media/PG2.jpg" property="og:image"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;family=Parisienne&amp;display=swap" rel="stylesheet"/>
+<link href="style.css" rel="stylesheet"/>
+<style>
+    /* Estilos para o formulário de mensagens */
+    #messageForm {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      background: var(--card);
+    }
+    #messageForm textarea {
+      width: 100%;
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    /* Estilos para o feed de mensagens */
+    #guestbook-feed {
+      max-width: 600px;
+      margin: 40px auto 0 auto;
+      max-height: 500px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 24px;
+      background: #fff;
+    }
+    #feed-loading {
+      text-align: center;
+      padding: 40px;
+      color: #777;
+    }
+    .guestbook-entry {
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 0;
+    }
+    .guestbook-entry:last-child {
+      border-bottom: 0;
+    }
+    .guestbook-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .guestbook-header strong {
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+    .guestbook-header span {
+      font-size: 0.85rem;
+      color: #777;
+    }
+    .guestbook-entry p {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      color: #333;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    
+    /* Estilo para a mensagem de boas-vindas */
+    .welcome-guest {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: white;
+      background: rgba(0,0,0,0.3);
+      padding: 8px 16px;
+      border-radius: 50px;
+      display: inline-block;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    /* Estilos para a lista dinâmica de presentes */
+    .gift-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .gift-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+    .gift-item:hover {
+      border-color: var(--accent);
+      background: #fff5f5;
+    }
+    .gift-item.reserved {
+      background: #f0f0f0;
+      color: #999;
+      border-color: #ddd;
+      cursor: not-allowed;
+      opacity: 0.7;
+      text-decoration: line-through;
+    }
+    .gift-item.reserved input {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .gift-item input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+
+
+    /* Feedback premium após confirmação de presença */
+    .rsvp-success-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(18, 14, 12, .46);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .28s ease, visibility .28s ease;
+      pointer-events: none;
+    }
+    .rsvp-success-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .rsvp-success-card {
+      width: min(330px, 92vw);
+      min-height: 210px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 28px;
+      background: rgba(255, 252, 248, .92);
+      box-shadow: 0 28px 80px rgba(0,0,0,.26);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px 24px;
+      transform: translateY(10px) scale(.96);
+      transition: transform .36s cubic-bezier(.2,.9,.2,1);
+    }
+    .rsvp-success-overlay.show .rsvp-success-card {
+      transform: translateY(0) scale(1);
+    }
+    .rsvp-checkmark {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 18px 36px rgba(34, 197, 94, .28);
+      animation: checkPulse .95s ease both;
+    }
+    .rsvp-checkmark svg {
+      width: 46px;
+      height: 46px;
+      stroke-dasharray: 52;
+      stroke-dashoffset: 52;
+      animation: drawCheck .56s .18s ease forwards;
+    }
+    .rsvp-success-card strong {
+      display: block;
+      margin-top: 18px;
+      font-family: var(--font-heading);
+      color: #2f261f;
+      font-size: 1.55rem;
+      line-height: 1.05;
+    }
+    .rsvp-success-card span {
+      display: block;
+      margin-top: 8px;
+      color: #6f5b4e;
+      font-size: .95rem;
+      line-height: 1.45;
+    }
+    @keyframes checkPulse {
+      0% { transform: scale(.72); opacity: 0; }
+      55% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+
+    .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(201,162,39,.08);text-align:center}
+    .qr-checkin-card img{width:190px;max-width:100%;border-radius:16px;background:#fff;padding:10px;margin:12px auto;display:block}
+    .qr-checkin-card small{display:block;color:var(--text-light);line-height:1.5}
+  </style>
+</head>
+<body class="loading convite-white-gold-theme">
+<audio id="backgroundMusic" loop="" src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
+<div class="fixed-ui-container">
+<button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
+<svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
+</button>
+<button aria-label="Opções de presente" class="fab-item" id="fabGiftsBtn">
+<svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect height="5" width="20" x="2" y="7"></rect><line x1="12" x2="12" y1="22" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+</button>
+<button aria-label="Ver a sua mesa" class="fab-item" id="fabGuestInfoBtn">
+<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+</button>
+<button aria-label="Ver mapa do local" class="fab-item" id="fabMapBtn">
+<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+</button>
+<button aria-label="Controlar música" id="musicControl">
+<svg height="20" id="musicIcon" viewBox="0 0 24 24" width="20"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path></svg>
+</button>
+</div>
+<main aria-labelledby="inviteTitle" class="invite-wrap" role="main">
+<!-- FLORES DECORATIVAS -->
+<div class="decor-flower-top-right"></div>
+<div class="decor-flower-bottom-left"></div>
+<header class="hero">
+<div class="hero-gradient-overlay"></div>
+<div class="hero-bottom-content">
+<p class="lead"><strong>Celebre connosco o nosso casamento</strong></p>
+<h1 class="names">Amara &amp; Daniel</h1>
+<p class="lead"><strong>18 de dezembro de 2026</strong></p>
+<div id="countdown">
+<div><span id="days">00</span><small>Dias</small></div>
+<div><span id="hours">00</span><small>Horas</small></div>
+<div><span id="minutes">00</span><small>Minutos</small></div>
+<div><span id="seconds">00</span><small>Segundos</small></div>
+</div>
+</div>
+<a class="scroll-down-indicator" href="#nossa-historia">
+<!--  <svg viewBox="0 0 24 24"><path d="M12 19.5l-7-7 1.5-1.5L12 16.5l5.5-5.5L19 12.5z"/></svg> -->
+</a>
+</header>
+<section class="section fade-in-section" id="nossa-historia">
+<p class="verse">"É melhor serem dois do que um, porque têm melhor recompensa pelo seu trabalho. E o cordão de três dobras não se quebra tão depressa."</p>
+<p class="verse-reference">Eclesiastes 4:9 e 12</p>
+<h2 class="section-title">A Nossa História</h2>
+<div class="couple-details">
+<div>
+<h3>Amara</h3>
+<p>Filha de <strong>Mateus Silva</strong><br/>e de <strong>Helena Silva</strong></p>
+</div>
+<div class="decorative-ampersand">♡</div>
+<div>
+<h3>Daniel</h3>
+<p>Filho de <strong>António Costa</strong><br/>e de <strong>Clara Costa</strong></p>
+</div>
+</div>
+<!-- Story Timeline com imagem de fundo e overlay -->
+<div class="story-timeline-container">
+<div class="story-background-image">
+<img alt="Casal demo" src="assets/media/TR-ET.jpg"/>
+<div class="story-overlay"></div>
+</div>
+<div class="story-timeline" id="storyTimeline">
+<!-- Capítulo 1 -->
+<div class="story-chapter">
+<div class="chapter-marker">
+<span class="chapter-number">Ⅰ</span>
+</div>
+<div class="chapter-content">
+<h3 class="chapter-title">O Encontro</h3>
+<p class="chapter-text">Um dia comum virou especial sem a gente perceber. Foi em 14 de julho de 2023, durante uma chamada de vídeo com uma amiga-prima. Do outro lado da tela, pela primeira vez, os nossos olhares cruzaram-se, ainda que por meio de pixels. Ali começou algo que o coração já guardava.</p>
+</div>
+</div>
+<!-- Capítulo 2 -->
+<div class="story-chapter">
+<div class="chapter-marker">
+<span class="chapter-number">Ⅱ</span>
+</div>
+<div class="chapter-content">
+<h3 class="chapter-title">A Amizade</h3>
+<p class="chapter-text">Depois vieram longas conversas virtuais. Dias viraram noites e noites viraram madrugadas. A distância era geográfica e tinha fuso horário, mas nunca foi de alma. A amizade cresceu tão forte que virou saudade de quem ainda não tinha sido abraçado.</p>
+</div>
+</div>
+<!-- Capítulo 3 -->
+<div class="story-chapter">
+<div class="chapter-marker">
+<span class="chapter-number">Ⅲ</span>
+</div>
+<div class="chapter-content">
+<h3 class="chapter-title">O Crescimento</h3>
+<p class="chapter-text">O maior desafio foi esperar. Um ano inteiro apenas com vozes, telas e coração apertado. Mas cada conversa era um tijolo, cada desabafo um alicerce. Aprendemos que confiança se constrói também no silêncio da espera.</p>
+</div>
+</div>
+<!-- Capítulo 4 -->
+<div class="story-chapter">
+<div class="chapter-marker">
+<span class="chapter-number">Ⅳ</span>
+</div>
+<div class="chapter-content">
+<h3 class="chapter-title">A Promessa</h3>
+<p class="chapter-text">No dia 19 de julho de 2024 aconteceu o primeiro encontro real. Depois de 12 meses de palavras, chegou o primeiro abraço. Ali nasceu a promessa de nunca mais deixar que a distância nos definisse. Hoje, esse compromisso tem nome, data e testemunhas: vocês.</p>
+</div>
+</div>
+</div>
+<!-- Indicadores de scroll (opcional) -->
+<div class="scroll-indicator">
+<span class="scroll-arrow">←</span>
+<span class="scroll-text">Deslize para navegar pelos capítulos</span>
+<span class="scroll-arrow">→</span>
+</div>
+</div>
+</section>
+<!-- SECÇÃO VINTAGE: CARTA DOS NOIVOS -->
+<section class="section vintage-section section-scene fade-in-section" id="carta-dos-noivos">
+<div class="vintage-scene">
+<img alt="Fundo romântico da carta dos noivos" src="assets/media/TR-ET.jpg"/>
+<div class="vintage-scene-overlay"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewBox="0 0 24 24"><path d="M4 7.5h16M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 18 19.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path><path d="m8 11 2 2 6-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg>
+</span>
+<h2 class="section-title">Carta dos Noivos</h2>
+</div>
+<p class="section-subtitle">Antes de celebrarmos este dia, queremos deixar algumas palavras de gratidão a quem caminha connosco.</p>
+<div class="vintage-letter-preview elevated-card">
+<div aria-hidden="true" class="letter-seal">A&D</div>
+<div class="letter-topline">
+<span><i></i> Fé</span>
+<span><i></i> Amor</span>
+<span><i></i> Gratidão</span>
+</div>
+<p class="letter-intro">Querido(a) convidado(a),</p>
+<p>Depois de toda a nossa história com distâncias, fusos e esperas, este convite chega como um gesto de gratidão. Queremos celebrar este momento com quem acompanhou, torceu e faz parte da nossa caminhada.</p>
+<div class="letter-signature">Amara &amp; Daniel</div>
+<button class="btn btn-primary vintage-action" data-open-modal="cartaNoivosModal" type="button">Ler a Carta Completa</button>
+</div>
+</div>
+</section>
+<!-- SECÇÃO VINTAGE: PADRINHOS & HONRA -->
+<section class="section section-highlight vintage-section section-scene fade-in-section" id="padrinhos-honra">
+<div class="vintage-scene">
+<img alt="Fundo da secção padrinhos e honra" src="assets/media/Padrinhos.jpg"/>
+<div class="vintage-scene-overlay soft-dark"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewBox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg>
+</span>
+<h2 class="section-title">Padrinhos &amp; Honra</h2>
+</div>
+<p class="section-subtitle">Uma homenagem às pessoas que acompanham esta união com carinho, apoio e presença especial.</p>
+<div class="honor-grid">
+<article class="honor-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.4"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
+<span class="honor-number">01</span>
+<h3>Madrinha de Honra</h3>
+<p>Uma presença delicada, próxima e essencial neste caminho até ao altar.</p>
+<button class="btn btn-outline" data-open-modal="madrinhaHonraModal" type="button">Ver Dedicatória</button>
+</article>
+<article class="honor-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.4"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M15.5 7.5 18 10l3.5-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg></span>
+<span class="honor-number">02</span>
+<h3>Padrinho de Honra</h3>
+<p>Um apoio firme, discreto e especial para este momento tão importante.</p>
+<button class="btn btn-outline" data-open-modal="padrinhoHonraModal" type="button">Ver Dedicatória</button>
+</article>
+<article class="honor-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M7.5 18.5a5.5 5.5 0 0 1 9 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="9" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle><circle cx="15" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
+<span class="honor-number">03</span>
+<h3>Damas &amp; Cavalheiros</h3>
+<p>Amigos e familiares escolhidos para caminhar connosco neste dia de celebração.</p>
+<button class="btn btn-outline" data-open-modal="damasCavalheirosModal" type="button">Ver Dedicatória</button>
+</article>
+<article class="honor-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 17c1.5-2.7 4.1-4 8-4s6.5 1.3 8 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="8" cy="8.5" fill="none" r="2.3" stroke="currentColor" stroke-width="1.4"></circle><circle cx="16" cy="8.5" fill="none" r="2.3" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
+<span class="honor-number">04</span>
+<h3>Famílias</h3>
+<p>A base, a bênção e a memória viva de tudo o que somos e celebramos.</p>
+<button class="btn btn-outline" data-open-modal="familiasModal" type="button">Ver Homenagem</button>
+</article>
+</div>
+</div>
+</section>
+<section class="section section-highlight fade-in-section" id="agenda-evento">
+<div class="agenda-centered">
+<div class="agenda-header">
+<div class="agenda-icon-divider">
+<span class="divider"></span>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="divider"></span>
+</div>
+<h2 class="section-title">O Grande Dia</h2>
+<p class="section-subtitle">Temos a honra de convidá-lo(a) a celebrar connosco cada momento.</p>
+<div class="agenda-icon-small">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<div class="agenda-event">
+<h3 class="event-title">Cerimónia Religiosa</h3>
+<p class="event-time">09:00</p>
+<div class="agenda-icon-divider">
+<span class="divider"></span>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="divider"></span>
+</div>
+<h4 class="event-location">Igreja Matriz — Local Demo</h4>
+<a class="map-link-button" href="#" id="mapBtnReligiosa" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+            Ver no Mapa
+          </a>
+</div>
+<div class="agenda-event">
+<h3 class="event-title">Recepção</h3>
+<p class="event-time">13:00</p>
+<div class="agenda-icon-divider">
+<span class="divider"></span>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A3 3 0 0 1 15 7.875v3.375c0 .621-.504 1.125-1.125 1.125H10.125c-.621 0-1.125-.504-1.125-1.125V7.875A3 3 0 0 1 12 4.875Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="divider"></span>
+</div>
+<h4 class="event-location"> Salão Imperial</h4>
+<a class="map-link-button" href="#" id="mapBtnCivil" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+            Ver no Mapa
+          </a>
+</div>
+<div class="agenda-event">
+<h3 class="event-title">Copo de Água</h3>
+<p class="event-time">14:30</p>
+<div class="agenda-icon-divider">
+<span class="divider"></span>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A3 3 0 0 1 15 7.875v3.375c0 .621-.504 1.125-1.125 1.125H10.125c-.621 0-1.125-.504-1.125-1.125V7.875A3 3 0 0 1 12 4.875Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="divider"></span>
+</div>
+<h4 class="event-location">Jardim Dourado</h4>
+<p class="event-description">Copo de Água e celebração no Salão Ballroom.</p>
+<a class="map-link-button" href="#" id="mapBtnCopo" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+            Ver no Mapa
+          </a>
+</div>
+</div>
+</section>
+<!-- SECÇÃO VINTAGE: MENU DA CELEBRAÇÃO -->
+<section class="section vintage-section section-scene fade-in-section" id="menu-celebracao">
+<div class="vintage-scene">
+<img alt="Fundo da secção menu da celebração" src="assets/media/MENU-2.jpg"/>
+<div class="vintage-scene-overlay warm-light"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewBox="0 0 24 24"><path d="M7 3v9.5a2.5 2.5 0 0 0 5 0V3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M14 3v7m3-7v16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg>
+</span>
+<h2 class="section-title">Menu da Celebração</h2>
+</div>
+<p class="section-subtitle">Uma pequena antevisão dos sabores que farão parte da nossa recepção.</p>
+<div class="menu-preview-grid menu-visual-grid">
+<div class="menu-preview-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M7 7h10M6 12h12M8 17h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
+<span>Entrada</span>
+<h3>Recepção leve</h3>
+<p>Opções delicadas para receber os convidados com conforto.</p>
+</div>
+<div class="menu-preview-card featured elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M6 8h12M7 12h10M8 16h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="18" cy="6" fill="none" r="2" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
+<span>Principal</span>
+<h3>Serviço especial</h3>
+<p>Pratos pensados para tornar o almoço memorável e acolhedor.</p>
+</div>
+<div class="menu-preview-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M7 17a5 5 0 0 1 10 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M9 14a3 3 0 1 1 6 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
+<span>Sobremesa</span>
+<h3>Final doce</h3>
+<p>Um encerramento suave para brindar este momento.</p>
+</div>
+</div>
+<button class="btn btn-primary vintage-action" data-open-modal="menuCelebracaoModal" type="button">Ver Menu Completo</button>
+</div>
+</section>
+<section class="section fade-in-section" id="galeria">
+<h2 class="section-title">Momentos</h2>
+<div class="gallery-grid">
+<div class="gallery-image-container">
+<img alt="Alianças sobre tecido delicado" data-src="assets/media/momentos-aliancas.jpg" src="assets/media/momentos-aliancas.jpg"/>
+</div>
+<div class="gallery-image-container">
+<img alt="Mãos dadas com alianças" data-src="assets/media/momentos-maos.jpg" src="assets/media/momentos-maos.jpg"/>
+</div>
+<div class="gallery-image-container">
+<img alt="Brinde discreto de casamento" data-src="assets/media/momentos-champagne.jpg" src="assets/media/momentos-champagne.jpg"/>
+</div>
+</div>
+</section>
+<section class="section section-highlight fade-in-section" id="guia-evento">
+<h2 class="section-title">Guia do Evento</h2>
+<p class="section-subtitle">Tudo o que precisa de saber para celebrar connosco.</p>
+<div class="guide-grid">
+<div class="guide-item">
+<h4>Confirme a Sua Presença</h4>
+<p>Por favor, informe-nos se poderemos contar consigo até 30 de Novembro de 2026.</p>
+<button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
+<button class="btn btn-outline" id="calendarBtn" type="button">Adicionar ao Calendário</button>
+</div>
+<div class="guide-item">
+<h4>Inspiração de Vestuário</h4>
+<p>O estilo visual será elegante e romântico, com inspiração em branco e dourado para uma celebração harmoniosa.</p>
+<button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
+</div>
+<div class="guide-item">
+<h4>Presentes e Mimos</h4>
+<p>A sua presença é o nosso maior presente! Se desejar, pode contribuir para o nosso futuro.</p>
+<button class="btn btn-outline" id="giftsCombinedBtn">Ver Opções de Presente</button>
+</div>
+</div>
+</section>
+<!-- SECÇÃO VINTAGE: ETIQUETA DO EVENTO -->
+<section class="section vintage-section etiquette-section section-scene fade-in-section" id="etiqueta-evento">
+<div class="vintage-scene">
+<img alt="Fundo da secção etiqueta do evento" src="assets/media/TR-ET.jpg"/>
+<div class="vintage-scene-overlay soft-dark"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewBox="0 0 24 24"><path d="M8 4h8l4 4v8l-4 4H8l-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M9 12h6M12 9v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg>
+</span>
+<h2 class="section-title">Etiqueta do Evento</h2>
+</div>
+<p class="section-subtitle">Pequenas orientações para que todos vivam este dia com elegância, respeito e tranquilidade.</p>
+<div class="etiquette-grid etiquette-visual-grid">
+<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewBox="0 0 24 24"><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="12" cy="12" fill="none" r="8" stroke="currentColor" stroke-width="1.4"></circle></svg></span><p>Chegue com alguma antecedência à cerimónia.</p></div>
+<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewBox="0 0 24 24"><path d="M10 15V9a2 2 0 1 1 4 0v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M6 11v1a6 6 0 0 0 12 0v-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span><p>Durante os momentos solenes, mantenha o telemóvel em silêncio.</p></div>
+<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewBox="0 0 24 24"><rect fill="none" height="10" rx="2" stroke="currentColor" stroke-width="1.4" width="14" x="5" y="7"></rect><circle cx="12" cy="12" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle></svg></span><p>Registe memórias com discrição e respeite os fotógrafos oficiais.</p></div>
+<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewBox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg></span><p>Partilhe alegria, carinho e uma presença cheia de boas energias.</p></div>
+</div>
+<button class="btn btn-outline vintage-action" data-open-modal="etiquetaEventoModal" type="button">Ver Recomendações</button>
+</div>
+</section>
+<!-- SECÇÃO VINTAGE: TRANSPORTE, ESTACIONAMENTO & APOIO -->
+<section class="section section-highlight vintage-section travel-section section-scene fade-in-section" id="transporte-apoio">
+<div class="vintage-scene">
+<img alt="Fundo da secção transporte e apoio" src="assets/media/TR-ET.jpg"/>
+<div class="vintage-scene-overlay warm-light"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.4"></circle></svg>
+</span>
+<h2 class="section-title">Transporte &amp; Apoio</h2>
+</div>
+<p class="section-subtitle">Informação prática para chegar aos locais do evento com segurança e sem pressa.</p>
+<div class="travel-card elevated-card">
+<div aria-hidden="true" class="travel-map-mark">⌖</div>
+<div>
+<h3>Orientações para o dia</h3>
+<p>Guarde os contactos de apoio, consulte os mapas e organize a sua chegada com antecedência.</p>
+<div class="travel-points">
+<span><i></i> Mapa</span>
+<span><i></i> Apoio</span>
+<span><i></i> Localização</span>
+</div>
+</div>
+<button class="btn btn-primary" data-open-modal="transporteApoioModal" type="button">Ver Detalhes de Chegada</button>
+</div>
+</div>
+</section>
+
+<section class="section section-highlight fade-in-section" id="capsula-tempo">
+  <div class="time-capsule-card elevated-card">
+    <span class="time-capsule-kicker">Memórias do dia</span>
+    <h2 class="section-title">Cápsula do Tempo</h2>
+    <p class="section-subtitle">No próprio dia do casamento, os convidados poderão partilhar aqui as fotografias tiradas durante a celebração. Esta área fica bloqueada antes e depois da data do evento.</p>
+
+    <div class="time-capsule-state" id="timeCapsuleState">
+      <strong id="timeCapsuleStateTitle">Disponível apenas no dia do casamento</strong>
+      <span id="timeCapsuleStateText">A cápsula será aberta automaticamente no dia 18/12/2026.</span>
+    </div>
+
+    <form id="timeCapsuleForm" class="time-capsule-form" aria-describedby="timeCapsuleStatus">
+      <label for="timeCapsuleFiles">Adicionar fotografias do casamento</label>
+      <input id="timeCapsuleFiles" type="file" accept="image/*" multiple disabled="" />
+      <small>Formatos aceites: imagens. Para manter o convite leve, seleccione até 8 fotografias por envio.</small>
+      <button class="btn btn-primary" id="timeCapsuleSubmit" type="submit" disabled="">Partilhar Fotos</button>
+      <p id="timeCapsuleStatus" class="time-capsule-status"></p>
+    </form>
+
+    <div class="time-capsule-gallery" id="timeCapsuleGallery" aria-live="polite">
+      <p class="time-capsule-empty" id="timeCapsuleEmpty">As fotografias partilhadas no dia aparecerão aqui.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section fade-in-section" id="mural-felicitacoes">
+<h2 class="section-title">Mural de Felicitações</h2>
+<p class="section-subtitle">Deixe-nos uma mensagem de carinho!</p>
+<form id="messageForm">
+<div style="margin-bottom: 16px;">
+<label for="messageText">A sua mensagem:</label>
+<textarea id="messageText" maxlength="500" placeholder="Escreva aqui a sua felicitação..." required=""></textarea>
+</div>
+<div class="form-actions" style="text-align: right;">
+<button class="btn btn-primary" type="submit">Enviar Mensagem</button>
+</div>
+<p id="messageStatus" style="font-size: 0.9rem; margin-top: 16px; text-align: center;"></p>
+</form>
+<div id="guestbook-feed">
+<p id="feed-loading">A carregar mensagens...</p>
+</div>
+</section>
+<footer class="footer fade-in-section">
+<h3 class="names">Amara &amp; Daniel</h3>
+<p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
+<div class="footer-contact">
+<span>Tem dúvidas?</span>
+<span>Apoio Demo: +258 84 000 0000 | Coordenação Demo: +258 87 000 0000</span>
+</div>
+</footer>
+
+<footer class="lirandzo-demo-footer" aria-label="Rodapé Lirandzo">
+  <img src="assets/media/lirandzo-logo.svg" alt="Lirandzo" loading="lazy">
+</footer>
+</main>
+<!-- MODAIS -->
+<div aria-labelledby="rsvpTitle" aria-modal="true" class="modal" id="rsvpModal" role="dialog">
+<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-rsvp"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<h3 id="rsvpTitle">Confirmar Presença</h3>
+<p>Escolha uma das opções abaixo. A sua resposta será registada no painel dos noivos.</p>
+<div class="rsvp-options" id="rsvpOptions" aria-describedby="rsvpStatus">
+<button class="btn btn-primary rsvp-choice" id="confirmPresenceBtn" type="button">Sim! confirmo.</button>
+<button class="btn btn-outline rsvp-choice" id="pendingPresenceBtn" type="button">Ainda por confirmar</button>
+<button class="btn btn-outline rsvp-choice" id="addCalendarBtn" type="button">Adicionar ao calendário</button>
+<button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
+</div>
+<p id="rsvpStatus" class="rsvp-status" style="font-size: 0.9rem; margin-top: 16px;"></p>
+</div>
+</div>
+<div aria-labelledby="dressCodeTitle" aria-modal="true" class="modal" id="dressCodeModal" role="dialog">
+<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-dress"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M8 4h8l1 4-2 2v10H9V10L7 8l1-4Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<h3 id="dressCodeTitle">Inspiração: Elegante e Romântico</h3>
+<p>O objetivo é o conforto sofisticado. Tons claros, branco, dourado e detalhes elegantes são bem-vindos.</p>
+<div class="dresscode-grid dresscode-palette">
+<img class="dresscode-palette-img" alt="Paleta de cores do dress code com tons neutros, dourados, verdes e castanhos." src="assets/media/dress-code-paleta.jpeg"/>
+</div>
+<button class="btn btn-ghost" data-close-modal="" type="button">Entendi</button>
+</div>
+</div>
+<div aria-labelledby="giftsCombinedTitle" aria-modal="true" class="modal" id="giftsCombinedModal" role="dialog">
+<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-gifts"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><rect fill="none" height="4" stroke="currentColor" stroke-width="1.5" width="18" x="3" y="8"></rect><path d="M12 8v13M5 12v9h14v-9" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="M12 8H8.5a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8Zm0 0h3.5a2.5 2.5 0 1 0 0-5C13 3 12 8 12 8Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<h3 id="giftsCombinedTitle">Presentes e Contribuições</h3>
+<p>A sua presença é o maior presente! Se desejar contribuir, deixamos abaixo as opções monetárias:</p>
+<div class="tab-buttons single-tab">
+<button class="tab-btn active" data-tab="monetaryContent">Contribuição Monetária</button>
+</div>
+<div class="tab-content active" id="monetaryContent">
+<h4>Um Mimo para o Futuro</h4>
+<div class="info-block payment-method-block">
+<div class="payment-method-header">
+<strong>Conta Bancária Demo (Banco Exemplo)</strong>
+<div class="payment-logo-stack" aria-label="Logotipo Banco Exemplo">
+<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/bim.jpg" alt="Banco Exemplo" loading="lazy"/></div>
+</div>
+</div>
+<p>Titular: Cliente Demo Lirandzo<br/>Conta: 000000000<br/>NIB: 000000000000000000000</p>
+<p>Banco: Banco Exemplo</p></div>
+<div class="info-block payment-method-block">
+<div class="payment-method-header">
+<strong>Conta Bancária Demo (Banco Modelo)</strong>
+<div class="payment-logo-stack" aria-label="Logotipo Banco Modelo">
+<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/bci-placeholder.svg" alt="Banco Modelo" loading="lazy"/></div>
+</div>
+</div>
+<p>Titular: Cliente Demo Lirandzo<br/>Conta: 111111111<br/>NIB: 111111111111111111111</p>
+<p>Banco: Banco Modelo</p></div>
+<div class="info-block payment-method-block">
+<div class="payment-method-header">
+<strong>M-Pesa Demo / e-Mola Demo</strong>
+<div class="payment-logo-stack" aria-label="Logotipos M-Pesa e e-Mola">
+<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/m-pesa.jpg" alt="M-Pesa" loading="lazy"/></div>
+<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/e-mola.jpg" alt="e-Mola" loading="lazy"/></div>
+</div>
+</div>
+<p>M-Pesa Demo: 840000000<br/>e-Mola Demo: 870000000<br/>Titular: Cliente Demo Lirandzo</p></div>
+<hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);"/>
+<h4>Registar Comprovativo</h4>
+<p style="font-size: 0.9rem; text-align: left; margin-bottom: 16px;">Se desejar, pode partilhar o seu comprovativo de pagamento aqui.</p>
+<form enctype="multipart/form-data" id="comprovativoForm">
+<div style="margin-bottom: 16px; text-align: left;">
+<label for="canalPagamento">Canal de contribuição</label>
+<select id="canalPagamento" required="">
+<option value="">Seleccione o canal usado</option>
+<option value="Carteira móvel">Carteira móvel</option>
+<option value="Transferência bancária">Transferência bancária</option>
+</select>
+</div>
+<div style="margin-bottom: 16px; text-align: left;">
+<label for="comprovativoFile">Anexar Imagem (PNG, JPG)</label>
+<input accept="image/png, image/jpeg" id="comprovativoFile" name="comprovativoFile" required="" type="file"/>
+</div>
+<div class="form-actions">
+<button class="btn btn-primary" type="submit">Enviar Comprovativo</button>
+</div>
+<p id="comprovativoStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
+</form>
+</div>
+<button class="btn btn-ghost" data-close-modal="" style="margin-top: 24px;" type="button">Fechar</button>
+</div>
+</div>
+<!-- MODAIS VINTAGE ADICIONAIS -->
+<div aria-labelledby="cartaNoivosTitle" aria-modal="true" class="modal vintage-detail-modal" id="cartaNoivosModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-letter"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Carta dos Noivos</span>
+<h3 id="cartaNoivosTitle">Com o coração cheio de gratidão</h3>
+<div class="modal-divider"></div>
+<p>Querido(a) convidado(a), obrigado por fazer parte deste momento tão especial. A nossa história foi construída com fé, paciência, amizade e amor. Hoje, ao prepararmos este dia, percebemos que a celebração só fica completa quando é partilhada com pessoas que marcaram a nossa caminhada.</p>
+<p>Que este convite lhe transmita o carinho com que o recebemos na nossa história. A sua presença será uma bênção e uma memória que levaremos connosco para a vida inteira.</p>
+<p class="modal-signature">Amara &amp; Daniel</p>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Carta</button>
+</div>
+</div>
+<div aria-labelledby="madrinhaHonraTitle" aria-modal="true" class="modal vintage-detail-modal" id="madrinhaHonraModal" role="dialog">
+<div class="modal-card vintage-modal-card has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Padrinhos &amp; Honra</span>
+<h3 id="madrinhaHonraTitle">Madrinha de Honra</h3>
+<div class="modal-divider"></div>
+<p>Uma pessoa escolhida pela delicadeza, proximidade e carinho. A madrinha de honra representa apoio, cuidado e uma presença feminina especial neste caminho até ao altar.</p>
+<div class="modal-note">“Obrigada por caminhar connosco com amor e por fazer parte deste capítulo tão bonito.”</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
+</div>
+</div>
+<div aria-labelledby="padrinhoHonraTitle" aria-modal="true" class="modal vintage-detail-modal" id="padrinhoHonraModal" role="dialog">
+<div class="modal-card vintage-modal-card has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Padrinhos &amp; Honra</span>
+<h3 id="padrinhoHonraTitle">Padrinho de Honra</h3>
+<div class="modal-divider"></div>
+<p>Uma presença firme, discreta e importante. O padrinho de honra simboliza amizade, confiança e apoio para este compromisso de vida.</p>
+<div class="modal-note">“A tua presença honra a nossa união e torna este dia ainda mais especial.”</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
+</div>
+</div>
+<div aria-labelledby="damasCavalheirosTitle" aria-modal="true" class="modal vintage-detail-modal" id="damasCavalheirosModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><circle cx="15" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M6 18c1-2.5 2.8-4 6-4s5 1.5 6 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Padrinhos &amp; Honra</span>
+<h3 id="damasCavalheirosTitle">Damas &amp; Cavalheiros</h3>
+<div class="modal-divider"></div>
+<p>São amigos e familiares que trazem leveza, alegria e cumplicidade à celebração. Cada presença foi escolhida pelo valor afectivo que tem na nossa caminhada.</p>
+<div class="honor-modal-list">
+<span>Companhia</span>
+<span>Alegria</span>
+<span>Memória</span>
+<span>Família</span>
+</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
+</div>
+</div>
+<div aria-labelledby="familiasTitle" aria-modal="true" class="modal vintage-detail-modal" id="familiasModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-family"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><circle cx="8" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><circle cx="16" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M4 18c1-2.7 3.3-4 8-4s7 1.3 8 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Homenagem</span>
+<h3 id="familiasTitle">Às nossas famílias</h3>
+<div class="modal-divider"></div>
+<p>Às nossas famílias, deixamos uma homenagem de profundo reconhecimento. Obrigado pelos ensinamentos, pelas orações, pelo apoio e por tudo o que nos trouxe até este momento.</p>
+<p>Este dia também é vosso, porque cada gesto de amor recebido ao longo da vida está presente nesta união.</p>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Homenagem</button>
+</div>
+</div>
+<div aria-labelledby="menuCelebracaoTitle" aria-modal="true" class="modal vintage-detail-modal" id="menuCelebracaoModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-menu"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M7 3v9.5a2.5 2.5 0 0 0 5 0V3M14 3v7m3-7v18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Menu da Celebração</span>
+<h3 id="menuCelebracaoTitle">Sabores do nosso dia</h3>
+<div class="modal-divider"></div>
+<div class="modal-menu-list">
+<div><strong>Entrada</strong><p>Recepção leve com opções cuidadosamente servidas aos convidados.</p></div>
+<div><strong>Prato principal</strong><p>Serviço especial preparado para o momento de almoço e celebração.</p></div>
+<div><strong>Bebidas</strong><p>Selecção de bebidas para acompanhar a recepção.</p></div>
+<div><strong>Sobremesa</strong><p>Final doce para brindar a união dos noivos.</p></div>
+</div>
+<p class="small-modal-text">Caso tenha alguma restrição alimentar importante, contacte previamente os noivos ou a equipa de apoio.</p>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Menu</button>
+</div>
+</div>
+<div aria-labelledby="etiquetaEventoTitle" aria-modal="true" class="modal vintage-detail-modal" id="etiquetaEventoModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-etiquette"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M8 4h8l4 4v8l-4 4H8l-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="M9 12h6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Etiqueta do Evento</span>
+<h3 id="etiquetaEventoTitle">Recomendações para os convidados</h3>
+<div class="modal-divider"></div>
+<div class="modal-etiquette-list">
+<p><strong>Pontualidade:</strong> chegar cedo ajuda a viver a cerimónia com tranquilidade.</p>
+<p><strong>Telemóveis:</strong> mantenha o som desligado durante os momentos formais.</p>
+<p><strong>Fotografias:</strong> registe memórias sem interromper a equipa oficial.</p>
+<p><strong>Convivência:</strong> celebre com carinho, respeito e espírito familiar.</p>
+</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Recomendações</button>
+</div>
+</div>
+<div aria-labelledby="transporteApoioTitle" aria-modal="true" class="modal vintage-detail-modal" id="transporteApoioModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-travel"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div></div>
+<span class="modal-kicker">Transporte &amp; Apoio</span>
+<h3 id="transporteApoioTitle">Detalhes de chegada</h3>
+<div class="modal-divider"></div>
+<div class="modal-travel-grid">
+<div><strong>Cerimónia</strong><p>Igreja Matriz — Local Demo. Recomenda-se chegada antes das 09:00.</p></div>
+<div><strong>Recepção</strong><p>Salão Imperial. A cerimónia civil inicia às 13:00.</p></div>
+<div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div>
+<div><strong>Apoio</strong><p>Dúvidas no dia: Apoio Demo: +258 84 000 0000 | Coordenação Demo: +258 87 000 0000.</p></div>
+</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Detalhes</button>
+</div>
+</div>
+
+<div aria-labelledby="locationChooserTitle" aria-modal="true" class="modal" id="locationChooserModal" role="dialog">
+<div class="modal-card wide-modal has-modal-hero location-chooser-card">
+<div class="modal-hero modal-hero-mapchooser">
+<div class="modal-hero-overlay"></div>
+<div class="modal-hero-top-accent"></div>
+<div aria-hidden="true" class="modal-hero-badge">
+<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+</div>
+<h3 id="locationChooserTitle">Escolha o local no mapa</h3>
+<p>Toque no local desejado para abrir a rota no Google Maps.</p>
+<div class="location-chooser-grid">
+<article class="location-choice-card">
+<div class="location-choice-preview religious-preview">
+<div class="location-choice-overlay"></div>
+<div class="location-choice-top-accent"></div>
+<div aria-hidden="true" class="location-choice-pin">
+<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+<div class="location-choice-caption">
+<span>Cerimónia Religiosa</span>
+<strong>Igreja Matriz — Local Demo</strong>
+</div>
+</div>
+<div class="location-choice-body">
+<p>Cerimónia religiosa na Local Demo. Recomendamos chegada com antecedência.</p>
+<a class="btn btn-primary" href="#" id="locationMapReligiosa" rel="noopener noreferrer" target="_blank">Abrir mapa da cerimónia</a>
+</div>
+</article>
+<article class="location-choice-card">
+<div class="location-choice-preview civil-preview">
+<div class="location-choice-overlay"></div>
+<div class="location-choice-top-accent"></div>
+<div aria-hidden="true" class="location-choice-pin">
+<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+<div class="location-choice-caption">
+<span>Recepção &amp; Civil</span>
+<strong>Salão Imperial</strong>
+</div>
+</div>
+<div class="location-choice-body">
+<p>Cerimónia civil e recepção, com rota directa para o destino.</p>
+<a class="btn btn-outline" href="#" id="locationMapCivil" rel="noopener noreferrer" target="_blank">Abrir mapa do Salão Imperial</a>
+</div>
+</article>
+<article class="location-choice-card">
+<div class="location-choice-preview copo-preview">
+<div class="location-choice-overlay"></div>
+<div class="location-choice-top-accent"></div>
+<div aria-hidden="true" class="location-choice-pin">
+<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+<div class="location-choice-caption">
+<span>Copo de Água</span>
+<strong>Jardim Dourado</strong>
+</div>
+</div>
+<div class="location-choice-body">
+<p>Rota directa para o local do Copo de Água e celebração.</p>
+<a class="btn btn-primary" href="#" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa do Jardim Dourado</a>
+</div>
+</article>
+</div>
+<div class="form-actions" style="margin-top: 12px;">
+<button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
+</div>
+</div>
+</div>
+<div aria-modal="true" class="modal" id="lightboxModal" role="dialog">
+<div class="modal-card" data-close-modal="">
+<img alt="Imagem em destaque da galeria" id="lightboxImage" src=""/>
+</div>
+</div>
+<div aria-labelledby="guestInfoTitle" aria-modal="true" class="modal" id="guestInfoModal" role="dialog">
+<div class="modal-card has-modal-hero" style="text-align: left;"><div class="modal-hero modal-hero-guest"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<h3 id="guestInfoTitle" style="text-align: center;">O Seu Lugar</h3>
+<p style="text-align: center; margin-bottom: 32px;">Informação para o dia da receção.</p>
+<div class="info-block">
+<p><strong>Convidado:</strong></p>
+<p id="guestInfoName" style="font-size: 1.1rem; color: var(--text-dark);">A carregar...</p>
+</div>
+<div class="info-block">
+<p><strong>Mesa:</strong></p>
+<p id="guestInfoMesa" style="font-size: 1.1rem; color: var(--accent); font-weight: 600;">A carregar...</p>
+</div>
+<div class="info-block">
+<p><strong>Acompanhantes:</strong></p>
+<p id="guestInfoGuests" style="font-size: 1.1rem; color: var(--text-dark);">A carregar...</p>
+</div>
+<div class="qr-checkin-card">
+<p><strong>QR Code de Check-in</strong></p>
+<img id="guestCheckinQr" alt="QR Code de check-in" src="" loading="lazy"/>
+<small>Apresente este código à entrada do salão para confirmar a presença.</small>
+</div>
+<div class="form-actions" style="margin-top: 32px;">
+<button class="btn btn-primary" data-close-modal="" style="width: 100%;" type="button">Fechar</button>
+</div>
+</div>
+</div>
+<script src="event-data.js"></script>
+<script src="client-config.js"></script>
+<script src="lirandzo-api.js"></script>
+<script>
+
+    // ============================================
+// VERIFICAÇÃO DE ACESSO DO CONVIDADO
+// ============================================
+
+// Configuração base de acesso ao convite
+const API_URL = window.LIRANDZO_APPS_SCRIPT_URL || '#demo-offline';
+const DEMO_MODE = !(window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured());
+const DEMO_GIFTS = [
+  { name: 'Jogo de pratos elegante', reserved: false, reserved_by: null },
+  { name: 'Conjunto de talheres', reserved: false, reserved_by: null },
+  { name: 'Jogo de copos', reserved: false, reserved_by: null },
+  { name: 'Liquidificador', reserved: false, reserved_by: null },
+  { name: 'Torradeira', reserved: false, reserved_by: null },
+  { name: 'Jogo de panelas', reserved: false, reserved_by: null }
+];
+const DEMO_MESSAGES = [
+  { nome: 'Convidada Demo', message: 'Que este novo capítulo seja cheio de amor, paz e cumplicidade.', timestamp: '2026-06-10T10:30:00' },
+  { nome: 'Família Demo', message: 'Desejamos muitas bênçãos e felicidade aos noivos.', timestamp: '2026-06-11T18:09:00' }
+];
+
+function jsonpRequest(url) {
+  const parsedUrl = String(url || '');
+  const action = (parsedUrl.match(/[?&]action=([^&]+)/) || [null, ''])[1] || 'get_guest';
+  const tokenMatch = parsedUrl.match(/[?&]token=([^&]+)/);
+  const params = {};
+  if (tokenMatch) params.token = decodeURIComponent(tokenMatch[1]);
+  if (window.LirandzoAPI) return window.LirandzoAPI.get(action, params);
+  return Promise.resolve({ status: 'error', message: 'API não carregada' });
+}
+async function verifyInviteAccess() {
+  const urlParams = new URLSearchParams(window.location.search);
+  let currentToken = urlParams.get("t");
+
+  if (!currentToken) {
+    currentToken = localStorage.getItem('guestToken');
+  }
+  if (!currentToken) {
+    window.location.href = 'index.html';
+    return false;
+  }
+
+  try {
+    const result = await (window.LirandzoAPI ? window.LirandzoAPI.get('get_guest', { token: currentToken }) : Promise.resolve({status:'error'}));
+    if (!result || result.status !== 'success') {
+      window.location.href = 'index.html';
+      return false;
+    }
+    const guest = result.data || result;
+    localStorage.setItem('guestName', guest.name || guest.nome || 'Convidado');
+    localStorage.setItem('guestToken', currentToken);
+    localStorage.setItem('guestMesa', guest.mesa || 'A definir');
+    localStorage.setItem('guestMaxGuests', guest.maxGuests || 1);
+    localStorage.setItem('guestCompanions', guest.companions || Math.max((Number(guest.maxGuests)||1)-1,0));
+    localStorage.setItem('guestNumber', guest.number || '');
+    if (!urlParams.get("t")) history.replaceState(null, '', `convite.html?t=${encodeURIComponent(currentToken)}`);
+    return true;
+  } catch (err) {
+    console.error('Erro ao verificar convidado:', err);
+    window.location.href = 'index.html';
+    return false;
+  }
+}
+
+// Verificar acesso antes de iniciar o convite
+document.addEventListener('DOMContentLoaded', async () => {
+  const hasAccess = await verifyInviteAccess();
+  if (!hasAccess) return;
+
+  // Resto do código existente...
+  const urlParams = new URLSearchParams(window.location.search);
+  token = urlParams.get("t");
+  
+  // ... continuar com o código existente
+});
+    // ============================================
+    // CONFIGURAÇÃO DO BACKEND RENDER / MONGODB
+    // ============================================
+    
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    
+
+    // Função para requisições POST (com tratamento de CORS)
+    async function postRequest(data) {
+      try {
+        if (window.LirandzoAPI) {
+          return await window.LirandzoAPI.post(data);
+        }
+        return { status: "error", message: "API não carregada" };
+      } catch (err) {
+        console.error("Erro na requisição POST:", err);
+        throw err;
+      }
+    }
+
+    async function getRsvpStatus() {
+      try {
+        if (!window.LirandzoAPI || !token) return { confirmed: false };
+        const res = await window.LirandzoAPI.get('get_rsvp_status', { token });
+        const data = res && (res.data || res);
+        return {
+          confirmed: Boolean(data && data.confirmed),
+          row: data && (data.rsvp || data.row || null)
+        };
+      } catch (err) {
+        console.warn('Não foi possível confirmar o estado RSVP:', err);
+        return { confirmed: false };
+      }
+    }
+
+    function setButtonLoading(button, isLoading, loadingText) {
+      if (!button) return;
+      if (isLoading) {
+        if (!button.dataset.originalText) button.dataset.originalText = button.textContent.trim();
+        button.classList.add('is-loading');
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+        button.textContent = loadingText || 'A processar...';
+      } else {
+        button.classList.remove('is-loading');
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        button.textContent = button.dataset.originalText || button.textContent;
+        delete button.dataset.originalText;
+      }
+    }
+
+    // Função para upload de arquivo (FormData)
+    async function postFormData(formData) {
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Importante: no-cors para evitar erro de CORS
+          body: formData
+        });
+        
+        // Com no-cors, não podemos ler a resposta
+        return { status: "success" };
+      } catch (err) {
+        console.error("Erro no upload:", err);
+        throw err;
+      }
+    }
+    
+    // Variáveis globais
+    let guestName = "";
+    let guestMesa = null;
+    let maxGuests = 1;
+    let token = "";
+    let rsvpTitle = null; // Declarar para uso posterior
+    let rsvpAlreadyConfirmed = false;
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+
+      const urlParams = new URLSearchParams(window.location.search);
+      token = urlParams.get("t") || localStorage.getItem('guestToken');
+      if (token && !urlParams.get("t")) {
+        history.replaceState(null, '', `convite.html?t=${encodeURIComponent(token)}`);
+      }
+
+      if (!token) {
+        document.body.innerHTML = "Convite inválido.";
+        return;
+      }
+
+      async function loadGuest() {
+        try {
+          const result = await jsonpRequest(`${API_URL}?action=get_guest&token=${encodeURIComponent(token)}`);
+
+          if (!result || result.status !== "success") {
+            return false;
+          }
+
+          const guest = result.data || result;
+          guestName = guest.name || guest.nome || localStorage.getItem('guestName') || "Convidado";
+          guestMesa = guest.mesa || localStorage.getItem('guestMesa') || "A definir";
+          maxGuests = Number(guest.maxGuests || guest.guests || localStorage.getItem('guestMaxGuests') || 1) || 1;
+          const companions = Number(guest.companions ?? Math.max(maxGuests - 1, 0)) || 0;
+
+          localStorage.setItem('guestName', guestName);
+          localStorage.setItem('guestMesa', guestMesa);
+          localStorage.setItem('guestMaxGuests', String(maxGuests));
+          localStorage.setItem('guestCompanions', String(companions));
+          localStorage.setItem('guestNumber', guest.number || localStorage.getItem('guestNumber') || '');
+
+          if (window.LirandzoAPI) {
+            window.LirandzoAPI.post({ action: 'open_invite', token, nome: guestName, timestamp: new Date().toISOString() }).catch(() => {});
+          }
+
+          return true;
+        } catch(err) {
+          console.error("Erro ao carregar convidado:", err);
+          return false;
+        }
+      }
+
+      const success = await loadGuest();
+
+      if (!success) {
+        document.body.innerHTML = "Convite inválido.";
+        return;
+      }
+
+      initializeUI();
+    });
+
+    function initializeUI() {
+      const guestStatus = localStorage.getItem('guestStatus'); 
+      rsvpAlreadyConfirmed = /confirmado/i.test(guestStatus || '');
+      
+      // Adicionar mensagem de boas-vindas com dados reais do convidado
+      const heroContent = document.querySelector('.hero-bottom-content');
+      if (heroContent) {
+        const safeGuestName = guestName || localStorage.getItem('guestName') || 'Convidado';
+        const welcomeMessage = document.createElement('p');
+        welcomeMessage.className = 'welcome-guest';
+        welcomeMessage.textContent = `Bem-vindo(a), ${safeGuestName}`;
+        const previousWelcome = heroContent.querySelector('.welcome-guest');
+        if (previousWelcome) previousWelcome.remove();
+        heroContent.prepend(welcomeMessage);
+      }
+
+      // Configurar RSVP
+      const rsvpModal = document.getElementById('rsvpModal');
+      const rsvpForm = document.getElementById('rsvpForm');
+      if (rsvpForm && rsvpModal) {
+        const nameInput = rsvpForm.querySelector('#nome');
+        const guestsSelect = rsvpForm.querySelector('#guests');
+        rsvpTitle = rsvpModal.querySelector('#rsvpTitle');
+        const rsvpSubmitBtn = rsvpForm.querySelector('#sendRsvpServer');
+
+        if (nameInput) {
+          nameInput.value = guestName;
+          nameInput.disabled = true; 
+        }
+        
+        // Configurar dropdown de convidados
+        function buildDropdown(maxConvidados) {
+          const max = Number(maxConvidados) || 1;
+          guestsSelect.innerHTML = '';
+
+          for (let i = 1; i <= max; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            guestsSelect.appendChild(option);
+          }
+        }
+
+        buildDropdown(maxGuests);
+
+        if (guestStatus && guestStatus.toLowerCase().startsWith('confirmado')) {
+          const guestsMatch = guestStatus.match(/\(([^)]+)\)/); 
+          if (guestsMatch && guestsMatch[1]) {
+            const confirmedGuests = guestsMatch[1];
+            if (guestsSelect.querySelector(`option[value="${confirmedGuests}"]`)) {
+              guestsSelect.value = confirmedGuests;
+            }
+          }
+          if (rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
+          if (rsvpSubmitBtn) rsvpSubmitBtn.textContent = "Atualizar Confirmação";
+        }
+      }
+
+      // Configurar modal de informação do convidado
+      const guestInfoModal = document.getElementById('guestInfoModal');
+      if (guestInfoModal) {
+        const infoNameEl = document.getElementById('guestInfoName');
+        const infoMesaEl = document.getElementById('guestInfoMesa');
+        const infoGuestsEl = document.getElementById('guestInfoGuests');
+        const checkinQrEl = document.getElementById('guestCheckinQr');
+        
+        const safeGuestName = guestName || localStorage.getItem('guestName') || 'Convidado';
+        const safeMaxGuests = Number(maxGuests || localStorage.getItem('guestMaxGuests') || 1) || 1;
+        const safeCompanions = Math.max(safeMaxGuests - 1, 0);
+        if (infoNameEl) {
+          infoNameEl.textContent = safeGuestName;
+        }
+        if (infoGuestsEl) {
+          infoGuestsEl.textContent = safeCompanions === 0 ? 'Sem acompanhante registado' : safeCompanions + ' acompanhante(s)';
+        }
+        if (checkinQrEl && window.LirandzoAPI) {
+          checkinQrEl.src = window.LirandzoAPI.qrUrl(token || localStorage.getItem('guestToken'));
+        }
+        if (infoMesaEl) {
+          // Verificar se guestMesa existe e é uma string
+          const safeMesa = guestMesa || localStorage.getItem('guestMesa') || 'A definir';
+          if (safeMesa && typeof safeMesa === 'string' && safeMesa !== "A definir" && safeMesa !== "undefined" && safeMesa.trim() !== "") {
+            infoMesaEl.textContent = safeMesa;
+          } else {
+            infoMesaEl.textContent = "A sua mesa será indicada à entrada.";
+            infoMesaEl.style.color = "var(--text-light)";
+            infoMesaEl.style.fontWeight = "400";
+          }
+        }
+      }
+
+      // Constantes
+      const HOST_WHATSAPP_NUMBER = '+258840000000';
+      const ADDRESS_RELIGIOSA = 'Igreja Matriz — Local Demo';
+      const ADDRESS_CIVIL = 'Salão Imperial — Local Demo';
+      const ADDRESS_COPO_DE_AGUA = 'Jardim Dourado — Local Demo'; 
+      const EVENT_DATE = "2026-12-18T09:00:00+02:00"; 
+      const body = document.body;
+      const music = document.getElementById('backgroundMusic');
+      const musicControl = document.getElementById('musicControl');
+      
+      const fabRsvpBtn = document.getElementById('fabRsvpBtn');
+      const fabGiftsBtn = document.getElementById('fabGiftsBtn');
+      const fabGuestInfoBtn = document.getElementById('fabGuestInfoBtn');
+      const fabMapBtn = document.getElementById('fabMapBtn'); 
+      
+      const rsvpBtn = document.getElementById('rsvpBtn');
+      const dressCodeBtn = document.getElementById('dressCodeBtn');
+      const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
+      const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
+      const mapBtnCivil = document.getElementById('mapBtnCivil');
+      const mapBtnCopo = document.getElementById('mapBtnCopo');
+      const galleryImages = document.querySelectorAll('.gallery-grid img');
+      const lightboxModal = document.getElementById('lightboxModal');
+      const lightboxImage = document.getElementById('lightboxImage');
+      
+      const createMapLink = (address, isDirections = false) => {
+        const baseUrl = 'https://www.google.com/maps'; 
+        const encodedAddress = encodeURIComponent(address);
+        if (isDirections) return `${baseUrl}/dir/?api=1&destination=${encodedAddress}`;
+        return `${baseUrl}/search/?api=1&query=${encodedAddress}`;
+      };
+      let preservedScrollY = 0;
+      const MODAL_CLOSE_ANIMATION_MS = 420;
+
+      const getCurrentScrollY = () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      const lockPageScrollForModal = () => {
+        // Não bloqueamos html/body com overflow/position.
+        // Isso era a origem do salto para o topo em alguns navegadores.
+        preservedScrollY = getCurrentScrollY();
+      };
+
+      const unlockPageScrollAfterModal = () => {
+        document.documentElement.classList.remove('modal-is-open');
+        document.body.classList.remove('modal-open');
+      };
+
+      const openModal = (modalId) => {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+
+        const beforeOpenScrollY = getCurrentScrollY();
+        lockPageScrollForModal();
+        document.documentElement.classList.remove('modal-is-open');
+        document.body.classList.remove('modal-open');
+
+        if (modal.__closeTimer) clearTimeout(modal.__closeTimer);
+        modal.classList.remove('is-closing');
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+
+        const modalCard = modal.querySelector('.modal-card');
+        if (modalCard) modalCard.scrollTop = 0;
+
+        // Garantia anti-salto: abrir modal nunca altera a posição do convite.
+        requestAnimationFrame(() => {
+          if (Math.abs(getCurrentScrollY() - beforeOpenScrollY) > 2) {
+            window.scrollTo({ top: beforeOpenScrollY, left: 0, behavior: 'auto' });
+          }
+        });
+      };
+
+      const closeModal = (modal) => {
+        if (!modal || !modal.classList.contains('open')) return;
+
+        const beforeCloseScrollY = getCurrentScrollY();
+        modal.classList.add('is-closing');
+        modal.setAttribute('aria-hidden', 'true');
+
+        if (modal.__closeTimer) clearTimeout(modal.__closeTimer);
+        modal.__closeTimer = setTimeout(() => {
+          modal.classList.remove('open', 'is-closing');
+          modal.__closeTimer = null;
+
+          if (!document.querySelector('.modal.open')) {
+            unlockPageScrollAfterModal();
+          }
+
+          // Garantia anti-salto também ao fechar.
+          requestAnimationFrame(() => {
+            if (Math.abs(getCurrentScrollY() - beforeCloseScrollY) > 2) {
+              window.scrollTo({ top: beforeCloseScrollY, left: 0, behavior: 'auto' });
+            }
+          });
+        }, MODAL_CLOSE_ANIMATION_MS);
+      };
+      
+      const showRsvpSuccessFeedback = (message = 'A vossa presença foi registada com sucesso.') => {
+        const existing = document.querySelector('.rsvp-success-overlay');
+        if (existing) existing.remove();
+        const overlay = document.createElement('div');
+        overlay.className = 'rsvp-success-overlay';
+        overlay.setAttribute('aria-live', 'polite');
+        overlay.innerHTML = `
+          <div class="rsvp-success-card" role="status">
+            <div class="rsvp-checkmark" aria-hidden="true">
+              <svg viewBox="0 0 52 52" fill="none">
+                <path d="M14 27.5 23 36 39 17" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <div>
+              <strong>Presença confirmada</strong>
+              <span>${message}</span>
+            </div>
+          </div>`;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('show'));
+        return new Promise(resolve => {
+          setTimeout(() => {
+            overlay.classList.remove('show');
+            setTimeout(() => { overlay.remove(); resolve(); }, 320);
+          }, 1700);
+        });
+      };
+      
+      body.classList.remove('loading');
+      setTimeout(() => body.classList.add('loaded'), 100);
+
+      const updateMusicIcon = () => {
+        if (!musicControl) return;
+        musicControl.innerHTML = music.paused 
+          ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>`
+          : `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>`;
+        musicControl.classList.toggle('playing', !music.paused);
+      };
+      
+      if (music) {
+        const tryAutoplay = music.play();
+
+        if (tryAutoplay !== undefined) {
+          tryAutoplay.catch(() => {
+            const playOnFirstInteraction = () => {
+              music.play().then(() => {
+                updateMusicIcon();
+                document.removeEventListener('click', playOnFirstInteraction);
+                document.removeEventListener('touchstart', playOnFirstInteraction);
+              });
+            };
+
+            document.addEventListener('click', playOnFirstInteraction);
+            document.addEventListener('touchstart', playOnFirstInteraction);
+          });
+        }
+      }
+      
+      if(musicControl) {
+        musicControl.addEventListener('click', () => {
+          music.paused ? music.play() : music.pause();
+          updateMusicIcon();
+        });
+      }
+      updateMusicIcon();
+      
+      const locationMapReligiosa = document.getElementById('locationMapReligiosa');
+      const locationMapCivil = document.getElementById('locationMapCivil');
+      const locationMapCopo = document.getElementById('locationMapCopo');
+
+      if (mapBtnReligiosa) mapBtnReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true); 
+      if (mapBtnCivil) mapBtnCivil.href = createMapLink(ADDRESS_CIVIL, true);
+      if (mapBtnCopo) mapBtnCopo.href = createMapLink(ADDRESS_COPO_DE_AGUA, true); 
+      if (locationMapReligiosa) locationMapReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true);
+      if (locationMapCivil) locationMapCivil.href = createMapLink(ADDRESS_CIVIL, true);
+      if (locationMapCopo) locationMapCopo.href = createMapLink(ADDRESS_COPO_DE_AGUA, true);
+      
+      const EVENT_END_DATE = "2026-12-18T22:00:00+02:00";
+      const EVENT_TITLE = "Casamento de Amara & Daniel";
+      const EVENT_LOCATION = `${ADDRESS_RELIGIOSA} / ${ADDRESS_CIVIL} / ${ADDRESS_COPO_DE_AGUA}`;
+
+      const padCalendarValue = (value) => String(value).padStart(2, '0');
+      const formatIcsDate = (date) => {
+        return `${date.getFullYear()}${padCalendarValue(date.getMonth() + 1)}${padCalendarValue(date.getDate())}T${padCalendarValue(date.getHours())}${padCalendarValue(date.getMinutes())}${padCalendarValue(date.getSeconds())}`;
+      };
+
+      const escapeIcsText = (value) => String(value || '')
+        .replace(/\\/g, '\\\\')
+        .replace(/;/g, '\\;')
+        .replace(/,/g, '\\,')
+        .replace(/\n/g, '\\n');
+
+      const addEventToCalendar = () => {
+        const description = "Lembrete do casamento de Amara e Daniel. Confirme a sua presença e guarde esta data especial.";
+        const calendarUrl = new URL('https://calendar.google.com/calendar/render');
+        calendarUrl.searchParams.set('action', 'TEMPLATE');
+        calendarUrl.searchParams.set('text', EVENT_TITLE);
+        calendarUrl.searchParams.set('dates', '20261218T090000/20261218T220000');
+        calendarUrl.searchParams.set('ctz', 'Africa/Maputo');
+        calendarUrl.searchParams.set('location', EVENT_LOCATION);
+        calendarUrl.searchParams.set('details', description);
+
+        window.open(calendarUrl.toString(), '_blank', 'noopener,noreferrer');
+      };
+
+      const calendarBtn = document.getElementById('calendarBtn');
+      const addCalendarBtn = document.getElementById('addCalendarBtn');
+      const confirmPresenceBtn = document.getElementById('confirmPresenceBtn');
+      const pendingPresenceBtn = document.getElementById('pendingPresenceBtn');
+      const rsvpOptionsStatus = document.getElementById('rsvpStatus');
+
+      const applyRsvpConfirmedState = () => {
+        if (!rsvpAlreadyConfirmed) return;
+        if (confirmPresenceBtn) {
+          confirmPresenceBtn.disabled = true;
+          confirmPresenceBtn.classList.add('is-confirmed');
+          confirmPresenceBtn.textContent = 'Presença já confirmada';
+          confirmPresenceBtn.setAttribute('aria-disabled', 'true');
+        }
+        if (pendingPresenceBtn) {
+          pendingPresenceBtn.disabled = true;
+          pendingPresenceBtn.classList.add('is-confirmed');
+          pendingPresenceBtn.textContent = 'Estado fechado';
+          pendingPresenceBtn.title = 'A presença já foi confirmada. Esta opção já não está disponível.';
+          pendingPresenceBtn.setAttribute('aria-disabled', 'true');
+        }
+        if (rsvpOptionsStatus) {
+          rsvpOptionsStatus.style.color = '#15803d';
+          rsvpOptionsStatus.textContent = 'A sua presença já foi confirmada. Não é necessário confirmar novamente.';
+        }
+      };
+
+      getRsvpStatus().then(status => {
+        if (status.confirmed || /confirmado/i.test(localStorage.getItem('guestStatus') || '')) {
+          rsvpAlreadyConfirmed = true;
+          applyRsvpConfirmedState();
+        }
+      });
+
+      const setRsvpChoice = async (choice, sourceButton) => {
+        const currentGuestName = guestName || localStorage.getItem('guestName') || 'Convidado';
+
+        if (rsvpAlreadyConfirmed || /confirmado/i.test(localStorage.getItem('guestStatus') || '')) {
+          rsvpAlreadyConfirmed = true;
+          applyRsvpConfirmedState();
+          if (rsvpOptionsStatus) {
+            rsvpOptionsStatus.style.color = '#15803d';
+            rsvpOptionsStatus.textContent = 'A sua presença já foi confirmada. As opções de RSVP foram bloqueadas para evitar alterações duplicadas.';
+          }
+          return;
+        }
+
+        if (choice !== 'confirmed') {
+          const statusBeforeChange = await getRsvpStatus();
+          if (statusBeforeChange.confirmed) {
+            rsvpAlreadyConfirmed = true;
+            applyRsvpConfirmedState();
+            return;
+          }
+        }
+
+        const payload = {
+          choice,
+          guestName: currentGuestName,
+          event: EVENT_TITLE,
+          savedAt: new Date().toISOString()
+        };
+
+        try {
+          setButtonLoading(sourceButton, true, choice === 'confirmed' ? 'A confirmar...' : 'A guardar...');
+
+          if (choice === 'confirmed') {
+            const currentStatus = await getRsvpStatus();
+            if (rsvpAlreadyConfirmed || currentStatus.confirmed) {
+              rsvpAlreadyConfirmed = true;
+              applyRsvpConfirmedState();
+              return;
+            }
+          }
+
+          localStorage.setItem('rsvpChoice', JSON.stringify(payload));
+          if (window.LirandzoAPI) {
+            await window.LirandzoAPI.post({ action: 'rsvp_choice', token, nome: currentGuestName, choice, guests: maxGuests, timestamp: new Date().toISOString() });
+          }
+          if (choice === 'confirmed') {
+            rsvpAlreadyConfirmed = true;
+            localStorage.setItem('guestStatus', `Confirmado (${maxGuests})`);
+            if (rsvpOptionsStatus) rsvpOptionsStatus.textContent = '';
+            await showRsvpSuccessFeedback('Obrigado. A confirmação foi guardada para a organização do evento.');
+            closeModal(document.getElementById('rsvpModal'));
+            applyRsvpConfirmedState();
+            return;
+          }
+          if (rsvpOptionsStatus) {
+            rsvpOptionsStatus.style.color = '#9E7A13';
+            rsvpOptionsStatus.textContent = 'Estado guardado como “ainda por confirmar”.';
+          }
+        } catch (err) {
+          console.error('Erro ao guardar RSVP:', err);
+          if (rsvpOptionsStatus) {
+            rsvpOptionsStatus.style.color = '#D93025';
+            rsvpOptionsStatus.textContent = 'Não foi possível guardar agora. Tente novamente.';
+          }
+        } finally {
+          if (!(choice === 'confirmed' && rsvpAlreadyConfirmed)) {
+            setButtonLoading(sourceButton, false);
+          }
+        }
+      };
+
+      calendarBtn?.addEventListener('click', addEventToCalendar);
+      addCalendarBtn?.addEventListener('click', () => {
+        addEventToCalendar();
+        if (rsvpOptionsStatus) {
+          rsvpOptionsStatus.style.color = '#9E7A13';
+          rsvpOptionsStatus.textContent = 'O calendário foi aberto numa nova aba com o evento já preenchido. Basta confirmar para guardar.';
+        }
+      });
+      confirmPresenceBtn?.addEventListener('click', () => setRsvpChoice('confirmed', confirmPresenceBtn));
+      pendingPresenceBtn?.addEventListener('click', () => setRsvpChoice('pending', pendingPresenceBtn));
+
+
+      document.addEventListener('click', (event) => {
+        const emptyAnchor = event.target.closest('a[href="#"]');
+        if (!emptyAnchor) return;
+        const isModalTrigger = emptyAnchor.hasAttribute('data-open-modal') || emptyAnchor.closest('[data-open-modal]');
+        const isCloseTrigger = emptyAnchor.hasAttribute('data-close-modal') || emptyAnchor.closest('[data-close-modal]');
+        const isPlaceholderMap = emptyAnchor.id && /map/i.test(emptyAnchor.id);
+        if (isModalTrigger || isCloseTrigger || isPlaceholderMap) {
+          event.preventDefault();
+        }
+      }, true);
+
+      const bindModalTrigger = (element, modalId) => {
+        element?.addEventListener('click', (event) => {
+          event.preventDefault();
+          openModal(modalId);
+        });
+      };
+
+      [fabRsvpBtn, rsvpBtn].forEach(btn => bindModalTrigger(btn, 'rsvpModal'));
+      [fabGiftsBtn, giftsCombinedBtn].forEach(btn => bindModalTrigger(btn, 'giftsCombinedModal'));
+      bindModalTrigger(fabGuestInfoBtn, 'guestInfoModal');
+      bindModalTrigger(dressCodeBtn, 'dressCodeModal');
+      document.querySelectorAll('[data-open-modal]').forEach(btn => {
+        btn.addEventListener('click', (event) => {
+          event.preventDefault();
+          const targetModal = btn.getAttribute('data-open-modal');
+          if (targetModal) openModal(targetModal);
+        });
+      });
+      bindModalTrigger(fabMapBtn, 'locationChooserModal');
+      
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal || e.target.closest('[data-close-modal]')) {
+            e.preventDefault();
+            closeModal(modal);
+          }
+        });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.modal.open').forEach(modal => closeModal(modal));
+        }
+      });
+      
+      const countdownInterval = setInterval(() => {
+        const countdownElem = document.getElementById("countdown");
+        if (!countdownElem) { clearInterval(countdownInterval); return; }
+        const distance = new Date(EVENT_DATE).getTime() - new Date().getTime();
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          countdownElem.style.display = "none";
+          return;
+        }
+        const format = (num) => String(num).padStart(2, '0');
+        document.getElementById("days").innerText = format(Math.floor(distance / (1000 * 60 * 60 * 24)));
+        document.getElementById("hours").innerText = format(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        document.getElementById("minutes").innerText = format(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+        document.getElementById("seconds").innerText = format(Math.floor((distance % (1000 * 60)) / 1000));
+      }, 1000);
+      
+
+      // Cápsula do Tempo — activa apenas no dia do casamento
+      const timeCapsuleForm = document.getElementById('timeCapsuleForm');
+      const timeCapsuleFiles = document.getElementById('timeCapsuleFiles');
+      const timeCapsuleSubmit = document.getElementById('timeCapsuleSubmit');
+      const timeCapsuleStatus = document.getElementById('timeCapsuleStatus');
+      const timeCapsuleGallery = document.getElementById('timeCapsuleGallery');
+      const timeCapsuleEmpty = document.getElementById('timeCapsuleEmpty');
+      const timeCapsuleState = document.getElementById('timeCapsuleState');
+      const timeCapsuleStateTitle = document.getElementById('timeCapsuleStateTitle');
+      const timeCapsuleStateText = document.getElementById('timeCapsuleStateText');
+
+      const isSameCalendarDay = (a, b) => (
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate()
+      );
+
+      const formatEventDay = (date) => date.toLocaleDateString('pt-PT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      const readCapsuleFile = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({
+          src: reader.result,
+          dataUrl: reader.result,
+          nome: guestName || 'Convidado',
+          token: token || '',
+          filename: file.name,
+          mimeType: file.type || 'image/jpeg',
+          size: file.size || 0,
+          timestamp: new Date().toISOString()
+        });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const renderTimeCapsuleGallery = async () => {
+        if (!timeCapsuleGallery) return;
+        let savedPhotos = [];
+        try {
+          const res = await LirandzoAPI.get('list_capsule_photos');
+          savedPhotos = res.data || [];
+        } catch (err) {
+          savedPhotos = JSON.parse(localStorage.getItem('rm_capsulePhotos') || '[]');
+        }
+
+        timeCapsuleGallery.querySelectorAll('.time-capsule-photo').forEach(item => item.remove());
+        if (timeCapsuleEmpty) timeCapsuleEmpty.style.display = savedPhotos.length ? 'none' : 'block';
+
+        savedPhotos.slice(0, 12).forEach(photo => {
+          const item = document.createElement('article');
+          item.className = 'time-capsule-photo';
+          const src = photo.thumbnailUrl || photo.viewUrl || photo.src || photo.dataUrl || '';
+          const when = photo.timestamp || photo.createdAt || new Date().toISOString();
+          item.innerHTML = `
+            <img src="${src}" alt="Foto partilhada por ${escapeHTML(photo.nome || photo.name || 'Convidado')}" loading="lazy" />
+            <div>
+              <strong>${escapeHTML(photo.nome || photo.name || 'Convidado')}</strong>
+              <span>${new Date(when).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}</span>
+            </div>
+          `;
+          timeCapsuleGallery.appendChild(item);
+        });
+      };
+
+      const configureTimeCapsule = () => {
+        const eventDate = new Date(EVENT_DATE);
+        const today = new Date();
+        const capsuleIsOpen = isSameCalendarDay(today, eventDate);
+        const eventDayLabel = formatEventDay(eventDate);
+
+        if (!timeCapsuleForm || !timeCapsuleFiles || !timeCapsuleSubmit) return;
+
+        if (capsuleIsOpen) {
+          timeCapsuleForm.classList.remove('is-locked');
+          timeCapsuleFiles.disabled = false;
+          timeCapsuleSubmit.disabled = false;
+          if (timeCapsuleState) timeCapsuleState.classList.add('is-open');
+          if (timeCapsuleStateTitle) timeCapsuleStateTitle.textContent = 'Cápsula aberta hoje';
+          if (timeCapsuleStateText) timeCapsuleStateText.textContent = 'Partilhe as fotografias tiradas durante a celebração. As memórias ficarão guardadas na galeria do evento.';
+        } else {
+          timeCapsuleForm.classList.add('is-locked');
+          timeCapsuleFiles.disabled = true;
+          timeCapsuleSubmit.disabled = true;
+          if (timeCapsuleState) timeCapsuleState.classList.remove('is-open');
+          if (timeCapsuleStateTitle) timeCapsuleStateTitle.textContent = 'Disponível apenas no dia do casamento';
+          if (timeCapsuleStateText) {
+            timeCapsuleStateText.textContent = today < eventDate
+              ? `A cápsula será aberta automaticamente no dia ${eventDayLabel}.`
+              : `A cápsula esteve disponível apenas no dia ${eventDayLabel}.`;
+          }
+        }
+
+        renderTimeCapsuleGallery();
+      };
+
+      if (timeCapsuleForm) {
+        timeCapsuleForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const eventDate = new Date(EVENT_DATE);
+          const today = new Date();
+
+          if (!isSameCalendarDay(today, eventDate)) {
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = '#9E7A13';
+              timeCapsuleStatus.textContent = 'A Cápsula do Tempo só fica disponível no próprio dia do casamento.';
+            }
+            return;
+          }
+
+          const files = Array.from(timeCapsuleFiles.files || []).slice(0, 8);
+          if (!files.length) {
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = '#9E7A13';
+              timeCapsuleStatus.textContent = 'Seleccione pelo menos uma fotografia.';
+            }
+            return;
+          }
+
+          const validFiles = files.filter(file => file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024);
+          if (!validFiles.length) {
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = '#D93025';
+              timeCapsuleStatus.textContent = 'Só são aceites imagens até 5 MB.';
+            }
+            return;
+          }
+
+          setButtonLoading(timeCapsuleSubmit, true, 'A guardar...');
+          if (timeCapsuleStatus) timeCapsuleStatus.textContent = '';
+
+          try {
+            const photos = await Promise.all(validFiles.map(readCapsuleFile));
+            for (const photo of photos) {
+              await LirandzoAPI.post({
+                action: 'save_capsule_photo',
+                token: photo.token,
+                nome: photo.nome,
+                filename: photo.filename,
+                mimeType: photo.mimeType,
+                size: photo.size,
+                dataUrl: photo.dataUrl,
+                timestamp: photo.timestamp
+              });
+            }
+            await renderTimeCapsuleGallery();
+            timeCapsuleForm.reset();
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = 'green';
+              timeCapsuleStatus.textContent = 'Fotografias adicionadas à Cápsula do Tempo.';
+            }
+          } catch (err) {
+            console.error('Erro na Cápsula do Tempo:', err);
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = '#D93025';
+              timeCapsuleStatus.textContent = 'Erro ao guardar as fotografias. Tente novamente.';
+            }
+          } finally {
+            setButtonLoading(timeCapsuleSubmit, false);
+            timeCapsuleSubmit.disabled = !isSameCalendarDay(new Date(), new Date(EVENT_DATE));
+          }
+        });
+      }
+
+      configureTimeCapsule();
+
+      const giftsModal = document.getElementById('giftsCombinedModal');
+      if (giftsModal) {
+        const tabButtons = giftsModal.querySelectorAll('.tab-btn');
+        const tabContents = giftsModal.querySelectorAll('.tab-content');
+        tabButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            const tabId = button.getAttribute('data-tab');
+            tabContents.forEach(content => {
+              content.classList.toggle('active', content.id === tabId);
+            });
+          });
+        });
+      }
+      
+      // RSVP Form - Corrigido para CORS
+      if (rsvpForm) {
+        const rsvpStatus = document.getElementById('rsvpStatus');
+        const submitButton = document.getElementById('sendRsvpServer');
+        
+        const getRsvpData = () => ({
+          action: "rsvp",
+          nome: guestName, 
+          token: token,
+          guests: rsvpForm.querySelector('#guests').value,
+          phone: rsvpForm.querySelector('#phone').value.trim(),
+          message: rsvpForm.querySelector('#message').value.trim()
+        });
+
+        rsvpForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const data = getRsvpData();
+          
+          const originalButtonText = submitButton.textContent; 
+          setButtonLoading(submitButton, true, 'A enviar...');
+          rsvpStatus.textContent = "";
+
+          try {
+            await postRequest(data);
+            
+            // Se chegou aqui, assumimos que deu certo
+            localStorage.setItem('guestStatus', `Confirmado (${data.guests})`);
+            rsvpStatus.textContent = "";
+            submitButton.textContent = "Confirmado";
+            await showRsvpSuccessFeedback('Obrigado. A vossa presença foi registada com sucesso.');
+            closeModal(document.getElementById('rsvpModal'));
+            setButtonLoading(submitButton, false);
+            submitButton.textContent = "Atualizar Confirmação";
+            if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
+            
+          } catch (err) {
+            rsvpStatus.style.color = "#D93025";
+            rsvpStatus.textContent = "Erro ao registar. Tente novamente.";
+            setButtonLoading(submitButton, false);
+            submitButton.textContent = originalButtonText; 
+          }
+        });
+        
+        rsvpForm.querySelector('#sendWhatsapp')?.addEventListener('click', () => {
+          const data = getRsvpData();
+          const text = `RSVP - Olá! Sim! confirmo.. Nome: ${data.nome}, Convidados: ${data.guests}. Mensagem: ${data.message}`;
+          window.open(`https://wa.me/${HOST_WHATSAPP_NUMBER.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`, '_blank');
+          closeModal(document.getElementById('rsvpModal'));
+        });
+      }
+      
+      // Abrir confirmação de presença 5 segundos depois de chegar ao fim do convite
+      let endOfInviteRsvpTimer = null;
+      let endOfInviteRsvpOpened = false;
+      const isAtEndOfInvite = () => {
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const documentHeight = Math.max(
+          document.documentElement.scrollHeight,
+          document.body.scrollHeight
+        );
+        return scrollPosition >= documentHeight - 90;
+      };
+
+      const scheduleEndOfInviteRsvp = () => {
+        if (endOfInviteRsvpOpened) return;
+        if (isAtEndOfInvite()) {
+          if (!endOfInviteRsvpTimer) {
+            endOfInviteRsvpTimer = window.setTimeout(() => {
+              endOfInviteRsvpTimer = null;
+              if (endOfInviteRsvpOpened || !isAtEndOfInvite() || document.querySelector('.modal.open')) return;
+              endOfInviteRsvpOpened = true;
+              openModal('rsvpModal');
+            }, 5000);
+          }
+        } else if (endOfInviteRsvpTimer) {
+          window.clearTimeout(endOfInviteRsvpTimer);
+          endOfInviteRsvpTimer = null;
+        }
+      };
+
+      window.addEventListener('scroll', scheduleEndOfInviteRsvp, { passive: true });
+      window.addEventListener('resize', scheduleEndOfInviteRsvp);
+      scheduleEndOfInviteRsvp();
+
+      // Galeria
+      galleryImages.forEach(img => {
+        img.addEventListener('click', () => {
+          lightboxImage.src = img.getAttribute('data-src') || img.src;
+          openModal('lightboxModal');
+        });
+      });
+      // Comprovativo Form - CORRIGIDO PARA BASE64
+      const comprovativoForm = document.getElementById('comprovativoForm');
+      if (comprovativoForm) {
+        const comprovativoStatus = document.getElementById('comprovativoStatus');
+        const submitButton = comprovativoForm.querySelector('button[type="submit"]');
+
+        comprovativoForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const canal = document.getElementById('canalPagamento').value;
+          const fileInput = document.getElementById('comprovativoFile');
+          const file = fileInput.files[0];
+
+          if (!file || !canal) {
+            comprovativoStatus.style.color = "#D93025";
+            comprovativoStatus.textContent = "Por favor, preencha o canal e anexe um ficheiro.";
+            return;
+          }
+
+          setButtonLoading(submitButton, true, 'A processar imagem...');
+          comprovativoStatus.textContent = "";
+
+          // LER O FICHEIRO COMO BASE64 ANTES DE ENVIAR
+          const reader = new FileReader();
+          reader.onload = async function() {
+            const base64File = reader.result.split(',')[1]; 
+            
+            const data = {
+              action: 'upload_comprovativo',
+              nome: guestName,
+              token: token,
+              canal: canal,
+              comprovativoFile: base64File,
+              comprovativoFile_filename: file.name,
+              comprovativoFile_type: file.type
+            };
+
+            submitButton.textContent = "A enviar...";
+
+            try {
+              // Agora usamos o postRequest normal em vez do postFormData
+              await postRequest(data); 
+              
+              comprovativoStatus.style.color = "green";
+              comprovativoStatus.textContent = "Comprovativo registado com sucesso!";
+              submitButton.textContent = "Enviado!";
+              comprovativoForm.reset();
+              
+              setTimeout(() => {
+                setButtonLoading(submitButton, false);
+                comprovativoStatus.textContent = "";
+              }, 3000);
+              
+            } catch (err) {
+              comprovativoStatus.style.color = "#D93025";
+              comprovativoStatus.textContent = "Erro ao enviar comprovativo. Tente novamente.";
+              setButtonLoading(submitButton, false);
+            }
+          };
+
+          reader.onerror = function() {
+            comprovativoStatus.style.color = "#D93025";
+            comprovativoStatus.textContent = "Erro ao ler o ficheiro no seu dispositivo.";
+            setButtonLoading(submitButton, false);
+          };
+
+          // Inicia a leitura do ficheiro
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // Animações de scroll reversíveis por secção
+      const animatedSections = document.querySelectorAll('.fade-in-section');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          entry.target.classList.toggle('is-visible', entry.isIntersecting);
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      animatedSections.forEach(section => observer.observe(section));
+
+      // Mural de mensagens - Usando JSONP para carregar
+      const messageForm = document.getElementById('messageForm');
+      const messageText = document.getElementById('messageText');
+      const messageStatus = document.getElementById('messageStatus');
+      const guestbookFeed = document.getElementById('guestbook-feed');
+      const feedLoading = document.getElementById('feed-loading');
+
+      function renderMessage(message) {
+        const messageEl = document.createElement('div');
+        messageEl.className = 'guestbook-entry';
+        
+        messageEl.innerHTML = `
+          <div class="guestbook-header">
+            <strong>${escapeHTML(message.nome)}</strong>
+            <span>${new Date(message.timestamp).toLocaleString('pt-PT', {dateStyle: 'short', timeStyle: 'short'})}</span>
+          </div>
+          <p>${escapeHTML(message.message)}</p>
+        `;
+        return messageEl;
+      }
+
+      async function loadMessages() {
+        try {
+          const result = await jsonpRequest(`${API_URL}?action=messages`);
+          
+          if (result.status === "success" && result.data.length > 0) {
+            guestbookFeed.innerHTML = '';
+            result.data.forEach(message => {
+              guestbookFeed.appendChild(renderMessage(message));
+            });
+          } else {
+            feedLoading.textContent = "Ainda ninguém deixou uma mensagem. Seja o primeiro!";
+          }
+        } catch (err) {
+          feedLoading.textContent = "Erro ao carregar mensagens.";
+        }
+      }
+      
+      loadMessages();
+
+      if (messageForm) {
+        messageForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const message = messageText.value;
+          if (!message.trim()) return;
+
+          const submitButton = messageForm.querySelector('button[type="submit"]');
+          setButtonLoading(submitButton, true, 'A enviar...');
+          messageStatus.textContent = "";
+
+          const data = {
+            action: "post_message",
+            nome: guestName,
+            token: token,
+            message: message
+          };
+
+          try {
+            await postRequest(data);
+            
+            messageStatus.style.color = "green";
+            messageStatus.textContent = "Mensagem publicada. Obrigado!";
+            messageText.value = "";
+            
+            // Recarregar mensagens
+            await loadMessages();
+
+            setTimeout(() => { messageStatus.textContent = ""; }, 3000);
+          } catch (err) {
+            messageStatus.style.color = "#D93025";
+            messageStatus.textContent = "Erro ao enviar mensagem.";
+          } finally {
+            setButtonLoading(submitButton, false);
+          }
+        });
+      }
+
+      // Animações adicionais
+      const sectionTitles = document.querySelectorAll('.section-title');
+      const titleObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            titleObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.6 });
+      sectionTitles.forEach(title => titleObserver.observe(title));
+      
+      const agendaStar = document.querySelector('.agenda-icon-small');
+      if (agendaStar) {
+        const starObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              starObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.7 });
+        starObserver.observe(agendaStar);
+      }
+      
+      const countdownSpans = document.querySelectorAll('#countdown span');
+      countdownSpans.forEach(span => {
+        let lastValue = span.textContent;
+        const observer = new MutationObserver(() => {
+          if (span.textContent !== lastValue) {
+            span.classList.add('tick');
+            requestAnimationFrame(() => {
+              span.classList.remove('tick');
+            });
+            lastValue = span.textContent;
+          }
+        });
+        observer.observe(span, { childList: true });
+      });
+      
+      const flowers = document.querySelectorAll('.decor-flower-top-right, .decor-flower-bottom-left');
+      window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        flowers.forEach((flower, index) => {
+          const factor = index % 2 === 0 ? 0.03 : -0.03;
+          const translateY = scrollY * factor;
+          flower.style.transform = `translateY(${translateY}px)`;
+        });
+      });
+      
+      const magicRevealSelectors = [
+        '.section:not(.hero) > .verse',
+        '.section:not(.hero) > .verse-reference',
+        '.section:not(.hero) > .section-title',
+        '.section:not(.hero) > .section-subtitle',
+        '.section:not(.hero) .vintage-section-kicker',
+        '.section:not(.hero) .vintage-title-wrap',
+        '.section:not(.hero) .couple-details > *',
+        '.section:not(.hero) .story-chapter',
+        '.section:not(.hero) .agenda-header > *',
+        '.section:not(.hero) .agenda-event',
+        '.section:not(.hero) .gallery-image-container',
+        '.section:not(.hero) .guide-item',
+        '.section:not(.hero) .honor-card',
+        '.section:not(.hero) .menu-preview-card',
+        '.section:not(.hero) .etiquette-item',
+        '.section:not(.hero) .travel-card',
+        '.section:not(.hero) .vintage-letter-preview',
+        '.section:not(.hero) #messageForm',
+        '.section:not(.hero) #guestbook-feed',
+        '.section:not(.hero) .time-capsule-card',
+        '.section:not(.hero) .time-capsule-state',
+        '.section:not(.hero) .time-capsule-form',
+        '.section:not(.hero) .time-capsule-gallery',
+        '.footer > *'
+      ];
+
+      const magicRevealElements = Array.from(document.querySelectorAll(magicRevealSelectors.join(',')));
+      magicRevealElements.forEach((element, index) => {
+        if (!element.classList.contains('magic-reveal')) {
+          element.classList.add('magic-reveal');
+        }
+
+        if (element.closest('.honor-grid, .menu-preview-grid, .etiquette-grid, .gallery-grid, .guide-grid, .couple-details')) {
+          const siblings = Array.from(element.parentElement.children);
+          element.style.setProperty('--reveal-delay', `${Math.min(siblings.indexOf(element) * 90, 360)}ms`);
+        } else {
+          element.style.setProperty('--reveal-delay', `${Math.min(index % 5 * 55, 220)}ms`);
+        }
+
+        if (element.matches('.gallery-image-container')) element.dataset.reveal = 'zoom';
+        if (element.matches('.story-chapter')) element.dataset.reveal = 'slide';
+        if (element.matches('.agenda-event')) element.dataset.reveal = 'lift';
+        if (element.matches('.vintage-title-wrap, .section-title')) element.dataset.reveal = 'title';
+      });
+
+      let lastScrollY = window.scrollY;
+      document.documentElement.dataset.scrollDirection = 'down';
+
+      window.addEventListener('scroll', () => {
+        const currentY = window.scrollY;
+        document.documentElement.dataset.scrollDirection = currentY >= lastScrollY ? 'down' : 'up';
+        lastScrollY = currentY;
+      }, { passive: true });
+
+      const scrollElements = document.querySelectorAll('.scroll-animate, .magic-reveal');
+      const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          entry.target.classList.toggle('is-visible', entry.isIntersecting);
+        });
+      }, { threshold: 0.18, rootMargin: '0px 0px -6% 0px' });
+      scrollElements.forEach(el => scrollObserver.observe(el));
+    }
+
+    // Navegação por setas (opcional)
+    document.addEventListener('keydown', (e) => {
+      const timeline = document.getElementById('storyTimeline');
+      if (!timeline) return;
+      
+      if (e.key === 'ArrowRight') {
+        timeline.scrollBy({ left: 400, behavior: 'smooth' });
+      } else if (e.key === 'ArrowLeft') {
+        timeline.scrollBy({ left: -400, behavior: 'smooth' });
+      }
+    });
+  </script>
+</body>
+</html>

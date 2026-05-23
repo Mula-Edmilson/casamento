@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Acesso — Amara & Daniel</title>
+  
+  <link rel="icon" type="image/png" href="assets/media/lirandzo-logo.svg">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Inter:wght@300;400&family=Parisienne&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #2B2623;
+      --accent: #B08968;
+      --text-dark: #F5EFEA;
+      --text-light: #C8C0B9;
+      --text-muted: #A69B94;
+      --card: #352F2C;
+      --border-color: #4D4641;
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --font-heading: 'Cormorant Garamond', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-script: 'Parisienne', cursive;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 40px;
+      padding: 48px 32px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .icon {
+      width: 80px;
+      height: 80px;
+      background: var(--danger-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .icon svg {
+      width: 40px;
+      height: 40px;
+      color: var(--danger);
+    }
+
+    h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      color: var(--danger);
+      margin-bottom: 16px;
+    }
+
+    .message {
+      font-size: 1.1rem;
+      margin-bottom: 24px;
+      color: var(--text-dark);
+    }
+
+    .details {
+      background: var(--bg);
+      border-radius: 20px;
+      padding: 20px;
+      margin: 24px 0;
+      border: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .details p {
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .details strong {
+      color: var(--accent);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 16px 32px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin: 8px 0;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: #9A6F50;
+      transform: translateY(-2px);
+    }
+
+    .company-logo {
+      max-width: 100px;
+      margin-top: 24px;
+      opacity: 0.7;
+    }
+
+    .company-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    .company-info a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .company-info a:hover {
+      text-decoration: underline;
+    }
+
+    .device-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      
+      <h1>Restrição removida</h1>
+      
+      <p class="message">
+        A restrição por dispositivo foi removida.
+      </p>
+      
+      <p style="margin-bottom: 24px; color: var(--text-muted); font-size: 0.9rem;">
+        Agora qualquer dispositivo pode abrir o convite, desde que o convidado informe correctamente o nome no formulário de entrada.
+      </p>
+      
+      <button class="btn btn-primary" onclick="clearAndRedirect()">
+        Entrar no convite
+      </button>
+      
+      <a href="https://lirandzo.com" target="_blank">
+        <img src="assets/media/lirandzo-logo.svg" alt="Lirandzo" class="company-logo">
+      </a>
+      
+      <div class="company-info">
+        <p>Convite digital criado por <strong>Lirandzo</strong></p>
+        <p><a href="mailto:lirandzo.mz@gmail.com">lirandzo.mz@gmail.com</a></p>
+      </div>
+      
+      <div class="device-info">
+        <p>Estado do bloqueio por dispositivo: <span id="currentDeviceToken"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function clearAndRedirect() {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    document.getElementById('currentDeviceToken').textContent = 'removido';
+  </script>
+</body>
+</html>
