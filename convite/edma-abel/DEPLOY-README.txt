@@ -41,3 +41,27 @@ Actualização V4 — presentes e história:
 - server.js agora semeia apenas os presentes oficiais e remove itens antigos/obsoletos do convite.
 - import-edma-abel-to-mongodb.js também remove presentes antigos que não constam na lista oficial.
 - Secção "A Nossa História" actualizada com os quatro capítulos enviados e novo carrossel elegante com setas, dots e scroll horizontal.
+
+## ADMIN / PASSWORD NO RENDER
+
+Este convite já não usa senha pública no `client-config.js` para o painel `admin.html`.
+
+O login do admin agora segue o mesmo padrão dos outros convites:
+
+- `admin.html` chama `POST /manager/login`;
+- o `server.js` valida a senha pela variável de ambiente `MANAGER_PASSWORD` definida no Render;
+- se existir `MANAGER_SECRET`, o servidor devolve token de sessão;
+- as acções administrativas continuam a passar por `/admin-api` com `slug: edma-abel`.
+
+Variáveis obrigatórias/recomendadas no Render:
+
+```env
+MANAGER_PASSWORD=coloque_a_senha_real_no_render
+MANAGER_SECRET=coloque_um_seguro_com_mais_de_16_caracteres
+PUBLIC_API_BASE_URL=https://api-casamento-mj.onrender.com
+PUBLIC_SITE_URL=https://lirandzo.com
+INVITES_BASE_PATH=convite
+```
+
+Não volte a colocar `window.LIRANDZO_ADMIN_PASSWORD` no `client-config.js`, porque isso deixa a senha exposta no front-end.
+

@@ -116,7 +116,7 @@
       letter-spacing: .10em;
       text-transform: uppercase;
     }
-    .field input, .search-input {
+    .field input, .search-input, .filter-select {
       width: 100%;
       min-height: 43px;
       border: 1px solid var(--line-strong);
@@ -127,7 +127,7 @@
       padding: 0 13px;
       transition: border-color .2s ease, box-shadow .2s ease;
     }
-    .field input:focus, .search-input:focus {
+    .field input:focus, .search-input:focus, .filter-select:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 4px rgba(176, 137, 104, .10);
     }
@@ -487,6 +487,7 @@
     }
     .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .search-input { width: min(360px, 100%); font-size: 13px; }
+    .filter-select { width: auto; min-width: 148px; font-size: 12px; font-weight: 800; }
 
     .table-wrap { overflow: auto; border-radius: 16px; border: 1px solid var(--line); }
     table { width: 100%; border-collapse: collapse; min-width: 760px; background: rgba(33, 28, 25, .18); }
@@ -590,6 +591,66 @@
     }
     .contribution-mobile { display: grid; gap: 8px; }
 
+
+
+    .admin-form-card { margin-bottom: 12px; }
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: 1.5fr .85fr .7fr .7fr .9fr .9fr;
+      gap: 9px;
+      align-items: end;
+    }
+    .admin-field { display: grid; gap: 6px; min-width: 0; }
+    .admin-field label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .admin-field input,
+    .admin-field select,
+    .admin-field textarea {
+      width: 100%;
+      min-height: 39px;
+      border: 1px solid var(--line-strong);
+      border-radius: 13px;
+      outline: none;
+      background: rgba(33, 28, 25, .88);
+      color: var(--text);
+      padding: 0 11px;
+      font-size: 12px;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    .admin-field textarea {
+      min-height: 39px;
+      padding-top: 10px;
+      resize: vertical;
+      grid-column: span 2;
+    }
+    .admin-field input:focus,
+    .admin-field select:focus,
+    .admin-field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(176, 137, 104, .10);
+    }
+    .admin-form-actions { display: flex; align-items: end; gap: 8px; }
+    .row-actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .btn.danger {
+      background: rgba(239, 91, 91, .14);
+      color: var(--red);
+      border: 1px solid rgba(239, 91, 91, .30);
+      box-shadow: none;
+    }
+    .btn.warning {
+      background: rgba(242, 168, 74, .13);
+      color: var(--orange);
+      border: 1px solid rgba(242, 168, 74, .28);
+      box-shadow: none;
+    }
+    .btn[disabled] { opacity: .58; cursor: wait; transform: none !important; }
+    .status-badge.hidden { background: rgba(239, 91, 91, .12); color: var(--red); }
+    .action-note { color: var(--muted); font-size: 11px; line-height: 1.45; margin-top: 8px; }
 
     .empty {
       padding: 26px 12px;
@@ -793,7 +854,7 @@
       .desktop-table { display: none; }
       .mobile-list { display: grid; }
       .toolbar { align-items: stretch; }
-      .toolbar-left, .toolbar-right, .search-input { width: 100%; }
+      .toolbar-left, .toolbar-right, .search-input, .filter-select { width: 100%; }
       .toolbar-right .btn { flex: 1; }
       .info-row { grid-template-columns: 1fr; gap: 3px; }
       .activity-list { max-height: none; }
@@ -1026,7 +1087,8 @@
     html[data-theme="light"] .sync-pill,
     html[data-theme="light"] .backend-note,
     html[data-theme="light"] .field input,
-    html[data-theme="light"] .search-input {
+    html[data-theme="light"] .search-input,
+    html[data-theme="light"] .filter-select {
       background: rgba(255, 255, 255, .78);
       color: var(--text-2);
       border-color: var(--line-strong);
@@ -1071,6 +1133,70 @@
     }
 
 
+    /* AJUSTE CIRÚRGICO: remove o espaço vazio no topo do admin mobile.
+       Mantém o restante layout igual, apenas impede a dupla compensação entre .main e .mobile-tabs. */
+    @media (max-width: 760px) {
+      .main {
+        padding-top: calc(var(--topbar) + var(--safe-top)) !important;
+      }
+
+      .mobile-tabs {
+        position: relative !important;
+        top: auto !important;
+        margin-top: 0 !important;
+      }
+    }
+
+
+    @media (max-width: 980px) {
+      .admin-form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .admin-field textarea { grid-column: 1 / -1; }
+      .admin-form-actions { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 620px) {
+      .admin-form-grid { grid-template-columns: 1fr; }
+      .admin-field textarea,
+      .admin-form-actions { grid-column: auto; }
+      .row-actions { width: 100%; }
+      .row-actions .btn { flex: 1 1 auto; }
+    }
+
+    /* Correcção mobile: impede que os botões administrativos fiquem por cima das badges/textos. */
+    @media (max-width: 760px) {
+      .activity-list { max-height: none; overflow: visible; }
+      .mobile-card {
+        display: grid;
+        gap: 8px;
+        align-items: start;
+        overflow: visible;
+      }
+      .mobile-card > .status-badge {
+        display: inline-flex !important;
+        width: max-content;
+        max-width: 100%;
+        margin: 4px 0 0 !important;
+      }
+      .mobile-card .row-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-top: 4px;
+        align-items: stretch;
+      }
+      .mobile-card .row-actions .btn {
+        width: 100%;
+        min-height: 38px;
+        flex: none;
+        white-space: normal;
+        line-height: 1.15;
+      }
+      .mobile-card .row-actions .btn .feather {
+        flex: 0 0 auto;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1097,7 +1223,7 @@
       <div class="brand">
         <img src="assets/media/lirandzo-logo.svg" alt="Lirandzo">
         <div>
-          <div class="brand-title">EA</div>
+          <div class="brand-title">R&M</div>
           <div class="brand-subtitle">Painel administrativo</div>
         </div>
       </div>
@@ -1131,7 +1257,7 @@
             <h1>Painel do Evento</h1>
             <p>Resumo operacional do convite, confirmações, entrada, mensagens e cápsula.</p>
           </div>
-          <div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">12 de setembro de 2026</span></div>
+          <div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">08 de agosto de 2026</span></div>
         </div>
 
         <div id="metricsGrid" class="metrics-grid"></div>
@@ -1180,10 +1306,10 @@
               <div class="panel-body">
                 <div class="compact-info">
                   <div class="info-row"><span>Evento</span><strong id="eventName">Casamento</strong></div>
-                  <div class="info-row"><span>Data</span><strong id="eventDate">12 de setembro de 2026</strong></div>
-                  <div class="info-row"><span>RSVP até</span><strong id="rsvpDate">27 de maio de 2026</strong></div>
-                  <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">09:00 · Jardim do Farol 2</strong></div>
-                  <div class="info-row"><span>Recepção</span><strong id="receptionInfo">13:00 · Palácio dos Casamentos</strong></div>
+                  <div class="info-row"><span>Data</span><strong id="eventDate">08 de agosto de 2026</strong></div>
+                  <div class="info-row"><span>RSVP até</span><strong id="rsvpDate">20 de junho de 2026</strong></div>
+                  <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">09:00 · Paróquia São Gabriel Arcanjo</strong></div>
+                  <div class="info-row"><span>Recepção</span><strong id="receptionInfo">13:00 · Hotel Polana</strong></div>
                   <div class="info-row"><span>Apoio</span><strong id="supportInfo">Clemente / Nelson</strong></div>
                 </div>
               </div>
@@ -1195,12 +1321,28 @@
 
       <section id="guestsPanel" class="page-panel">
         <div class="section-title"><div><h1>Convidados</h1><p>Lista geral com mesa, acompanhantes, token e estado de entrada.</p></div><span id="guestBadge" class="event-chip">0 registos</span></div>
+        <section class="panel-card admin-form-card">
+          <div class="panel-head"><h2><i data-feather="user-plus"></i> Adicionar convidado</h2><span class="status-badge blue">Novo registo</span></div>
+          <div class="panel-body">
+            <form id="addGuestForm" class="admin-form-grid">
+              <div class="admin-field"><label for="newGuestName">Nome</label><input id="newGuestName" name="name" type="text" placeholder="Ex.: Armindo & Esposa" required></div>
+              <div class="admin-field"><label for="newGuestCategory">Categoria</label><select id="newGuestCategory" name="category"><option value="Individual">Individual</option><option value="Couple">Casal</option><option value="Família">Família</option><option value="VIP">VIP</option></select></div>
+              <div class="admin-field"><label for="newGuestTable">Mesa</label><input id="newGuestTable" name="table" type="text" placeholder="A definir"></div>
+              <div class="admin-field"><label for="newGuestMax">Pessoas</label><input id="newGuestMax" name="maxGuests" type="number" min="1" step="1" value="1"></div>
+              <div class="admin-field"><label for="newGuestPhone">Telefone</label><input id="newGuestPhone" name="phone" type="tel" placeholder="Opcional"></div>
+              <div class="admin-field"><label for="newGuestNumber">Nº</label><input id="newGuestNumber" name="number" type="number" min="0" step="1" placeholder="Auto"></div>
+              <div class="admin-field"><label for="newGuestNotes">Notas</label><textarea id="newGuestNotes" name="notes" rows="1" placeholder="Observações internas"></textarea></div>
+              <div class="admin-form-actions"><button id="addGuestBtn" class="btn small" type="submit"><i data-feather="plus"></i> Adicionar</button></div>
+            </form>
+            <p class="action-note">O sistema cria automaticamente o token do convidado e deixa o estado como “Não aberto”.</p>
+          </div>
+        </section>
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="guestSearch" class="search-input" type="search" placeholder="Pesquisar por nome, mesa ou token"></div><div class="toolbar-right"><button class="btn secondary small" data-export="guests" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>#</th><th>Convidado</th><th>Categoria</th><th>Mesa</th><th>Pessoas</th><th>Token</th><th>Estado</th></tr></thead><tbody id="guestRows"></tbody></table></div><div id="guestMobile" class="mobile-list"></div></div></section>
       </section>
 
       <section id="rsvpsPanel" class="page-panel">
         <div class="section-title"><div><h1>RSVP</h1><p>Confirmações recebidas pelo convite digital.</p></div><span id="rsvpBadge" class="event-chip">0 confirmações</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="check-circle"></i> Confirmações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="rsvpSearch" class="search-input" type="search" placeholder="Pesquisar confirmação"></div><div class="toolbar-right"><button class="btn secondary small" data-export="rsvps" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Telefone</th><th>Resposta</th><th>Mensagem</th></tr></thead><tbody id="rsvpRows"></tbody></table></div><div id="rsvpMobile" class="mobile-list"></div></div></section>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="check-circle"></i> Confirmações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="rsvpSearch" class="search-input" type="search" placeholder="Pesquisar confirmação"></div><div class="toolbar-right"><button class="btn secondary small" data-export="rsvps" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Telefone</th><th>Resposta</th><th>Mensagem</th><th>Acção</th></tr></thead><tbody id="rsvpRows"></tbody></table></div><div id="rsvpMobile" class="mobile-list"></div></div></section>
       </section>
 
       <section id="giftsPanel" class="page-panel">
@@ -1210,12 +1352,12 @@
 
       <section id="messagesPanel" class="page-panel">
         <div class="section-title"><div><h1>Mensagens</h1><p>Mural de felicitações enviado pelos convidados.</p></div><span id="messageBadge" class="event-chip">0 mensagens</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="message-circle"></i> Felicitações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="messageSearch" class="search-input" type="search" placeholder="Pesquisar mensagem"></div><div class="toolbar-right"><button class="btn secondary small" data-export="messages" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th></tr></thead><tbody id="messageRows"></tbody></table></div><div id="messageMobile" class="mobile-list"></div></div></section>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="message-circle"></i> Felicitações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="messageSearch" class="search-input" type="search" placeholder="Pesquisar mensagem"><select id="messageVisibilityFilter" class="filter-select" aria-label="Filtrar mensagens"><option value="all">Todas</option><option value="visible">Visíveis</option><option value="hidden">Ocultas</option></select></div><div class="toolbar-right"><button class="btn secondary small" data-export="messages" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="messageRows"></tbody></table></div><div id="messageMobile" class="mobile-list"></div></div></section>
       </section>
 
       <section id="checkinsPanel" class="page-panel">
         <div class="section-title"><div><h1>Check-in</h1><p>Entradas confirmadas no salão através do QR Code.</p></div><span id="checkinBadge" class="event-chip">0 entradas</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="log-in"></i> Entradas no salão</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="checkinSearch" class="search-input" type="search" placeholder="Pesquisar check-in"></div><div class="toolbar-right"><button class="btn secondary small" data-export="checkins" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Mesa</th><th>Operador</th><th>Estado</th></tr></thead><tbody id="checkinRows"></tbody></table></div><div id="checkinMobile" class="mobile-list"></div></div></section>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="log-in"></i> Entradas no salão</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="checkinSearch" class="search-input" type="search" placeholder="Pesquisar check-in"></div><div class="toolbar-right"><button class="btn secondary small" data-export="checkins" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Mesa</th><th>Operador</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="checkinRows"></tbody></table></div><div id="checkinMobile" class="mobile-list"></div></div></section>
       </section>
 
       <section id="capsulePanel" class="page-panel">
@@ -1291,6 +1433,72 @@
       };
       const contains = (obj, query) => JSON.stringify(obj || {}).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
       const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      const idOf = (o) => text(o && (o._id || o.id || o.messageId || o.rsvpId || o.checkinId || ''));
+      const apiBase = () => String(window.LIRANDZO_API_BASE_URL || '').replace(/\/+$/, '');
+      const inviteSlug = () => String(window.LIRANDZO_INVITE_SLUG || '').trim();
+      const adminPass = () => sessionStorage.getItem('rm_admin_password') || adminPassword?.value || '';
+      const adminToken = () => sessionStorage.getItem('rm_admin_token') || '';
+      async function readJsonResponse(res) {
+        const raw = await res.text();
+        try { return raw ? JSON.parse(raw) : {}; }
+        catch (err) { return { status: 'error', message: raw || 'Resposta inválida do servidor.' }; }
+      }
+      async function managerLogin(password) {
+        const base = apiBase();
+        if (!base) return null;
+        const res = await fetch(`${base}/manager/login`, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await readJsonResponse(res);
+        if (!res.ok || data.status === 'error') throw new Error(data.message || `Erro HTTP ${res.status}`);
+        return data.token || '';
+      }
+      async function validateAdminPasswordFallback(password) {
+        sessionStorage.setItem('rm_admin_password', password);
+        sessionStorage.removeItem('rm_admin_token');
+        await adminPost('get_guests', {});
+        return '';
+      }
+      async function adminPost(action, payload = {}) {
+        const base = apiBase();
+        if (!base) throw new Error('API do convite não configurada.');
+        const token = adminToken();
+        const password = adminPass();
+        const body = { ...payload, action, slug: inviteSlug(), password, admin_password: password };
+        const headers = { 'Content-Type': 'application/json', 'X-Invite-Slug': inviteSlug() };
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const res = await fetch(`${base}/admin-api`, {
+          method: 'POST',
+          mode: 'cors',
+          headers,
+          body: JSON.stringify(body)
+        });
+        const data = await readJsonResponse(res);
+        if (!res.ok || data.status === 'error') {
+          if (res.status === 401) {
+            sessionStorage.removeItem('rm_admin_logged');
+            sessionStorage.removeItem('rm_admin_token');
+            throw new Error('Sessão expirada ou senha inválida. Saia e entre novamente com a senha configurada no Render.');
+          }
+          throw new Error(data.message || `Erro HTTP ${res.status}`);
+        }
+        return data;
+      }
+      function setButtonBusy(button, busy, label) {
+        if (!button) return;
+        if (busy) {
+          button.dataset.originalHtml = button.innerHTML;
+          button.disabled = true;
+          button.innerHTML = `<i data-feather="loader"></i> ${label || 'Aguarde'}`;
+        } else {
+          button.disabled = false;
+          if (button.dataset.originalHtml) button.innerHTML = button.dataset.originalHtml;
+        }
+        feather.replace();
+      }
 
       const loginScreen = $('loginScreen');
       const app = $('app');
@@ -1310,6 +1518,8 @@
       const syncText = $('syncText');
       const dataSourceBadge = $('dataSourceBadge');
       const backendNote = $('backendNote');
+      const addGuestForm = $('addGuestForm');
+      const addGuestBtn = $('addGuestBtn');
 
       function init() {
         initTheme();
@@ -1323,7 +1533,7 @@
 
 
       function initTheme() {
-        const saved = localStorage.getItem('edma_admin_theme') || 'dark';
+        const saved = localStorage.getItem('rm_admin_theme') || 'dark';
         applyTheme(saved);
         themeToggle?.addEventListener('click', () => {
           const current = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -1334,7 +1544,7 @@
       function applyTheme(theme) {
         const selected = theme === 'light' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', selected);
-        localStorage.setItem('edma_admin_theme', selected);
+        localStorage.setItem('rm_admin_theme', selected);
         if (themeToggle) {
           const isLight = selected === 'light';
           themeToggle.setAttribute('aria-label', isLight ? 'Mudar para tema escuro' : 'Mudar para tema claro');
@@ -1377,19 +1587,37 @@
       }
 
       function bindEvents() {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
-          const expected = window.LIRANDZO_ADMIN_PASSWORD || 'edma2026';
-          if (adminPassword.value === expected) {
-            sessionStorage.setItem('edma_admin_logged', '1');
+          loginError.textContent = '';
+          const password = adminPassword.value;
+          const submitBtn = loginForm.querySelector('button[type="submit"]');
+          setButtonBusy(submitBtn, true, 'A validar');
+          try {
+            let token = '';
+            if (apiBase()) {
+              try {
+                token = await managerLogin(password);
+              } catch (loginErr) {
+                // Compatibilidade com servidor antigo/sem MANAGER_SECRET: valida directamente no /admin-api.
+                token = await validateAdminPasswordFallback(password);
+              }
+            } else {
+              throw new Error('API do convite não configurada. A senha do admin deve ser validada pelo Render.');
+            }
+            sessionStorage.setItem('rm_admin_logged', '1');
+            sessionStorage.setItem('rm_admin_password', password);
+            if (token) sessionStorage.setItem('rm_admin_token', token);
             loginScreen.style.display = 'none';
             app.style.display = 'block';
-            loadAll();
-          } else {
-            loginError.textContent = 'Senha incorrecta. Verifique a senha e tente novamente.';
+            await loadAll();
+          } catch (err) {
+            loginError.textContent = err.message || 'Senha incorrecta. Verifique a senha e tente novamente.';
+          } finally {
+            setButtonBusy(submitBtn, false);
           }
         });
-        if (sessionStorage.getItem('edma_admin_logged') === '1') {
+        if (sessionStorage.getItem('rm_admin_logged') === '1') {
           loginScreen.style.display = 'none';
           app.style.display = 'block';
           loadAll();
@@ -1397,15 +1625,93 @@
         menuBtn.addEventListener('click', () => toggleSidebar(true));
         overlay.addEventListener('click', () => toggleSidebar(false));
         logoutBtn.addEventListener('click', () => {
-          sessionStorage.removeItem('edma_admin_logged');
+          sessionStorage.removeItem('rm_admin_logged');
+          sessionStorage.removeItem('rm_admin_password');
+          sessionStorage.removeItem('rm_admin_token');
           location.reload();
         });
         refreshBtn.addEventListener('click', loadAll);
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleSidebar(false); });
         document.querySelectorAll('.search-input').forEach(input => input.addEventListener('input', renderLists));
+        $('messageVisibilityFilter')?.addEventListener('change', renderLists);
         document.querySelectorAll('[data-export]').forEach(button => {
           button.addEventListener('click', () => exportCSV(button.dataset.export));
         });
+        addGuestForm?.addEventListener('submit', handleAddGuestSubmit);
+        document.addEventListener('click', handleAdminActionClick);
+      }
+
+      async function handleAddGuestSubmit(event) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+        setButtonBusy(addGuestBtn, true, 'A adicionar');
+        try {
+          await adminPost('add_guest', payload);
+          form.reset();
+          const maxInput = $('newGuestMax');
+          if (maxInput) maxInput.value = '1';
+          alert('Convidado adicionado com sucesso.');
+          await loadAll();
+          showPanel('guests');
+        } catch (err) {
+          alert(err.message || 'Não foi possível adicionar o convidado.');
+        } finally {
+          setButtonBusy(addGuestBtn, false);
+        }
+      }
+
+      async function handleAdminActionClick(event) {
+        const button = event.target.closest('[data-admin-action]');
+        if (!button) return;
+        event.preventDefault();
+        const action = button.dataset.adminAction;
+        const id = button.dataset.id;
+        const name = button.dataset.name || 'este registo';
+        if (!id) { alert('ID do registo não encontrado.'); return; }
+
+        let confirmText = '';
+        let busyText = 'A processar';
+        let successText = 'Operação concluída.';
+        let payload = { id };
+
+        if (action === 'hide_message') {
+          confirmText = `Ocultar a mensagem de ${name}? Ela deixa de aparecer no mural público.`;
+          busyText = 'A ocultar';
+          successText = 'Mensagem ocultada com sucesso.';
+        } else if (action === 'restore_message') {
+          confirmText = `Restaurar a mensagem de ${name}? Ela volta a aparecer no mural público.`;
+          busyText = 'A restaurar';
+          successText = 'Mensagem restaurada com sucesso.';
+        } else if (action === 'restore_rsvp') {
+          confirmText = `Restaurar a confirmação de presença de ${name}? O convidado poderá confirmar novamente.`;
+          busyText = 'A restaurar';
+          successText = 'Confirmação restaurada com sucesso.';
+        } else if (action === 'restore_checkin') {
+          confirmText = `Restaurar o check-in de ${name}? A entrada volta a ficar pendente.`;
+          busyText = 'A restaurar';
+          successText = 'Check-in restaurado com sucesso.';
+        } else if (action === 'delete_message') {
+          const typed = prompt(`Para eliminar definitivamente a mensagem de ${name}, escreva ELIMINAR.`);
+          if (typed !== 'ELIMINAR') return;
+          busyText = 'A eliminar';
+          successText = 'Mensagem eliminada definitivamente.';
+        } else {
+          return;
+        }
+
+        if (confirmText && !confirm(confirmText)) return;
+        setButtonBusy(button, true, busyText);
+        try {
+          await adminPost(action, payload);
+          alert(successText);
+          await loadAll();
+        } catch (err) {
+          alert(err.message || 'A operação falhou.');
+        } finally {
+          setButtonBusy(button, false);
+        }
       }
 
       function buildNavigation() {
@@ -1422,9 +1728,9 @@
         $('eventChip').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
         $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Edma e Abel'}`;
         $('eventDate').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
-        $('rsvpDate').textContent = EVENT.rsvpDeadline || '27 de maio de 2026';
-        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '09:00'} · ${EVENT.ceremonyPlace || 'Jardim do Farol 2'}`;
-        $('receptionInfo').textContent = `${EVENT.receptionTime || '13:00'} · ${EVENT.receptionPlace || 'Palácio dos Casamentos'}`;
+        $('rsvpDate').textContent = EVENT.rsvpDeadline || '20 de junho de 2026';
+        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '09:00'} · ${EVENT.ceremonyPlace || 'Paróquia São Gabriel Arcanjo'}`;
+        $('receptionInfo').textContent = `${EVENT.receptionTime || '13:00'} · ${EVENT.receptionPlace || 'Hotel Polana'}`;
         $('supportInfo').textContent = EVENT.supportContacts || 'Apoio no dia do evento';
       }
 
@@ -1458,7 +1764,7 @@
         $('activityList').innerHTML = Array.from({ length: 5 }).map(() => '<article class="activity-item"><div class="skeleton-card" style="width:34px;min-height:34px"></div><div style="display:grid;gap:7px"><span class="skeleton-line" style="width:72%"></span><span class="skeleton-line" style="width:92%;height:12px"></span></div><span class="skeleton-line" style="width:86px;height:24px;border-radius:999px"></span></article>').join('');
         const tableSkeleton = (cols) => Array.from({ length: 5 }).map(() => '<tr>' + Array.from({ length: cols }).map(() => '<td><span class="skeleton-cell"></span></td>').join('') + '</tr>').join('');
         const mobileSkeleton = Array.from({ length: 4 }).map(() => '<article class="mobile-card"><span class="skeleton-line" style="width:62%"></span><span class="skeleton-line" style="width:88%;height:12px;margin-top:8px"></span></article>').join('');
-        ['guestRows','rsvpRows','giftRows','messageRows','checkinRows'].forEach((id, index) => { const el = $(id); if (el) el.innerHTML = tableSkeleton([7,6,4,3,6][index]); });
+        ['guestRows','rsvpRows','giftRows','messageRows','checkinRows'].forEach((id, index) => { const el = $(id); if (el) el.innerHTML = tableSkeleton([7,7,4,5,7][index]); });
         ['guestMobile','rsvpMobile','giftMobile','messageMobile','checkinMobile'].forEach(id => { const el = $(id); if (el) el.innerHTML = mobileSkeleton; });
         if ($('capsuleGrid')) $('capsuleGrid').innerHTML = Array.from({ length: 6 }).map(() => '<article class="photo-card"><div class="skeleton-card" style="aspect-ratio:1/1;border-radius:0;min-height:auto"></div><div class="photo-meta"><span class="skeleton-line" style="width:70%"></span><span class="skeleton-line" style="width:48%;height:12px;margin-top:8px"></span></div></article>').join('');
       }
@@ -1469,12 +1775,13 @@
         app.classList.add('is-loading');
         renderSkeletons();
         try {
+          const adminMessagesPromise = adminPost('get_messages').catch(() => LirandzoAPI.get('list_messages'));
           const [stats, guests, rsvps, gifts, messages, checkins, photos] = await Promise.all([
             LirandzoAPI.get('stats'),
             LirandzoAPI.get('list_guests'),
             LirandzoAPI.get('list_rsvps'),
             LirandzoAPI.get('list_gift_records'),
-            LirandzoAPI.get('list_messages'),
+            adminMessagesPromise,
             LirandzoAPI.get('list_checkins'),
             LirandzoAPI.get('list_capsule_photos')
           ]);
@@ -1578,9 +1885,11 @@
           ...DATA.messages.map(x => ({ ...x, type: 'Mensagem', icon: 'message-circle', detail: text(x.message).slice(0, 90) })),
           ...DATA.checkins.map(x => ({ ...x, type: 'Check-in', icon: 'log-in', detail: `${num(x.guests || x.maxGuests) || 1} pessoa(s) · ${x.mesa || 'Mesa a definir'}` })),
           ...DATA.photos.map(x => ({ ...x, type: 'Cápsula', icon: 'image', detail: x.filename || 'Foto enviada' }))
-        ].sort((a, b) => new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt)).slice(0, 9);
-        $('activityBadge').textContent = `${items.length} registos`;
-        $('activityList').innerHTML = items.length ? items.map(item => `
+        ].sort((a, b) => new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt));
+        const maxItems = window.matchMedia('(max-width: 760px)').matches ? 5 : 9;
+        const visibleItems = items.slice(0, maxItems);
+        $('activityBadge').textContent = `${visibleItems.length} registos`;
+        $('activityList').innerHTML = visibleItems.length ? visibleItems.map(item => `
           <article class="activity-item">
             <div class="activity-icon"><i data-feather="${item.icon}"></i></div>
             <div><strong>${esc(item.type)} · ${esc(nameOf(item))}</strong><p>${esc(item.detail || '-')}</p></div>
@@ -1626,9 +1935,16 @@
       function renderRsvps() {
         const list = filtered(DATA.rsvps, 'rsvpSearch');
         $('rsvpBadge').textContent = `${list.length} confirmações`;
-        $('rsvpRows').innerHTML = list.length ? list.map(r => `
-          <tr><td>${esc(dateFmt(r.timestamp))}</td><td><strong>${esc(nameOf(r))}</strong></td><td>${esc(peopleFromRsvp(r) || r.guests || '-')}</td><td>${esc(r.phone || '-')}</td><td>${esc(r.choice || 'Confirmado')}</td><td>${esc(r.message || '')}</td></tr>`).join('') : '<tr><td colspan="6" class="empty">Ainda não há confirmações.</td></tr>';
-        $('rsvpMobile').innerHTML = mobileCards(list, r => `${esc(peopleFromRsvp(r) || '-')} pessoa(s) · ${esc(dateFmt(r.timestamp))}`, r => `<span class="status-badge ok">${esc(r.choice || 'Confirmado')}</span>`);
+        $('rsvpRows').innerHTML = list.length ? list.map(r => {
+          const id = idOf(r);
+          const action = id ? `<button class="btn warning small" type="button" data-admin-action="restore_rsvp" data-id="${esc(id)}" data-name="${esc(nameOf(r))}"><i data-feather="rotate-ccw"></i> Restaurar</button>` : '<span class="status-badge warn">Sem ID</span>';
+          return `<tr><td>${esc(dateFmt(r.timestamp))}</td><td><strong>${esc(nameOf(r))}</strong></td><td>${esc(peopleFromRsvp(r) || r.guests || '-')}</td><td>${esc(r.phone || '-')}</td><td>${esc(r.choice || 'Confirmado')}</td><td>${esc(r.message || '')}</td><td><div class="row-actions">${action}</div></td></tr>`;
+        }).join('') : '<tr><td colspan="7" class="empty">Ainda não há confirmações.</td></tr>';
+        $('rsvpMobile').innerHTML = list.length ? list.map(r => {
+          const id = idOf(r);
+          const action = id ? `<button class="btn warning small" type="button" data-admin-action="restore_rsvp" data-id="${esc(id)}" data-name="${esc(nameOf(r))}"><i data-feather="rotate-ccw"></i> Restaurar confirmação</button>` : '';
+          return `<article class="mobile-card"><strong>${esc(nameOf(r))}</strong><span>${esc(peopleFromRsvp(r) || '-')} pessoa(s) · ${esc(dateFmt(r.timestamp))}</span><span class="status-badge ok">${esc(r.choice || 'Confirmado')}</span><div class="row-actions">${action}</div></article>`;
+        }).join('') : '<div class="empty">Sem dados para mostrar.</div>';
       }
 
       function parseGiftDetails(g) {
@@ -1686,17 +2002,48 @@
       }
 
       function renderMessages() {
-        const list = filtered(DATA.messages, 'messageSearch');
-        $('messageBadge').textContent = `${list.length} mensagens`;
-        $('messageRows').innerHTML = list.length ? list.map(m => `<tr><td>${esc(dateFmt(m.timestamp))}</td><td><strong>${esc(nameOf(m))}</strong></td><td>${esc(m.message || '')}</td></tr>`).join('') : '<tr><td colspan="3" class="empty">Ainda não há mensagens.</td></tr>';
-        $('messageMobile').innerHTML = mobileCards(list, m => `${esc(dateFmt(m.timestamp))}<br>${esc(m.message || '')}`, () => '<span class="status-badge blue">Mensagem</span>');
+        const all = filtered(DATA.messages, 'messageSearch');
+        const hiddenCount = all.filter(m => m.hidden === true || String(m.status || '').toLowerCase() === 'hidden').length;
+        const visibleCount = Math.max(all.length - hiddenCount, 0);
+        const mode = $('messageVisibilityFilter')?.value || 'all';
+        const list = all.filter(m => {
+          const isHidden = m.hidden === true || String(m.status || '').toLowerCase() === 'hidden';
+          if (mode === 'hidden') return isHidden;
+          if (mode === 'visible') return !isHidden;
+          return true;
+        });
+        $('messageBadge').textContent = `${visibleCount} visíveis · ${hiddenCount} ocultas`;
+        $('messageRows').innerHTML = list.length ? list.map(m => {
+          const id = idOf(m);
+          const isHidden = m.hidden === true || String(m.status || '').toLowerCase() === 'hidden';
+          const hideButton = id && !isHidden ? `<button class="btn warning small" type="button" data-admin-action="hide_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="eye-off"></i> Ocultar</button>` : '';
+          const restoreButton = id && isHidden ? `<button class="btn warning small" type="button" data-admin-action="restore_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="eye"></i> Restaurar</button>` : '';
+          const deleteButton = id ? `<button class="btn danger small" type="button" data-admin-action="delete_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="trash-2"></i> Eliminar</button>` : '<span class="status-badge warn">Sem ID</span>';
+          return `<tr><td>${esc(dateFmt(m.timestamp))}</td><td><strong>${esc(nameOf(m))}</strong></td><td>${esc(m.message || '')}</td><td>${isHidden ? '<span class="status-badge hidden">Oculta</span>' : '<span class="status-badge blue">Visível</span>'}</td><td><div class="row-actions">${hideButton}${restoreButton}${deleteButton}</div></td></tr>`;
+        }).join('') : '<tr><td colspan="5" class="empty">Ainda não há mensagens neste filtro.</td></tr>';
+        $('messageMobile').innerHTML = list.length ? list.map(m => {
+          const id = idOf(m);
+          const isHidden = m.hidden === true || String(m.status || '').toLowerCase() === 'hidden';
+          const hideButton = id && !isHidden ? `<button class="btn warning small" type="button" data-admin-action="hide_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="eye-off"></i> Ocultar</button>` : '';
+          const restoreButton = id && isHidden ? `<button class="btn warning small" type="button" data-admin-action="restore_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="eye"></i> Restaurar mensagem</button>` : '';
+          const deleteButton = id ? `<button class="btn danger small" type="button" data-admin-action="delete_message" data-id="${esc(id)}" data-name="${esc(nameOf(m))}"><i data-feather="trash-2"></i> Eliminar</button>` : '';
+          return `<article class="mobile-card"><strong>${esc(nameOf(m))}</strong><span>${esc(dateFmt(m.timestamp))}<br>${esc(m.message || '')}</span><span class="status-badge ${isHidden ? 'hidden' : 'blue'}">${isHidden ? 'Oculta' : 'Visível'}</span><div class="row-actions">${hideButton}${restoreButton}${deleteButton}</div></article>`;
+        }).join('') : '<div class="empty">Sem mensagens neste filtro.</div>';
       }
 
       function renderCheckins() {
         const list = filtered(DATA.checkins, 'checkinSearch');
         $('checkinBadge').textContent = `${list.length} entradas`;
-        $('checkinRows').innerHTML = list.length ? list.map(c => `<tr><td>${esc(dateFmt(c.timestamp))}</td><td><strong>${esc(nameOf(c))}</strong></td><td>${esc(c.guests || c.maxGuests || 1)}</td><td>${esc(c.mesa || 'A definir')}</td><td>${esc(c.operator || 'Recepção')}</td><td><span class="status-badge ok">${esc(c.status || 'Confirmado')}</span></td></tr>`).join('') : '<tr><td colspan="6" class="empty">Ainda não há check-ins.</td></tr>';
-        $('checkinMobile').innerHTML = mobileCards(list, c => `${esc(c.guests || 1)} pessoa(s) · Mesa: ${esc(c.mesa || 'A definir')} · ${esc(dateFmt(c.timestamp))}`, () => '<span class="status-badge ok">Confirmado</span>');
+        $('checkinRows').innerHTML = list.length ? list.map(c => {
+          const id = idOf(c);
+          const action = id ? `<button class="btn warning small" type="button" data-admin-action="restore_checkin" data-id="${esc(id)}" data-name="${esc(nameOf(c))}"><i data-feather="rotate-ccw"></i> Restaurar</button>` : '<span class="status-badge warn">Sem ID</span>';
+          return `<tr><td>${esc(dateFmt(c.timestamp))}</td><td><strong>${esc(nameOf(c))}</strong></td><td>${esc(c.guests || c.maxGuests || 1)}</td><td>${esc(c.mesa || 'A definir')}</td><td>${esc(c.operator || 'Recepção')}</td><td><span class="status-badge ok">${esc(c.status || 'Confirmado')}</span></td><td><div class="row-actions">${action}</div></td></tr>`;
+        }).join('') : '<tr><td colspan="7" class="empty">Ainda não há check-ins.</td></tr>';
+        $('checkinMobile').innerHTML = list.length ? list.map(c => {
+          const id = idOf(c);
+          const action = id ? `<button class="btn warning small" type="button" data-admin-action="restore_checkin" data-id="${esc(id)}" data-name="${esc(nameOf(c))}"><i data-feather="rotate-ccw"></i> Restaurar check-in</button>` : '';
+          return `<article class="mobile-card"><strong>${esc(nameOf(c))}</strong><span>${esc(c.guests || 1)} pessoa(s) · Mesa: ${esc(c.mesa || 'A definir')} · ${esc(dateFmt(c.timestamp))}</span><span class="status-badge ok">Confirmado</span><div class="row-actions">${action}</div></article>`;
+        }).join('') : '<div class="empty">Sem dados para mostrar.</div>';
       }
 
       function renderCapsule() {
@@ -1721,7 +2068,7 @@
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `edma-abel-${type}.csv`;
+        a.download = `rosalina-monteiro-${type}.csv`;
         a.click();
         setTimeout(() => URL.revokeObjectURL(a.href), 1000);
       }
