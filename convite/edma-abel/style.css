@@ -7236,3 +7236,280 @@ body.convite-rustic-theme .chapter-title {
     width: min(100%, 360px) !important;
   }
 }
+
+/* =========================================================
+   EDMA & ABEL — V5 CORRECÇÕES FINAIS
+   1) Contraste da aba Lista de Presentes
+   2) Lista de presentes sem texto a sair dos cards
+   3) A Nossa História reestruturada para mobile/tablet
+   ========================================================= */
+
+body.convite-rustic-theme .tab-buttons.single-tab,
+body.convite-rustic-theme .modal-card.has-modal-hero .tab-buttons.single-tab {
+  width: min(100%, 520px) !important;
+  margin: 0 auto 24px !important;
+  padding: 0 !important;
+  display: block !important;
+  border: 1px solid rgba(138, 90, 68, .62) !important;
+  border-radius: 999px !important;
+  background: #fbf6ef !important;
+  box-shadow: 0 10px 28px rgba(77, 53, 41, .08) !important;
+  overflow: hidden !important;
+}
+
+body.convite-rustic-theme .tab-buttons.single-tab .tab-btn.active,
+body.convite-rustic-theme .modal-card.has-modal-hero .tab-buttons.single-tab .tab-btn.active,
+body.edma-abel-theme .tab-buttons.single-tab .tab-btn.active {
+  width: 100% !important;
+  display: block !important;
+  background: #8A5A44 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  letter-spacing: .01em !important;
+  text-align: center !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
+}
+
+body.convite-rustic-theme #giftListContent,
+body.convite-rustic-theme .modal-card.has-modal-hero #giftListContent {
+  width: min(100%, 560px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+  overflow: visible !important;
+}
+
+body.convite-rustic-theme #giftListContent > h4,
+body.convite-rustic-theme #giftListContent > p {
+  width: min(100%, 500px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+body.convite-rustic-theme #giftChecklist.gift-checklist,
+body.convite-rustic-theme .modal-card.has-modal-hero #giftChecklist.gift-checklist {
+  width: min(100%, 500px) !important;
+  max-width: 500px !important;
+  margin: 22px auto 0 !important;
+  padding: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  border: 1px solid rgba(138, 90, 68, .18) !important;
+  border-radius: 18px !important;
+  background: rgba(255, 251, 245, .82) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+}
+
+body.convite-rustic-theme #giftChecklist .gift-item,
+body.convite-rustic-theme .modal-card.has-modal-hero #giftChecklist .gift-item {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-template-columns: 22px minmax(0, 1fr) !important;
+  align-items: flex-start !important;
+  column-gap: 14px !important;
+  row-gap: 0 !important;
+  padding: 14px 16px !important;
+  min-height: 54px !important;
+  margin: 0 !important;
+  text-align: left !important;
+  color: #4b372f !important;
+  -webkit-text-fill-color: #4b372f !important;
+  background: #fffaf3 !important;
+  background-image: none !important;
+  border: 1px solid rgba(141, 102, 81, .24) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+body.convite-rustic-theme #giftChecklist .gift-item span,
+body.convite-rustic-theme .modal-card.has-modal-hero #giftChecklist .gift-item span {
+  display: block !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  hyphens: auto !important;
+  line-height: 1.32 !important;
+  color: #4b372f !important;
+  -webkit-text-fill-color: #4b372f !important;
+  font-size: clamp(.92rem, 2.6vw, 1rem) !important;
+}
+
+body.convite-rustic-theme #giftChecklist .gift-item input[type="checkbox"],
+body.convite-rustic-theme .modal-card.has-modal-hero #giftChecklist .gift-item input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  margin: 2px 0 0 !important;
+  justify-self: center !important;
+  align-self: flex-start !important;
+  accent-color: #8A5A44 !important;
+}
+
+body.convite-rustic-theme #giftChecklist .gift-item.reserved span {
+  color: #8e817a !important;
+  -webkit-text-fill-color: #8e817a !important;
+}
+
+/* A Nossa História — mobile/tablet: imagem em cima, texto em baixo, sem aperto lateral */
+@media (max-width: 1024px) {
+  body.convite-rustic-theme #nossa-historia .story-carousel-shell,
+  #nossa-historia .story-carousel-shell {
+    width: min(100%, 620px) !important;
+    max-width: calc(100vw - 28px) !important;
+    margin: 28px auto 0 !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto !important;
+    border-radius: 28px !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  #nossa-historia .story-carousel-visual,
+  body.convite-rustic-theme #nossa-historia .story-carousel-visual {
+    width: 100% !important;
+    min-height: 0 !important;
+    height: clamp(300px, 82vw, 430px) !important;
+    border-radius: 0 !important;
+  }
+
+  #nossa-historia .story-carousel-visual img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 30% !important;
+  }
+
+  #nossa-historia .story-carousel-label {
+    left: 18px !important;
+    right: 18px !important;
+    bottom: 18px !important;
+    padding: 14px 16px !important;
+    border-radius: 20px !important;
+    text-align: left !important;
+  }
+
+  #nossa-historia .story-carousel-panel,
+  body.convite-rustic-theme #nossa-historia .story-carousel-panel {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 24px 16px 26px !important;
+    box-sizing: border-box !important;
+    background: #fbf6ef !important;
+    background-image: none !important;
+  }
+
+  #nossa-historia .story-carousel-topline {
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  #nossa-historia .story-mini-kicker {
+    max-width: 210px !important;
+    line-height: 1.35 !important;
+  }
+
+  #nossa-historia .story-carousel-track,
+  body.convite-rustic-theme #nossa-historia .story-carousel-track {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 4px 0 16px !important;
+    gap: 12px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-padding-inline: 0 !important;
+    align-items: stretch !important;
+  }
+
+  #nossa-historia .story-slide,
+  body.convite-rustic-theme #nossa-historia .story-slide,
+  body.convite-rustic-theme #nossa-historia .story-chapter {
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: auto !important;
+    padding: 24px 20px !important;
+    margin: 0 !important;
+    border-radius: 24px !important;
+    box-sizing: border-box !important;
+  }
+
+  #nossa-historia .story-slide .chapter-title,
+  body.convite-rustic-theme #nossa-historia .story-slide .chapter-title {
+    font-size: clamp(1.55rem, 8vw, 2.2rem) !important;
+    margin: 16px 0 10px !important;
+  }
+
+  #nossa-historia .story-slide .chapter-text,
+  body.convite-rustic-theme #nossa-historia .story-slide .chapter-text {
+    font-size: .96rem !important;
+    line-height: 1.68 !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 560px) {
+  body.convite-rustic-theme #giftListContent,
+  body.convite-rustic-theme .modal-card.has-modal-hero #giftListContent,
+  body.convite-rustic-theme #giftChecklist.gift-checklist,
+  body.convite-rustic-theme .modal-card.has-modal-hero #giftChecklist.gift-checklist {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body.convite-rustic-theme #giftChecklist.gift-checklist,
+  body.convite-rustic-theme .modal-card.has-modal-hero #giftChecklist.gift-checklist {
+    padding: 8px !important;
+    max-height: min(52vh, 480px) !important;
+  }
+
+  body.convite-rustic-theme #giftChecklist .gift-item,
+  body.convite-rustic-theme .modal-card.has-modal-hero #giftChecklist .gift-item {
+    grid-template-columns: 20px minmax(0, 1fr) !important;
+    column-gap: 12px !important;
+    padding: 13px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  #nossa-historia .story-carousel-visual,
+  body.convite-rustic-theme #nossa-historia .story-carousel-visual {
+    height: clamp(260px, 88vw, 370px) !important;
+  }
+
+  #nossa-historia .story-carousel-panel,
+  body.convite-rustic-theme #nossa-historia .story-carousel-panel {
+    padding: 22px 14px 24px !important;
+  }
+
+  #nossa-historia .story-carousel-topline {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  #nossa-historia .story-mini-kicker {
+    max-width: 100% !important;
+  }
+}
