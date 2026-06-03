@@ -218,7 +218,39 @@
     .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(138,90,68,.08);text-align:center}
     .qr-checkin-card img{width:190px;max-width:100%;border-radius:16px;background:#fff;padding:10px;margin:12px auto;display:block}
     .qr-checkin-card small{display:block;color:var(--text-light);line-height:1.5}
-  </style>
+  
+/* MENU REAL - EDMA & ABEL */
+.menu-real-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  text-align: left;
+}
+.menu-real-category {
+  padding: 14px 14px 12px;
+  border: 1px solid rgba(109, 76, 58, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 252, 247, 0.74);
+}
+.menu-real-category strong {
+  display: block;
+  color: var(--accent);
+  font-size: 0.92rem;
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+.menu-real-category ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.menu-real-category li {
+  margin: 4px 0;
+  color: var(--text-dark);
+  line-height: 1.35;
+  font-size: 0.9rem;
+}
+
+</style>
 </head>
 <body class="loading convite-rustic-theme edma-abel-theme">
 <audio id="backgroundMusic" loop preload="auto" autoplay playsinline src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
@@ -482,21 +514,21 @@
 <div class="menu-preview-grid menu-visual-grid">
 <div class="menu-preview-card elevated-card has-icon">
 <span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M7 7h10M6 12h12M8 17h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
-<span>Entrada</span>
-<h3>Recepção leve</h3>
-<p>Opções delicadas para receber os convidados com conforto.</p>
+<span>Pratos quentes</span>
+<h3>Molhos &amp; clássicos</h3>
+<p>Caril, carne assada, lasanha, pato, matapa, feijoada e mariscos.</p>
 </div>
 <div class="menu-preview-card featured elevated-card has-icon">
 <span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M6 8h12M7 12h10M8 16h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="18" cy="6" fill="none" r="2" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
-<span>Principal</span>
-<h3>Serviço especial</h3>
-<p>Pratos pensados para tornar o almoço memorável e acolhedor.</p>
+<span>Grelhados</span>
+<h3>Frango &amp; peixe fresco</h3>
+<p>Frango grelhado ao molho de salsa e manteiga e peixe fresco.</p>
 </div>
 <div class="menu-preview-card elevated-card has-icon">
 <span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M7 17a5 5 0 0 1 10 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M9 14a3 3 0 1 1 6 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
-<span>Sobremesa</span>
-<h3>Final doce</h3>
-<p>Um encerramento suave para brindar este momento.</p>
+<span>Rodízio &amp; tradição</span>
+<h3>Sabores de família</h3>
+<p>Picanha, babalaza, ananás grelhado, asinhas e pratos típicos.</p>
 </div>
 </div>
 <button class="btn btn-primary vintage-action" data-open-modal="menuCelebracaoModal" type="button">Ver Menu Completo</button>
@@ -753,13 +785,15 @@
 <span class="modal-kicker">Menu da Celebração</span>
 <h3 id="menuCelebracaoTitle">Sabores do nosso dia</h3>
 <div class="modal-divider"></div>
-<div class="modal-menu-list">
-<div><strong>Entrada</strong><p>Recepção leve com opções cuidadosamente servidas aos convidados.</p></div>
-<div><strong>Prato principal</strong><p>Serviço especial preparado para o momento de almoço e celebração.</p></div>
-<div><strong>Bebidas</strong><p>Selecção de bebidas para acompanhar a recepção.</p></div>
-<div><strong>Sobremesa</strong><p>Final doce para brindar a união dos noivos.</p></div>
+<div class="modal-menu-list menu-real-list">
+<div class="menu-real-category"><strong>Pratos Quentes &amp; Molhos</strong><ul><li>Caril de carne à indiana</li><li>Carne assada na panela (Biff)</li><li>Lasanha de carne</li><li>Pato estufado ao molho de laranja</li><li>Matapa tradicional de camarão</li><li>Feijoada com todos</li><li>Estufado de camarão e lulas</li></ul></div>
+<div class="menu-real-category"><strong>Grelhados</strong><ul><li>Frango grelhado ao molho de salsa e manteiga</li><li>Peixe grelhado fresco (vermelho ou garoupa)</li></ul></div>
+<div class="menu-real-category"><strong>Acompanhantes</strong><ul><li>Arroz branco</li><li>Xima</li><li>Arroz de vegetais</li><li>Arroz Bryan</li><li>Batata frita crocante</li><li>Apas</li></ul></div>
+<div class="menu-real-category"><strong>Saladas Frescas</strong><ul><li>Vegetais salteados</li><li>Beterraba com maçã</li><li>Salada russa com peito de frango e passas</li><li>Maionese cremosa</li><li>Repolho roxo com lascas de maca e milho doce</li><li>Massa chinesa de vegetais</li></ul></div>
+<div class="menu-real-category"><strong>Rodízio Premium</strong><ul><li>Picanha suculenta</li><li>Babalaza</li><li>Ananás grelhado</li><li>Asinhas marinadas</li></ul></div>
+<div class="menu-real-category"><strong>Pratos Típicos - Família</strong><ul><li>Tihove</li><li>Xiguinha</li><li>Mukapata</li></ul></div>
 </div>
-<p class="small-modal-text">Caso tenha alguma restrição alimentar importante, contacte previamente os noivos ou a equipa de apoio.</p>
+<p class="small-modal-text">Celebramos o amor em cada detalhe.</p>
 <button class="btn btn-primary" data-close-modal="" type="button">Fechar Menu</button>
 </div>
 </div>

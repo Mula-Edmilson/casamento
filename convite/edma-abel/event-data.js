@@ -21,11 +21,11 @@ window.LIRANDZO_EVENT = {
   "ceremonyTitle": "Cerimónia Religiosa",
   "ceremonyPlace": "Jardim do Farol 2",
   "ceremonyTime": "12:30",
-  "ceremonyMap": "https://share.google/MCE0bpCqheiqRVvP6",
+  "ceremonyMap": "https://maps.app.goo.gl/rbzP3MeZPr2s3x4i6",
   "receptionTitle": "Copo de Água",
   "receptionPlace": "Farol 2",
   "receptionTime": "14:00",
-  "receptionMap": "https://share.google/MCE0bpCqheiqRVvP6",
+  "receptionMap": "https://maps.app.goo.gl/rbzP3MeZPr2s3x4i6",
   "additionalTitle": "Civil",
   "additionalPlace": "Palácio dos Casamentos",
   "additionalTime": "10:00",
@@ -1619,7 +1619,7 @@ window.LIRANDZO_GUESTS = [
 window.LIRANDZO_GIFT_OPTIONS = [
   {
     "id": "gift-01",
-    "name": "Cama King",
+    "name": "Cama (King)",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1627,7 +1627,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-02",
-    "name": "Sofá em L",
+    "name": "Sofa (L)",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1635,7 +1635,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-03",
-    "name": "Geleira de 2 portas",
+    "name": "Geleira (2 portas)",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1667,7 +1667,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-07",
-    "name": "Mesa de jantar 6/8/10 lugares",
+    "name": "Mesa de Jantar (6/8/10 lugares)",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1699,7 +1699,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-11",
-    "name": "Fogão de 6 bocas a gás",
+    "name": "Fogão (6 bocas a gás)",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1723,7 +1723,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-14",
-    "name": "Panelas antiaderentes",
+    "name": "Panelas ante aderentes (caçarolas, Le Creuset)",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1731,7 +1731,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-15",
-    "name": "TV",
+    "name": "Tv",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1755,7 +1755,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-18",
-    "name": "Termoacumulador",
+    "name": "Termo acumulador",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1763,7 +1763,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-19",
-    "name": "Jogo de talheres",
+    "name": "Jogo de talhere",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1795,7 +1795,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-23",
-    "name": "Pirex de vidro",
+    "name": "Pirex (de vidro)",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",
@@ -1803,7 +1803,7 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "id": "gift-24",
-    "name": "Jogo de talheres adicional",
+    "name": "Jogo de talheres",
     "category": "Lista de presentes",
     "reserved": false,
     "reserved_by": "",

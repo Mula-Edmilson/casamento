@@ -29,3 +29,7 @@ ACTUALIZAÇÃO DE FOTOGRAFIAS — EDMA & ABEL
 - assets/media/edma-abel-hero.jpg: fotografia aplicada no hero do convite.
 - assets/media/edma-abel-save-the-date.jpg: fotografia aplicada na capa/index do convite.
 - assets/media/edma-abel-brinde.jpg, edma-abel-pedido.jpg, edma-abel-comemoracao.jpg e edma-abel-pose-2.jpg: fotografias integradas nas secções internas e galeria.
+Actualização menu/presentes:
+- Menu real integrado a partir do PDF enviado.
+- Lista de presentes actualizada com descrições exactas.
+- MAP_FAROL2_URL actualizado para https://maps.app.goo.gl/rbzP3MeZPr2s3x4i6
