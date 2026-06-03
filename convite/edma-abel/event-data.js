@@ -9,7 +9,7 @@ window.LIRANDZO_EVENT = {
   "eventType": "Casamento",
   "language": "Português",
   "visualStyle": "Elegante, romântico e minimalista",
-  "colors": "Nude, vinho rosado e champagne",
+  "colors": "Rustic chic: marfim, linho, terracota suave, verde sálvia e castanho espresso",
   "dateISO": "2026-09-12T10:00:00+02:00",
   "eventDateLong": "12 de setembro de 2026",
   "rsvpDeadline": "27 de maio de 2026",

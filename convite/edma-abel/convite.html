@@ -215,13 +215,13 @@
     }
     @keyframes drawCheck { to { stroke-dashoffset: 0; } }
 
-    .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(201,162,39,.08);text-align:center}
+    .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(138,90,68,.08);text-align:center}
     .qr-checkin-card img{width:190px;max-width:100%;border-radius:16px;background:#fff;padding:10px;margin:12px auto;display:block}
     .qr-checkin-card small{display:block;color:var(--text-light);line-height:1.5}
   </style>
 </head>
-<body class="loading convite-white-gold-theme edma-abel-theme">
-<audio id="backgroundMusic" loop="" data-youtube-source="https://youtu.be/jvJeTw4Q1O8" src=""></audio>
+<body class="loading convite-rustic-theme edma-abel-theme">
+<audio id="backgroundMusic" loop preload="auto" src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
 <div class="fixed-ui-container">
 <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
 <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
@@ -334,7 +334,7 @@
 <!-- SECÇÃO VINTAGE: CARTA DOS NOIVOS -->
 <section class="section vintage-section section-scene fade-in-section" id="carta-dos-noivos">
 <div class="vintage-scene">
-<img alt="Fundo romântico da carta dos noivos" src="assets/media/edma-abel-pose-2.jpg"/>
+<img alt="Fundo romântico da carta dos noivos" src="assets/media/fundo-flores-2.jpg"/>
 <div class="vintage-scene-overlay"></div>
 </div>
 <div class="vintage-content">
@@ -363,7 +363,7 @@
 <!-- SECÇÃO VINTAGE: PADRINHOS & HONRA -->
 <section class="section section-highlight vintage-section section-scene fade-in-section" id="padrinhos-honra">
 <div class="vintage-scene">
-<img alt="Fundo da secção padrinhos e honra" src="assets/media/edma-abel-comemoracao.jpg"/>
+<img alt="Fundo da secção padrinhos e honra" src="assets/media/fundo-flores.jpg"/>
 <div class="vintage-scene-overlay soft-dark"></div>
 </div>
 <div class="vintage-content">
@@ -467,7 +467,7 @@
 <!-- SECÇÃO VINTAGE: MENU DA CELEBRAÇÃO -->
 <section class="section vintage-section section-scene fade-in-section" id="menu-celebracao">
 <div class="vintage-scene">
-<img alt="Fundo da secção menu da celebração" src="assets/media/edma-abel-brinde.jpg"/>
+<img alt="Fundo da secção menu da celebração" src="assets/media/menu.jpg"/>
 <div class="vintage-scene-overlay warm-light"></div>
 </div>
 <div class="vintage-content">
@@ -528,7 +528,7 @@
 </div>
 <div class="guide-item">
 <h4>Inspiração de Vestuário</h4>
-<p>O dress code inspira-se em tons nude, vinho rosado e champagne: uma combinação romântica, elegante e sofisticada.</p>
+<p>O dress code inspira-se no estilo rustic chic: tons terrosos, marfim, verde sálvia e castanhos suaves, com presença natural e elegante.</p>
 <button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
 </div>
 <div class="guide-item">
@@ -541,7 +541,7 @@
 <!-- SECÇÃO VINTAGE: ETIQUETA DO EVENTO -->
 <section class="section vintage-section etiquette-section section-scene fade-in-section" id="etiqueta-evento">
 <div class="vintage-scene">
-<img alt="Fundo da secção etiqueta do evento" src="assets/media/edma-abel-pose-2.jpg"/>
+<img alt="Fundo da secção etiqueta do evento" src="assets/media/fundo-flores-2.jpg"/>
 <div class="vintage-scene-overlay soft-dark"></div>
 </div>
 <div class="vintage-content">
@@ -565,7 +565,7 @@
 <!-- SECÇÃO VINTAGE: TRANSPORTE, ESTACIONAMENTO & APOIO -->
 <section class="section section-highlight vintage-section travel-section section-scene fade-in-section" id="transporte-apoio">
 <div class="vintage-scene">
-<img alt="Fundo da secção transporte e apoio" src="assets/media/edma-abel-pose-2.jpg"/>
+<img alt="Fundo da secção transporte e apoio" src="assets/media/fundo-flores.jpg"/>
 <div class="vintage-scene-overlay warm-light"></div>
 </div>
 <div class="vintage-content">
@@ -665,9 +665,9 @@
 <div aria-labelledby="dressCodeTitle" aria-modal="true" class="modal" id="dressCodeModal" role="dialog">
 <div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-dress"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M8 4h8l1 4-2 2v10H9V10L7 8l1-4Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
 <h3 id="dressCodeTitle">Inspiração: Elegante e Romântico</h3>
-<p>O objetivo é o conforto sofisticado. Tons claros, branco, dourado e detalhes elegantes são bem-vindos.</p>
+<p>O objectivo é o conforto sofisticado. Tons marfim, bege, verde sálvia, terracota suave e castanhos naturais são bem-vindos.</p>
 <div class="dresscode-grid dresscode-palette">
-<img class="dresscode-palette-img" alt="Paleta de cores do dress code: nude, vinho rosado e champagne." src="assets/media/dress-code-paleta.jpeg"/>
+<img class="dresscode-palette-img" alt="Paleta de cores do dress code: rustic chic." src="assets/media/dress-code-paleta.jpeg"/>
 </div>
 <button class="btn btn-ghost" data-close-modal="" type="button">Entendi</button>
 </div>
@@ -1337,30 +1337,60 @@ document.addEventListener('DOMContentLoaded', async () => {
           : `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>`;
         musicControl.classList.toggle('playing', !music.paused);
       };
-      
-      if (music) {
-        const tryAutoplay = music.play();
 
-        if (tryAutoplay !== undefined) {
-          tryAutoplay.catch(() => {
-            const playOnFirstInteraction = () => {
-              music.play().then(() => {
-                updateMusicIcon();
-                document.removeEventListener('click', playOnFirstInteraction);
-                document.removeEventListener('touchstart', playOnFirstInteraction);
-              });
-            };
+      const MUSIC_URL = 'https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3';
 
-            document.addEventListener('click', playOnFirstInteraction);
-            document.addEventListener('touchstart', playOnFirstInteraction);
+      const safePlayMusic = () => {
+        if (!music) return Promise.resolve(false);
+        if (!music.getAttribute('src')) music.setAttribute('src', MUSIC_URL);
+        music.volume = 0.72;
+        music.load();
+        return music.play()
+          .then(() => {
+            updateMusicIcon();
+            return true;
+          })
+          .catch(() => {
+            updateMusicIcon();
+            return false;
           });
-        }
+      };
+
+      if (music) {
+        music.setAttribute('src', MUSIC_URL);
+        music.preload = 'auto';
+        music.volume = 0.72;
+
+        const playOnFirstInteraction = () => {
+          safePlayMusic().then((played) => {
+            if (played) {
+              document.removeEventListener('click', playOnFirstInteraction, true);
+              document.removeEventListener('touchstart', playOnFirstInteraction, true);
+              document.removeEventListener('keydown', playOnFirstInteraction, true);
+            }
+          });
+        };
+
+        safePlayMusic().then((played) => {
+          if (!played) {
+            document.addEventListener('click', playOnFirstInteraction, true);
+            document.addEventListener('touchstart', playOnFirstInteraction, true);
+            document.addEventListener('keydown', playOnFirstInteraction, true);
+          }
+        });
       }
       
       if(musicControl) {
-        musicControl.addEventListener('click', () => {
-          music.paused ? music.play() : music.pause();
-          updateMusicIcon();
+        musicControl.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (!music) return;
+          if (music.paused) {
+            safePlayMusic();
+          } else {
+            music.pause();
+            updateMusicIcon();
+          }
         });
       }
       updateMusicIcon();

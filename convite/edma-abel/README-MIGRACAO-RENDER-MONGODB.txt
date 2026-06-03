@@ -23,7 +23,7 @@ Dados integrados:
 - Slug: edma-abel
 - Convidados: 118 entradas / 200 pessoas autorizadas
 - Lista de presentes: 24 itens
-- Paleta/Dress code: nude, vinho rosado e champagne
+- Paleta/Dress code: rustic chic
 
 Atenção sobre a música:
 O cliente enviou um link do YouTube. O elemento <audio> do navegador precisa de um ficheiro directo em MP3/OGG para tocar como música de fundo. Assim, o convite mantém o controlo de música funcional, mas o ficheiro de áudio deve ser substituído por um link directo quando houver MP3 final.
