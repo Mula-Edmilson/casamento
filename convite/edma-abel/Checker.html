@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checker · Validação de Convidados</title>
   
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  <link rel="icon" type="image/png" href="assets/media/lirandzo-logo.svg">
   
   <!-- Estilos -->
   <style>
@@ -448,7 +448,6 @@
   
   <!-- Feather Icons -->
   <script src="https://unpkg.com/feather-icons"></script>
-  <script src="./client-config.js"></script>
 </head>
 <body>
   <div class="loading-overlay" id="loadingOverlay">
@@ -461,7 +460,7 @@
 
   <div class="container">
     <div class="header">
-      <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Logo" class="logo">
+      <img src="assets/media/lirandzo-logo.svg" alt="Logo" class="logo">
       <h1 class="title"><span>Checker</span> · Validação</h1>
       <p class="subtitle">Leia o QR Code do convidado para realizar check-in</p>
     </div>
@@ -542,8 +541,8 @@
   </div>
 
   <script>
-    const API_URL = "https://api-casamento-mj.onrender.com/api";
-    const ADMIN_TOKEN = 'SEU_TOKEN_ADMIN_AQUI'; // Token gerado no login do admin
+    const API_URL = '#demo-offline';
+    const ADMIN_TOKEN = 'DEMO_ADMIN_TOKEN'; // Token demo
 
     let currentGuest = null;
     let validationHistory = JSON.parse(localStorage.getItem('validationHistory') || '[]');
@@ -582,44 +581,30 @@
       document.getElementById('loadingOverlay').classList.remove('active');
     }
 
-    // Função JSONP
+    // Função JSONP DEMO
     async function jsonpRequest(url) {
-      return new Promise((resolve, reject) => {
-        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-        
-        window[callbackName] = function(data) {
-          delete window[callbackName];
-          document.body.removeChild(script);
-          resolve(data);
-        };
-
-        const script = document.createElement('script');
-        const separator = url.includes('?') ? '&' : '?';
-        script.src = url + separator + 'callback=' + callbackName;
-        
-        script.onerror = function(error) {
-          delete window[callbackName];
-          document.body.removeChild(script);
-          reject(new Error('JSONP request failed'));
-        };
-        
-        document.body.appendChild(script);
-      });
+      const tokenMatch = String(url || '').match(/[?&]token=([^&]+)/);
+      const token = tokenMatch ? decodeURIComponent(tokenMatch[1]) : 'demo-convidado';
+      const checkinState = JSON.parse(localStorage.getItem('demoCheckinState') || '{}');
+      return {
+        status: 'success',
+        nome: token.includes('familia') ? 'Família Exemplo' : 'Convidado Demo',
+        token: token || 'demo-convidado',
+        mesa: token.includes('familia') ? 'Mesa Família' : 'Mesa Demo',
+        maxGuests: token.includes('familia') ? 4 : 2,
+        checked_in: Boolean(checkinState[token]),
+        checked_in_at: checkinState[token] || null
+      };
     }
 
-    // Função POST
+    // Função POST DEMO
     async function postRequest(data) {
-      try {
-        const response = await fetch(API_URL, { method: 'POST',
-          mode: 'cors',
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, slug: window.LIRANDZO_INVITE_SLUG || "edma-abel" })
-        });
-        return { status: "success" };
-      } catch (err) {
-        console.error("Erro na requisição POST:", err);
-        throw err;
+      if (data.action === 'checkin_guest') {
+        const checkinState = JSON.parse(localStorage.getItem('demoCheckinState') || '{}');
+        checkinState[data.token] = new Date().toISOString();
+        localStorage.setItem('demoCheckinState', JSON.stringify(checkinState));
       }
+      return { status: "success", demo: true };
     }
 
     // Validar token
@@ -632,7 +617,7 @@
       showLoading();
       
       try {
-        const result = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest_by_token&token=${encodeURIComponent(token)}&admin_token=${ADMIN_TOKEN}`);
+        const result = await jsonpRequest(`${API_URL}?action=get_guest_by_token&token=${encodeURIComponent(token)}&admin_token=${ADMIN_TOKEN}`);
         
         hideLoading();
         
@@ -700,7 +685,7 @@
         
         if (result.status === 'success') {
           // Recarregar informações do convidado
-          const updatedGuest = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest_by_token&token=${currentGuest.token}&admin_token=${ADMIN_TOKEN}`);
+          const updatedGuest = await jsonpRequest(`${API_URL}?action=get_guest_by_token&token=${currentGuest.token}&admin_token=${ADMIN_TOKEN}`);
           currentGuest = updatedGuest;
           displayGuestInfo(updatedGuest);
           addToHistory(updatedGuest, true);
