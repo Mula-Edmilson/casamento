@@ -6686,3 +6686,288 @@ body.edma-abel-theme .gift-item span {
     max-width: 100% !important;
   }
 }
+
+/* =========================================================
+   QA V3 — CORRECÇÃO SÉRIA EDMA & ABEL
+   1) Restaura textos dos cards Carta/Padrinhos removendo o preenchimento castanho.
+   2) Remove efeito de gradiente em textos, botões, ícones e elementos decorativos.
+   3) Mantém Rustic Chic com cores sólidas.
+   ========================================================= */
+body.convite-rustic-theme,
+body.edma-abel-theme {
+  --rustic-solid-main: #8A5A44;
+  --rustic-solid-dark: #5F3E32;
+  --rustic-solid-soft: #A9795E;
+  --rustic-solid-paper: #FFFDF8;
+  --rustic-solid-linen: #F4EFE7;
+  --rustic-solid-sage: #A8B39A;
+  --rustic-solid-ink: #2E241F;
+  --rustic-solid-muted: #5B4A42;
+}
+
+/* Remove qualquer preenchimento castanho que estava a cobrir textos/cards */
+body.convite-rustic-theme .vintage-letter-preview::before,
+body.edma-abel-theme .vintage-letter-preview::before,
+body.convite-rustic-theme .honor-card::after,
+body.edma-abel-theme .honor-card::after {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 1px solid rgba(138, 90, 68, 0.28) !important;
+  opacity: 1 !important;
+  z-index: 0 !important;
+}
+
+body.convite-rustic-theme .vintage-letter-preview,
+body.edma-abel-theme .vintage-letter-preview,
+body.convite-rustic-theme .honor-card,
+body.edma-abel-theme .honor-card {
+  position: relative !important;
+  overflow: hidden !important;
+  background: var(--rustic-solid-paper) !important;
+  background-color: var(--rustic-solid-paper) !important;
+  background-image: none !important;
+  color: var(--rustic-solid-muted) !important;
+}
+
+body.convite-rustic-theme .vintage-letter-preview > *,
+body.edma-abel-theme .vintage-letter-preview > *,
+body.convite-rustic-theme .honor-card > *,
+body.edma-abel-theme .honor-card > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Textos: todos sólidos, sem background-clip/gradiente */
+body.convite-rustic-theme .hero-bottom-content .names,
+body.convite-rustic-theme .names,
+body.convite-rustic-theme .script-heading,
+body.convite-rustic-theme .chapter-title,
+body.convite-rustic-theme .event-location,
+body.convite-rustic-theme .footer .names,
+body.convite-rustic-theme .letter-signature,
+body.convite-rustic-theme .modal-signature,
+body.convite-rustic-theme .section-title,
+body.convite-rustic-theme .vintage-section-kicker,
+body.convite-rustic-theme .modal-kicker,
+body.convite-rustic-theme .chapter-number,
+body.convite-rustic-theme .agenda-date,
+body.convite-rustic-theme .agenda-time,
+body.convite-rustic-theme .honor-number,
+body.convite-rustic-theme .menu-preview-card span,
+body.edma-abel-theme .hero-bottom-content .names,
+body.edma-abel-theme .names,
+body.edma-abel-theme .script-heading,
+body.edma-abel-theme .chapter-title,
+body.edma-abel-theme .event-location,
+body.edma-abel-theme .footer .names,
+body.edma-abel-theme .letter-signature,
+body.edma-abel-theme .modal-signature,
+body.edma-abel-theme .section-title,
+body.edma-abel-theme .vintage-section-kicker,
+body.edma-abel-theme .modal-kicker,
+body.edma-abel-theme .chapter-number,
+body.edma-abel-theme .agenda-date,
+body.edma-abel-theme .agenda-time,
+body.edma-abel-theme .honor-number,
+body.edma-abel-theme .menu-preview-card span {
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+}
+
+body.convite-rustic-theme .hero-bottom-content .names,
+body.convite-rustic-theme .names,
+body.convite-rustic-theme .footer .names,
+body.edma-abel-theme .hero-bottom-content .names,
+body.edma-abel-theme .names,
+body.edma-abel-theme .footer .names {
+  color: var(--rustic-solid-main) !important;
+}
+
+body.convite-rustic-theme .section-title,
+body.convite-rustic-theme h1,
+body.convite-rustic-theme h2,
+body.convite-rustic-theme h3,
+body.convite-rustic-theme h4,
+body.edma-abel-theme .section-title,
+body.edma-abel-theme h1,
+body.edma-abel-theme h2,
+body.edma-abel-theme h3,
+body.edma-abel-theme h4 {
+  color: var(--rustic-solid-ink) !important;
+}
+
+body.convite-rustic-theme .vintage-section-kicker,
+body.convite-rustic-theme .modal-kicker,
+body.convite-rustic-theme .chapter-number,
+body.convite-rustic-theme .agenda-date,
+body.convite-rustic-theme .agenda-time,
+body.convite-rustic-theme .honor-number,
+body.convite-rustic-theme .menu-preview-card span,
+body.convite-rustic-theme .letter-signature,
+body.convite-rustic-theme .modal-signature,
+body.edma-abel-theme .vintage-section-kicker,
+body.edma-abel-theme .modal-kicker,
+body.edma-abel-theme .chapter-number,
+body.edma-abel-theme .agenda-date,
+body.edma-abel-theme .agenda-time,
+body.edma-abel-theme .honor-number,
+body.edma-abel-theme .menu-preview-card span,
+body.edma-abel-theme .letter-signature,
+body.edma-abel-theme .modal-signature {
+  color: var(--rustic-solid-main) !important;
+}
+
+/* Botões primários sem gradiente/metálico */
+body.convite-rustic-theme .btn-primary,
+body.convite-rustic-theme button.btn-primary,
+body.convite-rustic-theme a.btn-primary,
+body.convite-rustic-theme .vintage-action.btn-primary,
+body.convite-rustic-theme .tab-btn.active,
+body.convite-rustic-theme input[type="file"]::file-selector-button:hover,
+body.edma-abel-theme .btn-primary,
+body.edma-abel-theme button.btn-primary,
+body.edma-abel-theme a.btn-primary,
+body.edma-abel-theme .vintage-action.btn-primary,
+body.edma-abel-theme .tab-btn.active,
+body.edma-abel-theme input[type="file"]::file-selector-button:hover {
+  background: var(--rustic-solid-main) !important;
+  background-color: var(--rustic-solid-main) !important;
+  background-image: none !important;
+  border-color: var(--rustic-solid-main) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  box-shadow: 0 12px 26px rgba(95, 62, 50, 0.16) !important;
+}
+
+body.convite-rustic-theme .btn-primary:hover:not(:disabled),
+body.convite-rustic-theme button.btn-primary:hover:not(:disabled),
+body.convite-rustic-theme a.btn-primary:hover:not(:disabled),
+body.convite-rustic-theme .vintage-action.btn-primary:hover:not(:disabled),
+body.edma-abel-theme .btn-primary:hover:not(:disabled),
+body.edma-abel-theme button.btn-primary:hover:not(:disabled),
+body.edma-abel-theme a.btn-primary:hover:not(:disabled),
+body.edma-abel-theme .vintage-action.btn-primary:hover:not(:disabled) {
+  background: var(--rustic-solid-dark) !important;
+  background-color: var(--rustic-solid-dark) !important;
+  background-image: none !important;
+  border-color: var(--rustic-solid-dark) !important;
+  color: #FFFFFF !important;
+}
+
+/* Botões secundários/outline sem bordas metálicas por gradiente */
+body.convite-rustic-theme .btn-outline,
+body.convite-rustic-theme button.btn-outline,
+body.convite-rustic-theme a.btn-outline,
+body.convite-rustic-theme .map-link-button,
+body.convite-rustic-theme .tab-btn,
+body.convite-rustic-theme input[type="file"]::file-selector-button,
+body.convite-rustic-theme .btn-ghost,
+body.convite-rustic-theme button.btn-ghost,
+body.edma-abel-theme .btn-outline,
+body.edma-abel-theme button.btn-outline,
+body.edma-abel-theme a.btn-outline,
+body.edma-abel-theme .map-link-button,
+body.edma-abel-theme .tab-btn,
+body.edma-abel-theme input[type="file"]::file-selector-button,
+body.edma-abel-theme .btn-ghost,
+body.edma-abel-theme button.btn-ghost {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  border: 1px solid rgba(138, 90, 68, 0.48) !important;
+  color: var(--rustic-solid-dark) !important;
+  -webkit-text-fill-color: var(--rustic-solid-dark) !important;
+  box-shadow: 0 10px 22px rgba(95, 62, 50, 0.07) !important;
+}
+
+body.convite-rustic-theme .btn-outline:hover:not(:disabled),
+body.convite-rustic-theme button.btn-outline:hover:not(:disabled),
+body.convite-rustic-theme a.btn-outline:hover:not(:disabled),
+body.convite-rustic-theme .map-link-button:hover,
+body.convite-rustic-theme .tab-btn:hover,
+body.convite-rustic-theme .btn-ghost:hover:not(:disabled),
+body.convite-rustic-theme button.btn-ghost:hover:not(:disabled),
+body.edma-abel-theme .btn-outline:hover:not(:disabled),
+body.edma-abel-theme button.btn-outline:hover:not(:disabled),
+body.edma-abel-theme a.btn-outline:hover:not(:disabled),
+body.edma-abel-theme .map-link-button:hover,
+body.edma-abel-theme .tab-btn:hover,
+body.edma-abel-theme .btn-ghost:hover:not(:disabled),
+body.edma-abel-theme button.btn-ghost:hover:not(:disabled) {
+  background: var(--rustic-solid-linen) !important;
+  background-color: var(--rustic-solid-linen) !important;
+  background-image: none !important;
+  border-color: var(--rustic-solid-main) !important;
+  color: var(--rustic-solid-dark) !important;
+}
+
+/* Ícones e botões flutuantes: cor sólida */
+body.convite-rustic-theme #musicControl,
+body.convite-rustic-theme .fab-item,
+body.convite-rustic-theme .vintage-icon-badge,
+body.convite-rustic-theme .card-icon,
+body.convite-rustic-theme .etiquette-icon,
+body.convite-rustic-theme .modal-hero-badge,
+body.edma-abel-theme #musicControl,
+body.edma-abel-theme .fab-item,
+body.edma-abel-theme .vintage-icon-badge,
+body.edma-abel-theme .card-icon,
+body.edma-abel-theme .etiquette-icon,
+body.edma-abel-theme .modal-hero-badge {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  background-image: none !important;
+  border-color: rgba(138, 90, 68, 0.36) !important;
+  color: var(--rustic-solid-main) !important;
+  -webkit-text-fill-color: var(--rustic-solid-main) !important;
+  box-shadow: 0 12px 26px rgba(95, 62, 50, 0.10) !important;
+}
+
+body.convite-rustic-theme #musicControl:hover,
+body.convite-rustic-theme .fab-item:hover,
+body.edma-abel-theme #musicControl:hover,
+body.edma-abel-theme .fab-item:hover {
+  background: var(--rustic-solid-main) !important;
+  background-color: var(--rustic-solid-main) !important;
+  background-image: none !important;
+  border-color: var(--rustic-solid-main) !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Linhas/decorativos sem brilho metálico */
+body.convite-rustic-theme .modal-divider,
+body.convite-rustic-theme .agenda-icon-divider .divider,
+body.convite-rustic-theme .divider,
+body.convite-rustic-theme .modal-hero-top-accent,
+body.convite-rustic-theme .location-choice-top-accent,
+body.edma-abel-theme .modal-divider,
+body.edma-abel-theme .agenda-icon-divider .divider,
+body.edma-abel-theme .divider,
+body.edma-abel-theme .modal-hero-top-accent,
+body.edma-abel-theme .location-choice-top-accent {
+  background: var(--rustic-solid-main) !important;
+  background-color: var(--rustic-solid-main) !important;
+  background-image: none !important;
+}
+
+/* Mantém SVGs em traço sólido */
+body.convite-rustic-theme svg,
+body.convite-rustic-theme svg *,
+body.edma-abel-theme svg,
+body.edma-abel-theme svg * {
+  stroke: currentColor !important;
+  fill: none !important;
+}
+
+/* Excepções para imagens/logos SVG externos quando necessário */
+body.convite-rustic-theme img,
+body.edma-abel-theme img {
+  -webkit-text-fill-color: initial !important;
+}
