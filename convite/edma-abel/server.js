@@ -473,10 +473,11 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
   return { path: targetPath, commitSha: newCommit.sha, copiedFiles: treeItems.length };
 }
 
-const DEFAULT_GIFTS = ['Geleira', 'Fogão', 'Congelador', 'TV', 'Batedeira', 'Mesa', 'Cadeira', 'Panela', 'Ar Condicionado', 'Micro-ondas', 'Ferro a vapor', 'Mesa de centro', 'Vaso', 'Pratos', 'Colcha', 'Cobertor', 'Colchão', 'Forno eléctrico', 'Jogo de facas', 'Máquina de lavar', 'Tapete', 'Saladeira', 'Panela de pressão', 'Porta-temperos', 'Copos', 'Fritadeira eléctrica', 'Bandeja', 'Torradeira', 'Frigideira eléctrica'];
+const DEFAULT_GIFTS = ["Cama (King)", "Sofa (L)", "Geleira (2 portas)", "Máquina de lavar roupa", "Máquina de lavar louça", "Ferro de engomar a vapor", "Mesa de Jantar (6/8/10 lugares)", "Air fryer", "Microondas", "Aspirador de pó", "Fogão (6 bocas a gás)", "Jogo de pratos", "Máquina de café", "Panelas ante aderentes (caçarolas, Le Creuset)", "Tv", "Tapete de algodão para sala", "Liquidificador", "Termo acumulador", "Jogo de talhere", "Jogo de facas", "Taças e copos", "Saladeiras", "Pirex (de vidro)", "Jogo de talheres"];
 async function seedDefaultGifts(invite) {
+  await GiftItem.deleteMany({ inviteId: invite._id, name: { $nin: DEFAULT_GIFTS } });
   for (const name of DEFAULT_GIFTS) {
-    await GiftItem.findOneAndUpdate({ inviteId: invite._id, name }, { $setOnInsert: { inviteId: invite._id, slug: invite.slug, name, category: 'Geral', reserved: false } }, { upsert: true });
+    await GiftItem.findOneAndUpdate({ inviteId: invite._id, name }, { $setOnInsert: { inviteId: invite._id, slug: invite.slug, name, category: 'Lista de presentes', reserved: false } }, { upsert: true });
   }
 }
 

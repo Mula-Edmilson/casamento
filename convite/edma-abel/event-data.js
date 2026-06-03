@@ -70,10 +70,10 @@ window.LIRANDZO_EVENT = {
     }
   ],
   "story": {
-    "encontro": "Entre caminhos, conversas e pequenos gestos, nasceu uma história cuidada por Deus e fortalecida pelo tempo.",
-    "amizade": "A amizade transformou-se em companheirismo, respeito e vontade de construir uma vida partilhada com serenidade.",
-    "crescimento": "Cada etapa ensinou-nos que o amor verdadeiro cresce com paciência, fé, família e compromisso diário.",
-    "promessa": "Hoje celebramos a promessa de caminhar juntos, com gratidão por todos os que fazem parte desta bênção."
+    "encontro": "O ano era 2002, a obra de meus pais estava em avanço e retoques finais, alguns jovens da Igreja vieram ajudar e lá estava ele, sem nenhuma perspectiva fomos crescendo na fé, no amor e serviço a Deus.",
+    "amizade": "Ao longo dos anos pela convivência e caminhar juntos na fé, a amizade fortaleceu-se, amigos que conheciam altos e baixos um do outro se julgar, mas erguendo-se pois o alvo era e é ÚNICO, o céu.",
+    "crescimento": "Cada um seguiu sua história, seu processo até que muitos anos depois uma certeza houve, de RECOMEÇAR e juntos seguir nessa caminhada, chamada vida.",
+    "promessa": "A promessa de honrar um ao outro é de pouco tempo dita entre nós, mas cremos que há um PROPÓSITO, porém hoje em voz alta diante da lei dos homens e de Deus, decidimos o fazer; deixando de lado nossos medos e temores cientes de que a boa mão do Senhor, o Deus dos altos céus continuará nos conduzindo ATÉ QUE ELE VENHA."
   },
   "letter": "Querido(a) convidado(a),\n\nCom alegria e gratidão, convidamo-lo(a) a fazer parte do nosso casamento. Este dia representa o início de uma nova etapa das nossas vidas, construída com amor, fé, respeito e bênção familiar.\n\nA sua presença tornará este momento ainda mais especial, porque cada pessoa escolhida para estar connosco carrega um lugar importante na nossa história.\n\nContamos consigo para celebrar este capítulo com leveza, carinho e muita alegria.\n\nCom gratidão,\nEdma e Abel",
   "audioYoutube": "https://youtu.be/jvJeTw4Q1O8",

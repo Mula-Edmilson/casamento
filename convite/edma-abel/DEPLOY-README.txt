@@ -33,3 +33,11 @@ Actualização menu/presentes:
 - Menu real integrado a partir do PDF enviado.
 - Lista de presentes actualizada com descrições exactas.
 - MAP_FAROL2_URL actualizado para https://maps.app.goo.gl/rbzP3MeZPr2s3x4i6
+
+
+Actualização V4 — presentes e história:
+- Lista de presentes forçada para a lista oficial de 24 itens, preservando nomes e descrições exactas.
+- Front-end filtra a resposta do Render/MongoDB para mostrar apenas os presentes oficiais, na ordem correcta.
+- server.js agora semeia apenas os presentes oficiais e remove itens antigos/obsoletos do convite.
+- import-edma-abel-to-mongodb.js também remove presentes antigos que não constam na lista oficial.
+- Secção "A Nossa História" actualizada com os quatro capítulos enviados e novo carrossel elegante com setas, dots e scroll horizontal.
