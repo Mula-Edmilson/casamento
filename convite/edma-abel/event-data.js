@@ -77,7 +77,7 @@ window.LIRANDZO_EVENT = {
   },
   "letter": "Querido(a) convidado(a),\n\nCom alegria e gratidão, convidamo-lo(a) a fazer parte do nosso casamento. Este dia representa o início de uma nova etapa das nossas vidas, construída com amor, fé, respeito e bênção familiar.\n\nA sua presença tornará este momento ainda mais especial, porque cada pessoa escolhida para estar connosco carrega um lugar importante na nossa história.\n\nContamos consigo para celebrar este capítulo com leveza, carinho e muita alegria.\n\nCom gratidão,\nEdma e Abel",
   "audioYoutube": "https://youtu.be/jvJeTw4Q1O8",
-  "audioMp3": "https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3",
+  "audioMp3": "https://static.wixstatic.com/mp3/35b7f9_46603560222842afab5f5ec002881590.mp3",
   "civilMap": "https://www.google.com/maps/search/?api=1&query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique",
   "guestListVersion": "Lista de Mesas actualizada",
   "guestListUpdatedAt": "2026-06-03"
