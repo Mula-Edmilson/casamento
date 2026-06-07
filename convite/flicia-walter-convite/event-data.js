@@ -1,0 +1,70 @@
+// Dados do casamento Flícia & Walter — Lirandzo
+window.LIRANDZO_EVENT = {
+  coupleNames: "Flícia & Walter",
+  displayNames: "Flícia e Walter",
+  bride: "Flícia Alberto Chambal",
+  groom: "Walter Ivan Francisco Mafumo",
+  monogram: "F&W",
+  eventType: "Casamento",
+  language: "Português",
+  visualStyle: "Elegante e romântico",
+  colors: "Azul e branco",
+  dateISO: "2026-09-26T11:00:00+02:00",
+  eventDateLong: "26 de setembro de 2026",
+  rsvpDeadline: "15 de julho de 2026",
+  timezone: "Africa/Maputo",
+  verse: "Grandes coisas fez o Senhor por nós, e por isso estamos alegres.",
+  verseReference: "Salmos 126:3 ARC",
+  brideParents: "Alberto Chambal e Cacilda Sitoe",
+  groomParents: "Francisco Mafumo (em memória) e Ilda Cossa",
+  ceremonyTitle: "Cerimónia Religiosa",
+  ceremonyPlace: "Igreja Presbiteriana de Moçambique-Khovo",
+  ceremonyTime: "11:00",
+  receptionTitle: "Cerimónia Civil",
+  receptionPlace: "Kuphupa Eventos",
+  receptionTime: "14:30",
+  additionalTitle: "Copo d'Água",
+  additionalPlace: "Kuphupa Eventos",
+  additionalTime: "15:00",
+  supportContacts: "Júrcia Chambal: 842319460 | Milton Mafumo: 845762980",
+  estimatedGuests: 220,
+  guestRows: 5,
+  giftSectionType: "Apenas contribuição monetária",
+  bankAccounts: [
+    {
+      label: "Conta Bancária (Millennium BIM)",
+      holder: "Flícia Alberto Chambal",
+      account: "000100000120794168057",
+      nib: "000100000120794168057",
+      logo: "assets/payment/bim.jpg"
+    }
+  ],
+  mobilePayments: [
+    {
+      label: "Contribuição móvel",
+      number: "842600652",
+      holder: "Walter Mafumo",
+      logo: "assets/payment/m-pesa.jpg"
+    }
+  ],
+  story: {
+    encontro: "Uma história construída com carinho, fé e a certeza de que Deus prepara grandes coisas no tempo certo.",
+    amizade: "Entre família, cumplicidade e sonhos partilhados, este caminho ganhou forma até chegar a este dia especial.",
+    crescimento: "Cada etapa trouxe maturidade, alegria e a confirmação de que o amor também se constrói nos detalhes.",
+    promessa: "Hoje, Flícia e Walter convidam pessoas especiais para testemunharem o início de uma nova fase das suas vidas."
+  },
+  letter: "Queridos amigos e familiares, o nosso maior presente é ter-vos connosco e partilhar este dia tão especial. A vossa presença tornará este momento ainda mais memorável.\n\nCom carinho,\nFlícia e Walter"
+};
+
+window.LIRANDZO_GUESTS = [
+  { number: 1, category: "VIP", name: "Flícia Alberto Chambal", token: "fw-2026-001-flicia-alberto-chambal", mesa: "Mesa dos Noivos", maxGuests: 2, companions: 1, checkedIn: false },
+  { number: 2, category: "VIP", name: "Walter Mafumo", token: "fw-2026-002-walter-mafumo", mesa: "Mesa dos Noivos", maxGuests: 2, companions: 1, checkedIn: false, phone: "842600652" },
+  { number: 3, category: "Família", name: "Júrcia Chambal", token: "fw-2026-003-jurcia-chambal", mesa: "A definir", maxGuests: 2, companions: 1, checkedIn: false, phone: "842319460" },
+  { number: 4, category: "Família", name: "Milton Mafumo", token: "fw-2026-004-milton-mafumo", mesa: "A definir", maxGuests: 2, companions: 1, checkedIn: false, phone: "845762980" },
+  { number: 5, category: "Individual", name: "Convidado", token: "fw-2026-005-convidado", mesa: "A definir", maxGuests: 2, companions: 1, checkedIn: false }
+];
+
+window.LIRANDZO_GIFT_OPTIONS = [
+  { type: "bank", label: "Millennium BIM", holder: "Flícia Alberto Chambal", account: "000100000120794168057", nib: "000100000120794168057" },
+  { type: "mobile", label: "Contribuição móvel", number: "842600652", holder: "Walter Mafumo" }
+];

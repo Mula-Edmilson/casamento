@@ -1,0 +1,6 @@
+Nome;Mesa;Acompanhantes;Telefone;Notas
+Flícia Alberto Chambal;Mesa dos Noivos;1;;Token: fw-2026-001-flicia-alberto-chambal | Categoria: VIP | Nº: 1
+Walter Mafumo;Mesa dos Noivos;1;842600652;Token: fw-2026-002-walter-mafumo | Categoria: VIP | Nº: 2
+Júrcia Chambal;A definir;1;842319460;Token: fw-2026-003-jurcia-chambal | Categoria: Família | Nº: 3
+Milton Mafumo;A definir;1;845762980;Token: fw-2026-004-milton-mafumo | Categoria: Família | Nº: 4
+Convidado;A definir;1;;Token: fw-2026-005-convidado | Categoria: Individual | Nº: 5

@@ -1,2094 +1,1360 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="pt">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Convite de Casamento — Ana &amp; Miguel</title>
-<link href="assets/media/lirandzo-logo.svg" rel="icon" type="image/png"/>
-<meta content="Convite de Casamento — Ana &amp; Miguel" property="og:title"/>
-<meta content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas." property="og:description"/>
-<meta content="website" property="og:type"/>
-<meta content="assets/media/PG2.jpg" property="og:image"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;family=Parisienne&amp;display=swap" rel="stylesheet"/>
-<link href="style.css" rel="stylesheet"/>
-<style>
-    /* Estilos para o formulário de mensagens */
-    #messageForm {
-      max-width: 600px;
-      margin: 0 auto;
-      text-align: left;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 24px;
-      background: var(--card);
-    }
-    #messageForm textarea {
-      width: 100%;
-      min-height: 100px;
-      resize: vertical;
-    }
-    
-    /* Estilos para o feed de mensagens */
-    #guestbook-feed {
-      max-width: 600px;
-      margin: 40px auto 0 auto;
-      max-height: 500px;
-      overflow-y: auto;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 8px 24px;
-      background: #fff;
-    }
-    #feed-loading {
-      text-align: center;
-      padding: 40px;
-      color: #777;
-    }
-    .guestbook-entry {
-      border-bottom: 1px solid var(--border-color);
-      padding: 16px 0;
-    }
-    .guestbook-entry:last-child {
-      border-bottom: 0;
-    }
-    .guestbook-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .guestbook-header strong {
-      color: var(--accent);
-      font-size: 1.1rem;
-    }
-    .guestbook-header span {
-      font-size: 0.85rem;
-      color: #777;
-    }
-    .guestbook-entry p {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      color: #333;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-    
-    /* Estilo para a mensagem de boas-vindas */
-    .welcome-guest {
-      font-family: var(--font-body);
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: white;
-      background: rgba(0,0,0,0.3);
-      padding: 8px 16px;
-      border-radius: 50px;
-      display: inline-block;
-      margin-bottom: 24px;
-      border: 1px solid rgba(255,255,255,0.3);
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eeedea" />
+    <meta name="description" content="Convite digital privado de Flícia & Walter." />
+    <title>Convite de Casamento — Flícia & Walter</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/media/lirandzo-logo.svg" />
+    <script src="./event-data.js"></script>
+    <script src="./client-config.js"></script>
+    <script src="./lirandzo-api.js"></script>
+    <script>window.CONVITE_SLUG = window.LIRANDZO_INVITE_SLUG || "flicia-walter-convite"; window.CONVITE_API_URL = window.LIRANDZO_API_BASE_URL || "https://api-casamento-mj.onrender.com";</script>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+(() => {
+  "use strict";
 
-    /* Estilos para a lista dinâmica de presentes */
-    .gift-checklist {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
-      max-height: 500px;
-      overflow-y: auto;
-      padding: 16px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background: #fafafa;
-    }
-    .gift-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: white;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.95rem;
-    }
-    .gift-item:hover {
-      border-color: var(--accent);
-      background: #fff5f5;
-    }
-    .gift-item.reserved {
-      background: #f0f0f0;
-      color: #999;
-      border-color: #ddd;
-      cursor: not-allowed;
-      opacity: 0.7;
-      text-decoration: line-through;
-    }
-    .gift-item.reserved input {
-      pointer-events: none;
-      opacity: 0.5;
-    }
-    .gift-item input {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-  </style>
-  <script src="./client-config.js"></script>
-</head>
-<body class="loading">
-<audio id="backgroundMusic" loop="" src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
-<div class="fixed-ui-container">
-<button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
-<svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
-</button>
-<button aria-label="Opções de presente" class="fab-item" id="fabGiftsBtn">
-<svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect height="5" width="20" x="2" y="7"></rect><line x1="12" x2="12" y1="22" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-</button>
-<button aria-label="Ver a sua mesa" class="fab-item" id="fabGuestInfoBtn">
-<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-</button>
-<button aria-label="Ver mapa do local" class="fab-item" id="fabMapBtn">
-<svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-</button>
-<button aria-label="Controlar música" id="musicControl">
-<svg height="20" id="musicIcon" viewBox="0 0 24 24" width="20"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path></svg>
-</button>
-</div>
-<main aria-labelledby="inviteTitle" class="invite-wrap" role="main">
-<!-- FLORES DECORATIVAS -->
-<div class="decor-flower-top-right"></div>
-<div class="decor-flower-bottom-left"></div>
-<header class="hero">
-<div class="hero-gradient-overlay"></div>
-<div class="hero-bottom-content">
-<p class="lead"><strong>Celebre connosco o nosso casamento</strong></p>
-<h1 class="names">Ana &amp; Miguel</h1>
-<p class="lead"><strong>20 de dezembro de 2026</strong></p>
-<div id="countdown">
-<div><span id="days">00</span><small>Dias</small></div>
-<div><span id="hours">00</span><small>Horas</small></div>
-<div><span id="minutes">00</span><small>Minutos</small></div>
-<div><span id="seconds">00</span><small>Segundos</small></div>
-</div>
-</div>
-<a class="scroll-down-indicator" href="#nossa-historia">
-<!--  <svg viewBox="0 0 24 24"><path d="M12 19.5l-7-7 1.5-1.5L12 16.5l5.5-5.5L19 12.5z"/></svg> -->
-</a>
-</header>
-<section class="section fade-in-section" id="nossa-historia">
-<p class="verse">"Para que todos vejam, e saibam, e considerem, e juntamente entendam que a mão do Senhor fez isto, e o Santo de Israel o criou."</p>
-<p class="verse-reference">Isaías 41:20</p>
-<h2 class="section-title">A Nossa História</h2>
-<div class="couple-details">
-<div>
-<h3>Ana</h3>
-<p>Filha de <strong>Carlos Mateus</strong><br/>e de <strong>Sofia Langa</strong></p>
-</div>
-<div class="decorative-ampersand">♡</div>
-<div>
-<h3>Miguel</h3>
-<p>Filho de <strong>Miguel Andrade</strong><br/>e de <strong>Helena Macuácua</strong></p>
-</div>
-</div>
-<!-- Story Timeline com imagem de fundo e overlay -->
-<div class="story-timeline-container">
-<div class="story-background-image">
-<img alt="Casal demo" src="assets/media/fundo-flores.jpg"/>
-<div class="story-overlay"></div>
-</div>
-<div class="story-timeline" id="storyTimeline">
-<!-- Capítulo 1 -->
-<div class="story-chapter">
-<div class="chapter-marker">
-<span class="chapter-number">Ⅰ</span>
-</div>
-<div class="chapter-content">
-<h3 class="chapter-title">O Encontro</h3>
-<p class="chapter-text">Nós nos conhecemos na igreja, no lugar onde nossa fé sempre foi o nosso alicerce. Por muito tempo, apenas nos víamos sem imaginar que, entre olhares discretos e encontros despretensiosos, Deus já estava escrevendo a nossa história.</p>
-</div>
-</div>
-<!-- Capítulo 2 -->
-<div class="story-chapter">
-<div class="chapter-marker">
-<span class="chapter-number">Ⅱ</span>
-</div>
-<div class="chapter-content">
-<h3 class="chapter-title">A Amizade</h3>
-<p class="chapter-text">O que começou de forma simples transformou-se em amizade, cuidado, parceria e, quando percebemos, em amor. Passamos por momentos bons, desafios, aprendizados e crescimento lado a lado.</p>
-</div>
-</div>
-<!-- Capítulo 3 -->
-<div class="story-chapter">
-<div class="chapter-marker">
-<span class="chapter-number">Ⅲ</span>
-</div>
-<div class="chapter-content">
-<h3 class="chapter-title">O Crescimento</h3>
-<p class="chapter-text">Cada etapa fortaleceu o que sentimos e nos preparou para este dia tão especial. Aprendemos a caminhar juntos, a apoiar um ao outro e a construir sonhos compartilhados.</p>
-</div>
-</div>
-<!-- Capítulo 4 -->
-<div class="story-chapter">
-<div class="chapter-marker">
-<span class="chapter-number">Ⅳ</span>
-</div>
-<div class="chapter-content">
-<h3 class="chapter-title">A Promessa</h3>
-<p class="chapter-text">Hoje, diante de Deus e das pessoas que amamos, celebramos a certeza de que fomos conduzidos até aqui por um propósito maior. O que antes era apenas um encontro na igreja, tornou-se uma promessa de vida inteira.</p>
-</div>
-</div>
-</div>
-<!-- Indicadores de scroll (opcional) -->
-<div class="scroll-indicator">
-<span class="scroll-arrow">←</span>
-<span class="scroll-text">Deslize para navegar pelos capítulos</span>
-<span class="scroll-arrow">→</span>
-</div>
-</div>
-</section>
-<!-- SECÇÃO VINTAGE: CARTA DOS NOIVOS -->
-<section class="section vintage-section section-scene fade-in-section" id="carta-dos-noivos">
-<div class="vintage-scene">
-<img alt="Fundo romântico da carta dos noivos" src="assets/media/fundo-flores.jpg"/>
-<div class="vintage-scene-overlay"></div>
-</div>
-<div class="vintage-content">
-<div class="vintage-section-kicker">------</div>
-<div class="vintage-title-wrap">
-<span aria-hidden="true" class="vintage-icon-badge">
-<svg viewBox="0 0 24 24"><path d="M4 7.5h16M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 18 19.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path><path d="m8 11 2 2 6-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg>
-</span>
-<h2 class="section-title">Carta dos Noivos</h2>
-</div>
-<p class="section-subtitle">Antes de celebrarmos este dia, queremos deixar algumas palavras de gratidão a quem caminha connosco.</p>
-<div class="vintage-letter-preview elevated-card">
-<div aria-hidden="true" class="letter-seal">AM</div>
-<div class="letter-topline">
-<span><i></i> Fé</span>
-<span><i></i> Amor</span>
-<span><i></i> Gratidão</span>
-</div>
-<p class="letter-intro">Querido(a) convidado(a),</p>
-<p>Este convite é mais do que uma data marcada. É uma forma carinhosa de partilhar consigo a alegria de um novo capítulo, escrito com fé, amor e a presença das pessoas que tornam a nossa história ainda mais bonita.</p>
-<div class="letter-signature">Ana &amp; Miguel</div>
-<button class="btn btn-primary vintage-action" data-open-modal="cartaNoivosModal" type="button">Ler a Carta Completa</button>
-</div>
-</div>
-</section>
-<!-- SECÇÃO VINTAGE: PADRINHOS & HONRA -->
-<section class="section section-highlight vintage-section section-scene fade-in-section" id="padrinhos-honra">
-<div class="vintage-scene">
-<img alt="Fundo da secção padrinhos e honra" src="assets/media/Padrinhos.jpg"/>
-<div class="vintage-scene-overlay soft-dark"></div>
-</div>
-<div class="vintage-content">
-<div class="vintage-section-kicker">------</div>
-<div class="vintage-title-wrap">
-<span aria-hidden="true" class="vintage-icon-badge">
-<svg viewBox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg>
-</span>
-<h2 class="section-title">Padrinhos &amp; Honra</h2>
-</div>
-<p class="section-subtitle">Uma homenagem às pessoas que acompanham esta união com carinho, apoio e presença especial.</p>
-<div class="honor-grid">
-<article class="honor-card elevated-card has-icon">
-<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.4"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
-<span class="honor-number">01</span>
-<h3>Madrinha de Honra</h3>
-<p>Uma presença delicada, próxima e essencial neste caminho até ao altar.</p>
-<button class="btn btn-outline" data-open-modal="madrinhaHonraModal" type="button">Ver Dedicatória</button>
-</article>
-<article class="honor-card elevated-card has-icon">
-<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.4"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M15.5 7.5 18 10l3.5-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg></span>
-<span class="honor-number">02</span>
-<h3>Padrinho de Honra</h3>
-<p>Um apoio firme, discreto e especial para este momento tão importante.</p>
-<button class="btn btn-outline" data-open-modal="padrinhoHonraModal" type="button">Ver Dedicatória</button>
-</article>
-<article class="honor-card elevated-card has-icon">
-<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M7.5 18.5a5.5 5.5 0 0 1 9 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="9" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle><circle cx="15" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
-<span class="honor-number">03</span>
-<h3>Damas &amp; Cavalheiros</h3>
-<p>Amigos e familiares escolhidos para caminhar connosco neste dia de celebração.</p>
-<button class="btn btn-outline" data-open-modal="damasCavalheirosModal" type="button">Ver Dedicatória</button>
-</article>
-<article class="honor-card elevated-card has-icon">
-<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 17c1.5-2.7 4.1-4 8-4s6.5 1.3 8 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="8" cy="8.5" fill="none" r="2.3" stroke="currentColor" stroke-width="1.4"></circle><circle cx="16" cy="8.5" fill="none" r="2.3" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
-<span class="honor-number">04</span>
-<h3>Famílias</h3>
-<p>A base, a bênção e a memória viva de tudo o que somos e celebramos.</p>
-<button class="btn btn-outline" data-open-modal="familiasModal" type="button">Ver Homenagem</button>
-</article>
-</div>
-</div>
-</section>
-<section class="section section-highlight fade-in-section" id="agenda-evento">
-<div class="agenda-centered">
-<div class="agenda-header">
-<div class="agenda-icon-divider">
-<span class="divider"></span>
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<span class="divider"></span>
-</div>
-<h2 class="section-title">O Grande Dia</h2>
-<p class="section-subtitle">Temos a honra de convidá-lo(a) a celebrar connosco cada momento.</p>
-<div class="agenda-icon-small">
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
-</div>
-<div class="agenda-event">
-<h3 class="event-title">Cerimónia Religiosa</h3>
-<p class="event-time">15:00</p>
-<div class="agenda-icon-divider">
-<span class="divider"></span>
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
-<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<span class="divider"></span>
-</div>
-<h4 class="event-location">Capela Jardim das Flores</h4>
-<a class="map-link-button" href="#" id="mapBtnReligiosa" rel="noopener noreferrer" target="_blank">
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
-<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-            Ver no Mapa
-          </a>
-</div>
-<div class="agenda-event">
-<h3 class="event-title">Recepção</h3>
-<p class="event-time">13:30</p>
-<div class="agenda-icon-divider">
-<span class="divider"></span>
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A3 3 0 0 1 15 7.875v3.375c0 .621-.504 1.125-1.125 1.125H10.125c-.621 0-1.125-.504-1.125-1.125V7.875A3 3 0 0 1 12 4.875Z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<span class="divider"></span>
-</div>
-<h4 class="event-location"> Quinta Demo Garden</h4>
-<a class="map-link-button" href="#" id="mapBtnCivil" rel="noopener noreferrer" target="_blank">
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
-<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-            Ver no Mapa
-          </a>
-</div>
-<div class="agenda-event">
-<h3 class="event-title">Copo de Água</h3>
-<p class="event-time">14:00</p>
-<div class="agenda-icon-divider">
-<span class="divider"></span>
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A3 3 0 0 1 15 7.875v3.375c0 .621-.504 1.125-1.125 1.125H10.125c-.621 0-1.125-.504-1.125-1.125V7.875A3 3 0 0 1 12 4.875Z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<span class="divider"></span>
-</div>
-<p class="event-description">Celebração e festa no local da recepção.</p>
-</div>
-</div>
-</section>
-<!-- SECÇÃO VINTAGE: MENU DA CELEBRAÇÃO -->
-<section class="section vintage-section section-scene fade-in-section" id="menu-celebracao">
-<div class="vintage-scene">
-<img alt="Fundo da secção menu da celebração" src="assets/media/menu.jpg"/>
-<div class="vintage-scene-overlay warm-light"></div>
-</div>
-<div class="vintage-content">
-<div class="vintage-section-kicker">------</div>
-<div class="vintage-title-wrap">
-<span aria-hidden="true" class="vintage-icon-badge">
-<svg viewBox="0 0 24 24"><path d="M7 3v9.5a2.5 2.5 0 0 0 5 0V3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M14 3v7m3-7v16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg>
-</span>
-<h2 class="section-title">Menu da Celebração</h2>
-</div>
-<p class="section-subtitle">Uma pequena antevisão dos sabores que farão parte da nossa recepção.</p>
-<div class="menu-preview-grid menu-visual-grid">
-<div class="menu-preview-card elevated-card has-icon">
-<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M7 7h10M6 12h12M8 17h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
-<span>Entrada</span>
-<h3>Recepção leve</h3>
-<p>Opções delicadas para receber os convidados com conforto.</p>
-</div>
-<div class="menu-preview-card featured elevated-card has-icon">
-<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M6 8h12M7 12h10M8 16h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="18" cy="6" fill="none" r="2" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
-<span>Principal</span>
-<h3>Serviço especial</h3>
-<p>Pratos pensados para tornar o almoço memorável e acolhedor.</p>
-</div>
-<div class="menu-preview-card elevated-card has-icon">
-<span aria-hidden="true" class="card-icon"><svg viewBox="0 0 24 24"><path d="M7 17a5 5 0 0 1 10 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M9 14a3 3 0 1 1 6 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
-<span>Sobremesa</span>
-<h3>Final doce</h3>
-<p>Um encerramento suave para brindar este momento.</p>
-</div>
-</div>
-<button class="btn btn-primary vintage-action" data-open-modal="menuCelebracaoModal" type="button">Ver Menu Completo</button>
-</div>
-</section>
-<section class="section fade-in-section" id="galeria">
-<h2 class="section-title">Momentos</h2>
-<div class="gallery-grid">
-<div class="gallery-image-container">
-<img alt="Momentos especiais do casal" data-src="assets/media/PG1.jpg" src="assets/media/PG1.jpg"/>
-</div>
-<div class="gallery-image-container">
-<img alt="Foto do pedido de noivado" data-src="assets/media/PG2.jpg" src="assets/media/PG2.jpg"/>
-</div>
-<div class="gallery-image-container">
-<img alt="Foto do pedido de noivado" data-src="assets/media/PG5.jpg" src="assets/media/PG5.jpg"/>
-</div>
-</div>
-</section>
-<section class="section section-highlight fade-in-section" id="guia-evento">
-<h2 class="section-title">Guia do Evento</h2>
-<p class="section-subtitle">Tudo o que precisa de saber para celebrar connosco.</p>
-<div class="guide-grid">
-<div class="guide-item">
-<h4>Confirme a Sua Presença</h4>
-<p>Por favor, informe-nos se poderemos contar consigo até 30 de Novembro de 2026.</p>
-<button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
-<button class="btn btn-outline" id="calendarBtn" type="button">Adicionar ao Calendário</button>
-</div>
-<div class="guide-item">
-<h4>Inspiração de Vestuário</h4>
-<p>O código de vestimenta é casual elegante. Sugerimos tons neutros (prata, preto, branco) para a harmonia do evento.</p>
-<button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
-</div>
-<div class="guide-item">
-<h4>Presentes e Mimos</h4>
-<p>A sua presença é o nosso maior presente! Se desejar, pode contribuir para o nosso futuro.</p>
-<button class="btn btn-outline" id="giftsCombinedBtn">Ver Opções de Presente</button>
-</div>
-</div>
-</section>
-<!-- SECÇÃO VINTAGE: ETIQUETA DO EVENTO -->
-<section class="section vintage-section etiquette-section section-scene fade-in-section" id="etiqueta-evento">
-<div class="vintage-scene">
-<img alt="Fundo da secção etiqueta do evento" src="assets/media/fundo-flores.jpg"/>
-<div class="vintage-scene-overlay soft-dark"></div>
-</div>
-<div class="vintage-content">
-<div class="vintage-section-kicker">------</div>
-<div class="vintage-title-wrap">
-<span aria-hidden="true" class="vintage-icon-badge">
-<svg viewBox="0 0 24 24"><path d="M8 4h8l4 4v8l-4 4H8l-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M9 12h6M12 9v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg>
-</span>
-<h2 class="section-title">Etiqueta do Evento</h2>
-</div>
-<p class="section-subtitle">Pequenas orientações para que todos vivam este dia com elegância, respeito e tranquilidade.</p>
-<div class="etiquette-grid etiquette-visual-grid">
-<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewBox="0 0 24 24"><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="12" cy="12" fill="none" r="8" stroke="currentColor" stroke-width="1.4"></circle></svg></span><p>Chegue com alguma antecedência à cerimónia.</p></div>
-<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewBox="0 0 24 24"><path d="M10 15V9a2 2 0 1 1 4 0v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M6 11v1a6 6 0 0 0 12 0v-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span><p>Durante os momentos solenes, mantenha o telemóvel em silêncio.</p></div>
-<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewBox="0 0 24 24"><rect fill="none" height="10" rx="2" stroke="currentColor" stroke-width="1.4" width="14" x="5" y="7"></rect><circle cx="12" cy="12" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle></svg></span><p>Registe memórias com discrição e respeite os fotógrafos oficiais.</p></div>
-<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewBox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg></span><p>Partilhe alegria, carinho e uma presença cheia de boas energias.</p></div>
-</div>
-<button class="btn btn-outline vintage-action" data-open-modal="etiquetaEventoModal" type="button">Ver Recomendações</button>
-</div>
-</section>
-<!-- SECÇÃO VINTAGE: TRANSPORTE, ESTACIONAMENTO & APOIO -->
-<section class="section section-highlight vintage-section travel-section section-scene fade-in-section" id="transporte-apoio">
-<div class="vintage-scene">
-<img alt="Fundo da secção transporte e apoio" src="assets/media/fundo-flores-2.jpg"/>
-<div class="vintage-scene-overlay warm-light"></div>
-</div>
-<div class="vintage-content">
-<div class="vintage-section-kicker">------</div>
-<div class="vintage-title-wrap">
-<span aria-hidden="true" class="vintage-icon-badge">
-<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.4"></circle></svg>
-</span>
-<h2 class="section-title">Transporte &amp; Apoio</h2>
-</div>
-<p class="section-subtitle">Informação prática para chegar aos locais do evento com segurança e sem pressa.</p>
-<div class="travel-card elevated-card">
-<div aria-hidden="true" class="travel-map-mark">⌖</div>
-<div>
-<h3>Orientações para o dia</h3>
-<p>Guarde os contactos de apoio, consulte os mapas e organize a sua chegada com antecedência.</p>
-<div class="travel-points">
-<span><i></i> Mapa</span>
-<span><i></i> Apoio</span>
-<span><i></i> Localização</span>
-</div>
-</div>
-<button class="btn btn-primary" data-open-modal="transporteApoioModal" type="button">Ver Detalhes de Chegada</button>
-</div>
-</div>
-</section>
+  const API_BASE = String(window.CONVITE_API_URL || window.LIRANDZO_API_BASE_URL || "").replace(/\/+$/, "");
+  const INVITE_SLUG = window.CONVITE_SLUG || window.LIRANDZO_INVITE_SLUG || "flicia-walter-convite";
 
-<section class="section section-highlight fade-in-section" id="capsula-tempo">
-  <div class="time-capsule-card elevated-card">
-    <span class="time-capsule-kicker">Memórias do dia</span>
-    <h2 class="section-title">Cápsula do Tempo</h2>
-    <p class="section-subtitle">No próprio dia do casamento, os convidados poderão partilhar aqui as fotografias tiradas durante a celebração. Esta área fica bloqueada antes e depois da data do evento.</p>
+  const wedding = {
+    slug: INVITE_SLUG,
+    bride: "FLÍCIA",
+    groom: "WALTER",
+    brideFull: "Flícia Alberto Chambal",
+    groomFull: "Walter Ivan Francisco Mafumo",
+    displayNames: "Flícia & Walter",
+    initials: "F W",
+    monogram: "FW",
+    dateLong: "26 de setembro de 2026",
+    dateDisplay: "26.09\n2026",
+    dateISO: "2026-09-26T11:00:00+02:00",
+    time: "11:00",
+    timezone: "Africa/Maputo",
+    venue: "Igreja Presbiteriana de Moçambique-Khovo",
+    address: "Igreja Presbiteriana de Moçambique-Khovo, Maputo, Moçambique",
+    ceremonyPlace: "Igreja Presbiteriana de Moçambique-Khovo",
+    ceremonyTime: "11:00",
+    ceremonyMap: "https://www.google.com/maps/search/?api=1&query=Igreja%20Presbiteriana%20de%20Mo%C3%A7ambique%20Khovo%20Maputo%20Mo%C3%A7ambique",
+    receptionPlace: "Kuphupa Eventos",
+    receptionTime: "14:30",
+    receptionMap: "https://www.google.com/maps/search/?api=1&query=Kuphupa%20Eventos%20Maputo%20Mo%C3%A7ambique",
+    rsvpDeadline: "15 de julho de 2026",
+    phone: "258842600652",
+    supportContacts: "842319460 Júrcia Chambal / 845762980 Milton Mafumo",
+    brideParents: "Alberto Chambal e Cacilda Sitoe",
+    groomParents: "Francisco Mafumo (em memória) e Ilda Cossa",
+    verseReference: "Salmos 126:3 ARC",
+    verse: "Grandes coisas fez o Senhor por nós, e por isso estamos alegres.",
+    bankName: "Millennium BIM",
+    bankHolder: "Flícia Alberto Chambal",
+    bankAccount: "000100000120794168057",
+    mobilePayment: "842600652 — Walter Mafumo",
+    giftText: "Queridos amigos e familiares, o nosso maior presente é ter-vos connosco e partilhar este dia tão especial. Contudo, caso desejem presentear-nos com um gesto de carinho, optamos por uma contribuição em dinheiro, que nos ajudará a realizar os primeiros passos na construção do nosso lar.",
+    musicUrl: "https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3",
+  };
 
-    <div class="time-capsule-state" id="timeCapsuleState">
-      <strong id="timeCapsuleStateTitle">Disponível apenas no dia do casamento</strong>
-      <span id="timeCapsuleStateText">A cápsula será aberta automaticamente no dia 20/12/2026.</span>
-    </div>
+  const photos = {
+    hero: "./assets/media/FW-1.jpg",
+    portrait: "./assets/media/FW-2.jpg",
+    dance: "./assets/media/FW-3.jpg",
+    close: "./assets/media/FW-4.jpg",
+    rings: "./assets/media/FW-5.jpg",
+    table: "./assets/media/FW-2.jpg",
+  };
 
-    <form id="timeCapsuleForm" class="time-capsule-form" aria-describedby="timeCapsuleStatus">
-      <label for="timeCapsuleFiles">Adicionar fotografias do casamento</label>
-      <input id="timeCapsuleFiles" type="file" accept="image/*" multiple disabled="" />
-      <small>Formatos aceites: imagens. Para manter o convite leve, seleccione até 8 fotografias por envio.</small>
-      <button class="btn btn-primary" id="timeCapsuleSubmit" type="submit" disabled="">Partilhar Fotos</button>
-      <p id="timeCapsuleStatus" class="time-capsule-status"></p>
-    </form>
+  const gallery = [
+    { src: photos.hero, title: "Retrato dos noivos" },
+    { src: photos.portrait, title: "Save the date" },
+    { src: photos.dance, title: "Encontro" },
+    { src: photos.close, title: "Mãos dadas" },
+    { src: photos.rings, title: "Olhar" },
+  ];
 
-    <div class="time-capsule-gallery" id="timeCapsuleGallery" aria-live="polite">
-      <p class="time-capsule-empty" id="timeCapsuleEmpty">As fotografias partilhadas no dia aparecerão aqui.</p>
-    </div>
-  </div>
-</section>
+  const program = [
+    ["11:00", "Cerimónia Religiosa — Igreja Presbiteriana de Moçambique-Khovo"],
+    ["14:30", "Cerimónia Civil — Kuphupa Eventos"],
+    ["15:00", "Copo d'Água — Kuphupa Eventos"],
+  ];
 
-<section class="section fade-in-section" id="mural-felicitacoes">
-<h2 class="section-title">Mural de Felicitações</h2>
-<p class="section-subtitle">Deixe-nos uma mensagem de carinho!</p>
-<form id="messageForm">
-<div style="margin-bottom: 16px;">
-<label for="messageText">A sua mensagem:</label>
-<textarea id="messageText" maxlength="500" placeholder="Escreva aqui a sua felicitação..." required=""></textarea>
-</div>
-<div class="form-actions" style="text-align: right;">
-<button class="btn btn-primary" type="submit">Enviar Mensagem</button>
-</div>
-<p id="messageStatus" style="font-size: 0.9rem; margin-top: 16px; text-align: center;"></p>
-</form>
-<div id="guestbook-feed">
-<p id="feed-loading">A carregar mensagens...</p>
-</div>
-</section>
-<footer class="footer fade-in-section">
-<h3 class="names">Ana &amp; Miguel</h3>
-<p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
-<div class="footer-contact">
-<span>Tem dúvidas?</span>
-<span>+258 84 000 0000 | +258 87 000 0000</span>
-</div>
-</footer>
+  const palette = ["#ffffff", "#eff6ff", "#2563eb", "#0f172a"];
 
-<footer class="lirandzo-demo-footer" aria-label="Rodapé Lirandzo">
-  <img src="assets/media/lirandzo-logo.svg" alt="Lirandzo" loading="lazy">
-</footer>
-</main>
-<!-- MODAIS -->
-<div aria-labelledby="rsvpTitle" aria-modal="true" class="modal" id="rsvpModal" role="dialog">
-<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-rsvp"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
-<h3 id="rsvpTitle">Confirmar Presença</h3>
-<p>Escolha uma das opções abaixo. Esta versão demo guarda a resposta localmente no navegador.</p>
-<div class="rsvp-options" id="rsvpOptions" aria-describedby="rsvpStatus">
-<button class="btn btn-primary rsvp-choice" id="confirmPresenceBtn" type="button">Confirmo a minha presença</button>
-<button class="btn btn-outline rsvp-choice" id="pendingPresenceBtn" type="button">Ainda por confirmar</button>
-<button class="btn btn-outline rsvp-choice" id="addCalendarBtn" type="button">Adicionar ao calendário</button>
-<button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
-</div>
-<p id="rsvpStatus" class="rsvp-status" style="font-size: 0.9rem; margin-top: 16px;"></p>
-</div>
-</div>
-<div aria-labelledby="dressCodeTitle" aria-modal="true" class="modal" id="dressCodeModal" role="dialog">
-<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-dress"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M8 4h8l1 4-2 2v10H9V10L7 8l1-4Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
-<h3 id="dressCodeTitle">Inspiração: Casual Elegante</h3>
-<p>O objetivo é o conforto sofisticado. Tons neutros, prata, branco e preto são bem-vindos.</p>
-<div class="dresscode-grid">
-<img alt="Homem com blazer bege e camisa branca." src="assets/media/fato_neutro.jpg"/>
-<img alt="Mulher com vestido branco" src="assets/media/vestido_branco.jpg"/>
-<img alt="Mulher com vestido preto." src="assets/media/vestido_preto.jpg"/>
-</div>
-<button class="btn btn-ghost" data-close-modal="" type="button">Entendi</button>
-</div>
-</div>
-<div aria-labelledby="giftsCombinedTitle" aria-modal="true" class="modal" id="giftsCombinedModal" role="dialog">
-<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-gifts"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><rect fill="none" height="4" stroke="currentColor" stroke-width="1.5" width="18" x="3" y="8"></rect><path d="M12 8v13M5 12v9h14v-9" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="M12 8H8.5a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8Zm0 0h3.5a2.5 2.5 0 1 0 0-5C13 3 12 8 12 8Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
-<h3 id="giftsCombinedTitle">Presentes e Contribuições</h3>
-<p>A sua presença é o maior presente! Se desejar, temos algumas opções:</p>
-<div class="tab-buttons">
-<button class="tab-btn active" data-tab="monetaryContent">Contribuição Monetária</button>
-<button class="tab-btn" data-tab="loicasContent">Lista de Presentes</button>
-</div>
-<div class="tab-content active" id="monetaryContent">
-<h4>Um Mimo para o Futuro</h4>
-<div class="info-block payment-method-block">
-<div class="payment-method-header">
-<strong>Conta Bancária Demo (Millennium BIM)</strong>
-<div class="payment-logo-stack" aria-label="Logotipo Millennium BIM">
-<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/bim.jpg" alt="Millennium BIM" loading="lazy"/></div>
-</div>
-</div>
-<p>Titular: Casal Demo<br/>NIB: 0000 0000 0000 0000 0000 0</p>
-<p>NUIB: DEMO-000000000</p><p>IBAN: MZ00 0000 0000 0000 0000 0000 0
-</p></div>
-<div class="info-block payment-method-block">
-<div class="payment-method-header">
-<strong>M-Pesa / e-Mola — Demonstração</strong>
-<div class="payment-logo-stack" aria-label="Logotipos M-Pesa e e-Mola">
-<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/m-pesa.jpg" alt="M-Pesa" loading="lazy"/></div>
-<div class="payment-logo-slot payment-logo-real"><img src="assets/payment/e-mola.jpg" alt="e-Mola" loading="lazy"/></div>
-</div>
-</div>
-<p>840000000 (Conta Demo)<br/>870000000 (Conta Demo)</p></div>
-<hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);"/>
-<h4>Registar Comprovativo</h4>
-<p style="font-size: 0.9rem; text-align: left; margin-bottom: 16px;">Se desejar, pode partilhar o seu comprovativo de pagamento aqui.</p>
-<form enctype="multipart/form-data" id="comprovativoForm">
-<div style="margin-bottom: 16px; text-align: left;">
-<label for="canalPagamento">Canal de Pagamento (ex: M-Pesa, Banco Demo)</label>
-<input id="canalPagamento" placeholder="Canal que utilizou" required="" type="text"/>
-</div>
-<div style="margin-bottom: 16px; text-align: left;">
-<label for="comprovativoFile">Anexar Imagem (PNG, JAM)</label>
-<input accept="image/png, image/jpeg" id="comprovativoFile" name="comprovativoFile" required="" type="file"/>
-</div>
-<div class="form-actions">
-<button class="btn btn-primary" type="submit">Enviar Comprovativo</button>
-</div>
-<p id="comprovativoStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
-</form>
-</div>
-<!-- SEÇÃO DE LISTA DE PRESENTES ATUALIZADA -->
-<div class="tab-content" id="loicasContent">
-<h4>Lista de Presentes</h4>
-<p>Selecione os presentes que gostaria de oferecer. <strong>Itens reservados não podem ser selecionados.</strong></p>
-<div id="giftListContainer" style="margin-top: 24px;">
-<!-- Loading state -->
-<div id="giftLoading" style="text-align: center; padding: 40px; color: #777;">
-            A carregar lista de presentes...
-          </div>
-<!-- Error state -->
-<div id="giftError" style="display: none; text-align: center; padding: 20px; color: #D93025; background: #ffe6e8; border-radius: 8px; margin-bottom: 20px;"></div>
-<!-- Gift checklist (populated by JavaScript) -->
-<div class="gift-checklist" id="giftList" style="display: none;"></div>
-<!-- Form for submitting gifts -->
-<form id="giftListForm" style="text-align: left; margin-top: 24px;">
-<div class="form-actions" style="margin-top: 24px;">
-<button class="btn btn-primary" id="submitGiftsBtn" type="submit">Registar Presentes Selecionados</button>
-</div>
-<p id="giftStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
-</form>
-</div>
-</div>
-<button class="btn btn-ghost" data-close-modal="" style="margin-top: 24px;" type="button">Fechar</button>
-</div>
-</div>
-<!-- MODAIS VINTAGE ADICIONAIS -->
-<div aria-labelledby="cartaNoivosTitle" aria-modal="true" class="modal vintage-detail-modal" id="cartaNoivosModal" role="dialog">
-<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-letter"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
-<span class="modal-kicker">Carta dos Noivos</span>
-<h3 id="cartaNoivosTitle">Com o coração cheio de gratidão</h3>
-<div class="modal-divider"></div>
-<p>Querido(a) convidado(a), obrigado por fazer parte deste momento tão especial. A nossa história foi construída com fé, paciência, amizade e amor. Hoje, ao prepararmos este dia, percebemos que a celebração só fica completa quando é partilhada com pessoas que marcaram a nossa caminhada.</p>
-<p>Que este convite lhe transmita o carinho com que o recebemos na nossa história. A sua presença será uma bênção e uma memória que levaremos connosco para a vida inteira.</p>
-<p class="modal-signature">Ana &amp; Miguel</p>
-<button class="btn btn-primary" data-close-modal="" type="button">Fechar Carta</button>
-</div>
-</div>
-<div aria-labelledby="madrinhaHonraTitle" aria-modal="true" class="modal vintage-detail-modal" id="madrinhaHonraModal" role="dialog">
-<div class="modal-card vintage-modal-card has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
-<span class="modal-kicker">Padrinhos &amp; Honra</span>
-<h3 id="madrinhaHonraTitle">Madrinha de Honra</h3>
-<div class="modal-divider"></div>
-<p>Uma pessoa escolhida pela delicadeza, proximidade e carinho. A madrinha de honra representa apoio, cuidado e uma presença feminina especial neste caminho até ao altar.</p>
-<div class="modal-note">“Obrigada por caminhar connosco com amor e por fazer parte deste capítulo tão bonito.”</div>
-<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
-</div>
-</div>
-<div aria-labelledby="padrinhoHonraTitle" aria-modal="true" class="modal vintage-detail-modal" id="padrinhoHonraModal" role="dialog">
-<div class="modal-card vintage-modal-card has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
-<span class="modal-kicker">Padrinhos &amp; Honra</span>
-<h3 id="padrinhoHonraTitle">Padrinho de Honra</h3>
-<div class="modal-divider"></div>
-<p>Uma presença firme, discreta e importante. O padrinho de honra simboliza amizade, confiança e apoio para este compromisso de vida.</p>
-<div class="modal-note">“A tua presença honra a nossa união e torna este dia ainda mais especial.”</div>
-<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
-</div>
-</div>
-<div aria-labelledby="damasCavalheirosTitle" aria-modal="true" class="modal vintage-detail-modal" id="damasCavalheirosModal" role="dialog">
-<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><circle cx="15" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M6 18c1-2.5 2.8-4 6-4s5 1.5 6 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
-<span class="modal-kicker">Padrinhos &amp; Honra</span>
-<h3 id="damasCavalheirosTitle">Damas &amp; Cavalheiros</h3>
-<div class="modal-divider"></div>
-<p>São amigos e familiares que trazem leveza, alegria e cumplicidade à celebração. Cada presença foi escolhida pelo valor afectivo que tem na nossa caminhada.</p>
-<div class="honor-modal-list">
-<span>Companhia</span>
-<span>Alegria</span>
-<span>Memória</span>
-<span>Família</span>
-</div>
-<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
-</div>
-</div>
-<div aria-labelledby="familiasTitle" aria-modal="true" class="modal vintage-detail-modal" id="familiasModal" role="dialog">
-<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-family"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><circle cx="8" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><circle cx="16" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M4 18c1-2.7 3.3-4 8-4s7 1.3 8 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
-<span class="modal-kicker">Homenagem</span>
-<h3 id="familiasTitle">Às nossas famílias</h3>
-<div class="modal-divider"></div>
-<p>Às nossas famílias, deixamos uma homenagem de profundo reconhecimento. Obrigado pelos ensinamentos, pelas orações, pelo apoio e por tudo o que nos trouxe até este momento.</p>
-<p>Este dia também é vosso, porque cada gesto de amor recebido ao longo da vida está presente nesta união.</p>
-<button class="btn btn-primary" data-close-modal="" type="button">Fechar Homenagem</button>
-</div>
-</div>
-<div aria-labelledby="menuCelebracaoTitle" aria-modal="true" class="modal vintage-detail-modal" id="menuCelebracaoModal" role="dialog">
-<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-menu"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M7 3v9.5a2.5 2.5 0 0 0 5 0V3M14 3v7m3-7v18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
-<span class="modal-kicker">Menu da Celebração</span>
-<h3 id="menuCelebracaoTitle">Sabores do nosso dia</h3>
-<div class="modal-divider"></div>
-<div class="modal-menu-list">
-<div><strong>Entrada</strong><p>Recepção leve com opções cuidadosamente servidas aos convidados.</p></div>
-<div><strong>Prato principal</strong><p>Serviço especial preparado para o momento de almoço e celebração.</p></div>
-<div><strong>Bebidas</strong><p>Selecção de bebidas para acompanhar a recepção.</p></div>
-<div><strong>Sobremesa</strong><p>Final doce para brindar a união dos noivos.</p></div>
-</div>
-<p class="small-modal-text">Caso tenha alguma restrição alimentar importante, contacte previamente os noivos ou a equipa de apoio.</p>
-<button class="btn btn-primary" data-close-modal="" type="button">Fechar Menu</button>
-</div>
-</div>
-<div aria-labelledby="etiquetaEventoTitle" aria-modal="true" class="modal vintage-detail-modal" id="etiquetaEventoModal" role="dialog">
-<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-etiquette"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M8 4h8l4 4v8l-4 4H8l-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="M9 12h6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
-<span class="modal-kicker">Etiqueta do Evento</span>
-<h3 id="etiquetaEventoTitle">Recomendações para os convidados</h3>
-<div class="modal-divider"></div>
-<div class="modal-etiquette-list">
-<p><strong>Pontualidade:</strong> chegar cedo ajuda a viver a cerimónia com tranquilidade.</p>
-<p><strong>Telemóveis:</strong> mantenha o som desligado durante os momentos formais.</p>
-<p><strong>Fotografias:</strong> registe memórias sem interromper a equipa oficial.</p>
-<p><strong>Convivência:</strong> celebre com carinho, respeito e espírito familiar.</p>
-</div>
-<button class="btn btn-primary" data-close-modal="" type="button">Fechar Recomendações</button>
-</div>
-</div>
-<div aria-labelledby="transporteApoioTitle" aria-modal="true" class="modal vintage-detail-modal" id="transporteApoioModal" role="dialog">
-<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-travel"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div></div>
-<span class="modal-kicker">Transporte &amp; Apoio</span>
-<h3 id="transporteApoioTitle">Detalhes de chegada</h3>
-<div class="modal-divider"></div>
-<div class="modal-travel-grid">
-<div><strong>Cerimónia</strong><p>Capela Jardim das Flores. Recomenda-se chegada antes das 15:00.</p></div>
-<div><strong>Recepção</strong><p>Quinta Demo Garden. Consulte o mapa do convite para melhor orientação.</p></div>
-<div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div>
-<div><strong>Apoio</strong><p>Dúvidas no dia: +258 84 000 0000 | +258 87 000 0000.</p></div>
-</div>
-<button class="btn btn-primary" data-close-modal="" type="button">Fechar Detalhes</button>
-</div>
-</div>
+  const conciergeItems = [
+    { icon: "calendar", title: "Guardar data", text: "Adicione o casamento ao calendário do telemóvel.", action: "Adicionar" },
+    { icon: "map", title: "Localização", text: "Veja os locais da cerimónia e recepção.", action: "Ver mapa", modal: "mapa" },
+    { icon: "gift", title: "Presentes", text: "Contribuição monetária e dados bancários.", action: "Ver", modal: "presentes" },
+    { icon: "rsvp", title: "RSVP", text: "Confirme a sua presença em poucos segundos.", action: "Confirmar", href: "#rsvp" },
+  ];
 
-<div aria-labelledby="locationChooserTitle" aria-modal="true" class="modal" id="locationChooserModal" role="dialog">
-<div class="modal-card wide-modal has-modal-hero location-chooser-card">
-<div class="modal-hero modal-hero-mapchooser">
-<div class="modal-hero-overlay"></div>
-<div class="modal-hero-top-accent"></div>
-<div aria-hidden="true" class="modal-hero-badge">
-<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
-</div>
-</div>
-<h3 id="locationChooserTitle">Escolha o local no mapa</h3>
-<p>Toque no local desejado para abrir a rota no Google Maps.</p>
-<div class="location-chooser-grid">
-<article class="location-choice-card">
-<div class="location-choice-preview religious-preview">
-<div class="location-choice-overlay"></div>
-<div class="location-choice-top-accent"></div>
-<div aria-hidden="true" class="location-choice-pin">
-<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
-</div>
-<div class="location-choice-caption">
-<span>Cerimónia Religiosa</span>
-<strong>Capela Jardim das Flores</strong>
-</div>
-</div>
-<div class="location-choice-body">
-<p>Local fictício para demonstração. Recomendamos chegada com antecedência.</p>
-<a class="btn btn-primary" href="#" id="locationMapReligiosa" rel="noopener noreferrer" target="_blank">Abrir mapa da cerimónia</a>
-</div>
-</article>
-<article class="location-choice-card">
-<div class="location-choice-preview civil-preview">
-<div class="location-choice-overlay"></div>
-<div class="location-choice-top-accent"></div>
-<div aria-hidden="true" class="location-choice-pin">
-<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
-</div>
-<div class="location-choice-caption">
-<span>Recepção &amp; Civil</span>
-<strong>Quinta Demo Garden</strong>
-</div>
-</div>
-<div class="location-choice-body">
-<p>Local da recepção e do copo de água, com rota directa para o destino.</p>
-<a class="btn btn-outline" href="#" id="locationMapCivil" rel="noopener noreferrer" target="_blank">Abrir mapa da recepção</a>
-</div>
-</article>
-</div>
-<div class="form-actions" style="margin-top: 12px;">
-<button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
-</div>
-</div>
-</div>
-<div aria-modal="true" class="modal" id="lightboxModal" role="dialog">
-<div class="modal-card" data-close-modal="">
-<img alt="Imagem em destaque da galeria" id="lightboxImage" src=""/>
-</div>
-</div>
-<div aria-labelledby="guestInfoTitle" aria-modal="true" class="modal" id="guestInfoModal" role="dialog">
-<div class="modal-card has-modal-hero" style="text-align: left;"><div class="modal-hero modal-hero-guest"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
-<h3 id="guestInfoTitle" style="text-align: center;">O Seu Lugar</h3>
-<p style="text-align: center; margin-bottom: 32px;">Informação para o dia da receção.</p>
-<div class="info-block">
-<p><strong>Convidado:</strong></p>
-<p id="guestInfoName" style="font-size: 1.1rem; color: var(--text-dark);">A carregar...</p>
-</div>
-<div class="info-block">
-<p><strong>Mesa:</strong></p>
-<p id="guestInfoMesa" style="font-size: 1.1rem; color: var(--accent); font-weight: 600;">A carregar...</p>
-</div>
-<div class="form-actions" style="margin-top: 32px;">
-<button class="btn btn-primary" data-close-modal="" style="width: 100%;" type="button">Fechar</button>
-</div>
-</div>
-</div>
-<script>
+  const demoGuests = [
+    { id: "fw-1", number: 1, category: "VIP", name: "Flícia Alberto Chambal", email: "", token: "fw-2026-001-flicia-alberto-chambal", table: "Mesa dos Noivos", maxGuests: 2, companions: 1, checkedIn: false },
+    { id: "fw-2", number: 2, category: "VIP", name: "Walter Mafumo", email: "waltermafumo3@gmail.com", phone: "842600652", token: "fw-2026-002-walter-mafumo", table: "Mesa dos Noivos", maxGuests: 2, companions: 1, checkedIn: false },
+    { id: "fw-3", number: 3, category: "Família", name: "Júrcia Chambal", email: "", phone: "842319460", token: "fw-2026-003-jurcia-chambal", table: "A definir", maxGuests: 2, companions: 1, checkedIn: false },
+    { id: "fw-4", number: 4, category: "Família", name: "Milton Mafumo", email: "", phone: "845762980", token: "fw-2026-004-milton-mafumo", table: "A definir", maxGuests: 2, companions: 1, checkedIn: false },
+    { id: "fw-5", number: 5, category: "Individual", name: "Convidado", email: "", token: "fw-2026-005-convidado", table: "A definir", maxGuests: 2, companions: 1, checkedIn: false },
+  ];
 
-    // ============================================
-// VERIFICAÇÃO DE DISPOSITIVO (ADICIONAR NO INÍCIO)
-// ============================================
+  const state = {
+    authGuest: null,
+    mode: null,
+    galleryIndex: 0,
+    messages: [],
+    audio: null,
+    countdownTimer: null,
+    petalsSeed: 0,
+  };
 
-// Coloca isto no TOPO absoluto da tua tag <script> no convite.html
-const API_URL = "https://api-casamento-mj.onrender.com/api";
-const DEMO_MODE = false;
-const DEMO_GIFTS = [
-  { name: 'Jogo de pratos elegante', reserved: false, reserved_by: null },
-  { name: 'Conjunto de talheres', reserved: false, reserved_by: null },
-  { name: 'Jogo de copos', reserved: false, reserved_by: null },
-  { name: 'Liquidificador', reserved: false, reserved_by: null },
-  { name: 'Torradeira', reserved: false, reserved_by: null },
-  { name: 'Jogo de panelas', reserved: false, reserved_by: null }
-];
-const DEMO_MESSAGES = [
-  { nome: 'Convidada Demo', message: 'Que este novo capítulo seja cheio de amor, paz e cumplicidade.', timestamp: '2026-06-10T10:30:00' },
-  { nome: 'Família Demo', message: 'Desejamos muitas bênçãos e felicidade aos noivos.', timestamp: '2026-06-11T18:15:00' }
-];
+  const $ = (selector, parent = document) => parent.querySelector(selector);
+  const $$ = (selector, parent = document) => Array.from(parent.querySelectorAll(selector));
+  const app = () => document.getElementById("app");
 
-function jsonpRequest(url) {
-  return new Promise((resolve) => {
-    const parsedUrl = String(url || '');
-    const action = (parsedUrl.match(/[?&]action=([^&]+)/) || [null, ''])[1];
-    const savedName = localStorage.getItem('guestName') || 'Convidado Demo';
-    const savedToken = localStorage.getItem('guestToken') || 'demo-convidado';
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
-    if (action === 'get_guest') {
-      resolve({ status: 'success', nome: savedName, mesa: localStorage.getItem('guestMesa') || 'Mesa Demo', maxGuests: Number(localStorage.getItem('guestMaxGuests') || 4) });
-      return;
-    }
-    if (action === 'verify_device') {
-      resolve({ status: 'success', canAccess: true });
-      return;
-    }
-    if (action === 'gifts') {
-      const reserved = JSON.parse(localStorage.getItem('demoGiftReservations') || '{}');
-      resolve({
-        status: 'success',
-        data: DEMO_GIFTS.map(gift => ({
-          ...gift,
-          reserved: Boolean(reserved[gift.name]),
-          reserved_by: reserved[gift.name] || null
-        }))
-      });
-      return;
-    }
-    if (action === 'messages') {
-      const extraMessages = JSON.parse(localStorage.getItem('demoMessages') || '[]');
-      resolve({ status: 'success', data: [...DEMO_MESSAGES, ...extraMessages] });
-      return;
-    }
+  function getTimeLeft(targetDate) {
+    const target = new Date(targetDate).getTime();
+    const diff = Math.max(target - Date.now(), 0);
+    return {
+      days: Math.floor(diff / 86400000),
+      hours: Math.floor((diff / 3600000) % 24),
+      minutes: Math.floor((diff / 60000) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+    };
+  }
 
-    resolve({ status: 'success', token: savedToken, guestName: savedName, canAccess: true });
-  });
-}
-async function verifyDeviceAccess() {
-  const urlParams = new URLSearchParams(window.location.search);
-  let currentToken = urlParams.get("t");
+  function twoDigits(value) {
+    return String(value).padStart(2, "0");
+  }
 
-  if (!currentToken) {
-    const fallbackName = localStorage.getItem('guestName');
-    if (!fallbackName) {
-      window.location.href = 'index.html';
+  async function apiFetch(endpoint, options = {}) {
+    if (!API_BASE) throw new Error("API Render não configurada.");
+    const response = await fetch(`${API_BASE}/api${endpoint}`, {
+      headers: { "Content-Type": "application/json", "X-Invite-Slug": INVITE_SLUG, ...(options.headers || {}) },
+      ...options,
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.status === "error") throw new Error(data.message || data.error || `Erro ${response.status}`);
+    return data.data || data;
+  }
+
+  async function isBackendAvailable() {
+    if (window.LirandzoAPI && typeof window.LirandzoAPI.isConfigured === "function" && window.LirandzoAPI.isConfigured()) return true;
+    if (!API_BASE) return false;
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 3000);
+      const response = await fetch(`${API_BASE}/health`, { signal: controller.signal, headers: { "X-Invite-Slug": INVITE_SLUG } });
+      clearTimeout(timer);
+      if (!response.ok) return false;
+      const data = await response.json().catch(() => ({}));
+      return data.mongo ? data.mongo === "connected" : true;
+    } catch {
       return false;
     }
-    currentToken = localStorage.getItem('guestToken') || 'demo-convidado';
-    history.replaceState(null, '', `convite.html?t=${encodeURIComponent(currentToken)}`);
   }
 
-  if (!localStorage.getItem('guestName')) {
-    localStorage.setItem('guestName', 'Convidado Demo');
+  async function getMode() {
+    return (await isBackendAvailable()) ? "live" : "demo";
   }
-  localStorage.setItem('guestToken', currentToken);
-  localStorage.setItem('guestMesa', localStorage.getItem('guestMesa') || 'Mesa Demo');
-  localStorage.setItem('guestMaxGuests', localStorage.getItem('guestMaxGuests') || '4');
-  localStorage.setItem('demoMode', 'true');
-  return true;
-}
 
-// Modificar o DOMContentLoaded para incluir a verificação
-document.addEventListener('DOMContentLoaded', async () => {
-  const hasAccess = await verifyDeviceAccess();
-  if (!hasAccess) return;
-
-  // Resto do código existente...
-  const urlParams = new URLSearchParams(window.location.search);
-  token = urlParams.get("t");
-  
-  // ... continuar com o código existente
-});
-    // ============================================
-    // CONFIGURAÇÃO DO GOOGLE APPS SCRIPT
-    // ============================================
-    
-    function escapeHTML(str) {
-      if (!str) return '';
-      return str.replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-    
-
-    // Função para requisições POST (com tratamento de CORS)
-    async function postRequest(data) {
+  async function findGuestByName(name) {
+    const cleanName = name.trim();
+    if (window.LirandzoAPI && typeof window.LirandzoAPI.get === "function") {
       try {
-        if (DEMO_MODE) {
-          if (data.action === 'save_gifts') {
-            const reserved = JSON.parse(localStorage.getItem('demoGiftReservations') || '{}');
-            (data.selectedGifts || []).forEach(item => { reserved[item] = data.nome || 'Convidado Demo'; });
-            localStorage.setItem('demoGiftReservations', JSON.stringify(reserved));
-          }
-          if (data.action === 'post_message') {
-            const messages = JSON.parse(localStorage.getItem('demoMessages') || '[]');
-            messages.push({ nome: data.nome || 'Convidado Demo', message: data.message || '', timestamp: new Date().toISOString() });
-            localStorage.setItem('demoMessages', JSON.stringify(messages));
-          }
-          if (data.action === 'rsvp') {
-            localStorage.setItem('demoRsvp', JSON.stringify({ ...data, timestamp: new Date().toISOString() }));
-          }
-          if (data.action === 'upload_comprovativo') {
-            localStorage.setItem('demoComprovativo', JSON.stringify({ nome: data.nome, canal: data.canal, filename: data.comprovativoFile_filename || 'ficheiro-demo', timestamp: new Date().toISOString() }));
-          }
-          return { status: "success", demo: true };
-        }
-        const response = await fetch(API_URL, { method: 'POST',
-          mode: 'cors',
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, slug: window.LIRANDZO_INVITE_SLUG || "flicia-walter-convite" })
-        });
-        return { status: "success" };
+        const result = await window.LirandzoAPI.get("find_guest", { name: cleanName });
+        const guest = result.data || result;
+        if (guest && !guest.table && guest.mesa) guest.table = guest.mesa;
+        if (guest && !guest.maxGuests && guest.maxGuestsTotal) guest.maxGuests = guest.maxGuestsTotal;
+        return guest;
       } catch (err) {
-        console.error("Erro na requisição POST:", err);
+        const localGuest = demoGuests.find((guest) => guest.name.toLowerCase() === cleanName.toLowerCase());
+        if (localGuest) return localGuest;
         throw err;
       }
     }
 
-    // Função para upload de arquivo (FormData)
-    async function postFormData(formData) {
-      try {
-        const response = await fetch(API_URL, { method: 'POST',
-          mode: 'cors', // Importante: no-cors para evitar erro de CORS
-          body: formData
-        });
-        
-        // Com no-cors, não podemos ler a resposta
-        return { status: "success" };
-      } catch (err) {
-        console.error("Erro no upload:", err);
-        throw err;
-      }
+    const live = await isBackendAvailable();
+    if (live) {
+      return apiFetch("", {
+        method: "POST",
+        body: JSON.stringify({ action: "login", name: cleanName, slug: INVITE_SLUG }),
+      });
     }
-    
-    // Variáveis globais
-    let guestName = "";
-    let guestMesa = null;
-    let maxGuests = 1;
-    let token = "";
-    let rsvpTitle = null; // Declarar para uso posterior
-    
-    document.addEventListener('DOMContentLoaded', async () => {
 
-      const urlParams = new URLSearchParams(window.location.search);
-      token = urlParams.get("t");
+    const lowerName = cleanName.toLowerCase();
+    return demoGuests.find((guest) => guest.name.toLowerCase() === lowerName) || null;
+  }
 
-      if (!token) {
-        document.body.innerHTML = "Convite inválido.";
-        return;
+  async function submitRSVP(guestId, status, guests) {
+    const payload = {
+      action: status === "confirmed" ? "rsvp" : "rsvp_choice",
+      choice: status === "confirmed" ? "confirmed" : "declined",
+      nome: state.authGuest?.name || state.authGuest?.nome || "Convidado",
+      token: guestToken(),
+      guests,
+      slug: INVITE_SLUG,
+    };
+
+    try {
+      if (window.LirandzoAPI && typeof window.LirandzoAPI.post === "function") {
+        return await window.LirandzoAPI.post(payload);
       }
-
-      async function loadGuest() {
-        try {
-          if (DEMO_MODE) {
-            guestName = localStorage.getItem('guestName') || 'Convidado Demo';
-            guestMesa = localStorage.getItem('guestMesa') || 'Mesa Demo';
-            maxGuests = Number(localStorage.getItem('guestMaxGuests') || 4);
-            return true;
-          }
-
-          const result = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest&token=${token}`);
-
-          if(result.status !== "success"){
-            return false;
-          }
-
-          guestName = result.nome || "";
-          guestMesa = result.mesa || "A definir";
-          maxGuests = result.maxGuests || 1;
-
-          return true;
-        } catch(err) {
-          console.error("Erro ao carregar convidado:", err);
-          return false;
-        }
+      if (await isBackendAvailable()) {
+        return await apiFetch("", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
       }
+    } catch (err) {
+      if (err && err.message) throw err;
+    }
+    return { message: "RSVP registado (modo demo).", rsvpStatus: status, rsvpGuests: guests };
+  }
 
-      const success = await loadGuest();
-
-      if (!success) {
-        document.body.innerHTML = "Convite inválido.";
-        return;
+  async function fetchMessages() {
+    try {
+      if (window.LirandzoAPI && typeof window.LirandzoAPI.get === "function") {
+        const result = await window.LirandzoAPI.get("list_messages", {});
+        return (result.data || []).map((msg) => ({
+          name: msg.name || msg.nome || "Convidado",
+          text: msg.text || msg.message || "",
+          date: msg.date || msg.timestamp || msg.createdAt || "",
+        }));
       }
+      if (await isBackendAvailable()) {
+        const result = await apiFetch("?action=list_messages&slug=" + encodeURIComponent(INVITE_SLUG));
+        return (result.data || result || []).map((msg) => ({ name: msg.name || msg.nome || "Convidado", text: msg.text || msg.message || "" }));
+      }
+    } catch {
+      // fallback demo
+    }
+    return [];
+  }
 
-      initializeUI();
+  async function postMessage(guestId, text) {
+    const payload = {
+      action: "post_message",
+      nome: state.authGuest?.name || state.authGuest?.nome || "Convidado",
+      message: text,
+      slug: INVITE_SLUG,
+    };
+    try {
+      if (window.LirandzoAPI && typeof window.LirandzoAPI.post === "function") return await window.LirandzoAPI.post(payload);
+      if (await isBackendAvailable()) {
+        return await apiFetch("", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+      }
+    } catch {
+      // fallback demo
+    }
+    return { id: `demo-${Date.now()}`, name: state.authGuest?.name || "Convidado", text, date: new Date().toISOString() };
+  }
+
+  async function uploadGiftProof(formData) {
+    const base = API_BASE || window.LIRANDZO_API_BASE_URL || "";
+    if (!base) throw new Error("API Render não configurada para envio do comprovativo.");
+    const response = await fetch(`${String(base).replace(/\/+$/, "")}/api/upload_comprovativo`, {
+      method: "POST",
+      headers: { "X-Invite-Slug": INVITE_SLUG },
+      body: formData,
+    });
+    const contentType = response.headers.get("content-type") || "";
+    const data = contentType.includes("application/json") ? await response.json().catch(() => ({})) : {};
+    if (!response.ok || data.status === "error") throw new Error(data.message || data.error || `Erro ${response.status}`);
+    if (!contentType.includes("application/json")) throw new Error("O servidor não respondeu ao envio do comprovativo. Confirme se o Render/API está activo.");
+    return data;
+  }
+
+  function playChime(freqs, duration = 0.55) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    freqs.forEach((freq, index) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      gain.gain.setValueAtTime(0, ctx.currentTime + index * 0.11);
+      gain.gain.linearRampToValueAtTime(0.04, ctx.currentTime + index * 0.11 + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + index * 0.11 + duration);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + index * 0.11);
+      osc.stop(ctx.currentTime + index * 0.11 + duration + 0.05);
+    });
+  }
+
+  function playHoverClick() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 880;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.015, ctx.currentTime + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.12);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  }
+
+  function icon(type) {
+    const common = `fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"`;
+    const icons = {
+      calendar: `<svg class="animated-icon calendar-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="12" width="28" height="28" rx="2" ${common}/><path d="M16 8v8M32 8v8M10 20h28" ${common}/><path class="icon-pulse" d="M18 28h12M18 34h7" ${common}/></svg>`,
+      map: `<svg class="animated-icon map-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M16 38 8 42V14l8-4 16 6 8-4v28l-8 4-16-6Z" ${common}/><path class="icon-trace" d="M16 10v28M32 16v28" ${common}/><circle class="icon-pulse" cx="25" cy="27" r="3" ${common}/></svg>`,
+      camera: `<svg class="animated-icon camera-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 17h5l2-4h7l2 4h4a5 5 0 0 1 5 5v11a5 5 0 0 1-5 5H14a5 5 0 0 1-5-5V22a5 5 0 0 1 5-5Z" ${common}/><circle class="icon-spin" cx="24" cy="28" r="7" ${common}/><path class="icon-flash" d="M36 13l4-4M39 18h5M31 10V5" ${common}/></svg>`,
+      music: `<svg class="animated-icon music-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M18 33V12l18-4v21" ${common}/><circle class="icon-bounce" cx="14" cy="35" r="5" ${common}/><circle class="icon-bounce delay" cx="32" cy="31" r="5" ${common}/></svg>`,
+      gift: `<svg class="animated-icon gift-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 21h30v19H9zM24 21v19M7 15h34v6H7z" ${common}/><path class="icon-pulse" d="M24 15c-2-7-11-7-11-1 0 4 5 4 11 1Zm0 0c2-7 11-7 11-1 0 4-5 4-11 1Z" ${common}/></svg>`,
+      shuttle: `<svg class="animated-icon shuttle-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M10 16h28a4 4 0 0 1 4 4v11H6V20a4 4 0 0 1 4-4Z" ${common}/><path class="icon-trace" d="M12 22h24M15 31v5M33 31v5" ${common}/><circle cx="15" cy="36" r="3" ${common}/><circle cx="33" cy="36" r="3" ${common}/></svg>`,
+      ring: `<svg class="animated-icon ring-icon" viewBox="0 0 48 48" aria-hidden="true"><path class="icon-spark" d="M24 6l4 7h-8l4-7Z" ${common}/><circle cx="24" cy="29" r="11" ${common}/><path class="icon-pulse" d="M16 12h16M19 12l-4 6M29 12l4 6" ${common}/></svg>`,
+      rsvp: `<svg class="animated-icon rsvp-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 15h30v24H9z" ${common}/><path class="icon-trace" d="M9 15l15 13 15-13" ${common}/><path class="icon-pulse" d="M17 32h14" ${common}/></svg>`,
+    };
+    return icons[type] || icons.rsvp;
+  }
+
+  function countdownStrip() {
+    const c = getTimeLeft(wedding.dateISO);
+    return `<div class="countdown-strip" aria-label="Contagem regressiva">
+      <span><strong data-countdown-part="days">${twoDigits(c.days)}</strong><small>dias</small></span>
+      <span><strong data-countdown-part="hours">${twoDigits(c.hours)}</strong><small>horas</small></span>
+      <span><strong data-countdown-part="minutes">${twoDigits(c.minutes)}</strong><small>minutos</small></span>
+      <span><strong data-countdown-part="seconds">${twoDigits(c.seconds)}</strong><small>segundos</small></span>
+    </div>`;
+  }
+
+  function updateCountdown() {
+    const c = getTimeLeft(wedding.dateISO);
+    $$('[data-countdown-part="days"]').forEach((el) => { el.textContent = twoDigits(c.days); });
+    $$('[data-countdown-part="hours"]').forEach((el) => { el.textContent = twoDigits(c.hours); });
+    $$('[data-countdown-part="minutes"]').forEach((el) => { el.textContent = twoDigits(c.minutes); });
+    $$('[data-countdown-part="seconds"]').forEach((el) => { el.textContent = twoDigits(c.seconds); });
+  }
+
+  function heading(eyebrow, title, copy = "") {
+    return `<div class="section-heading"><p>${escapeHtml(eyebrow)}</p><h2>${escapeHtml(title)}</h2>${copy ? `<span>${escapeHtml(copy)}</span>` : ""}</div>`;
+  }
+
+  function divider() {
+    return `<div class="section-divider"><span class="divider-line"></span><span class="divider-amp">&amp;</span><span class="divider-line"></span></div>`;
+  }
+
+  function qrPattern(seed) {
+    const base = String(seed).split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    let blocks = "";
+    for (let index = 0; index < 81; index += 1) {
+      const active = ((index * 7 + base) % 5 === 0 || (index + base) % 11 === 0);
+      blocks += `<span class="${active ? "is-active" : ""}"></span>`;
+    }
+    return `<div class="qr-pattern" aria-hidden="true">${blocks}</div>`;
+  }
+  function guestToken(guest = state.authGuest) {
+    return String(guest?.token || guest?.inviteToken || guest?.publicToken || guest?.id || "").trim();
+  }
+
+  function checkinUrl(token = guestToken()) {
+    const base = new URL("checkin.html", window.location.href);
+    if (token) base.searchParams.set("t", token);
+    return base.href;
+  }
+
+  function qrImage(token = guestToken()) {
+    if (!token) return qrPattern(state.authGuest?.name || wedding.displayNames);
+    const url = checkinUrl(token);
+    return `<img class="qr-code-img" src="https://quickchart.io/qr?size=280&margin=1&text=${encodeURIComponent(url)}" alt="QR Code de check-in do convidado" loading="lazy" />`;
+  }
+
+  function petals(count = 14) {
+    let html = "";
+    for (let i = 0; i < count; i += 1) {
+      const left = Math.random() * 100;
+      const delay = Math.random() * 12;
+      const duration = 8 + Math.random() * 8;
+      const size = 0.5 + Math.random() * 0.8;
+      const opacity = 0.2 + Math.random() * 0.3;
+      const swing = Math.random() * 80 - 40;
+      html += `<span class="petal" style="left:${left}%;--swing:${swing}px;--dur:${duration}s;--delay:${delay}s;--size:${size};--opacity:${opacity};"></span>`;
+    }
+    return `<div class="petals-container" aria-hidden="true">${html}</div>`;
+  }
+
+  function rsvpStatusLabel(status) {
+    const labels = {
+      pending: "Ainda não confirmado",
+      confirmed: "Presença confirmada",
+      declined: "Presença não confirmada",
+    };
+    return labels[status] || labels.pending;
+  }
+
+  function guestCompanionsCount(guest = state.authGuest) {
+    if (!guest) return 0;
+    if (Number.isFinite(Number(guest.companions))) return Math.max(Number(guest.companions), 0);
+    return Math.max(Number(guest.maxGuests || 1) - 1, 0);
+  }
+
+  function guestTotalCount(guest = state.authGuest) {
+    if (!guest) return 1;
+    return Math.max(Number(guest.maxGuests || guestCompanionsCount(guest) + 1 || 1), 1);
+  }
+
+  function renderEntryCover() {
+    clearInterval(state.countdownTimer);
+    app().innerHTML = `<section class="std-cover" aria-label="Save the date">
+      <img class="std-cover-bg" src="${photos.portrait}" alt="Flícia e Walter" />
+      <div class="std-cover-overlay"></div>
+      <div class="std-cover-card">
+        <p class="std-cover-kicker">save the date</p>
+        <h1>Flícia <span>&amp;</span> Walter</h1>
+        <p class="std-cover-date">${wedding.dateLong} · ${wedding.time}</p>
+        ${countdownStrip()}
+        <button class="std-cover-button" type="button" id="std-open-login">Abrir convite</button>
+      </div>
+      <p class="std-cover-footnote">Convite privado · Lirandzo</p>
+    </section>`;
+    bindCursorTargets();
+    updateCountdown();
+    state.countdownTimer = setInterval(updateCountdown, 1000);
+    $("#std-open-login")?.addEventListener("click", () => {
+      playChime([392, 523.25, 659.25]);
+      startMusic();
+      renderLogin();
+    });
+  }
+
+  function renderLogin() {
+    clearInterval(state.countdownTimer);
+    app().innerHTML = `<div class="login-overlay">
+      <div class="login-petals" aria-hidden="true"></div>
+      <div class="login-card">
+        <div class="login-monogram">F&amp;W</div>
+        <p class="login-kicker">Convite privado</p>
+        <h1 class="login-title">Flícia &amp; Walter</h1>
+        <p class="login-subtitle">Por favor, introduza o seu nome para aceder ao convite.</p>
+        <div id="login-mode-slot"></div>
+        <form class="login-form" id="login-form">
+          <label class="login-input-wrap">
+            <span class="login-label">O seu nome</span>
+            <input id="login-name" type="text" placeholder="Como consta no convite" autocomplete="off" />
+          </label>
+          <p class="login-error is-hidden" id="login-error"></p>
+          <button class="login-submit" id="login-submit" type="submit" disabled>
+            <span class="login-submit-text">Entrar</span>
+            <span class="login-submit-arrow">&rarr;</span>
+          </button>
+        </form>
+      </div>
+      <p class="login-footnote">Um convite feito com amor</p>
+    </div>`;
+
+    bindCursorTargets();
+    bindLoginEvents();
+    getMode().then((mode) => {
+      state.mode = mode;
+      const slot = $("#login-mode-slot");
+      if (!slot) return;
+      slot.innerHTML = `<p class="login-mode-badge"><span class="mode-dot ${mode}"></span>${mode === "live" ? "Conectado ao servidor" : "Modo demonstração"}</p>`;
+      bindCursorTargets();
+    });
+  }
+
+  function bindLoginEvents() {
+    const input = $("#login-name");
+    const submit = $("#login-submit");
+    const form = $("#login-form");
+    const error = $("#login-error");
+
+    input.addEventListener("input", () => {
+      submit.disabled = !input.value.trim();
+      error.classList.add("is-hidden");
     });
 
-    function initializeUI() {
-      const guestStatus = localStorage.getItem('guestStatus'); 
-      
-      // Adicionar mensagem de boas-vindas
-      const heroContent = document.querySelector('.hero-bottom-content');
-      if (heroContent) {
-        const welcomeMessage = document.createElement('p');
-        welcomeMessage.className = 'welcome-guest';
-        welcomeMessage.textContent = `Bem-vindo(a), ${guestName}!`;
-        heroContent.prepend(welcomeMessage);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const name = input.value.trim();
+      if (!name) return;
+
+      input.disabled = true;
+      submit.disabled = true;
+      submit.querySelector(".login-submit-text").textContent = "A verificar...";
+      error.classList.add("is-hidden");
+
+      try {
+        const guest = await findGuestByName(name);
+        if (!guest) throw new Error("Nome nao encontrado na lista de convidados.");
+        state.authGuest = guest;
+        sessionStorage.setItem(`wedding_guest_${INVITE_SLUG}`, JSON.stringify(guest));
+        playChime([523.25, 659.25, 783.99, 1046.5]);
+        startMusic();
+        renderWelcome();
+      } catch (err) {
+        error.textContent = err.message || "Erro ao verificar. Tente novamente.";
+        error.classList.remove("is-hidden");
+        input.disabled = false;
+        submit.disabled = false;
+        submit.querySelector(".login-submit-text").textContent = "Entrar";
       }
-
-      // Configurar RSVP
-      const rsvpModal = document.getElementById('rsvpModal');
-      const rsvpForm = document.getElementById('rsvpForm');
-      if (rsvpForm && rsvpModal) {
-        const nameInput = rsvpForm.querySelector('#nome');
-        const guestsSelect = rsvpForm.querySelector('#guests');
-        rsvpTitle = rsvpModal.querySelector('#rsvpTitle');
-        const rsvpSubmitBtn = rsvpForm.querySelector('#sendRsvpServer');
-
-        if (nameInput) {
-          nameInput.value = guestName;
-          nameInput.disabled = true; 
-        }
-        
-        // Configurar dropdown de convidados
-        function buildDropdown(maxConvidados) {
-          const max = Number(maxConvidados) || 1;
-          guestsSelect.innerHTML = '';
-
-          for (let i = 1; i <= max; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            guestsSelect.appendChild(option);
-          }
-        }
-
-        buildDropdown(maxGuests);
-
-        if (guestStatus && guestStatus.toLowerCase().startsWith('confirmado')) {
-          const guestsMatch = guestStatus.match(/\(([^)]+)\)/); 
-          if (guestsMatch && guestsMatch[1]) {
-            const confirmedGuests = guestsMatch[1];
-            if (guestsSelect.querySelector(`option[value="${confirmedGuests}"]`)) {
-              guestsSelect.value = confirmedGuests;
-            }
-          }
-          if (rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
-          if (rsvpSubmitBtn) rsvpSubmitBtn.textContent = "Atualizar Confirmação";
-        }
-      }
-
-      // Configurar modal de informação do convidado
-      const guestInfoModal = document.getElementById('guestInfoModal');
-      if (guestInfoModal) {
-        const infoNameEl = document.getElementById('guestInfoName');
-        const infoMesaEl = document.getElementById('guestInfoMesa');
-        
-        if (infoNameEl) {
-          infoNameEl.textContent = guestName;
-        }
-        if (infoMesaEl) {
-          // Verificar se guestMesa existe e é uma string
-          if (guestMesa && typeof guestMesa === 'string' && guestMesa !== "A definir" && guestMesa !== "undefined" && guestMesa.trim() !== "") {
-            infoMesaEl.textContent = guestMesa;
-          } else {
-            infoMesaEl.textContent = "A sua mesa será indicada à entrada.";
-            infoMesaEl.style.color = "var(--text-light)";
-            infoMesaEl.style.fontWeight = "400";
-          }
-        }
-      }
-
-      // Constantes
-      const HOST_WHATSAPP_NUMBER = '+258840000000';
-      const ADDRESS_RELIGIOSA = 'Capela Jardim das Flores, Maputo';
-      const ADDRESS_CIVIL_COPO_DE_AGUA = 'Quinta Demo Garden, Maputo'; 
-      const EVENT_DATE = "2026-12-20T15:00:00"; 
-      const body = document.body;
-      const music = document.getElementById('backgroundMusic');
-      const musicControl = document.getElementById('musicControl');
-      
-      const fabRsvpBtn = document.getElementById('fabRsvpBtn');
-      const fabGiftsBtn = document.getElementById('fabGiftsBtn');
-      const fabGuestInfoBtn = document.getElementById('fabGuestInfoBtn');
-      const fabMapBtn = document.getElementById('fabMapBtn'); 
-      
-      const rsvpBtn = document.getElementById('rsvpBtn');
-      const dressCodeBtn = document.getElementById('dressCodeBtn');
-      const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
-      const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
-      const mapBtnCivil = document.getElementById('mapBtnCivil');
-      const galleryImages = document.querySelectorAll('.gallery-grid img');
-      const lightboxModal = document.getElementById('lightboxModal');
-      const lightboxImage = document.getElementById('lightboxImage');
-      
-      const createMapLink = (address, isDirections = false) => {
-        const baseUrl = 'https://www.google.com/maps'; 
-        const encodedAddress = encodeURIComponent(address);
-        if (isDirections) return `${baseUrl}/dir/?api=1&destination=${encodedAddress}`;
-        return `${baseUrl}/search/?api=1&query=${encodedAddress}`;
-      };
-      let preservedScrollY = 0;
-      const MODAL_CLOSE_ANIMATION_MS = 420;
-
-      const getCurrentScrollY = () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-
-      const lockPageScrollForModal = () => {
-        // Não bloqueamos html/body com overflow/position.
-        // Isso era a origem do salto para o topo em alguns navegadores.
-        preservedScrollY = getCurrentScrollY();
-      };
-
-      const unlockPageScrollAfterModal = () => {
-        document.documentElement.classList.remove('modal-is-open');
-        document.body.classList.remove('modal-open');
-      };
-
-      const openModal = (modalId) => {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
-
-        const beforeOpenScrollY = getCurrentScrollY();
-        lockPageScrollForModal();
-        document.documentElement.classList.remove('modal-is-open');
-        document.body.classList.remove('modal-open');
-
-        if (modal.__closeTimer) clearTimeout(modal.__closeTimer);
-        modal.classList.remove('is-closing');
-        modal.classList.add('open');
-        modal.setAttribute('aria-hidden', 'false');
-
-        const modalCard = modal.querySelector('.modal-card');
-        if (modalCard) modalCard.scrollTop = 0;
-
-        // Garantia anti-salto: abrir modal nunca altera a posição do convite.
-        requestAnimationFrame(() => {
-          if (Math.abs(getCurrentScrollY() - beforeOpenScrollY) > 2) {
-            window.scrollTo({ top: beforeOpenScrollY, left: 0, behavior: 'auto' });
-          }
-        });
-      };
-
-      const closeModal = (modal) => {
-        if (!modal || !modal.classList.contains('open')) return;
-
-        const beforeCloseScrollY = getCurrentScrollY();
-        modal.classList.add('is-closing');
-        modal.setAttribute('aria-hidden', 'true');
-
-        if (modal.__closeTimer) clearTimeout(modal.__closeTimer);
-        modal.__closeTimer = setTimeout(() => {
-          modal.classList.remove('open', 'is-closing');
-          modal.__closeTimer = null;
-
-          if (!document.querySelector('.modal.open')) {
-            unlockPageScrollAfterModal();
-          }
-
-          // Garantia anti-salto também ao fechar.
-          requestAnimationFrame(() => {
-            if (Math.abs(getCurrentScrollY() - beforeCloseScrollY) > 2) {
-              window.scrollTo({ top: beforeCloseScrollY, left: 0, behavior: 'auto' });
-            }
-          });
-        }, MODAL_CLOSE_ANIMATION_MS);
-      };
-      
-      body.classList.remove('loading');
-      setTimeout(() => body.classList.add('loaded'), 100);
-
-      const updateMusicIcon = () => {
-        if (!musicControl) return;
-        musicControl.innerHTML = music.paused 
-          ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>`
-          : `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>`;
-        musicControl.classList.toggle('playing', !music.paused);
-      };
-      
-      if (music) {
-        const tryAutoplay = music.play();
-
-        if (tryAutoplay !== undefined) {
-          tryAutoplay.catch(() => {
-            const playOnFirstInteraction = () => {
-              music.play().then(() => {
-                updateMusicIcon();
-                document.removeEventListener('click', playOnFirstInteraction);
-                document.removeEventListener('touchstart', playOnFirstInteraction);
-              });
-            };
-
-            document.addEventListener('click', playOnFirstInteraction);
-            document.addEventListener('touchstart', playOnFirstInteraction);
-          });
-        }
-      }
-      
-      if(musicControl) {
-        musicControl.addEventListener('click', () => {
-          music.paused ? music.play() : music.pause();
-          updateMusicIcon();
-        });
-      }
-      updateMusicIcon();
-      
-      const locationMapReligiosa = document.getElementById('locationMapReligiosa');
-      const locationMapCivil = document.getElementById('locationMapCivil');
-
-      if (mapBtnReligiosa) mapBtnReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true); 
-      if (mapBtnCivil) mapBtnCivil.href = createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true); 
-      if (locationMapReligiosa) locationMapReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true);
-      if (locationMapCivil) locationMapCivil.href = createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true);
-      
-      const EVENT_END_DATE = "2026-12-20T22:00:00";
-      const EVENT_TITLE = "Casamento de Ana & Miguel";
-      const EVENT_LOCATION = `${ADDRESS_RELIGIOSA} / ${ADDRESS_CIVIL_COPO_DE_AGUA}`;
-
-      const padCalendarValue = (value) => String(value).padStart(2, '0');
-      const formatIcsDate = (date) => {
-        return `${date.getFullYear()}${padCalendarValue(date.getMonth() + 1)}${padCalendarValue(date.getDate())}T${padCalendarValue(date.getHours())}${padCalendarValue(date.getMinutes())}${padCalendarValue(date.getSeconds())}`;
-      };
-
-      const escapeIcsText = (value) => String(value || '')
-        .replace(/\\/g, '\\\\')
-        .replace(/;/g, '\\;')
-        .replace(/,/g, '\\,')
-        .replace(/\n/g, '\\n');
-
-      const addEventToCalendar = () => {
-        const description = "Lembrete demo do convite digital Lirandzo. Confirme a sua presença e guarde esta data especial.";
-        const calendarUrl = new URL('https://calendar.google.com/calendar/render');
-        calendarUrl.searchParams.set('action', 'TEMPLATE');
-        calendarUrl.searchParams.set('text', EVENT_TITLE);
-        calendarUrl.searchParams.set('dates', '20261220T150000/20261220T220000');
-        calendarUrl.searchParams.set('ctz', 'Africa/Maputo');
-        calendarUrl.searchParams.set('location', EVENT_LOCATION);
-        calendarUrl.searchParams.set('details', description);
-
-        window.open(calendarUrl.toString(), '_blank', 'noopener,noreferrer');
-      };
-
-      const calendarBtn = document.getElementById('calendarBtn');
-      const addCalendarBtn = document.getElementById('addCalendarBtn');
-      const confirmPresenceBtn = document.getElementById('confirmPresenceBtn');
-      const pendingPresenceBtn = document.getElementById('pendingPresenceBtn');
-      const rsvpOptionsStatus = document.getElementById('rsvpStatus');
-
-      const setRsvpChoice = (choice) => {
-        const guestName = localStorage.getItem('guestName') || 'Convidado demo';
-        const payload = {
-          choice,
-          guestName,
-          event: EVENT_TITLE,
-          savedAt: new Date().toISOString()
-        };
-        localStorage.setItem('demoRsvpChoice', JSON.stringify(payload));
-        if (rsvpOptionsStatus) {
-          rsvpOptionsStatus.style.color = '#2f6f3e';
-          rsvpOptionsStatus.textContent = choice === 'confirmed'
-            ? 'Presença confirmada em modo demo. Obrigado!'
-            : 'Estado guardado como “ainda por confirmar” em modo demo.';
-        }
-      };
-
-      calendarBtn?.addEventListener('click', addEventToCalendar);
-      addCalendarBtn?.addEventListener('click', () => {
-        addEventToCalendar();
-        if (rsvpOptionsStatus) {
-          rsvpOptionsStatus.style.color = '#765038';
-          rsvpOptionsStatus.textContent = 'O calendário foi aberto numa nova aba com o evento já preenchido. Basta confirmar para guardar.';
-        }
-      });
-      confirmPresenceBtn?.addEventListener('click', () => setRsvpChoice('confirmed'));
-      pendingPresenceBtn?.addEventListener('click', () => setRsvpChoice('pending'));
-
-
-      document.addEventListener('click', (event) => {
-        const emptyAnchor = event.target.closest('a[href="#"]');
-        if (!emptyAnchor) return;
-        const isModalTrigger = emptyAnchor.hasAttribute('data-open-modal') || emptyAnchor.closest('[data-open-modal]');
-        const isCloseTrigger = emptyAnchor.hasAttribute('data-close-modal') || emptyAnchor.closest('[data-close-modal]');
-        const isPlaceholderMap = emptyAnchor.id && /map/i.test(emptyAnchor.id);
-        if (isModalTrigger || isCloseTrigger || isPlaceholderMap) {
-          event.preventDefault();
-        }
-      }, true);
-
-      const bindModalTrigger = (element, modalId) => {
-        element?.addEventListener('click', (event) => {
-          event.preventDefault();
-          openModal(modalId);
-        });
-      };
-
-      [fabRsvpBtn, rsvpBtn].forEach(btn => bindModalTrigger(btn, 'rsvpModal'));
-      [fabGiftsBtn, giftsCombinedBtn].forEach(btn => bindModalTrigger(btn, 'giftsCombinedModal'));
-      bindModalTrigger(fabGuestInfoBtn, 'guestInfoModal');
-      bindModalTrigger(dressCodeBtn, 'dressCodeModal');
-      document.querySelectorAll('[data-open-modal]').forEach(btn => {
-        btn.addEventListener('click', (event) => {
-          event.preventDefault();
-          const targetModal = btn.getAttribute('data-open-modal');
-          if (targetModal) openModal(targetModal);
-        });
-      });
-      bindModalTrigger(fabMapBtn, 'locationChooserModal');
-      
-      document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal || e.target.closest('[data-close-modal]')) {
-            e.preventDefault();
-            closeModal(modal);
-          }
-        });
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          document.querySelectorAll('.modal.open').forEach(modal => closeModal(modal));
-        }
-      });
-      
-      const countdownInterval = setInterval(() => {
-        const countdownElem = document.getElementById("countdown");
-        if (!countdownElem) { clearInterval(countdownInterval); return; }
-        const distance = new Date(EVENT_DATE).getTime() - new Date().getTime();
-        if (distance < 0) {
-          clearInterval(countdownInterval);
-          countdownElem.style.display = "none";
-          return;
-        }
-        const format = (num) => String(num).padStart(2, '0');
-        document.getElementById("days").innerText = format(Math.floor(distance / (1000 * 60 * 60 * 24)));
-        document.getElementById("hours").innerText = format(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
-        document.getElementById("minutes").innerText = format(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
-        document.getElementById("seconds").innerText = format(Math.floor((distance % (1000 * 60)) / 1000));
-      }, 1000);
-      
-
-      // Cápsula do Tempo — activa apenas no dia do casamento
-      const timeCapsuleForm = document.getElementById('timeCapsuleForm');
-      const timeCapsuleFiles = document.getElementById('timeCapsuleFiles');
-      const timeCapsuleSubmit = document.getElementById('timeCapsuleSubmit');
-      const timeCapsuleStatus = document.getElementById('timeCapsuleStatus');
-      const timeCapsuleGallery = document.getElementById('timeCapsuleGallery');
-      const timeCapsuleEmpty = document.getElementById('timeCapsuleEmpty');
-      const timeCapsuleState = document.getElementById('timeCapsuleState');
-      const timeCapsuleStateTitle = document.getElementById('timeCapsuleStateTitle');
-      const timeCapsuleStateText = document.getElementById('timeCapsuleStateText');
-
-      const isSameCalendarDay = (a, b) => (
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate()
-      );
-
-      const formatEventDay = (date) => date.toLocaleDateString('pt-PT', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-
-      const renderTimeCapsuleGallery = () => {
-        if (!timeCapsuleGallery) return;
-        const savedPhotos = JSON.parse(localStorage.getItem('demoTimeCapsulePhotos') || '[]');
-        timeCapsuleGallery.querySelectorAll('.time-capsule-photo').forEach(item => item.remove());
-
-        if (timeCapsuleEmpty) {
-          timeCapsuleEmpty.style.display = savedPhotos.length ? 'none' : 'block';
-        }
-
-        savedPhotos.forEach(photo => {
-          const item = document.createElement('article');
-          item.className = 'time-capsule-photo';
-          item.innerHTML = `
-            <img src="${photo.src}" alt="Foto partilhada por ${escapeHTML(photo.nome)}" loading="lazy" />
-            <div>
-              <strong>${escapeHTML(photo.nome)}</strong>
-              <span>${new Date(photo.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}</span>
-            </div>
-          `;
-          timeCapsuleGallery.appendChild(item);
-        });
-      };
-
-      const configureTimeCapsule = () => {
-        const eventDate = new Date(EVENT_DATE);
-        const today = new Date();
-        const capsuleIsOpen = isSameCalendarDay(today, eventDate);
-        const eventDayLabel = formatEventDay(eventDate);
-
-        if (!timeCapsuleForm || !timeCapsuleFiles || !timeCapsuleSubmit) return;
-
-        if (capsuleIsOpen) {
-          timeCapsuleForm.classList.remove('is-locked');
-          timeCapsuleFiles.disabled = false;
-          timeCapsuleSubmit.disabled = false;
-          if (timeCapsuleState) timeCapsuleState.classList.add('is-open');
-          if (timeCapsuleStateTitle) timeCapsuleStateTitle.textContent = 'Cápsula aberta hoje';
-          if (timeCapsuleStateText) timeCapsuleStateText.textContent = 'Partilhe as fotografias tiradas durante a celebração. As memórias ficarão guardadas nesta versão demo.';
-        } else {
-          timeCapsuleForm.classList.add('is-locked');
-          timeCapsuleFiles.disabled = true;
-          timeCapsuleSubmit.disabled = true;
-          if (timeCapsuleState) timeCapsuleState.classList.remove('is-open');
-          if (timeCapsuleStateTitle) timeCapsuleStateTitle.textContent = 'Disponível apenas no dia do casamento';
-          if (timeCapsuleStateText) {
-            timeCapsuleStateText.textContent = today < eventDate
-              ? `A cápsula será aberta automaticamente no dia ${eventDayLabel}.`
-              : `A cápsula esteve disponível apenas no dia ${eventDayLabel}.`;
-          }
-        }
-
-        renderTimeCapsuleGallery();
-      };
-
-      if (timeCapsuleForm) {
-        timeCapsuleForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const eventDate = new Date(EVENT_DATE);
-          const today = new Date();
-
-          if (!isSameCalendarDay(today, eventDate)) {
-            if (timeCapsuleStatus) {
-              timeCapsuleStatus.style.color = '#8f684d';
-              timeCapsuleStatus.textContent = 'A Cápsula do Tempo só fica disponível no próprio dia do casamento.';
-            }
-            return;
-          }
-
-          const files = Array.from(timeCapsuleFiles.files || []).slice(0, 8);
-          if (!files.length) {
-            if (timeCapsuleStatus) {
-              timeCapsuleStatus.style.color = '#8f684d';
-              timeCapsuleStatus.textContent = 'Seleccione pelo menos uma fotografia.';
-            }
-            return;
-          }
-
-          const validFiles = files.filter(file => file.type.startsWith('image/'));
-          if (!validFiles.length) {
-            if (timeCapsuleStatus) {
-              timeCapsuleStatus.style.color = '#D93025';
-              timeCapsuleStatus.textContent = 'Só são aceites ficheiros de imagem.';
-            }
-            return;
-          }
-
-          timeCapsuleSubmit.disabled = true;
-          timeCapsuleSubmit.textContent = 'A guardar...';
-          if (timeCapsuleStatus) timeCapsuleStatus.textContent = '';
-
-          try {
-            const existingPhotos = JSON.parse(localStorage.getItem('demoTimeCapsulePhotos') || '[]');
-            const readPhoto = (file) => new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve({
-                src: reader.result,
-                nome: guestName || 'Convidado Demo',
-                filename: file.name,
-                timestamp: new Date().toISOString()
-              });
-              reader.onerror = reject;
-              reader.readAsDataURL(file);
-            });
-
-            const newPhotos = await Promise.all(validFiles.map(readPhoto));
-            localStorage.setItem('demoTimeCapsulePhotos', JSON.stringify([...existingPhotos, ...newPhotos].slice(-24)));
-            renderTimeCapsuleGallery();
-            timeCapsuleForm.reset();
-            if (timeCapsuleStatus) {
-              timeCapsuleStatus.style.color = 'green';
-              timeCapsuleStatus.textContent = 'Fotografias adicionadas à Cápsula do Tempo.';
-            }
-          } catch (err) {
-            console.error('Erro na Cápsula do Tempo:', err);
-            if (timeCapsuleStatus) {
-              timeCapsuleStatus.style.color = '#D93025';
-              timeCapsuleStatus.textContent = 'Erro ao guardar as fotografias neste dispositivo.';
-            }
-          } finally {
-            timeCapsuleSubmit.disabled = !isSameCalendarDay(new Date(), new Date(EVENT_DATE));
-            timeCapsuleSubmit.textContent = 'Partilhar Fotos';
-          }
-        });
-      }
-
-      configureTimeCapsule();
-
-      const giftsModal = document.getElementById('giftsCombinedModal');
-      if (giftsModal) {
-        const tabButtons = giftsModal.querySelectorAll('.tab-btn');
-        const tabContents = giftsModal.querySelectorAll('.tab-content');
-        tabButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            const tabId = button.getAttribute('data-tab');
-            tabContents.forEach(content => {
-              content.classList.toggle('active', content.id === tabId);
-            });
-          });
-        });
-      }
-      
-      // RSVP Form - Corrigido para CORS
-      if (rsvpForm) {
-        const rsvpStatus = document.getElementById('rsvpStatus');
-        const submitButton = document.getElementById('sendRsvpServer');
-        
-        const getRsvpData = () => ({
-          action: "rsvp",
-          nome: guestName, 
-          token: token,
-          guests: rsvpForm.querySelector('#guests').value,
-          phone: rsvpForm.querySelector('#phone').value.trim(),
-          message: rsvpForm.querySelector('#message').value.trim()
-        });
-
-        rsvpForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const data = getRsvpData();
-          
-          const originalButtonText = submitButton.textContent; 
-          submitButton.disabled = true;
-          submitButton.textContent = "A enviar...";
-          rsvpStatus.textContent = "";
-
-          try {
-            await postRequest(data);
-            
-            // Se chegou aqui, assumimos que deu certo
-            localStorage.setItem('guestStatus', `Confirmado (${data.guests})`);
-            rsvpStatus.style.color = "green";
-            rsvpStatus.textContent = "Confirmação demo registada com sucesso!";
-            submitButton.textContent = "Atualizado!";
-            
-            setTimeout(() => {
-              closeModal(document.getElementById('rsvpModal'));
-              submitButton.disabled = false;
-              submitButton.textContent = "Atualizar Confirmação";
-              if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
-            }, 2000);
-            
-          } catch (err) {
-            rsvpStatus.style.color = "#D93025";
-            rsvpStatus.textContent = "Erro ao registar a simulação. Tente novamente.";
-            submitButton.disabled = false;
-            submitButton.textContent = originalButtonText; 
-          }
-        });
-        
-        rsvpForm.querySelector('#sendWhatsapp').addEventListener('click', () => {
-          const data = getRsvpData();
-          const text = `RSVP - Olá! Confirmo a minha presença. Nome: ${data.nome}, Convidados: ${data.guests}. Mensagem: ${data.message}`;
-          window.open(`https://wa.me/${HOST_WHATSAPP_NUMBER.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`, '_blank');
-          closeModal(document.getElementById('rsvpModal'));
-        });
-      }
-      
-      // Abrir confirmação de presença 5 segundos depois de chegar ao fim do convite
-      let endOfInviteRsvpTimer = null;
-      let endOfInviteRsvpOpened = false;
-      const isAtEndOfInvite = () => {
-        const scrollPosition = window.scrollY + window.innerHeight;
-        const documentHeight = Math.max(
-          document.documentElement.scrollHeight,
-          document.body.scrollHeight
-        );
-        return scrollPosition >= documentHeight - 90;
-      };
-
-      const scheduleEndOfInviteRsvp = () => {
-        if (endOfInviteRsvpOpened) return;
-        if (isAtEndOfInvite()) {
-          if (!endOfInviteRsvpTimer) {
-            endOfInviteRsvpTimer = window.setTimeout(() => {
-              endOfInviteRsvpTimer = null;
-              if (endOfInviteRsvpOpened || !isAtEndOfInvite() || document.querySelector('.modal.open')) return;
-              endOfInviteRsvpOpened = true;
-              openModal('rsvpModal');
-            }, 5000);
-          }
-        } else if (endOfInviteRsvpTimer) {
-          window.clearTimeout(endOfInviteRsvpTimer);
-          endOfInviteRsvpTimer = null;
-        }
-      };
-
-      window.addEventListener('scroll', scheduleEndOfInviteRsvp, { passive: true });
-      window.addEventListener('resize', scheduleEndOfInviteRsvp);
-      scheduleEndOfInviteRsvp();
-
-      // Galeria
-      galleryImages.forEach(img => {
-        img.addEventListener('click', () => {
-          lightboxImage.src = img.getAttribute('data-src') || img.src;
-          openModal('lightboxModal');
-        });
-      });
-
-      // Função para carregar a lista de presentes (usando JSONP)
-      async function loadGiftList() {
-        const giftLoading = document.getElementById('giftLoading');
-        const giftError = document.getElementById('giftError');
-        const giftList = document.getElementById('giftList');
-
-        try {
-          const result = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=gifts`);
-
-          if (result.status === 'success') {
-            const gifts = result.data;
-            
-            giftLoading.style.display = 'none';
-            giftError.style.display = 'none';
-            giftList.style.display = 'grid';
-            
-            giftList.innerHTML = '';
-            gifts.forEach(gift => {
-              const item = document.createElement('label');
-              item.className = `gift-item ${gift.reserved ? 'reserved' : ''}`;
-              
-              const checkbox = document.createElement('input');
-              checkbox.type = 'checkbox';
-              checkbox.name = 'gift';
-              checkbox.value = gift.name;
-              checkbox.disabled = gift.reserved;
-              
-              item.appendChild(checkbox);
-              item.appendChild(document.createTextNode(gift.name));
-              
-              if (gift.reserved_by && gift.reserved_by === guestName) {
-                const reservedSpan = document.createElement('span');
-                reservedSpan.style.marginLeft = 'auto';
-                reservedSpan.style.fontSize = '0.8rem';
-                reservedSpan.style.color = '#666';
-                reservedSpan.textContent = '(seu)';
-                item.appendChild(reservedSpan);
-              }
-              
-              giftList.appendChild(item);
-            });
-          } else {
-            throw new Error(result.message || 'Erro ao carregar presentes');
-          }
-        } catch (error) {
-          giftLoading.style.display = 'none';
-          giftError.style.display = 'block';
-          giftError.textContent = 'Erro ao carregar lista de presentes. Tente novamente mais tarde.';
-          console.error('Erro ao carregar presentes:', error);
-        }
-      }
-
-      // Carregar lista de presentes quando o modal for aberto
-      const giftsCombinedModal = document.getElementById('giftsCombinedModal');
-      if (giftsCombinedModal) {
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-              if (giftsCombinedModal.classList.contains('open')) {
-                const loicasContent = document.getElementById('loicasContent');
-                if (loicasContent && loicasContent.classList.contains('active')) {
-                  loadGiftList();
-                }
-              }
-            }
-          });
-        });
-
-        observer.observe(giftsCombinedModal, { attributes: true });
-
-        const tabButtons = giftsCombinedModal.querySelectorAll('.tab-btn');
-        tabButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            if (button.getAttribute('data-tab') === 'loicasContent' && giftsCombinedModal.classList.contains('open')) {
-              loadGiftList();
-            }
-          });
-        });
-      }
-
-      // Gift List Form - Corrigido para CORS
-      const giftListForm = document.getElementById('giftListForm');
-      if (giftListForm) {
-        const giftStatus = document.getElementById('giftStatus');
-        const submitButton = document.getElementById('submitGiftsBtn');
-
-        giftListForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          
-          const selectedCheckboxes = document.querySelectorAll('#giftList input[name="gift"]:checked:not(:disabled)');
-          const selectedGifts = Array.from(selectedCheckboxes).map(cb => cb.value);
-
-          if (selectedGifts.length === 0) {
-            giftStatus.style.color = "#D93025"; 
-            giftStatus.textContent = "Por favor, selecione pelo menos um item disponível.";
-            return;
-          }
-
-          submitButton.disabled = true;
-          submitButton.textContent = "A registar...";
-          giftStatus.textContent = "";
-
-          const data = {
-            action: "save_gifts",
-            nome: guestName,
-            token: token, 
-            selectedGifts: selectedGifts
-          };
-
-          try {
-            await postRequest(data);
-            
-            giftStatus.style.color = "green";
-            giftStatus.textContent = "Presentes demo registados com sucesso!";
-            submitButton.textContent = "Registado!";
-            
-            await loadGiftList();
-            
-            setTimeout(() => {
-              submitButton.disabled = false;
-              submitButton.textContent = "Registar Presentes Selecionados";
-              giftStatus.textContent = "";
-            }, 2500);
-            
-          } catch (err) {
-            giftStatus.style.color = "#D93025";
-            giftStatus.textContent = "Erro ao registar presentes. Tente novamente.";
-            submitButton.disabled = false;
-            submitButton.textContent = "Registar Presentes Selecionados";
-          }
-        });
-      }
-      
-      // Comprovativo Form - CORRIGIDO PARA BASE64
-      const comprovativoForm = document.getElementById('comprovativoForm');
-      if (comprovativoForm) {
-        const comprovativoStatus = document.getElementById('comprovativoStatus');
-        const submitButton = comprovativoForm.querySelector('button[type="submit"]');
-
-        comprovativoForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          const canal = document.getElementById('canalPagamento').value;
-          const fileInput = document.getElementById('comprovativoFile');
-          const file = fileInput.files[0];
-
-          if (!file || !canal) {
-            comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Por favor, preencha o canal e anexe um ficheiro.";
-            return;
-          }
-
-          submitButton.disabled = true;
-          submitButton.textContent = "A processar imagem...";
-          comprovativoStatus.textContent = "";
-
-          // LER O FICHEIRO COMO BASE64 ANTES DE ENVIAR
-          const reader = new FileReader();
-          reader.onload = async function() {
-            const base64File = reader.result.split(',')[1]; 
-            
-            const data = {
-              action: 'upload_comprovativo',
-              nome: guestName,
-              token: token,
-              canal: canal,
-              comprovativoFile: base64File,
-              comprovativoFile_filename: file.name,
-              comprovativoFile_type: file.type
-            };
-
-            submitButton.textContent = "A enviar...";
-
-            try {
-              // Agora usamos o postRequest normal em vez do postFormData
-              await postRequest(data); 
-              
-              comprovativoStatus.style.color = "green";
-              comprovativoStatus.textContent = "Comprovativo demo registado com sucesso!";
-              submitButton.textContent = "Enviado!";
-              comprovativoForm.reset();
-              
-              setTimeout(() => {
-                submitButton.disabled = false;
-                submitButton.textContent = "Enviar Comprovativo";
-                comprovativoStatus.textContent = "";
-              }, 3000);
-              
-            } catch (err) {
-              comprovativoStatus.style.color = "#D93025";
-              comprovativoStatus.textContent = "Erro ao enviar comprovativo. Tente novamente.";
-              submitButton.disabled = false;
-              submitButton.textContent = "Enviar Comprovativo";
-            }
-          };
-
-          reader.onerror = function() {
-            comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Erro ao ler o ficheiro no seu dispositivo.";
-            submitButton.disabled = false;
-            submitButton.textContent = "Enviar Comprovativo";
-          };
-
-          // Inicia a leitura do ficheiro
-          reader.readAsDataURL(file);
-        });
-      }
-
-      // Animações de scroll reversíveis por secção
-      const animatedSections = document.querySelectorAll('.fade-in-section');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          entry.target.classList.toggle('is-visible', entry.isIntersecting);
-        });
-      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-      animatedSections.forEach(section => observer.observe(section));
-
-      // Mural de mensagens - Usando JSONP para carregar
-      const messageForm = document.getElementById('messageForm');
-      const messageText = document.getElementById('messageText');
-      const messageStatus = document.getElementById('messageStatus');
-      const guestbookFeed = document.getElementById('guestbook-feed');
-      const feedLoading = document.getElementById('feed-loading');
-
-      function renderMessage(message) {
-        const messageEl = document.createElement('div');
-        messageEl.className = 'guestbook-entry';
-        
-        messageEl.innerHTML = `
-          <div class="guestbook-header">
-            <strong>${escapeHTML(message.nome)}</strong>
-            <span>${new Date(message.timestamp).toLocaleString('pt-PT', {dateStyle: 'short', timeStyle: 'short'})}</span>
+    });
+  }
+
+  function renderWelcome() {
+    app().innerHTML = `<div class="welcome-screen">
+      <div>
+        <p class="welcome-line">Bem-vindo(a),</p>
+        <h1 class="welcome-name">${escapeHtml(state.authGuest.name)}</h1>
+        <div class="welcome-bar"></div>
+      </div>
+    </div>`;
+    window.setTimeout(() => renderExperience(), 3200);
+  }
+
+  function renderExperience() {
+    app().innerHTML = `<div class="experience">
+      <div class="scroll-progress" aria-hidden="true"><span></span></div>
+      ${guestPill()}
+      ${quickNav()}
+      ${bottomLightboxNav()}
+      ${mainSiteHtml()}
+      ${musicToggle()}
+      <div class="modal-shell is-hidden" id="modal-shell" role="dialog" aria-modal="true"></div>
+    </div>`;
+
+    bindCursorTargets();
+    bindExperienceEvents();
+    updateMusicButton();
+    updateCountdown();
+    clearInterval(state.countdownTimer);
+    state.countdownTimer = setInterval(updateCountdown, 1000);
+    initPremiumMotion();
+    fetchMessages().then((messages) => {
+      state.messages = messages.map((msg) => ({ name: msg.name, text: msg.text }));
+      renderMessageStream();
+      initRevealAnimations($(".guestbook-section") || document);
+    });
+  }
+
+  function guestPill() {
+    return `<div class="guest-pill">
+      <span class="guest-pill-name">${escapeHtml(state.authGuest.name)}</span>
+      <button type="button" class="guest-pill-logout" data-action="logout" aria-label="Sair">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>`;
+  }
+
+  function quickNav() {
+    const items = [
+      { modal: "guest", label: "Passe", icon: "ring" },
+      { href: "#detalhes", label: "Detalhes", icon: "map" },
+      { href: "#rsvp", label: "RSVP", icon: "rsvp" },
+      { href: "#galeria", label: "Galeria", icon: "camera" },
+    ];
+
+    return `<nav class="quick-nav" aria-label="Navegação rápida">
+      ${items.map((item) => item.modal
+        ? `<button type="button" data-modal="${item.modal}" aria-label="${item.label}">${icon(item.icon)}<span>${item.label}</span></button>`
+        : `<a href="${item.href}" aria-label="${item.label}">${icon(item.icon)}<span>${item.label}</span></a>`
+      ).join("")}
+    </nav>`;
+  }
+
+  function bottomLightboxNav() {
+    return `<nav class="bottom-lightbox-nav" aria-label="Acessos rápidos aos lightboxes">
+      <div class="bottom-lightbox-track">
+        ${[
+          { label: "Confirmar presença", iconType: "rsvp", modal: "rsvp" },
+          { label: "Presentes", iconType: "gift", modal: "presentes" },
+          { label: "Mapa", iconType: "map", modal: "mapa" },
+          { label: "O seu passe pessoal", iconType: "ring", modal: "guest" },
+        ].map((item) => `<button type="button" class="bottom-lightbox-button" data-modal="${item.modal}" aria-label="${item.label}" title="${item.label}">${icon(item.iconType)}</button>`).join("")}
+      </div>
+    </nav>`;
+  }
+
+  function mainSiteHtml() {
+    return `<main class="site is-live" id="site">
+      <section class="hero" id="inicio">
+        ${petals()}
+        <img class="hero-bg" src="${photos.hero}" alt="Noivos em retrato elegante" />
+        <div class="hero-shade"></div>
+        <div class="hero-inner">
+          <p class="handwriting">Com alegria convidamo-lo(a)</p>
+          <h1><span>${wedding.bride}</span><i>&amp;</i><span>${wedding.groom}</span></h1>
+          <p class="hero-date">${wedding.dateLong} · ${wedding.venue}</p>
+          ${countdownStrip()}
+          <div class="hero-actions">
+            <button class="btn-outline" type="button" data-modal="rsvp">Confirmar presença</button>
+            <button class="btn-primary" type="button" data-action="calendar">Adicionar ao calendário</button>
           </div>
-          <p>${escapeHTML(message.message)}</p>
-        `;
-        return messageEl;
-      }
+        </div>
+        <a class="scroll-cue" href="#data" aria-label="Descer para os detalhes">descer</a>
+      </section>
 
-      async function loadMessages() {
-        try {
-          const result = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=messages`);
-          
-          if (result.status === "success" && result.data.length > 0) {
-            guestbookFeed.innerHTML = '';
-            result.data.forEach(message => {
-              guestbookFeed.appendChild(renderMessage(message));
-            });
-          } else {
-            feedLoading.textContent = "Ainda ninguém deixou uma mensagem. Seja o primeiro!";
-          }
-        } catch (err) {
-          feedLoading.textContent = "Erro ao carregar mensagens.";
-        }
-      }
-      
-      loadMessages();
+      <section class="date-editorial" id="data">
+        ${heading("save the date", wedding.dateDisplay, `${wedding.time} no ${wedding.venue}`)}
+      </section>
 
-      if (messageForm) {
-        messageForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          
-          const message = messageText.value;
-          if (!message.trim()) return;
+      ${vowSection()}
+      ${divider()}
+      ${blessingSection()}
+      ${divider()}
+      ${detailsIndex()}
+      ${conciergeSection()}
+      ${rsvpSection()}
+      ${divider()}
+      ${gallerySection()}
+      ${guestbookSection()}
+      ${finalSection()}
+      ${lirandzoFooter()}
+    </main>`;
+  }
 
-          const submitButton = messageForm.querySelector('button[type="submit"]');
-          submitButton.disabled = true;
-          submitButton.textContent = "A enviar...";
-          messageStatus.textContent = "";
+  function eventPass() {
+    const guest = state.authGuest;
+    const allowedCompanions = guestCompanionsCount(guest);
+    const tableLabel = guest?.table ? escapeHtml(guest.table) : "A definir";
+    const notesLabel = guest?.notes ? escapeHtml(guest.notes) : "Sem observações adicionais";
+    return `<section class="event-pass-section" id="passe">
+      <div class="event-pass-copy"><p>acesso privado</p><h2>O seu passe pessoal</h2><span>Este convite foi desbloqueado especialmente para ${escapeHtml(guest.name)}.</span></div>
+      <div class="event-pass">
+        <div class="pass-topline"><span>convite privado</span>${icon("ring")}</div>
+        <div class="pass-main">
+          <div><p>convidado</p><h3>${escapeHtml(guest.name)}</h3></div>
+          <div class="pass-qr-block">${qrImage()}<small>QR Code para check-in</small></div>
+        </div>
+        <div class="pass-meta">
+          <span><small>data</small>${wedding.dateLong}</span>
+          <span><small>hora</small>${wedding.time}</span>
+          <span><small>mesa</small>${tableLabel}</span>
+          <span><small>acompanhantes</small>${allowedCompanions}</span>
+        </div>
+        <div class="pass-note"><small>observações</small><span>${notesLabel}</span></div>
+        <div class="pass-actions">
+          <button type="button" data-modal="guest">Passe pessoal</button>
+          <button type="button" data-action="calendar">Calendário</button>
+          <button type="button" data-modal="mapa">Mapa</button>
+        </div>
+      </div>
+    </section>`;
+  }
 
-          const data = {
-            action: "post_message",
-            nome: guestName,
-            token: token,
-            message: message
-          };
+  function vowSection() {
+    return `<section class="vow-section">
+      <div class="vow-copy"><p>${escapeHtml(wedding.verseReference)}</p><h2>${escapeHtml(wedding.verse)}</h2></div>
+      <div class="phone-invite">
+        <div class="phone-notch"></div>
+        <img src="${photos.portrait}" alt="Prévia mobile do convite" />
+        ${countdownStrip()}
+        <strong>${wedding.bride}</strong><i>&amp;</i><strong>${wedding.groom}</strong>
+      </div>
+    </section>`;
+  }
 
-          try {
-            await postRequest(data);
-            
-            messageStatus.style.color = "green";
-            messageStatus.textContent = "Mensagem demo publicada. Obrigado!";
-            messageText.value = "";
-            
-            // Recarregar mensagens
-            await loadMessages();
+  function blessingSection() {
+    return `<section class="story-section blessing-section">
+      ${heading("bênção", "Grandes coisas fez o Senhor", `${wedding.verseReference}`)}
+      <div class="story-timeline blessing-grid">
+        <div class="story-item blessing-card"><div class="story-photo"><img src="${photos.dance}" alt="Flícia e Walter" /></div><div class="story-content"><time>Versículo</time><h3>${escapeHtml(wedding.verseReference)}</h3><p>${escapeHtml(wedding.verse)}</p></div></div>
+        <div class="story-item blessing-card"><div class="story-photo"><img src="${photos.close}" alt="Noivos de mãos dadas" /></div><div class="story-content"><time>Família</time><h3>Pais dos noivos</h3><p><strong>Noiva:</strong> ${escapeHtml(wedding.brideParents)}<br /><strong>Noivo:</strong> ${escapeHtml(wedding.groomParents)}</p></div></div>
+      </div>
+    </section>`;
+  }
 
-            setTimeout(() => { messageStatus.textContent = ""; }, 3000);
-          } catch (err) {
-            messageStatus.style.color = "#D93025";
-            messageStatus.textContent = "Erro ao enviar mensagem.";
-          } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Enviar Mensagem";
-          }
-        });
-      }
+  function detailsIndex() {
+    const rows = [
+      ["programa", "01", "Programa", "Horário completo da celebração"],
+      ["dress", "02", "Dress code", "Azul, branco e elegância romântica"],
+      ["presentes", "03", "Presentes", "Contribuição monetária"],
+      ["apoio", "04", "Apoio", "Contactos para o dia do evento"],
+      ["mapa", "05", "Mapa", "Locais da cerimónia e recepção"],
+    ];
+    return `<section class="details-index" id="detalhes">
+      ${heading("detalhes", "Tudo o que precisa", "Informações essenciais num convite limpo, elegante e funcional.")}
+      <div class="detail-list">
+        ${rows.map(([key, number, title, text]) => `<div class="detail-row"><button type="button" data-modal="${key}"><span>${number}</span><strong>${title}</strong><small>${text}</small></button></div>`).join("")}
+      </div>
+    </section>`;
+  }
 
-      // Animações adicionais
-      const sectionTitles = document.querySelectorAll('.section-title');
-      const titleObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            titleObserver.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.6 });
-      sectionTitles.forEach(title => titleObserver.observe(title));
-      
-      const agendaStar = document.querySelector('.agenda-icon-small');
-      if (agendaStar) {
-        const starObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              starObserver.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.7 });
-        starObserver.observe(agendaStar);
-      }
-      
-      const countdownSpans = document.querySelectorAll('#countdown span');
-      countdownSpans.forEach(span => {
-        let lastValue = span.textContent;
-        const observer = new MutationObserver(() => {
-          if (span.textContent !== lastValue) {
-            span.classList.add('tick');
-            requestAnimationFrame(() => {
-              span.classList.remove('tick');
-            });
-            lastValue = span.textContent;
-          }
-        });
-        observer.observe(span, { childList: true });
+  function conciergeSection() {
+    return `<section class="concierge-section" id="concierge">
+      ${heading("concierge", "Tudo a um toque", "Acções rápidas, ícones animados e informação certa no momento certo.")}
+      <div class="concierge-grid">
+        ${conciergeItems.map((item) => `<div class="concierge-item">
+          ${icon(item.icon)}
+          <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p></div>
+          ${item.modal ? `<button type="button" data-modal="${item.modal}">${escapeHtml(item.action)}</button>` : item.href ? `<a href="${item.href}">${escapeHtml(item.action)}</a>` : `<button type="button" data-action="calendar">${escapeHtml(item.action)}</button>`}
+        </div>`).join("")}
+      </div>
+    </section>`;
+  }
+
+  function guestOptions(guest = state.authGuest) {
+    const max = Math.max(1, Math.min(Number(guest?.maxGuests || 2), 10));
+    return Array.from({ length: max }, (_, i) => `<option>${i + 1}</option>`).join("");
+  }
+
+  function rsvpSection() {
+    const guest = state.authGuest;
+    const companions = guestCompanionsCount(guest);
+    const tableLabel = guest?.table ? escapeHtml(guest.table) : "A definir";
+    return `<section class="rsvp-section" id="rsvp">
+      <div class="rsvp-title"><p>Confirme</p><h2>RS<br />VP</h2><span>até ${wedding.rsvpDeadline}</span></div>
+      <div class="rsvp-action-card">
+        <p>Os seus dados já foram carregados para <strong>${escapeHtml(guest?.name || "Convidado")}</strong>.</p>
+        <ul class="rsvp-summary-list">
+          <li><span>Mesa</span><strong>${tableLabel}</strong></li>
+          <li><span>Acompanhantes</span><strong>${companions}</strong></li>
+        </ul>
+        <button class="btn-primary" type="button" data-modal="rsvp">Confirmar presença</button>
+        <p class="is-hidden" id="rsvp-note"></p>
+      </div>
+    </section>`;
+  }
+
+  function gallerySection() {
+    return `<section class="gallery-section" id="galeria">
+      ${heading("galeria", "Momentos", "Clique em qualquer imagem para abrir a galeria.")}
+      <div class="gallery-mosaic">
+        ${gallery.map((item, index) => `<button type="button" data-gallery-index="${index}"><img src="${item.src}" alt="${escapeHtml(item.title)}" /><span>${escapeHtml(item.title)}</span></button>`).join("")}
+      </div>
+    </section>`;
+  }
+
+  function guestbookSection() {
+    return `<section class="guestbook-section">
+      ${heading("mensagens", "Deixe uma mensagem", "As mensagens aparecem imediatamente no convite.")}
+      <div class="guestbook-grid">
+        <form class="guestbook-form" id="guestbook-form">
+          <p class="guestbook-as">A escrever como <strong>${escapeHtml(state.authGuest.name)}</strong></p>
+          <textarea id="guestbook-text" placeholder="Escreva uma mensagem para os noivos" rows="5"></textarea>
+          <button class="btn-primary" type="submit">Publicar mensagem</button>
+        </form>
+        <div class="message-stream" id="message-stream"></div>
+      </div>
+    </section>`;
+  }
+
+  function finalSection() {
+    return `<section class="final-section" id="fim">
+      ${petals()}
+      <div class="final-bg"><img src="${photos.dance}" alt="Flícia e Walter" /></div>
+      <div>
+        <p class="handwriting">Com amor</p>
+        <h2>${wedding.bride} &amp; ${wedding.groom}</h2>
+      </div>
+    </section>`;
+  }
+
+  function lirandzoFooter() {
+    return `<footer class="lirandzo-demo-footer" aria-label="Rodapé Lirandzo">
+      <img src="./assets/media/lirandzo-logo.svg" alt="Lirandzo" loading="lazy" />
+    </footer>`;
+  }
+
+  function musicToggle() {
+    return `<button class="music-toggle" type="button" data-action="music" aria-label="Tocar musica">
+      <svg class="music-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+    </button>`;
+  }
+
+  function bindExperienceEvents() {
+    document.addEventListener("keydown", handleGlobalKeydown);
+
+    $$('[data-action="calendar"]').forEach((button) => button.addEventListener("click", downloadCalendar));
+    $$('[data-action="logout"]').forEach((button) => button.addEventListener("click", logout));
+    $$('[data-action="music"]').forEach((button) => button.addEventListener("click", toggleMusic));
+
+    $$('[data-modal]').forEach((button) => {
+      button.addEventListener("click", () => {
+        playHoverClick();
+        openModal(button.dataset.modal);
       });
-      
-      const flowers = document.querySelectorAll('.decor-flower-top-right, .decor-flower-bottom-left');
-      window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
-        flowers.forEach((flower, index) => {
-          const factor = index % 2 === 0 ? 0.03 : -0.03;
-          const translateY = scrollY * factor;
-          flower.style.transform = `translateY(${translateY}px)`;
-        });
-      });
-      
-      const magicRevealSelectors = [
-        '.section:not(.hero) > .verse',
-        '.section:not(.hero) > .verse-reference',
-        '.section:not(.hero) > .section-title',
-        '.section:not(.hero) > .section-subtitle',
-        '.section:not(.hero) .vintage-section-kicker',
-        '.section:not(.hero) .vintage-title-wrap',
-        '.section:not(.hero) .couple-details > *',
-        '.section:not(.hero) .story-chapter',
-        '.section:not(.hero) .agenda-header > *',
-        '.section:not(.hero) .agenda-event',
-        '.section:not(.hero) .gallery-image-container',
-        '.section:not(.hero) .guide-item',
-        '.section:not(.hero) .honor-card',
-        '.section:not(.hero) .menu-preview-card',
-        '.section:not(.hero) .etiquette-item',
-        '.section:not(.hero) .travel-card',
-        '.section:not(.hero) .vintage-letter-preview',
-        '.section:not(.hero) #messageForm',
-        '.section:not(.hero) #guestbook-feed',
-        '.section:not(.hero) .time-capsule-card',
-        '.section:not(.hero) .time-capsule-state',
-        '.section:not(.hero) .time-capsule-form',
-        '.section:not(.hero) .time-capsule-gallery',
-        '.footer > *'
-      ];
+    });
 
-      const magicRevealElements = Array.from(document.querySelectorAll(magicRevealSelectors.join(',')));
-      magicRevealElements.forEach((element, index) => {
-        if (!element.classList.contains('magic-reveal')) {
-          element.classList.add('magic-reveal');
-        }
+    $$('[data-gallery-index]').forEach((button) => {
+      button.addEventListener("click", () => openGallery(Number(button.dataset.galleryIndex || 0)));
+    });
 
-        if (element.closest('.honor-grid, .menu-preview-grid, .etiquette-grid, .gallery-grid, .guide-grid, .couple-details')) {
-          const siblings = Array.from(element.parentElement.children);
-          element.style.setProperty('--reveal-delay', `${Math.min(siblings.indexOf(element) * 90, 360)}ms`);
-        } else {
-          element.style.setProperty('--reveal-delay', `${Math.min(index % 5 * 55, 220)}ms`);
-        }
+    $("#rsvp-form")?.addEventListener("submit", handleRsvpSubmit);
 
-        if (element.matches('.gallery-image-container')) element.dataset.reveal = 'zoom';
-        if (element.matches('.story-chapter')) element.dataset.reveal = 'slide';
-        if (element.matches('.agenda-event')) element.dataset.reveal = 'lift';
-        if (element.matches('.vintage-title-wrap, .section-title')) element.dataset.reveal = 'title';
-      });
+    $("#guestbook-form")?.addEventListener("submit", handleGuestbookSubmit);
+    addParallaxHandler();
+  }
 
-      let lastScrollY = window.scrollY;
-      document.documentElement.dataset.scrollDirection = 'down';
+  function handleGlobalKeydown(event) {
+    if (event.key === "Escape") closeModal();
+  }
 
-      window.addEventListener('scroll', () => {
-        const currentY = window.scrollY;
-        document.documentElement.dataset.scrollDirection = currentY >= lastScrollY ? 'down' : 'up';
-        lastScrollY = currentY;
-      }, { passive: true });
+  function openGallery(index) {
+    state.galleryIndex = index;
+    openModal("galeria");
+  }
 
-      const scrollElements = document.querySelectorAll('.scroll-animate, .magic-reveal');
-      const scrollObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          entry.target.classList.toggle('is-visible', entry.isIntersecting);
-        });
-      }, { threshold: 0.18, rootMargin: '0px 0px -6% 0px' });
-      scrollElements.forEach(el => scrollObserver.observe(el));
+  function openModal(type) {
+    const shell = $("#modal-shell");
+    if (!shell) return;
+    shell.classList.remove("is-hidden");
+    shell.classList.add("is-open");
+    shell.innerHTML = `<button class="modal-backdrop" type="button" data-close-modal aria-label="Fechar"></button>
+      <div class="modal-panel">
+        <button class="modal-close" type="button" data-close-modal aria-label="Fechar lightbox">fechar</button>
+        ${modalContent(type)}
+      </div>`;
+
+    $$('[data-close-modal]', shell).forEach((button) => button.addEventListener("click", closeModal));
+    $$('[data-gallery-nav]', shell).forEach((button) => button.addEventListener("click", () => navigateGallery(Number(button.dataset.galleryNav))));
+    $$('[data-gallery-dot]', shell).forEach((button) => button.addEventListener("click", () => {
+      state.galleryIndex = Number(button.dataset.galleryDot || 0);
+      openModal("galeria");
+    }));
+    shell.querySelector("#modal-rsvp-form")?.addEventListener("submit", handleRsvpSubmit);
+    shell.querySelector('[data-action="confirm-rsvp"]')?.addEventListener("click", confirmPresenceFromGuest);
+    shell.querySelector('[data-action="calendar"]')?.addEventListener("click", downloadCalendar);
+    shell.querySelector('[data-action="music"]')?.addEventListener("click", toggleMusic);
+    shell.querySelector('[data-action="logout"]')?.addEventListener("click", logout);
+    shell.querySelector('[data-action="copy-iban"]')?.addEventListener("click", copyIban);
+    shell.querySelector("#gift-proof-form")?.addEventListener("submit", handleGiftProofSubmit);
+    bindCursorTargets();
+    initRevealAnimations(shell);
+    initRippleInteractions(shell);
+  }
+
+  function closeModal() {
+    const shell = $("#modal-shell");
+    if (!shell || shell.classList.contains("is-hidden")) return;
+    shell.classList.add("is-hidden");
+    shell.classList.remove("is-open");
+    shell.innerHTML = "";
+  }
+
+  function navigateGallery(direction) {
+    state.galleryIndex = (state.galleryIndex + gallery.length + direction) % gallery.length;
+    openModal("galeria");
+  }
+
+  function modalContent(type) {
+    const guest = state.authGuest;
+
+    if (type === "galeria") {
+      const current = gallery[state.galleryIndex];
+      return `<div class="gallery-lightbox">
+        <img src="${current.src}" alt="${escapeHtml(current.title)}" />
+        <div class="glb-info"><p class="modal-eyebrow">galeria</p><h2>${escapeHtml(current.title)}</h2><nav><button type="button" data-gallery-nav="-1">Anterior</button><button type="button" data-gallery-nav="1">Seguinte</button></nav></div>
+        <div class="glb-dots">${gallery.map((_, index) => `<button type="button" class="${index === state.galleryIndex ? "is-active" : ""}" data-gallery-dot="${index}" aria-label="Imagem ${index + 1}"></button>`).join("")}</div>
+      </div>`;
     }
 
-    // Navegação por setas (opcional)
-    document.addEventListener('keydown', (e) => {
-      const timeline = document.getElementById('storyTimeline');
-      if (!timeline) return;
-      
-      if (e.key === 'ArrowRight') {
-        timeline.scrollBy({ left: 400, behavior: 'smooth' });
-      } else if (e.key === 'ArrowLeft') {
-        timeline.scrollBy({ left: -400, behavior: 'smooth' });
-      }
+    if (type === "guest") {
+      return eventPass();
+    }
+
+    if (type === "rsvp") {
+      const companions = guestCompanionsCount(guest);
+      const tableLabel = guest?.table ? escapeHtml(guest.table) : "A definir";
+      return `<div class="modal-copy rsvp-modal">
+        <p class="modal-eyebrow">confirmar presença</p>
+        <h2>RSVP</h2>
+        <p>O convite já reconheceu os seus dados. Confirme a presença ou adicione o casamento ao calendário como lembrete.</p>
+        <div class="rsvp-choice-card">
+          <ul class="rsvp-summary-list">
+            <li><span>Convidado</span><strong>${escapeHtml(guest?.name || "Convidado")}</strong></li>
+            <li><span>Mesa</span><strong>${tableLabel}</strong></li>
+            <li><span>Acompanhantes</span><strong>${companions}</strong></li>
+          </ul>
+          <div class="rsvp-choice-actions">
+            <button class="btn-primary" type="button" data-action="confirm-rsvp">Confirmar presença</button>
+            <button class="btn-outline" type="button" data-action="calendar">Adicionar ao calendário como lembrete</button>
+          </div>
+          <p class="is-hidden" id="modal-rsvp-note"></p>
+        </div>
+      </div>`;
+    }
+
+    if (type === "programa") {
+      return `<div class="modal-copy"><p class="modal-eyebrow">programa</p><h2>O dia de Flícia & Walter.</h2><div class="modal-timeline">${program.map(([time, label]) => `<div><time>${time}</time><span>${label}</span></div>`).join("")}</div></div>`;
+    }
+
+    if (type === "dress") {
+      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">dress code</p><h2>Elegante e romântico.</h2><p>Paleta principal em azul e branco, com apresentação clássica, limpa e harmoniosa.</p><div class="palette large">${palette.map((color) => `<span style="background-color:${color}"></span>`).join("")}</div></div><img src="${photos.close}" alt="Inspiração visual do convite" /></div>`;
+    }
+
+    if (type === "apoio") {
+      return `<div class="modal-copy"><p class="modal-eyebrow">apoio no dia</p><h2>Contactos de apoio</h2><p>${escapeHtml(wedding.supportContacts)}</p><p>Em caso de dúvida no dia do evento, contacte a organização através destes números.</p></div>`;
+    }
+
+    if (type === "musica") {
+      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">música</p><h2>Ambiente sonoro escolhido pelos noivos.</h2><p>A música do convite está integrada e pode ser controlada pelo botão de áudio.</p><button class="btn-primary" type="button" data-action="music">Tocar / pausar música</button></div><img src="${photos.portrait}" alt="Flícia e Walter" /></div>`;
+    }
+
+    if (type === "presentes") {
+      return `<div class="modal-copy gift-modal">
+        <p class="modal-eyebrow">presentes</p>
+        <h2>A vossa presença é o maior presente.</h2>
+        <p>${escapeHtml(wedding.giftText)}</p>
+        <ul class="guest-info-list gift-list">
+          <li><span>banco</span><strong>${escapeHtml(wedding.bankName)}</strong></li>
+          <li><span>titular</span><strong>${escapeHtml(wedding.bankHolder)}</strong></li>
+          <li><span>conta</span><strong>${escapeHtml(wedding.bankAccount)}</strong></li>
+          <li><span>pagamento móvel</span><strong>${escapeHtml(wedding.mobilePayment)}</strong></li>
+        </ul>
+        <button class="btn-primary" type="button" data-action="copy-iban">Copiar número da conta</button>
+        <form class="gift-proof-form" id="gift-proof-form" enctype="multipart/form-data">
+          <div class="gift-proof-head">
+            <p class="modal-eyebrow">comprovativo</p>
+            <h3>Enviar comprovativo</h3>
+            <span>Depois de efectuar a contribuição, envie aqui a imagem ou PDF do comprovativo.</span>
+          </div>
+          <label>
+            <span>Comprovativo</span>
+            <input id="gift-file" name="comprovativoFile" type="file" accept="image/*,.pdf" required />
+          </label>
+          <button class="btn-primary" type="submit">Enviar comprovativo</button>
+          <p class="gift-proof-note is-hidden" id="gift-proof-note"></p>
+        </form>
+      </div>`;
+    }
+
+    return `<div class="modal-copy map-modal"><p class="modal-eyebrow">localização</p><h2>${wedding.displayNames}</h2><p><strong>Cerimónia:</strong> ${wedding.ceremonyPlace} · ${wedding.ceremonyTime}</p><p><strong>Recepção:</strong> ${wedding.receptionPlace} · ${wedding.receptionTime}</p><div class="map-visual"><span></span><strong>F&amp;W</strong></div><a class="text-link" href="${wedding.ceremonyMap}" target="_blank" rel="noreferrer">Abrir cerimónia no Google Maps</a><a class="text-link" href="${wedding.receptionMap}" target="_blank" rel="noreferrer">Abrir recepção no Google Maps</a></div>`;
+  }
+
+  async function confirmPresenceFromGuest() {
+    const note = $("#modal-rsvp-note") || $("#rsvp-note");
+    const totalGuests = guestTotalCount(state.authGuest);
+
+    try {
+      const result = await submitRSVP(state.authGuest.id, "confirmed", totalGuests);
+      state.authGuest = { ...state.authGuest, rsvpStatus: "confirmed", rsvpGuests: totalGuests };
+      sessionStorage.setItem(`wedding_guest_${INVITE_SLUG}`, JSON.stringify(state.authGuest));
+      if (note) note.textContent = result.message || "Presença confirmada com sucesso.";
+    } catch {
+      state.authGuest = { ...state.authGuest, rsvpStatus: "confirmed", rsvpGuests: totalGuests };
+      sessionStorage.setItem(`wedding_guest_${INVITE_SLUG}`, JSON.stringify(state.authGuest));
+      if (note) note.textContent = "Presença confirmada localmente. Quando o servidor estiver activo, o RSVP será sincronizado.";
+    }
+
+    if (note) note.classList.remove("is-hidden");
+  }
+
+  async function handleRsvpSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const attendance = form.querySelector("select[id$='attendance'], #attendance")?.value || $("#attendance")?.value || "Confirmo presença";
+    const guests = form.querySelector("select[id$='guests-select'], #guests-select")?.value || "1";
+    const status = attendance === "Confirmo presença" ? "confirmed" : "declined";
+    const note = form.querySelector("#modal-rsvp-note") || $("#rsvp-note");
+
+    try {
+      const totalGuests = parseInt(guests, 10);
+      const result = await submitRSVP(state.authGuest.id, status, totalGuests);
+      state.authGuest = { ...state.authGuest, rsvpStatus: status, rsvpGuests: totalGuests };
+      sessionStorage.setItem(`wedding_guest_${INVITE_SLUG}`, JSON.stringify(state.authGuest));
+      note.textContent = result.message || "RSVP registado com sucesso.";
+    } catch {
+      note.textContent = "Resposta guardada localmente. Quando o servidor estiver activo, o RSVP será registado no sistema.";
+    }
+    note.classList.remove("is-hidden");
+  }
+
+  async function handleGuestbookSubmit(event) {
+    event.preventDefault();
+    const textarea = $("#guestbook-text");
+    const text = textarea.value.trim();
+    if (!text) return;
+
+    const newMessage = { name: state.authGuest.name || "Convidado", text };
+    state.messages = [newMessage, ...state.messages];
+    renderMessageStream();
+    textarea.value = "";
+
+    try {
+      await postMessage(state.authGuest.id, text);
+    } catch {
+      // a mensagem local já foi apresentada
+    }
+  }
+
+  function renderMessageStream() {
+    const stream = $("#message-stream");
+    if (!stream) return;
+    stream.innerHTML = state.messages.map((msg, index) => `<blockquote key="${index}"><p>"${escapeHtml(msg.text)}"</p><cite>— ${escapeHtml(msg.name)}</cite></blockquote>`).join("");
+  }
+
+  function calendarReminderUrl() {
+    const start = new Date(wedding.dateISO);
+    const end = new Date(start.getTime() + 7 * 60 * 60 * 1000);
+    const localParts = (date) => new Intl.DateTimeFormat("sv-SE", {
+      timeZone: wedding.timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).formatToParts(date).reduce((acc, part) => {
+      acc[part.type] = part.value;
+      return acc;
+    }, {});
+    const compact = (date) => {
+      const p = localParts(date);
+      return `${p.year}${p.month}${p.day}T${p.hour}${p.minute}${p.second}`;
+    };
+    const details = [
+      `Convite privado de ${wedding.displayNames}.`,
+      `Cerimónia: ${wedding.ceremonyPlace} às ${wedding.ceremonyTime}.`,
+      `Recepção: ${wedding.receptionPlace} às ${wedding.receptionTime}.`,
+    ].join("\n");
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text: `Casamento ${wedding.displayNames}`,
+      dates: `${compact(start)}/${compact(end)}`,
+      ctz: wedding.timezone,
+      details,
+      location: wedding.address,
     });
-  </script>
-</body>
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  }
+
+  function downloadCalendar() {
+    const url = calendarReminderUrl();
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    if (!opened) window.location.href = url;
+  }
+
+  function copyIban() {
+    navigator.clipboard?.writeText(wedding.bankAccount);
+  }
+
+  async function handleGiftProofSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const note = form.querySelector("#gift-proof-note");
+    const button = form.querySelector('button[type="submit"]');
+    const fileInput = form.querySelector("#gift-file");
+    const file = fileInput?.files?.[0];
+
+    if (!file) {
+      if (note) {
+        note.textContent = "Seleccione a imagem ou PDF do comprovativo antes de enviar.";
+        note.classList.remove("is-hidden");
+      }
+      return;
+    }
+
+    const maxSize = 6 * 1024 * 1024;
+    if (file.size > maxSize) {
+      if (note) {
+        note.textContent = "O ficheiro é demasiado grande. Use uma imagem ou PDF até 6 MB.";
+        note.classList.remove("is-hidden");
+      }
+      return;
+    }
+
+    const formData = new FormData(form);
+    formData.set("name", state.authGuest?.name || "Convidado");
+    formData.set("nome", state.authGuest?.name || "Convidado");
+    formData.set("token", guestToken());
+    formData.set("slug", INVITE_SLUG);
+    formData.set("canal", "Comprovativo");
+
+    if (note) {
+      note.textContent = "A enviar comprovativo...";
+      note.classList.remove("is-hidden");
+    }
+    if (button) {
+      button.disabled = true;
+      button.textContent = "A enviar...";
+    }
+
+    try {
+      const result = await uploadGiftProof(formData);
+      if (note) note.textContent = result.message || result.data?.message || "Comprovativo enviado com sucesso.";
+      form.reset();
+    } catch (err) {
+      if (note) note.textContent = err.message || "Não foi possível enviar o comprovativo. Tente novamente.";
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = "Enviar comprovativo";
+      }
+    }
+  }
+
+  function ensureMusic() {
+    if (state.audio && state.audio instanceof HTMLAudioElement) return state.audio;
+    const audio = new Audio(wedding.musicUrl);
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.volume = 0.52;
+    state.audio = audio;
+    audio.addEventListener("play", updateMusicButton);
+    audio.addEventListener("pause", updateMusicButton);
+    audio.addEventListener("ended", updateMusicButton);
+    return audio;
+  }
+
+  function updateMusicButton() {
+    const button = $('[data-action="music"]');
+    if (!button) return;
+    const audio = state.audio instanceof HTMLAudioElement ? state.audio : null;
+    const isPlaying = Boolean(audio && !audio.paused && !audio.ended);
+    button.setAttribute("aria-label", isPlaying ? "Parar musica" : "Tocar musica");
+    button.innerHTML = isPlaying
+      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`
+      : `<svg class="music-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>`;
+  }
+
+  function startMusic() {
+    const audio = ensureMusic();
+    const playPromise = audio.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => updateMusicButton());
+    }
+    updateMusicButton();
+  }
+
+  function toggleMusic() {
+    const audio = ensureMusic();
+    if (audio.paused || audio.ended) {
+      startMusic();
+    } else {
+      audio.pause();
+      updateMusicButton();
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem(`wedding_guest_${INVITE_SLUG}`);
+    state.authGuest = null;
+    closeModal();
+    renderEntryCover();
+  }
+
+  function setupCursor() {
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (isTouch) return;
+    const dot = document.createElement("div");
+    const ring = document.createElement("div");
+    dot.className = "cursor-dot";
+    ring.className = "cursor-ring";
+    document.body.append(dot, ring);
+
+    window.addEventListener("mousemove", (event) => {
+      const pos = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      dot.style.transform = pos;
+      ring.style.transform = pos;
+    });
+
+    const observer = new MutationObserver(bindCursorTargets);
+    observer.observe(document.body, { childList: true, subtree: true });
+    bindCursorTargets();
+  }
+
+  function bindCursorTargets() {
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (isTouch) return;
+    const dot = $(".cursor-dot");
+    const ring = $(".cursor-ring");
+    if (!dot || !ring) return;
+    $$('button, a, input, select, textarea, [role="button"]').forEach((el) => {
+      if (el.dataset.cursorBound) return;
+      el.dataset.cursorBound = "true";
+      el.addEventListener("mouseenter", () => { dot.classList.add("is-hovering"); ring.classList.add("is-hovering"); });
+      el.addEventListener("mouseleave", () => { dot.classList.remove("is-hovering"); ring.classList.remove("is-hovering"); });
+    });
+  }
+
+
+  function prefersReducedMotion() {
+    return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function initPremiumMotion() {
+    document.documentElement.classList.add("motion-ready");
+    initScrollProgress();
+    initRevealAnimations(document);
+    initRippleInteractions(document);
+    initParallaxMotion();
+  }
+
+  function initScrollProgress() {
+    const progress = $(".scroll-progress span");
+    if (!progress || progress.dataset.progressBound) return;
+    progress.dataset.progressBound = "true";
+
+    const update = () => {
+      const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+      const value = Math.min(Math.max(window.scrollY / scrollable, 0), 1);
+      progress.style.transform = `scaleX(${value})`;
+    };
+
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+  }
+
+  function prepareRevealElements(root = document) {
+    const revealGroups = [
+      [".hero .handwriting, .hero h1, .hero-date, .hero .countdown-strip, .hero-actions, .scroll-cue", "hero"],
+      [".section-heading p, .section-heading h2, .section-heading span, .rsvp-title p, .rsvp-title h2, .rsvp-title span, .event-pass-copy p, .event-pass-copy h2, .event-pass-copy span, .modal-eyebrow, .modal-copy h2, .modal-copy p", "text"],
+      [".date-editorial, .vow-copy, .story-content, .detail-row, .concierge-item, .rsvp-action-card, .rsvp-choice-card, .guestbook-form, .message-stream blockquote, .final-section > div:not(.final-bg), .modal-timeline div, .guest-info-list li, .pass-meta span, .pass-note, .pass-actions", "fade-up"],
+      [".gallery-mosaic button, .story-photo, .phone-invite, .event-pass, .split-modal img, .gallery-lightbox img, .final-bg, .map-visual, .pass-qr-block", "photo"],
+    ];
+
+    revealGroups.forEach(([selector, type]) => {
+      $$(selector, root).forEach((element, index) => {
+        if (element.dataset.revealReady === "true") return;
+        element.dataset.revealReady = "true";
+        element.dataset.reveal = element.dataset.reveal || type;
+        element.style.setProperty("--reveal-delay", `${Math.min(index % 8, 7) * 78}ms`);
+      });
+    });
+  }
+
+  function revealElement(element) {
+    element.classList.add("is-revealed");
+    element.removeAttribute("data-reveal-stuck");
+  }
+
+  function initRevealAnimations(root = document) {
+    prepareRevealElements(root);
+
+    const elements = $$('[data-reveal="hero"], [data-reveal="text"], [data-reveal="fade-up"], [data-reveal="photo"]', root)
+      .filter((element) => !element.classList.contains("is-revealed"));
+
+    if (!elements.length) return;
+
+    const revealVisibleNow = () => {
+      elements.forEach((element) => {
+        if (element.classList.contains("is-revealed")) return;
+        const rect = element.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 1.12 && rect.bottom > -80) revealElement(element);
+      });
+    };
+
+    // Conteúdos dentro de modais/lightboxes não devem ficar escondidos por scroll interno.
+    if (root?.id === "modal-shell" || root?.classList?.contains("modal-shell")) {
+      elements.forEach(revealElement);
+      return;
+    }
+
+    if (prefersReducedMotion() || !("IntersectionObserver" in window)) {
+      elements.forEach(revealElement);
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        revealElement(entry.target);
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.01, rootMargin: "180px 0px 180px 0px" });
+
+    elements.forEach((element) => observer.observe(element));
+
+    const fallbackKey = root === document ? document.documentElement : root;
+    if (fallbackKey && fallbackKey.dataset.revealFallbackBound !== "true") {
+      fallbackKey.dataset.revealFallbackBound = "true";
+      window.addEventListener("scroll", revealVisibleNow, { passive: true });
+      window.addEventListener("resize", revealVisibleNow, { passive: true });
+      window.addEventListener("load", revealVisibleNow, { passive: true });
+    }
+
+    window.requestAnimationFrame(revealVisibleNow);
+    window.setTimeout(revealVisibleNow, 450);
+    window.setTimeout(revealVisibleNow, 1400);
+  }
+
+  function initRippleInteractions(root = document) {
+    $$('.btn-primary, .btn-outline, .std-cover-button, .login-submit, .concierge-item button, .concierge-item a, .bottom-lightbox-button, .quick-nav a, .quick-nav button, .pass-actions button, .gallery-lightbox nav button', root).forEach((element) => {
+      if (element.dataset.rippleBound === "true") return;
+      element.dataset.rippleBound = "true";
+      element.classList.add("has-ripple");
+      element.addEventListener("pointerdown", (event) => {
+        const rect = element.getBoundingClientRect();
+        const ripple = document.createElement("span");
+        ripple.className = "tap-ripple";
+        ripple.style.left = `${event.clientX - rect.left}px`;
+        ripple.style.top = `${event.clientY - rect.top}px`;
+        element.appendChild(ripple);
+        window.setTimeout(() => ripple.remove(), 650);
+      });
+    });
+  }
+
+  function initParallaxMotion() {
+    if (prefersReducedMotion()) return;
+    const layers = [
+      { element: $(".hero-bg"), speed: -0.075, limit: 34 },
+      { element: $(".final-bg img"), speed: 0.11, limit: 44 },
+      { element: $(".phone-invite"), speed: 0.035, limit: 18 },
+    ].filter((item) => item.element && item.element.dataset.parallaxMotionBound !== "true");
+
+    if (!layers.length) return;
+    layers.forEach((item) => { item.element.dataset.parallaxMotionBound = "true"; });
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      layers.forEach(({ element, speed, limit }) => {
+        const rect = element.getBoundingClientRect();
+        if (rect.bottom < -80 || rect.top > window.innerHeight + 80) return;
+        const center = rect.top + rect.height / 2;
+        const offset = Math.max(Math.min((center - window.innerHeight / 2) * speed, limit), -limit);
+        element.style.setProperty("--scroll-y", `${offset.toFixed(2)}px`);
+      });
+    };
+
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    update();
+  }
+
+  function addParallaxHandler() {
+    // Mantido por compatibilidade com versões anteriores; a animação de scroll actual
+    // é controlada por initParallaxMotion() usando variáveis CSS, sem sobrescrever reveals.
+    initParallaxMotion();
+  }
+
+  function boot() {
+    setupCursor();
+    try {
+      const raw = sessionStorage.getItem(`wedding_guest_${INVITE_SLUG}`);
+      state.authGuest = raw ? JSON.parse(raw) : null;
+    } catch {
+      state.authGuest = null;
+    }
+    if (state.authGuest) renderExperience();
+    else renderEntryCover();
+  }
+
+  document.addEventListener("DOMContentLoaded", boot);
+})();
+
+    </script>
+  </body>
 </html>

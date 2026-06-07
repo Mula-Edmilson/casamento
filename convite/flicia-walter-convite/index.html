@@ -1,870 +1,1360 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt">
-<head>
-  <meta charset="UTF-8" />
-  <title>Convite de Casamento — Ana & Miguel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eeedea" />
+    <meta name="description" content="Convite digital privado de Flícia & Walter." />
+    <title>Flícia & Walter — Convite Digital</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/media/lirandzo-logo.svg" />
+    <script src="./event-data.js"></script>
+    <script src="./client-config.js"></script>
+    <script src="./lirandzo-api.js"></script>
+    <script>window.CONVITE_SLUG = window.LIRANDZO_INVITE_SLUG || "flicia-walter-convite"; window.CONVITE_API_URL = window.LIRANDZO_API_BASE_URL || "https://api-casamento-mj.onrender.com";</script>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+(() => {
+  "use strict";
 
-  <link rel="icon" type="image/png" href="assets/media/lirandzo-logo.svg">
-  <meta property="og:title" content="Convite de Casamento — Ana & Miguel">
-  <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/media/PG2.jpg">
+  const API_BASE = String(window.CONVITE_API_URL || window.LIRANDZO_API_BASE_URL || "").replace(/\/+$/, "");
+  const INVITE_SLUG = window.CONVITE_SLUG || window.LIRANDZO_INVITE_SLUG || "flicia-walter-convite";
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
+  const wedding = {
+    slug: INVITE_SLUG,
+    bride: "FLÍCIA",
+    groom: "WALTER",
+    brideFull: "Flícia Alberto Chambal",
+    groomFull: "Walter Ivan Francisco Mafumo",
+    displayNames: "Flícia & Walter",
+    initials: "F W",
+    monogram: "FW",
+    dateLong: "26 de setembro de 2026",
+    dateDisplay: "26.09\n2026",
+    dateISO: "2026-09-26T11:00:00+02:00",
+    time: "11:00",
+    timezone: "Africa/Maputo",
+    venue: "Igreja Presbiteriana de Moçambique-Khovo",
+    address: "Igreja Presbiteriana de Moçambique-Khovo, Maputo, Moçambique",
+    ceremonyPlace: "Igreja Presbiteriana de Moçambique-Khovo",
+    ceremonyTime: "11:00",
+    ceremonyMap: "https://www.google.com/maps/search/?api=1&query=Igreja%20Presbiteriana%20de%20Mo%C3%A7ambique%20Khovo%20Maputo%20Mo%C3%A7ambique",
+    receptionPlace: "Kuphupa Eventos",
+    receptionTime: "14:30",
+    receptionMap: "https://www.google.com/maps/search/?api=1&query=Kuphupa%20Eventos%20Maputo%20Mo%C3%A7ambique",
+    rsvpDeadline: "15 de julho de 2026",
+    phone: "258842600652",
+    supportContacts: "842319460 Júrcia Chambal / 845762980 Milton Mafumo",
+    brideParents: "Alberto Chambal e Cacilda Sitoe",
+    groomParents: "Francisco Mafumo (em memória) e Ilda Cossa",
+    verseReference: "Salmos 126:3 ARC",
+    verse: "Grandes coisas fez o Senhor por nós, e por isso estamos alegres.",
+    bankName: "Millennium BIM",
+    bankHolder: "Flícia Alberto Chambal",
+    bankAccount: "000100000120794168057",
+    mobilePayment: "842600652 — Walter Mafumo",
+    giftText: "Queridos amigos e familiares, o nosso maior presente é ter-vos connosco e partilhar este dia tão especial. Contudo, caso desejem presentear-nos com um gesto de carinho, optamos por uma contribuição em dinheiro, que nos ajudará a realizar os primeiros passos na construção do nosso lar.",
+    musicUrl: "https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3",
+  };
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  const photos = {
+    hero: "./assets/media/FW-1.jpg",
+    portrait: "./assets/media/FW-2.jpg",
+    dance: "./assets/media/FW-3.jpg",
+    close: "./assets/media/FW-4.jpg",
+    rings: "./assets/media/FW-5.jpg",
+    table: "./assets/media/FW-2.jpg",
+  };
+
+  const gallery = [
+    { src: photos.hero, title: "Retrato dos noivos" },
+    { src: photos.portrait, title: "Save the date" },
+    { src: photos.dance, title: "Encontro" },
+    { src: photos.close, title: "Mãos dadas" },
+    { src: photos.rings, title: "Olhar" },
+  ];
+
+  const program = [
+    ["11:00", "Cerimónia Religiosa — Igreja Presbiteriana de Moçambique-Khovo"],
+    ["14:30", "Cerimónia Civil — Kuphupa Eventos"],
+    ["15:00", "Copo d'Água — Kuphupa Eventos"],
+  ];
+
+  const palette = ["#ffffff", "#eff6ff", "#2563eb", "#0f172a"];
+
+  const conciergeItems = [
+    { icon: "calendar", title: "Guardar data", text: "Adicione o casamento ao calendário do telemóvel.", action: "Adicionar" },
+    { icon: "map", title: "Localização", text: "Veja os locais da cerimónia e recepção.", action: "Ver mapa", modal: "mapa" },
+    { icon: "gift", title: "Presentes", text: "Contribuição monetária e dados bancários.", action: "Ver", modal: "presentes" },
+    { icon: "rsvp", title: "RSVP", text: "Confirme a sua presença em poucos segundos.", action: "Confirmar", href: "#rsvp" },
+  ];
+
+  const demoGuests = [
+    { id: "fw-1", number: 1, category: "VIP", name: "Flícia Alberto Chambal", email: "", token: "fw-2026-001-flicia-alberto-chambal", table: "Mesa dos Noivos", maxGuests: 2, companions: 1, checkedIn: false },
+    { id: "fw-2", number: 2, category: "VIP", name: "Walter Mafumo", email: "waltermafumo3@gmail.com", phone: "842600652", token: "fw-2026-002-walter-mafumo", table: "Mesa dos Noivos", maxGuests: 2, companions: 1, checkedIn: false },
+    { id: "fw-3", number: 3, category: "Família", name: "Júrcia Chambal", email: "", phone: "842319460", token: "fw-2026-003-jurcia-chambal", table: "A definir", maxGuests: 2, companions: 1, checkedIn: false },
+    { id: "fw-4", number: 4, category: "Família", name: "Milton Mafumo", email: "", phone: "845762980", token: "fw-2026-004-milton-mafumo", table: "A definir", maxGuests: 2, companions: 1, checkedIn: false },
+    { id: "fw-5", number: 5, category: "Individual", name: "Convidado", email: "", token: "fw-2026-005-convidado", table: "A definir", maxGuests: 2, companions: 1, checkedIn: false },
+  ];
+
+  const state = {
+    authGuest: null,
+    mode: null,
+    galleryIndex: 0,
+    messages: [],
+    audio: null,
+    countdownTimer: null,
+    petalsSeed: 0,
+  };
+
+  const $ = (selector, parent = document) => parent.querySelector(selector);
+  const $$ = (selector, parent = document) => Array.from(parent.querySelectorAll(selector));
+  const app = () => document.getElementById("app");
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function getTimeLeft(targetDate) {
+    const target = new Date(targetDate).getTime();
+    const diff = Math.max(target - Date.now(), 0);
+    return {
+      days: Math.floor(diff / 86400000),
+      hours: Math.floor((diff / 3600000) % 24),
+      minutes: Math.floor((diff / 60000) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+    };
+  }
+
+  function twoDigits(value) {
+    return String(value).padStart(2, "0");
+  }
+
+  async function apiFetch(endpoint, options = {}) {
+    if (!API_BASE) throw new Error("API Render não configurada.");
+    const response = await fetch(`${API_BASE}/api${endpoint}`, {
+      headers: { "Content-Type": "application/json", "X-Invite-Slug": INVITE_SLUG, ...(options.headers || {}) },
+      ...options,
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.status === "error") throw new Error(data.message || data.error || `Erro ${response.status}`);
+    return data.data || data;
+  }
+
+  async function isBackendAvailable() {
+    if (window.LirandzoAPI && typeof window.LirandzoAPI.isConfigured === "function" && window.LirandzoAPI.isConfigured()) return true;
+    if (!API_BASE) return false;
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 3000);
+      const response = await fetch(`${API_BASE}/health`, { signal: controller.signal, headers: { "X-Invite-Slug": INVITE_SLUG } });
+      clearTimeout(timer);
+      if (!response.ok) return false;
+      const data = await response.json().catch(() => ({}));
+      return data.mongo ? data.mongo === "connected" : true;
+    } catch {
+      return false;
     }
-
-    :root {
-      --bg: #ede3d6;
-      --accent: #8a6448;
-      --accent-dark: #77533d;
-      --text: #ffffff;
-      --text-dark: #4f3f34;
-      --text-light: #6c5b4d;
-      --text-muted: #8b7a6b;
-      --border-color: #ccb39e;
-      --card: #fbf6ef;
-      --card-soft: rgba(251, 246, 239, 0.88);
-      --font-heading: 'Cormorant Garamond', serif;
-      --font-body: 'Inter', sans-serif;
-      --font-script: 'Parisienne', cursive;
-      --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      --danger: #b44747;
-    }
-
-    body {
-      font-family: var(--font-body);
-      color: var(--text);
-      min-height: 100vh;
-      overflow: hidden;
-      opacity: 0;
-      transition: opacity 1.5s ease;
-      background-color: var(--bg);
-    }
-
-    body.loading { opacity: 0; }
-    body.loaded { opacity: 1; }
-
-    .page {
-      position: relative;
-      width: 100%;
-      min-height: 100vh;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 32px 20px;
-    }
-
-    .bg-image {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      object-position: center 28%;
-      z-index: -2;
-      transform: scale(1.02);
-    }
-
-    .overlay {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(to bottom,
-          rgba(255,255,255,0.02) 0%,
-          rgba(255,255,255,0.08) 38%,
-          rgba(244, 232, 220, 0.38) 56%,
-          rgba(247,239,230,0.82) 76%,
-          rgba(251,246,239,0.98) 100%
-        ),
-        linear-gradient(90deg, rgba(138,100,72,0.05), rgba(138,100,72,0.02));
-      z-index: -1;
-    }
-
-    .page::before,
-    .page::after {
-      content: "";
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20220%20220%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%238b6448%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20opacity%3D%22.45%22%3E%3Cpath%20d%3D%22M186%2018c-5%2019-12%2035-24%2048-13%2014-28%2024-52%2032%22/%3E%3Cpath%20d%3D%22M147%2031c13%206%2024%2017%2030%2031%22/%3E%3Cpath%20d%3D%22M124%2041c6%209%2010%2020%2010%2031%22/%3E%3Cpath%20d%3D%22M92%2098c-10-10-22-16-38-18%22/%3E%3Cpath%20d%3D%22M55%2080c6%208%2010%2018%2011%2029%22/%3E%3Cpath%20d%3D%22M102%20107c-10%2011-17%2023-22%2037%22/%3E%3Cpath%20d%3D%22M80%20144c10%200%2018%203%2025%208%22/%3E%3Ccircle%20cx%3D%22148%22%20cy%3D%2231%22%20r%3D%228%22/%3E%3Ccircle%20cx%3D%22124%22%20cy%3D%2241%22%20r%3D%2210%22/%3E%3Ccircle%20cx%3D%2255%22%20cy%3D%2280%22%20r%3D%229%22/%3E%3Ccircle%20cx%3D%2280%22%20cy%3D%22144%22%20r%3D%2211%22/%3E%3C/g%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-size: contain;
-      opacity: 0.15;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .page::before { top: -70px; left: -70px; transform: rotate(-8deg); }
-    .page::after { right: -85px; bottom: -85px; transform: rotate(180deg); }
-
-    .content {
-      position: relative;
-      text-align: center;
-      max-width: 720px;
-      width: 100%;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.4rem;
-      align-items: center;
-      justify-content: center;
-      z-index: 1;
-    }
-
-    .subtitle {
-      letter-spacing: 0.28em;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      color: var(--text-dark);
-      opacity: 0.88;
-    }
-
-    .countdown-main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.45rem;
-      margin: 0.4rem 0 0.5rem;
-    }
-
-    .days-label {
-      display: flex;
-      align-items: flex-end;
-      gap: 0.7rem;
-    }
-
-    .days-number {
-      font-family: var(--font-heading);
-      font-size: clamp(4rem, 10vw, 5.8rem);
-      font-weight: 700;
-      line-height: 1;
-      color: var(--text-dark);
-    }
-
-    .days-text {
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      text-align: left;
-      line-height: 1.3;
-      color: var(--text-light);
-    }
-
-    .quotation {
-      font-size: 0.8rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--text-light);
-    }
-
-    .divider {
-      width: 120px;
-      height: 1px;
-      background: rgba(138, 100, 72, 0.45);
-      margin: 0.6rem auto 0.3rem;
-    }
-
-    .time-row {
-      display: flex;
-      gap: 1.2rem;
-      margin-top: 0.35rem;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-light);
-    }
-
-    .time-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.16rem;
-      min-width: 70px;
-    }
-
-    .time-value {
-      font-weight: 600;
-      font-size: 0.98rem;
-      color: var(--text-dark);
-    }
-
-    .time-label {
-      font-size: 0.68rem;
-      opacity: 0.8;
-    }
-
-    .names {
-      font-family: var(--font-script);
-      font-size: 5rem;
-      color: var(--accent);
-      line-height: 1;
-      text-shadow: 0 10px 22px rgba(255,255,255,0.28);
-      margin: 0.7rem 0 0.2rem;
-    }
-
-    .date-text {
-      font-size: 0.9rem;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--text-dark);
-      opacity: 0.86;
-    }
-
-    .btn-open {
-      padding: 0.95rem 2.5rem;
-      border-radius: 999px;
-      border: 1px solid rgba(138,100,72,0.35);
-      background: rgba(251,246,239,0.72);
-      color: var(--accent);
-      font-size: 0.84rem;
-      text-transform: uppercase;
-      letter-spacing: 0.22em;
-      cursor: pointer;
-      transition: var(--transition-smooth);
-      box-shadow: 0 12px 30px rgba(74,56,42,0.1);
-      margin-top: 1.3rem;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      font-weight: 600;
-    }
-
-    .btn-open:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fffdf8;
-      transform: translateY(-2px);
-      box-shadow: 0 14px 28px rgba(74,56,42,0.16);
-    }
-
-    .login-overlay {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(44, 34, 27, 0.58);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.45s ease, visibility 0.45s ease;
-    }
-
-    .login-overlay.visible {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .login-container {
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.42)),
-        repeating-linear-gradient(90deg, rgba(138,100,72,0.018) 0, rgba(138,100,72,0.018) 1px, transparent 1px, transparent 8px),
-        var(--card);
-      border: 1px solid rgba(138,100,72,0.2);
-      border-radius: 18px;
-      text-align: center;
-      box-shadow: 0 26px 80px rgba(0,0,0,0.22);
-      max-width: 560px;
-      width: 100%;
-      transform: scale(0.95) translateY(10px);
-      transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .login-overlay.visible .login-container {
-      transform: scale(1) translateY(0);
-    }
-
-    .login-hero {
-      position: relative;
-      min-height: 180px;
-      background-image: url('assets/media/PG2.jpg');
-      background-size: cover;
-      background-position: center 30%;
-      overflow: hidden;
-    }
-
-    .login-hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: inherit;
-      background-size: cover;
-      background-position: center 30%;
-      transform: scale(1.05);
-    }
-
-    .login-hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom,
-        rgba(30,21,17,0.78) 0%,
-        rgba(63,49,39,0.38) 24%,
-        rgba(251,246,239,0.18) 58%,
-        rgba(251,246,239,0.96) 100%);
-    }
-
-    .login-badge {
-      position: absolute;
-      top: 26px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 66px;
-      height: 66px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.48);
-      color: white;
-      z-index: 2;
-      backdrop-filter: blur(7px);
-      -webkit-backdrop-filter: blur(7px);
-      box-shadow: 0 14px 30px rgba(0,0,0,0.18);
-    }
-
-    .login-badge svg { width: 28px; height: 28px; }
-
-    .login-body {
-      padding: 0 34px 34px;
-      position: relative;
-    }
-
-    .login-container .names {
-      font-size: 3.5rem;
-      color: var(--accent);
-      text-shadow: none;
-      margin-bottom: 0.3rem;
-    }
-
-    .login-subtitle {
-      margin: 6px 0 26px 0;
-      font-size: 0.98rem;
-      color: var(--text-light);
-    }
-
-    .login-kicker {
-      display: inline-block;
-      margin-top: -8px;
-      margin-bottom: 14px;
-      font-size: 0.72rem;
-      letter-spacing: 0.24em;
-      text-transform: uppercase;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    #loginForm {
-      text-align: left;
-    }
-
-    #loginForm .form-group {
-      margin-bottom: 18px;
-      text-align: left;
-    }
-
-    #loginForm label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-light);
-    }
-
-    .input-shell {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: rgba(255,255,255,0.7);
-      border: 1px solid rgba(138,100,72,0.18);
-      border-radius: 14px;
-      padding: 0 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
-    }
-
-    .input-shell svg {
-      width: 18px;
-      height: 18px;
-      color: var(--accent);
-      opacity: 0.85;
-      flex-shrink: 0;
-    }
-
-    #loginForm input {
-      width: 100%;
-      padding: 14px 12px;
-      border-radius: 14px;
-      border: none;
-      background: transparent;
-      font-size: 1rem;
-      color: var(--text-dark);
-      font-family: var(--font-body);
-      transition: all 0.3s ease;
-    }
-
-    #loginForm input::placeholder { color: #9f8e80; }
-
-    #loginForm input:focus {
-      outline: none;
-    }
-
-    .input-shell:focus-within {
-      border-color: rgba(138,100,72,0.42);
-      box-shadow: 0 0 0 4px rgba(138,100,72,0.10);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-family: var(--font-body);
-      padding: 13px 26px;
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid transparent;
-      font-size: 0.88rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      transition: var(--transition-smooth);
-      text-align: center;
-      width: 100%;
-    }
-
-    .btn:disabled {
-      opacity: 0.75;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .btn-primary {
-      background-color: var(--accent);
-      color: white;
-      border-color: var(--accent);
-      box-shadow: 0 12px 24px rgba(138,100,72,0.14);
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      background-color: var(--accent-dark);
-      border-color: var(--accent-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 16px 28px rgba(138,100,72,0.18);
-    }
-
-    .btn-close {
-      background-color: rgba(255,255,255,0.52);
-      color: var(--text-light);
-      border-color: rgba(138,100,72,0.22);
-      margin-top: 10px;
-    }
-
-    .btn-close:hover:not(:disabled) {
-      background-color: rgba(138,100,72,0.08);
-      color: var(--accent-dark);
-    }
-
-    .login-error-message {
-      font-size: 0.9rem;
-      color: var(--danger);
-      margin-top: 16px;
-      min-height: 1.2em;
-      text-align: center;
-    }
-
-    .loading-spinner {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .info-text {
-      margin-top: 22px;
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      padding-top: 18px;
-      border-top: 1px solid rgba(138,100,72,0.14);
-      text-align: left;
-      display: grid;
-      gap: 8px;
-    }
-
-    .info-line {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .info-line svg {
-      width: 16px;
-      height: 16px;
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    @media (max-width: 768px) {
-      .names { font-size: 3.9rem; }
-      .content { padding: 1rem 0.5rem; }
-      .time-row { gap: 0.75rem; }
-      .time-box { min-width: 62px; }
-      .page::before,
-      .page::after { width: 180px; height: 180px; }
-      .login-body { padding: 0 22px 24px; }
-      .login-container .names { font-size: 2.9rem; }
-      .login-hero { min-height: 156px; }
-    }
-  </style>
-  <script src="./client-config.js"></script>
-</head>
-<body class="loading">
-
-  <!-- PÁGINA PRINCIPAL -->
-  <div class="page">
-    <img class="bg-image" src="assets/media/PG2.jpg" alt="background">
-    <div class="overlay"></div>
-
-    <div class="content">
-      <div class="subtitle">CONTAGEM DECRESCENTE PARA O NOSSO DIA</div>
-
-      <div class="countdown-main">
-        <div class="days-label">
-          <span id="days" class="days-number">0</span>
-          <div class="days-text">
-            <div>DIAS</div>
-            <div>ATÉ</div>
-          </div>
-        </div>
-
-        <div class="quotation">"SIM, ACEITO!"</div>
-        <div class="divider"></div>
-
-        <div class="time-row" id="timeRow">
-          <div class="time-box">
-            <span id="hours" class="time-value">00</span>
-            <span class="time-label">HORAS</span>
-          </div>
-          <div class="time-box">
-            <span id="minutes" class="time-value">00</span>
-            <span class="time-label">MINUTOS</span>
-          </div>
-          <div class="time-box">
-            <span id="seconds" class="time-value">00</span>
-            <span class="time-label">SEGUNDOS</span>
-          </div>
-        </div>
-      </div>
-
-      <h1 class="names">Ana & Miguel</h1>
-      <div class="date-text">20 DE DEZEMBRO 2026</div>
-      
-      <button class="btn-open" id="openLoginBtn">
-        ABRIR CONVITE
-      </button>
-    </div>
-  </div>
-
-  <!-- POPUP DE LOGIN -->
-  <div class="login-overlay" id="loginOverlay">
-    <div class="login-container">
-      <div class="login-hero">
-        <div class="login-hero-overlay"></div>
-        <div class="login-badge" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5h16"/><path d="M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 18 19.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z"/><path d="m8 12 2.3 2.2L16 9"/></svg>
-        </div>
-      </div>
-      <div class="login-body">
-        <span class="login-kicker">Acesso ao convite</span>
-        <h2 class="names">Ana & Miguel</h2>
-        <p class="login-subtitle">Por favor, identifique-se para entrar no convite</p>
-        
-        <form id="loginForm">
-          <div class="form-group">
-            <label for="name">Seu primeiro nome</label>
-            <div class="input-shell">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5"/></svg>
-              <input type="text" id="name" placeholder="Ex.: João" required autocomplete="off">
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary" id="submitBtn">
-            <span class="btn-text">Entrar</span>
-            <span class="loading-spinner" style="display: none;"></span>
-          </button>
-          <button type="button" class="btn btn-close" id="closeLoginBtn">Cancelar</button>
-          <p id="loginError" class="login-error-message"></p>
-        </form>
-        
-        <div class="info-text">
-          <div class="info-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg><span>Cada convite só pode ser aberto em um dispositivo.</span></div>
-          <div class="info-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z"/></svg><span>Digite o seu primeiro nome como está no convite.</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ============================================
-    // CONFIGURAÇÕES
-    // ============================================
-    const API_URL = "https://api-casamento-mj.onrender.com/api";
-    const WEDDING_DATE = new Date("2026-12-20T15:00:00");
-
-    // ============================================
-    // ELEMENTOS DO DOM
-    // ============================================
-    const daysEl = document.getElementById("days");
-    const hoursEl = document.getElementById("hours");
-    const minutesEl = document.getElementById("minutes");
-    const secondsEl = document.getElementById("seconds");
-    
-    const openLoginBtn = document.getElementById('openLoginBtn');
-    const closeLoginBtn = document.getElementById('closeLoginBtn');
-    const loginOverlay = document.getElementById('loginOverlay');
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-    const submitBtn = document.getElementById('submitBtn');
-    const nameInput = document.getElementById('name');
-
-    // ============================================
-    // FUNÇÃO DE COUNTDOWN
-    // ============================================
-    function updateCountdown() {
-      const now = new Date();
-      const diff = WEDDING_DATE.getTime() - now.getTime();
-
-      if (diff <= 0) {
-        daysEl.textContent = "0";
-        hoursEl.textContent = "00";
-        minutesEl.textContent = "00";
-        secondsEl.textContent = "00";
-        return;
+  }
+
+  async function getMode() {
+    return (await isBackendAvailable()) ? "live" : "demo";
+  }
+
+  async function findGuestByName(name) {
+    const cleanName = name.trim();
+    if (window.LirandzoAPI && typeof window.LirandzoAPI.get === "function") {
+      try {
+        const result = await window.LirandzoAPI.get("find_guest", { name: cleanName });
+        const guest = result.data || result;
+        if (guest && !guest.table && guest.mesa) guest.table = guest.mesa;
+        if (guest && !guest.maxGuests && guest.maxGuestsTotal) guest.maxGuests = guest.maxGuestsTotal;
+        return guest;
+      } catch (err) {
+        const localGuest = demoGuests.find((guest) => guest.name.toLowerCase() === cleanName.toLowerCase());
+        if (localGuest) return localGuest;
+        throw err;
       }
-
-      let totalSeconds = Math.floor(diff / 1000);
-      const days = Math.floor(totalSeconds / (3600 * 24));
-      totalSeconds -= days * 3600 * 24;
-      const hours = Math.floor(totalSeconds / 3600);
-      totalSeconds -= hours * 3600;
-      const minutes = Math.floor(totalSeconds / 60);
-      const seconds = totalSeconds - minutes * 60;
-
-      daysEl.textContent = days;
-      hoursEl.textContent = String(hours).padStart(2, "0");
-      minutesEl.textContent = String(minutes).padStart(2, "0");
-      secondsEl.textContent = String(seconds).padStart(2, "0");
     }
 
-    // ============================================
-    // SISTEMA DE TOKEN DE DISPOSITIVO
-    // ============================================
-    function getDeviceToken() {
-      let deviceToken = localStorage.getItem('deviceToken');
-      if (!deviceToken) {
-        deviceToken = generateDeviceToken();
-        localStorage.setItem('deviceToken', deviceToken);
-      }
-      return deviceToken;
-    }
-
-    function generateDeviceToken() {
-      const userAgent = navigator.userAgent;
-      const screenRes = `${screen.width}x${screen.height}`;
-      const timeStamp = Date.now();
-      const random = Math.random().toString(36).substring(2);
-      const rawToken = `${userAgent}-${screenRes}-${timeStamp}-${random}`;
-      return btoa(encodeURIComponent(rawToken)).substring(0, 64);
-    }
-
-    function getUserAgentInfo() {
-      return navigator.userAgent.substring(0, 100);
-    }
-
-    // ============================================
-    // FUNÇÃO JSONP COM TIMEOUT
-    // ============================================
-    function jsonpRequest(url, timeout = 15000) {
-      return new Promise((resolve, reject) => {
-        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-        let timeoutId = setTimeout(() => {
-          cleanup();
-          reject(new Error('Tempo limite excedido. Verifique sua conexão.'));
-        }, timeout);
-
-        function cleanup() {
-          if (timeoutId) clearTimeout(timeoutId);
-          delete window[callbackName];
-          const script = document.querySelector(`script[src*="${callbackName}"]`);
-          if (script) script.remove();
-        }
-
-        window[callbackName] = function(data) {
-          cleanup();
-          resolve(data);
-        };
-
-        const script = document.createElement('script');
-        const separator = url.includes('?') ? '&' : '?';
-        script.src = url + separator + 'callback=' + callbackName;
-        
-        script.onerror = function() {
-          cleanup();
-          reject(new Error('Erro de conexão com o servidor'));
-        };
-        
-        document.body.appendChild(script);
+    const live = await isBackendAvailable();
+    if (live) {
+      return apiFetch("", {
+        method: "POST",
+        body: JSON.stringify({ action: "login", name: cleanName, slug: INVITE_SLUG }),
       });
     }
 
-    // ============================================
-    // FUNÇÃO PRINCIPAL DE LOGIN
-    // ============================================
-    // Substitua a função jsonpRequest por esta:
-async function postRequest(data) {
-  const response = await fetch(API_URL, { method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ ...data, slug: window.LIRANDZO_INVITE_SLUG || "flicia-walter-convite" })
-  });
-  return { status: "success" }; // Com no-cors, não podemos ler a resposta
-}
-
-// E modifique a função performLogin:
-async function performLogin(name) {
-  if (!name || name.trim() === '') {
-    loginError.textContent = "Por favor, digite o seu nome";
-    return;
+    const lowerName = cleanName.toLowerCase();
+    return demoGuests.find((guest) => guest.name.toLowerCase() === lowerName) || null;
   }
 
-  const cleanName = name.trim();
-  const deviceToken = getDeviceToken();
-  const btnText = submitBtn.querySelector('.btn-text');
-  const spinner = submitBtn.querySelector('.loading-spinner');
+  async function submitRSVP(guestId, status, guests) {
+    const payload = {
+      action: status === "confirmed" ? "rsvp" : "rsvp_choice",
+      choice: status === "confirmed" ? "confirmed" : "declined",
+      nome: state.authGuest?.name || state.authGuest?.nome || "Convidado",
+      token: guestToken(),
+      guests,
+      slug: INVITE_SLUG,
+    };
 
-  btnText.style.display = 'none';
-  spinner.style.display = 'inline-block';
-  submitBtn.disabled = true;
-  loginError.textContent = '';
-
-  // MODO DEMO: qualquer nome introduzido abre o convite.
-  const demoToken = `demo-${cleanName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'convidado'}`;
-
-  localStorage.setItem('guestName', cleanName);
-  localStorage.setItem('guestToken', demoToken);
-  localStorage.setItem('guestMesa', 'Mesa Demo');
-  localStorage.setItem('guestMaxGuests', '4');
-  localStorage.setItem('deviceToken', deviceToken);
-  localStorage.setItem('demoMode', 'true');
-
-  setTimeout(() => {
-    window.location.href = `convite.html?t=${encodeURIComponent(demoToken)}`;
-  }, 350);
-}
-
-    // ============================================
-    // VERIFICAR SE JÁ ESTÁ LOGADO
-    // ============================================
-    async function checkExistingLogin() {
-      const guestToken = localStorage.getItem('guestToken');
-      if (guestToken && localStorage.getItem('demoMode') === 'true') {
-        window.location.href = `convite.html?t=${encodeURIComponent(guestToken)}`;
+    try {
+      if (window.LirandzoAPI && typeof window.LirandzoAPI.post === "function") {
+        return await window.LirandzoAPI.post(payload);
       }
+      if (await isBackendAvailable()) {
+        return await apiFetch("", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+      }
+    } catch (err) {
+      if (err && err.message) throw err;
+    }
+    return { message: "RSVP registado (modo demo).", rsvpStatus: status, rsvpGuests: guests };
+  }
+
+  async function fetchMessages() {
+    try {
+      if (window.LirandzoAPI && typeof window.LirandzoAPI.get === "function") {
+        const result = await window.LirandzoAPI.get("list_messages", {});
+        return (result.data || []).map((msg) => ({
+          name: msg.name || msg.nome || "Convidado",
+          text: msg.text || msg.message || "",
+          date: msg.date || msg.timestamp || msg.createdAt || "",
+        }));
+      }
+      if (await isBackendAvailable()) {
+        const result = await apiFetch("?action=list_messages&slug=" + encodeURIComponent(INVITE_SLUG));
+        return (result.data || result || []).map((msg) => ({ name: msg.name || msg.nome || "Convidado", text: msg.text || msg.message || "" }));
+      }
+    } catch {
+      // fallback demo
+    }
+    return [];
+  }
+
+  async function postMessage(guestId, text) {
+    const payload = {
+      action: "post_message",
+      nome: state.authGuest?.name || state.authGuest?.nome || "Convidado",
+      message: text,
+      slug: INVITE_SLUG,
+    };
+    try {
+      if (window.LirandzoAPI && typeof window.LirandzoAPI.post === "function") return await window.LirandzoAPI.post(payload);
+      if (await isBackendAvailable()) {
+        return await apiFetch("", {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+      }
+    } catch {
+      // fallback demo
+    }
+    return { id: `demo-${Date.now()}`, name: state.authGuest?.name || "Convidado", text, date: new Date().toISOString() };
+  }
+
+  async function uploadGiftProof(formData) {
+    const base = API_BASE || window.LIRANDZO_API_BASE_URL || "";
+    if (!base) throw new Error("API Render não configurada para envio do comprovativo.");
+    const response = await fetch(`${String(base).replace(/\/+$/, "")}/api/upload_comprovativo`, {
+      method: "POST",
+      headers: { "X-Invite-Slug": INVITE_SLUG },
+      body: formData,
+    });
+    const contentType = response.headers.get("content-type") || "";
+    const data = contentType.includes("application/json") ? await response.json().catch(() => ({})) : {};
+    if (!response.ok || data.status === "error") throw new Error(data.message || data.error || `Erro ${response.status}`);
+    if (!contentType.includes("application/json")) throw new Error("O servidor não respondeu ao envio do comprovativo. Confirme se o Render/API está activo.");
+    return data;
+  }
+
+  function playChime(freqs, duration = 0.55) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    freqs.forEach((freq, index) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      gain.gain.setValueAtTime(0, ctx.currentTime + index * 0.11);
+      gain.gain.linearRampToValueAtTime(0.04, ctx.currentTime + index * 0.11 + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + index * 0.11 + duration);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + index * 0.11);
+      osc.stop(ctx.currentTime + index * 0.11 + duration + 0.05);
+    });
+  }
+
+  function playHoverClick() {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 880;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.015, ctx.currentTime + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.12);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  }
+
+  function icon(type) {
+    const common = `fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"`;
+    const icons = {
+      calendar: `<svg class="animated-icon calendar-icon" viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="12" width="28" height="28" rx="2" ${common}/><path d="M16 8v8M32 8v8M10 20h28" ${common}/><path class="icon-pulse" d="M18 28h12M18 34h7" ${common}/></svg>`,
+      map: `<svg class="animated-icon map-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M16 38 8 42V14l8-4 16 6 8-4v28l-8 4-16-6Z" ${common}/><path class="icon-trace" d="M16 10v28M32 16v28" ${common}/><circle class="icon-pulse" cx="25" cy="27" r="3" ${common}/></svg>`,
+      camera: `<svg class="animated-icon camera-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 17h5l2-4h7l2 4h4a5 5 0 0 1 5 5v11a5 5 0 0 1-5 5H14a5 5 0 0 1-5-5V22a5 5 0 0 1 5-5Z" ${common}/><circle class="icon-spin" cx="24" cy="28" r="7" ${common}/><path class="icon-flash" d="M36 13l4-4M39 18h5M31 10V5" ${common}/></svg>`,
+      music: `<svg class="animated-icon music-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M18 33V12l18-4v21" ${common}/><circle class="icon-bounce" cx="14" cy="35" r="5" ${common}/><circle class="icon-bounce delay" cx="32" cy="31" r="5" ${common}/></svg>`,
+      gift: `<svg class="animated-icon gift-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 21h30v19H9zM24 21v19M7 15h34v6H7z" ${common}/><path class="icon-pulse" d="M24 15c-2-7-11-7-11-1 0 4 5 4 11 1Zm0 0c2-7 11-7 11-1 0 4-5 4-11 1Z" ${common}/></svg>`,
+      shuttle: `<svg class="animated-icon shuttle-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M10 16h28a4 4 0 0 1 4 4v11H6V20a4 4 0 0 1 4-4Z" ${common}/><path class="icon-trace" d="M12 22h24M15 31v5M33 31v5" ${common}/><circle cx="15" cy="36" r="3" ${common}/><circle cx="33" cy="36" r="3" ${common}/></svg>`,
+      ring: `<svg class="animated-icon ring-icon" viewBox="0 0 48 48" aria-hidden="true"><path class="icon-spark" d="M24 6l4 7h-8l4-7Z" ${common}/><circle cx="24" cy="29" r="11" ${common}/><path class="icon-pulse" d="M16 12h16M19 12l-4 6M29 12l4 6" ${common}/></svg>`,
+      rsvp: `<svg class="animated-icon rsvp-icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M9 15h30v24H9z" ${common}/><path class="icon-trace" d="M9 15l15 13 15-13" ${common}/><path class="icon-pulse" d="M17 32h14" ${common}/></svg>`,
+    };
+    return icons[type] || icons.rsvp;
+  }
+
+  function countdownStrip() {
+    const c = getTimeLeft(wedding.dateISO);
+    return `<div class="countdown-strip" aria-label="Contagem regressiva">
+      <span><strong data-countdown-part="days">${twoDigits(c.days)}</strong><small>dias</small></span>
+      <span><strong data-countdown-part="hours">${twoDigits(c.hours)}</strong><small>horas</small></span>
+      <span><strong data-countdown-part="minutes">${twoDigits(c.minutes)}</strong><small>minutos</small></span>
+      <span><strong data-countdown-part="seconds">${twoDigits(c.seconds)}</strong><small>segundos</small></span>
+    </div>`;
+  }
+
+  function updateCountdown() {
+    const c = getTimeLeft(wedding.dateISO);
+    $$('[data-countdown-part="days"]').forEach((el) => { el.textContent = twoDigits(c.days); });
+    $$('[data-countdown-part="hours"]').forEach((el) => { el.textContent = twoDigits(c.hours); });
+    $$('[data-countdown-part="minutes"]').forEach((el) => { el.textContent = twoDigits(c.minutes); });
+    $$('[data-countdown-part="seconds"]').forEach((el) => { el.textContent = twoDigits(c.seconds); });
+  }
+
+  function heading(eyebrow, title, copy = "") {
+    return `<div class="section-heading"><p>${escapeHtml(eyebrow)}</p><h2>${escapeHtml(title)}</h2>${copy ? `<span>${escapeHtml(copy)}</span>` : ""}</div>`;
+  }
+
+  function divider() {
+    return `<div class="section-divider"><span class="divider-line"></span><span class="divider-amp">&amp;</span><span class="divider-line"></span></div>`;
+  }
+
+  function qrPattern(seed) {
+    const base = String(seed).split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    let blocks = "";
+    for (let index = 0; index < 81; index += 1) {
+      const active = ((index * 7 + base) % 5 === 0 || (index + base) % 11 === 0);
+      blocks += `<span class="${active ? "is-active" : ""}"></span>`;
+    }
+    return `<div class="qr-pattern" aria-hidden="true">${blocks}</div>`;
+  }
+  function guestToken(guest = state.authGuest) {
+    return String(guest?.token || guest?.inviteToken || guest?.publicToken || guest?.id || "").trim();
+  }
+
+  function checkinUrl(token = guestToken()) {
+    const base = new URL("checkin.html", window.location.href);
+    if (token) base.searchParams.set("t", token);
+    return base.href;
+  }
+
+  function qrImage(token = guestToken()) {
+    if (!token) return qrPattern(state.authGuest?.name || wedding.displayNames);
+    const url = checkinUrl(token);
+    return `<img class="qr-code-img" src="https://quickchart.io/qr?size=280&margin=1&text=${encodeURIComponent(url)}" alt="QR Code de check-in do convidado" loading="lazy" />`;
+  }
+
+  function petals(count = 14) {
+    let html = "";
+    for (let i = 0; i < count; i += 1) {
+      const left = Math.random() * 100;
+      const delay = Math.random() * 12;
+      const duration = 8 + Math.random() * 8;
+      const size = 0.5 + Math.random() * 0.8;
+      const opacity = 0.2 + Math.random() * 0.3;
+      const swing = Math.random() * 80 - 40;
+      html += `<span class="petal" style="left:${left}%;--swing:${swing}px;--dur:${duration}s;--delay:${delay}s;--size:${size};--opacity:${opacity};"></span>`;
+    }
+    return `<div class="petals-container" aria-hidden="true">${html}</div>`;
+  }
+
+  function rsvpStatusLabel(status) {
+    const labels = {
+      pending: "Ainda não confirmado",
+      confirmed: "Presença confirmada",
+      declined: "Presença não confirmada",
+    };
+    return labels[status] || labels.pending;
+  }
+
+  function guestCompanionsCount(guest = state.authGuest) {
+    if (!guest) return 0;
+    if (Number.isFinite(Number(guest.companions))) return Math.max(Number(guest.companions), 0);
+    return Math.max(Number(guest.maxGuests || 1) - 1, 0);
+  }
+
+  function guestTotalCount(guest = state.authGuest) {
+    if (!guest) return 1;
+    return Math.max(Number(guest.maxGuests || guestCompanionsCount(guest) + 1 || 1), 1);
+  }
+
+  function renderEntryCover() {
+    clearInterval(state.countdownTimer);
+    app().innerHTML = `<section class="std-cover" aria-label="Save the date">
+      <img class="std-cover-bg" src="${photos.portrait}" alt="Flícia e Walter" />
+      <div class="std-cover-overlay"></div>
+      <div class="std-cover-card">
+        <p class="std-cover-kicker">save the date</p>
+        <h1>Flícia <span>&amp;</span> Walter</h1>
+        <p class="std-cover-date">${wedding.dateLong} · ${wedding.time}</p>
+        ${countdownStrip()}
+        <button class="std-cover-button" type="button" id="std-open-login">Abrir convite</button>
+      </div>
+      <p class="std-cover-footnote">Convite privado · Lirandzo</p>
+    </section>`;
+    bindCursorTargets();
+    updateCountdown();
+    state.countdownTimer = setInterval(updateCountdown, 1000);
+    $("#std-open-login")?.addEventListener("click", () => {
+      playChime([392, 523.25, 659.25]);
+      startMusic();
+      renderLogin();
+    });
+  }
+
+  function renderLogin() {
+    clearInterval(state.countdownTimer);
+    app().innerHTML = `<div class="login-overlay">
+      <div class="login-petals" aria-hidden="true"></div>
+      <div class="login-card">
+        <div class="login-monogram">F&amp;W</div>
+        <p class="login-kicker">Convite privado</p>
+        <h1 class="login-title">Flícia &amp; Walter</h1>
+        <p class="login-subtitle">Por favor, introduza o seu nome para aceder ao convite.</p>
+        <div id="login-mode-slot"></div>
+        <form class="login-form" id="login-form">
+          <label class="login-input-wrap">
+            <span class="login-label">O seu nome</span>
+            <input id="login-name" type="text" placeholder="Como consta no convite" autocomplete="off" />
+          </label>
+          <p class="login-error is-hidden" id="login-error"></p>
+          <button class="login-submit" id="login-submit" type="submit" disabled>
+            <span class="login-submit-text">Entrar</span>
+            <span class="login-submit-arrow">&rarr;</span>
+          </button>
+        </form>
+      </div>
+      <p class="login-footnote">Um convite feito com amor</p>
+    </div>`;
+
+    bindCursorTargets();
+    bindLoginEvents();
+    getMode().then((mode) => {
+      state.mode = mode;
+      const slot = $("#login-mode-slot");
+      if (!slot) return;
+      slot.innerHTML = `<p class="login-mode-badge"><span class="mode-dot ${mode}"></span>${mode === "live" ? "Conectado ao servidor" : "Modo demonstração"}</p>`;
+      bindCursorTargets();
+    });
+  }
+
+  function bindLoginEvents() {
+    const input = $("#login-name");
+    const submit = $("#login-submit");
+    const form = $("#login-form");
+    const error = $("#login-error");
+
+    input.addEventListener("input", () => {
+      submit.disabled = !input.value.trim();
+      error.classList.add("is-hidden");
+    });
+
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const name = input.value.trim();
+      if (!name) return;
+
+      input.disabled = true;
+      submit.disabled = true;
+      submit.querySelector(".login-submit-text").textContent = "A verificar...";
+      error.classList.add("is-hidden");
+
+      try {
+        const guest = await findGuestByName(name);
+        if (!guest) throw new Error("Nome nao encontrado na lista de convidados.");
+        state.authGuest = guest;
+        sessionStorage.setItem(`wedding_guest_${INVITE_SLUG}`, JSON.stringify(guest));
+        playChime([523.25, 659.25, 783.99, 1046.5]);
+        startMusic();
+        renderWelcome();
+      } catch (err) {
+        error.textContent = err.message || "Erro ao verificar. Tente novamente.";
+        error.classList.remove("is-hidden");
+        input.disabled = false;
+        submit.disabled = false;
+        submit.querySelector(".login-submit-text").textContent = "Entrar";
+      }
+    });
+  }
+
+  function renderWelcome() {
+    app().innerHTML = `<div class="welcome-screen">
+      <div>
+        <p class="welcome-line">Bem-vindo(a),</p>
+        <h1 class="welcome-name">${escapeHtml(state.authGuest.name)}</h1>
+        <div class="welcome-bar"></div>
+      </div>
+    </div>`;
+    window.setTimeout(() => renderExperience(), 3200);
+  }
+
+  function renderExperience() {
+    app().innerHTML = `<div class="experience">
+      <div class="scroll-progress" aria-hidden="true"><span></span></div>
+      ${guestPill()}
+      ${quickNav()}
+      ${bottomLightboxNav()}
+      ${mainSiteHtml()}
+      ${musicToggle()}
+      <div class="modal-shell is-hidden" id="modal-shell" role="dialog" aria-modal="true"></div>
+    </div>`;
+
+    bindCursorTargets();
+    bindExperienceEvents();
+    updateMusicButton();
+    updateCountdown();
+    clearInterval(state.countdownTimer);
+    state.countdownTimer = setInterval(updateCountdown, 1000);
+    initPremiumMotion();
+    fetchMessages().then((messages) => {
+      state.messages = messages.map((msg) => ({ name: msg.name, text: msg.text }));
+      renderMessageStream();
+      initRevealAnimations($(".guestbook-section") || document);
+    });
+  }
+
+  function guestPill() {
+    return `<div class="guest-pill">
+      <span class="guest-pill-name">${escapeHtml(state.authGuest.name)}</span>
+      <button type="button" class="guest-pill-logout" data-action="logout" aria-label="Sair">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>`;
+  }
+
+  function quickNav() {
+    const items = [
+      { modal: "guest", label: "Passe", icon: "ring" },
+      { href: "#detalhes", label: "Detalhes", icon: "map" },
+      { href: "#rsvp", label: "RSVP", icon: "rsvp" },
+      { href: "#galeria", label: "Galeria", icon: "camera" },
+    ];
+
+    return `<nav class="quick-nav" aria-label="Navegação rápida">
+      ${items.map((item) => item.modal
+        ? `<button type="button" data-modal="${item.modal}" aria-label="${item.label}">${icon(item.icon)}<span>${item.label}</span></button>`
+        : `<a href="${item.href}" aria-label="${item.label}">${icon(item.icon)}<span>${item.label}</span></a>`
+      ).join("")}
+    </nav>`;
+  }
+
+  function bottomLightboxNav() {
+    return `<nav class="bottom-lightbox-nav" aria-label="Acessos rápidos aos lightboxes">
+      <div class="bottom-lightbox-track">
+        ${[
+          { label: "Confirmar presença", iconType: "rsvp", modal: "rsvp" },
+          { label: "Presentes", iconType: "gift", modal: "presentes" },
+          { label: "Mapa", iconType: "map", modal: "mapa" },
+          { label: "O seu passe pessoal", iconType: "ring", modal: "guest" },
+        ].map((item) => `<button type="button" class="bottom-lightbox-button" data-modal="${item.modal}" aria-label="${item.label}" title="${item.label}">${icon(item.iconType)}</button>`).join("")}
+      </div>
+    </nav>`;
+  }
+
+  function mainSiteHtml() {
+    return `<main class="site is-live" id="site">
+      <section class="hero" id="inicio">
+        ${petals()}
+        <img class="hero-bg" src="${photos.hero}" alt="Noivos em retrato elegante" />
+        <div class="hero-shade"></div>
+        <div class="hero-inner">
+          <p class="handwriting">Com alegria convidamo-lo(a)</p>
+          <h1><span>${wedding.bride}</span><i>&amp;</i><span>${wedding.groom}</span></h1>
+          <p class="hero-date">${wedding.dateLong} · ${wedding.venue}</p>
+          ${countdownStrip()}
+          <div class="hero-actions">
+            <button class="btn-outline" type="button" data-modal="rsvp">Confirmar presença</button>
+            <button class="btn-primary" type="button" data-action="calendar">Adicionar ao calendário</button>
+          </div>
+        </div>
+        <a class="scroll-cue" href="#data" aria-label="Descer para os detalhes">descer</a>
+      </section>
+
+      <section class="date-editorial" id="data">
+        ${heading("save the date", wedding.dateDisplay, `${wedding.time} no ${wedding.venue}`)}
+      </section>
+
+      ${vowSection()}
+      ${divider()}
+      ${blessingSection()}
+      ${divider()}
+      ${detailsIndex()}
+      ${conciergeSection()}
+      ${rsvpSection()}
+      ${divider()}
+      ${gallerySection()}
+      ${guestbookSection()}
+      ${finalSection()}
+      ${lirandzoFooter()}
+    </main>`;
+  }
+
+  function eventPass() {
+    const guest = state.authGuest;
+    const allowedCompanions = guestCompanionsCount(guest);
+    const tableLabel = guest?.table ? escapeHtml(guest.table) : "A definir";
+    const notesLabel = guest?.notes ? escapeHtml(guest.notes) : "Sem observações adicionais";
+    return `<section class="event-pass-section" id="passe">
+      <div class="event-pass-copy"><p>acesso privado</p><h2>O seu passe pessoal</h2><span>Este convite foi desbloqueado especialmente para ${escapeHtml(guest.name)}.</span></div>
+      <div class="event-pass">
+        <div class="pass-topline"><span>convite privado</span>${icon("ring")}</div>
+        <div class="pass-main">
+          <div><p>convidado</p><h3>${escapeHtml(guest.name)}</h3></div>
+          <div class="pass-qr-block">${qrImage()}<small>QR Code para check-in</small></div>
+        </div>
+        <div class="pass-meta">
+          <span><small>data</small>${wedding.dateLong}</span>
+          <span><small>hora</small>${wedding.time}</span>
+          <span><small>mesa</small>${tableLabel}</span>
+          <span><small>acompanhantes</small>${allowedCompanions}</span>
+        </div>
+        <div class="pass-note"><small>observações</small><span>${notesLabel}</span></div>
+        <div class="pass-actions">
+          <button type="button" data-modal="guest">Passe pessoal</button>
+          <button type="button" data-action="calendar">Calendário</button>
+          <button type="button" data-modal="mapa">Mapa</button>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  function vowSection() {
+    return `<section class="vow-section">
+      <div class="vow-copy"><p>${escapeHtml(wedding.verseReference)}</p><h2>${escapeHtml(wedding.verse)}</h2></div>
+      <div class="phone-invite">
+        <div class="phone-notch"></div>
+        <img src="${photos.portrait}" alt="Prévia mobile do convite" />
+        ${countdownStrip()}
+        <strong>${wedding.bride}</strong><i>&amp;</i><strong>${wedding.groom}</strong>
+      </div>
+    </section>`;
+  }
+
+  function blessingSection() {
+    return `<section class="story-section blessing-section">
+      ${heading("bênção", "Grandes coisas fez o Senhor", `${wedding.verseReference}`)}
+      <div class="story-timeline blessing-grid">
+        <div class="story-item blessing-card"><div class="story-photo"><img src="${photos.dance}" alt="Flícia e Walter" /></div><div class="story-content"><time>Versículo</time><h3>${escapeHtml(wedding.verseReference)}</h3><p>${escapeHtml(wedding.verse)}</p></div></div>
+        <div class="story-item blessing-card"><div class="story-photo"><img src="${photos.close}" alt="Noivos de mãos dadas" /></div><div class="story-content"><time>Família</time><h3>Pais dos noivos</h3><p><strong>Noiva:</strong> ${escapeHtml(wedding.brideParents)}<br /><strong>Noivo:</strong> ${escapeHtml(wedding.groomParents)}</p></div></div>
+      </div>
+    </section>`;
+  }
+
+  function detailsIndex() {
+    const rows = [
+      ["programa", "01", "Programa", "Horário completo da celebração"],
+      ["dress", "02", "Dress code", "Azul, branco e elegância romântica"],
+      ["presentes", "03", "Presentes", "Contribuição monetária"],
+      ["apoio", "04", "Apoio", "Contactos para o dia do evento"],
+      ["mapa", "05", "Mapa", "Locais da cerimónia e recepção"],
+    ];
+    return `<section class="details-index" id="detalhes">
+      ${heading("detalhes", "Tudo o que precisa", "Informações essenciais num convite limpo, elegante e funcional.")}
+      <div class="detail-list">
+        ${rows.map(([key, number, title, text]) => `<div class="detail-row"><button type="button" data-modal="${key}"><span>${number}</span><strong>${title}</strong><small>${text}</small></button></div>`).join("")}
+      </div>
+    </section>`;
+  }
+
+  function conciergeSection() {
+    return `<section class="concierge-section" id="concierge">
+      ${heading("concierge", "Tudo a um toque", "Acções rápidas, ícones animados e informação certa no momento certo.")}
+      <div class="concierge-grid">
+        ${conciergeItems.map((item) => `<div class="concierge-item">
+          ${icon(item.icon)}
+          <div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p></div>
+          ${item.modal ? `<button type="button" data-modal="${item.modal}">${escapeHtml(item.action)}</button>` : item.href ? `<a href="${item.href}">${escapeHtml(item.action)}</a>` : `<button type="button" data-action="calendar">${escapeHtml(item.action)}</button>`}
+        </div>`).join("")}
+      </div>
+    </section>`;
+  }
+
+  function guestOptions(guest = state.authGuest) {
+    const max = Math.max(1, Math.min(Number(guest?.maxGuests || 2), 10));
+    return Array.from({ length: max }, (_, i) => `<option>${i + 1}</option>`).join("");
+  }
+
+  function rsvpSection() {
+    const guest = state.authGuest;
+    const companions = guestCompanionsCount(guest);
+    const tableLabel = guest?.table ? escapeHtml(guest.table) : "A definir";
+    return `<section class="rsvp-section" id="rsvp">
+      <div class="rsvp-title"><p>Confirme</p><h2>RS<br />VP</h2><span>até ${wedding.rsvpDeadline}</span></div>
+      <div class="rsvp-action-card">
+        <p>Os seus dados já foram carregados para <strong>${escapeHtml(guest?.name || "Convidado")}</strong>.</p>
+        <ul class="rsvp-summary-list">
+          <li><span>Mesa</span><strong>${tableLabel}</strong></li>
+          <li><span>Acompanhantes</span><strong>${companions}</strong></li>
+        </ul>
+        <button class="btn-primary" type="button" data-modal="rsvp">Confirmar presença</button>
+        <p class="is-hidden" id="rsvp-note"></p>
+      </div>
+    </section>`;
+  }
+
+  function gallerySection() {
+    return `<section class="gallery-section" id="galeria">
+      ${heading("galeria", "Momentos", "Clique em qualquer imagem para abrir a galeria.")}
+      <div class="gallery-mosaic">
+        ${gallery.map((item, index) => `<button type="button" data-gallery-index="${index}"><img src="${item.src}" alt="${escapeHtml(item.title)}" /><span>${escapeHtml(item.title)}</span></button>`).join("")}
+      </div>
+    </section>`;
+  }
+
+  function guestbookSection() {
+    return `<section class="guestbook-section">
+      ${heading("mensagens", "Deixe uma mensagem", "As mensagens aparecem imediatamente no convite.")}
+      <div class="guestbook-grid">
+        <form class="guestbook-form" id="guestbook-form">
+          <p class="guestbook-as">A escrever como <strong>${escapeHtml(state.authGuest.name)}</strong></p>
+          <textarea id="guestbook-text" placeholder="Escreva uma mensagem para os noivos" rows="5"></textarea>
+          <button class="btn-primary" type="submit">Publicar mensagem</button>
+        </form>
+        <div class="message-stream" id="message-stream"></div>
+      </div>
+    </section>`;
+  }
+
+  function finalSection() {
+    return `<section class="final-section" id="fim">
+      ${petals()}
+      <div class="final-bg"><img src="${photos.dance}" alt="Flícia e Walter" /></div>
+      <div>
+        <p class="handwriting">Com amor</p>
+        <h2>${wedding.bride} &amp; ${wedding.groom}</h2>
+      </div>
+    </section>`;
+  }
+
+  function lirandzoFooter() {
+    return `<footer class="lirandzo-demo-footer" aria-label="Rodapé Lirandzo">
+      <img src="./assets/media/lirandzo-logo.svg" alt="Lirandzo" loading="lazy" />
+    </footer>`;
+  }
+
+  function musicToggle() {
+    return `<button class="music-toggle" type="button" data-action="music" aria-label="Tocar musica">
+      <svg class="music-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+    </button>`;
+  }
+
+  function bindExperienceEvents() {
+    document.addEventListener("keydown", handleGlobalKeydown);
+
+    $$('[data-action="calendar"]').forEach((button) => button.addEventListener("click", downloadCalendar));
+    $$('[data-action="logout"]').forEach((button) => button.addEventListener("click", logout));
+    $$('[data-action="music"]').forEach((button) => button.addEventListener("click", toggleMusic));
+
+    $$('[data-modal]').forEach((button) => {
+      button.addEventListener("click", () => {
+        playHoverClick();
+        openModal(button.dataset.modal);
+      });
+    });
+
+    $$('[data-gallery-index]').forEach((button) => {
+      button.addEventListener("click", () => openGallery(Number(button.dataset.galleryIndex || 0)));
+    });
+
+    $("#rsvp-form")?.addEventListener("submit", handleRsvpSubmit);
+
+    $("#guestbook-form")?.addEventListener("submit", handleGuestbookSubmit);
+    addParallaxHandler();
+  }
+
+  function handleGlobalKeydown(event) {
+    if (event.key === "Escape") closeModal();
+  }
+
+  function openGallery(index) {
+    state.galleryIndex = index;
+    openModal("galeria");
+  }
+
+  function openModal(type) {
+    const shell = $("#modal-shell");
+    if (!shell) return;
+    shell.classList.remove("is-hidden");
+    shell.classList.add("is-open");
+    shell.innerHTML = `<button class="modal-backdrop" type="button" data-close-modal aria-label="Fechar"></button>
+      <div class="modal-panel">
+        <button class="modal-close" type="button" data-close-modal aria-label="Fechar lightbox">fechar</button>
+        ${modalContent(type)}
+      </div>`;
+
+    $$('[data-close-modal]', shell).forEach((button) => button.addEventListener("click", closeModal));
+    $$('[data-gallery-nav]', shell).forEach((button) => button.addEventListener("click", () => navigateGallery(Number(button.dataset.galleryNav))));
+    $$('[data-gallery-dot]', shell).forEach((button) => button.addEventListener("click", () => {
+      state.galleryIndex = Number(button.dataset.galleryDot || 0);
+      openModal("galeria");
+    }));
+    shell.querySelector("#modal-rsvp-form")?.addEventListener("submit", handleRsvpSubmit);
+    shell.querySelector('[data-action="confirm-rsvp"]')?.addEventListener("click", confirmPresenceFromGuest);
+    shell.querySelector('[data-action="calendar"]')?.addEventListener("click", downloadCalendar);
+    shell.querySelector('[data-action="music"]')?.addEventListener("click", toggleMusic);
+    shell.querySelector('[data-action="logout"]')?.addEventListener("click", logout);
+    shell.querySelector('[data-action="copy-iban"]')?.addEventListener("click", copyIban);
+    shell.querySelector("#gift-proof-form")?.addEventListener("submit", handleGiftProofSubmit);
+    bindCursorTargets();
+    initRevealAnimations(shell);
+    initRippleInteractions(shell);
+  }
+
+  function closeModal() {
+    const shell = $("#modal-shell");
+    if (!shell || shell.classList.contains("is-hidden")) return;
+    shell.classList.add("is-hidden");
+    shell.classList.remove("is-open");
+    shell.innerHTML = "";
+  }
+
+  function navigateGallery(direction) {
+    state.galleryIndex = (state.galleryIndex + gallery.length + direction) % gallery.length;
+    openModal("galeria");
+  }
+
+  function modalContent(type) {
+    const guest = state.authGuest;
+
+    if (type === "galeria") {
+      const current = gallery[state.galleryIndex];
+      return `<div class="gallery-lightbox">
+        <img src="${current.src}" alt="${escapeHtml(current.title)}" />
+        <div class="glb-info"><p class="modal-eyebrow">galeria</p><h2>${escapeHtml(current.title)}</h2><nav><button type="button" data-gallery-nav="-1">Anterior</button><button type="button" data-gallery-nav="1">Seguinte</button></nav></div>
+        <div class="glb-dots">${gallery.map((_, index) => `<button type="button" class="${index === state.galleryIndex ? "is-active" : ""}" data-gallery-dot="${index}" aria-label="Imagem ${index + 1}"></button>`).join("")}</div>
+      </div>`;
     }
 
-    // ============================================
-    // EVENT LISTENERS
-    // ============================================
-    
-    // Inicialização
-    document.addEventListener('DOMContentLoaded', () => {
-      // Remover loading
-      document.body.classList.remove('loading');
-      setTimeout(() => document.body.classList.add('loaded'), 100);
-      
-      // Iniciar countdown
-      updateCountdown();
-      setInterval(updateCountdown, 1000);
-      
-      // Nesta versão, o acesso ao convite só acontece após envio do nome no formulário.
-    });
+    if (type === "guest") {
+      return eventPass();
+    }
 
-    // Abrir popup de login
-    openLoginBtn.addEventListener('click', () => {
-      loginOverlay.classList.add('visible');
-      nameInput.focus();
-    });
+    if (type === "rsvp") {
+      const companions = guestCompanionsCount(guest);
+      const tableLabel = guest?.table ? escapeHtml(guest.table) : "A definir";
+      return `<div class="modal-copy rsvp-modal">
+        <p class="modal-eyebrow">confirmar presença</p>
+        <h2>RSVP</h2>
+        <p>O convite já reconheceu os seus dados. Confirme a presença ou adicione o casamento ao calendário como lembrete.</p>
+        <div class="rsvp-choice-card">
+          <ul class="rsvp-summary-list">
+            <li><span>Convidado</span><strong>${escapeHtml(guest?.name || "Convidado")}</strong></li>
+            <li><span>Mesa</span><strong>${tableLabel}</strong></li>
+            <li><span>Acompanhantes</span><strong>${companions}</strong></li>
+          </ul>
+          <div class="rsvp-choice-actions">
+            <button class="btn-primary" type="button" data-action="confirm-rsvp">Confirmar presença</button>
+            <button class="btn-outline" type="button" data-action="calendar">Adicionar ao calendário como lembrete</button>
+          </div>
+          <p class="is-hidden" id="modal-rsvp-note"></p>
+        </div>
+      </div>`;
+    }
 
-    // Fechar popup
-    closeLoginBtn.addEventListener('click', () => {
-      loginOverlay.classList.remove('visible');
-      loginError.textContent = '';
-      nameInput.value = '';
-    });
+    if (type === "programa") {
+      return `<div class="modal-copy"><p class="modal-eyebrow">programa</p><h2>O dia de Flícia & Walter.</h2><div class="modal-timeline">${program.map(([time, label]) => `<div><time>${time}</time><span>${label}</span></div>`).join("")}</div></div>`;
+    }
 
-    // Fechar ao clicar fora
-    loginOverlay.addEventListener('click', (e) => {
-      if (e.target === loginOverlay) {
-        loginOverlay.classList.remove('visible');
-        loginError.textContent = '';
-        nameInput.value = '';
+    if (type === "dress") {
+      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">dress code</p><h2>Elegante e romântico.</h2><p>Paleta principal em azul e branco, com apresentação clássica, limpa e harmoniosa.</p><div class="palette large">${palette.map((color) => `<span style="background-color:${color}"></span>`).join("")}</div></div><img src="${photos.close}" alt="Inspiração visual do convite" /></div>`;
+    }
+
+    if (type === "apoio") {
+      return `<div class="modal-copy"><p class="modal-eyebrow">apoio no dia</p><h2>Contactos de apoio</h2><p>${escapeHtml(wedding.supportContacts)}</p><p>Em caso de dúvida no dia do evento, contacte a organização através destes números.</p></div>`;
+    }
+
+    if (type === "musica") {
+      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">música</p><h2>Ambiente sonoro escolhido pelos noivos.</h2><p>A música do convite está integrada e pode ser controlada pelo botão de áudio.</p><button class="btn-primary" type="button" data-action="music">Tocar / pausar música</button></div><img src="${photos.portrait}" alt="Flícia e Walter" /></div>`;
+    }
+
+    if (type === "presentes") {
+      return `<div class="modal-copy gift-modal">
+        <p class="modal-eyebrow">presentes</p>
+        <h2>A vossa presença é o maior presente.</h2>
+        <p>${escapeHtml(wedding.giftText)}</p>
+        <ul class="guest-info-list gift-list">
+          <li><span>banco</span><strong>${escapeHtml(wedding.bankName)}</strong></li>
+          <li><span>titular</span><strong>${escapeHtml(wedding.bankHolder)}</strong></li>
+          <li><span>conta</span><strong>${escapeHtml(wedding.bankAccount)}</strong></li>
+          <li><span>pagamento móvel</span><strong>${escapeHtml(wedding.mobilePayment)}</strong></li>
+        </ul>
+        <button class="btn-primary" type="button" data-action="copy-iban">Copiar número da conta</button>
+        <form class="gift-proof-form" id="gift-proof-form" enctype="multipart/form-data">
+          <div class="gift-proof-head">
+            <p class="modal-eyebrow">comprovativo</p>
+            <h3>Enviar comprovativo</h3>
+            <span>Depois de efectuar a contribuição, envie aqui a imagem ou PDF do comprovativo.</span>
+          </div>
+          <label>
+            <span>Comprovativo</span>
+            <input id="gift-file" name="comprovativoFile" type="file" accept="image/*,.pdf" required />
+          </label>
+          <button class="btn-primary" type="submit">Enviar comprovativo</button>
+          <p class="gift-proof-note is-hidden" id="gift-proof-note"></p>
+        </form>
+      </div>`;
+    }
+
+    return `<div class="modal-copy map-modal"><p class="modal-eyebrow">localização</p><h2>${wedding.displayNames}</h2><p><strong>Cerimónia:</strong> ${wedding.ceremonyPlace} · ${wedding.ceremonyTime}</p><p><strong>Recepção:</strong> ${wedding.receptionPlace} · ${wedding.receptionTime}</p><div class="map-visual"><span></span><strong>F&amp;W</strong></div><a class="text-link" href="${wedding.ceremonyMap}" target="_blank" rel="noreferrer">Abrir cerimónia no Google Maps</a><a class="text-link" href="${wedding.receptionMap}" target="_blank" rel="noreferrer">Abrir recepção no Google Maps</a></div>`;
+  }
+
+  async function confirmPresenceFromGuest() {
+    const note = $("#modal-rsvp-note") || $("#rsvp-note");
+    const totalGuests = guestTotalCount(state.authGuest);
+
+    try {
+      const result = await submitRSVP(state.authGuest.id, "confirmed", totalGuests);
+      state.authGuest = { ...state.authGuest, rsvpStatus: "confirmed", rsvpGuests: totalGuests };
+      sessionStorage.setItem(`wedding_guest_${INVITE_SLUG}`, JSON.stringify(state.authGuest));
+      if (note) note.textContent = result.message || "Presença confirmada com sucesso.";
+    } catch {
+      state.authGuest = { ...state.authGuest, rsvpStatus: "confirmed", rsvpGuests: totalGuests };
+      sessionStorage.setItem(`wedding_guest_${INVITE_SLUG}`, JSON.stringify(state.authGuest));
+      if (note) note.textContent = "Presença confirmada localmente. Quando o servidor estiver activo, o RSVP será sincronizado.";
+    }
+
+    if (note) note.classList.remove("is-hidden");
+  }
+
+  async function handleRsvpSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const attendance = form.querySelector("select[id$='attendance'], #attendance")?.value || $("#attendance")?.value || "Confirmo presença";
+    const guests = form.querySelector("select[id$='guests-select'], #guests-select")?.value || "1";
+    const status = attendance === "Confirmo presença" ? "confirmed" : "declined";
+    const note = form.querySelector("#modal-rsvp-note") || $("#rsvp-note");
+
+    try {
+      const totalGuests = parseInt(guests, 10);
+      const result = await submitRSVP(state.authGuest.id, status, totalGuests);
+      state.authGuest = { ...state.authGuest, rsvpStatus: status, rsvpGuests: totalGuests };
+      sessionStorage.setItem(`wedding_guest_${INVITE_SLUG}`, JSON.stringify(state.authGuest));
+      note.textContent = result.message || "RSVP registado com sucesso.";
+    } catch {
+      note.textContent = "Resposta guardada localmente. Quando o servidor estiver activo, o RSVP será registado no sistema.";
+    }
+    note.classList.remove("is-hidden");
+  }
+
+  async function handleGuestbookSubmit(event) {
+    event.preventDefault();
+    const textarea = $("#guestbook-text");
+    const text = textarea.value.trim();
+    if (!text) return;
+
+    const newMessage = { name: state.authGuest.name || "Convidado", text };
+    state.messages = [newMessage, ...state.messages];
+    renderMessageStream();
+    textarea.value = "";
+
+    try {
+      await postMessage(state.authGuest.id, text);
+    } catch {
+      // a mensagem local já foi apresentada
+    }
+  }
+
+  function renderMessageStream() {
+    const stream = $("#message-stream");
+    if (!stream) return;
+    stream.innerHTML = state.messages.map((msg, index) => `<blockquote key="${index}"><p>"${escapeHtml(msg.text)}"</p><cite>— ${escapeHtml(msg.name)}</cite></blockquote>`).join("");
+  }
+
+  function calendarReminderUrl() {
+    const start = new Date(wedding.dateISO);
+    const end = new Date(start.getTime() + 7 * 60 * 60 * 1000);
+    const localParts = (date) => new Intl.DateTimeFormat("sv-SE", {
+      timeZone: wedding.timezone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).formatToParts(date).reduce((acc, part) => {
+      acc[part.type] = part.value;
+      return acc;
+    }, {});
+    const compact = (date) => {
+      const p = localParts(date);
+      return `${p.year}${p.month}${p.day}T${p.hour}${p.minute}${p.second}`;
+    };
+    const details = [
+      `Convite privado de ${wedding.displayNames}.`,
+      `Cerimónia: ${wedding.ceremonyPlace} às ${wedding.ceremonyTime}.`,
+      `Recepção: ${wedding.receptionPlace} às ${wedding.receptionTime}.`,
+    ].join("\n");
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text: `Casamento ${wedding.displayNames}`,
+      dates: `${compact(start)}/${compact(end)}`,
+      ctz: wedding.timezone,
+      details,
+      location: wedding.address,
+    });
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  }
+
+  function downloadCalendar() {
+    const url = calendarReminderUrl();
+    const opened = window.open(url, "_blank", "noopener,noreferrer");
+    if (!opened) window.location.href = url;
+  }
+
+  function copyIban() {
+    navigator.clipboard?.writeText(wedding.bankAccount);
+  }
+
+  async function handleGiftProofSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const note = form.querySelector("#gift-proof-note");
+    const button = form.querySelector('button[type="submit"]');
+    const fileInput = form.querySelector("#gift-file");
+    const file = fileInput?.files?.[0];
+
+    if (!file) {
+      if (note) {
+        note.textContent = "Seleccione a imagem ou PDF do comprovativo antes de enviar.";
+        note.classList.remove("is-hidden");
       }
-    });
+      return;
+    }
 
-    // Fechar com tecla ESC
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && loginOverlay.classList.contains('visible')) {
-        loginOverlay.classList.remove('visible');
-        loginError.textContent = '';
-        nameInput.value = '';
+    const maxSize = 6 * 1024 * 1024;
+    if (file.size > maxSize) {
+      if (note) {
+        note.textContent = "O ficheiro é demasiado grande. Use uma imagem ou PDF até 6 MB.";
+        note.classList.remove("is-hidden");
       }
-    });
+      return;
+    }
 
-    // Submeter formulário
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = nameInput.value.trim();
-      if (name) {
-        performLogin(name);
+    const formData = new FormData(form);
+    formData.set("name", state.authGuest?.name || "Convidado");
+    formData.set("nome", state.authGuest?.name || "Convidado");
+    formData.set("token", guestToken());
+    formData.set("slug", INVITE_SLUG);
+    formData.set("canal", "Comprovativo");
+
+    if (note) {
+      note.textContent = "A enviar comprovativo...";
+      note.classList.remove("is-hidden");
+    }
+    if (button) {
+      button.disabled = true;
+      button.textContent = "A enviar...";
+    }
+
+    try {
+      const result = await uploadGiftProof(formData);
+      if (note) note.textContent = result.message || result.data?.message || "Comprovativo enviado com sucesso.";
+      form.reset();
+    } catch (err) {
+      if (note) note.textContent = err.message || "Não foi possível enviar o comprovativo. Tente novamente.";
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = "Enviar comprovativo";
       }
+    }
+  }
+
+  function ensureMusic() {
+    if (state.audio && state.audio instanceof HTMLAudioElement) return state.audio;
+    const audio = new Audio(wedding.musicUrl);
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.volume = 0.52;
+    state.audio = audio;
+    audio.addEventListener("play", updateMusicButton);
+    audio.addEventListener("pause", updateMusicButton);
+    audio.addEventListener("ended", updateMusicButton);
+    return audio;
+  }
+
+  function updateMusicButton() {
+    const button = $('[data-action="music"]');
+    if (!button) return;
+    const audio = state.audio instanceof HTMLAudioElement ? state.audio : null;
+    const isPlaying = Boolean(audio && !audio.paused && !audio.ended);
+    button.setAttribute("aria-label", isPlaying ? "Parar musica" : "Tocar musica");
+    button.innerHTML = isPlaying
+      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`
+      : `<svg class="music-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>`;
+  }
+
+  function startMusic() {
+    const audio = ensureMusic();
+    const playPromise = audio.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => updateMusicButton());
+    }
+    updateMusicButton();
+  }
+
+  function toggleMusic() {
+    const audio = ensureMusic();
+    if (audio.paused || audio.ended) {
+      startMusic();
+    } else {
+      audio.pause();
+      updateMusicButton();
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem(`wedding_guest_${INVITE_SLUG}`);
+    state.authGuest = null;
+    closeModal();
+    renderEntryCover();
+  }
+
+  function setupCursor() {
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (isTouch) return;
+    const dot = document.createElement("div");
+    const ring = document.createElement("div");
+    dot.className = "cursor-dot";
+    ring.className = "cursor-ring";
+    document.body.append(dot, ring);
+
+    window.addEventListener("mousemove", (event) => {
+      const pos = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+      dot.style.transform = pos;
+      ring.style.transform = pos;
     });
 
-    // Limpar erro ao digitar
-    nameInput.addEventListener('input', () => {
-      loginError.textContent = '';
-    });
+    const observer = new MutationObserver(bindCursorTargets);
+    observer.observe(document.body, { childList: true, subtree: true });
+    bindCursorTargets();
+  }
 
-    // ============================================
-    // TRATAMENTO DE ERROS DE REDE
-    // ============================================
-    window.addEventListener('online', () => {
-      console.log('Conexão restabelecida');
+  function bindCursorTargets() {
+    const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (isTouch) return;
+    const dot = $(".cursor-dot");
+    const ring = $(".cursor-ring");
+    if (!dot || !ring) return;
+    $$('button, a, input, select, textarea, [role="button"]').forEach((el) => {
+      if (el.dataset.cursorBound) return;
+      el.dataset.cursorBound = "true";
+      el.addEventListener("mouseenter", () => { dot.classList.add("is-hovering"); ring.classList.add("is-hovering"); });
+      el.addEventListener("mouseleave", () => { dot.classList.remove("is-hovering"); ring.classList.remove("is-hovering"); });
     });
+  }
 
-    window.addEventListener('offline', () => {
-      loginError.textContent = 'Sem conexão com a internet';
+
+  function prefersReducedMotion() {
+    return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function initPremiumMotion() {
+    document.documentElement.classList.add("motion-ready");
+    initScrollProgress();
+    initRevealAnimations(document);
+    initRippleInteractions(document);
+    initParallaxMotion();
+  }
+
+  function initScrollProgress() {
+    const progress = $(".scroll-progress span");
+    if (!progress || progress.dataset.progressBound) return;
+    progress.dataset.progressBound = "true";
+
+    const update = () => {
+      const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+      const value = Math.min(Math.max(window.scrollY / scrollable, 0), 1);
+      progress.style.transform = `scaleX(${value})`;
+    };
+
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+  }
+
+  function prepareRevealElements(root = document) {
+    const revealGroups = [
+      [".hero .handwriting, .hero h1, .hero-date, .hero .countdown-strip, .hero-actions, .scroll-cue", "hero"],
+      [".section-heading p, .section-heading h2, .section-heading span, .rsvp-title p, .rsvp-title h2, .rsvp-title span, .event-pass-copy p, .event-pass-copy h2, .event-pass-copy span, .modal-eyebrow, .modal-copy h2, .modal-copy p", "text"],
+      [".date-editorial, .vow-copy, .story-content, .detail-row, .concierge-item, .rsvp-action-card, .rsvp-choice-card, .guestbook-form, .message-stream blockquote, .final-section > div:not(.final-bg), .modal-timeline div, .guest-info-list li, .pass-meta span, .pass-note, .pass-actions", "fade-up"],
+      [".gallery-mosaic button, .story-photo, .phone-invite, .event-pass, .split-modal img, .gallery-lightbox img, .final-bg, .map-visual, .pass-qr-block", "photo"],
+    ];
+
+    revealGroups.forEach(([selector, type]) => {
+      $$(selector, root).forEach((element, index) => {
+        if (element.dataset.revealReady === "true") return;
+        element.dataset.revealReady = "true";
+        element.dataset.reveal = element.dataset.reveal || type;
+        element.style.setProperty("--reveal-delay", `${Math.min(index % 8, 7) * 78}ms`);
+      });
     });
-  </script>
-</body>
+  }
+
+  function revealElement(element) {
+    element.classList.add("is-revealed");
+    element.removeAttribute("data-reveal-stuck");
+  }
+
+  function initRevealAnimations(root = document) {
+    prepareRevealElements(root);
+
+    const elements = $$('[data-reveal="hero"], [data-reveal="text"], [data-reveal="fade-up"], [data-reveal="photo"]', root)
+      .filter((element) => !element.classList.contains("is-revealed"));
+
+    if (!elements.length) return;
+
+    const revealVisibleNow = () => {
+      elements.forEach((element) => {
+        if (element.classList.contains("is-revealed")) return;
+        const rect = element.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 1.12 && rect.bottom > -80) revealElement(element);
+      });
+    };
+
+    // Conteúdos dentro de modais/lightboxes não devem ficar escondidos por scroll interno.
+    if (root?.id === "modal-shell" || root?.classList?.contains("modal-shell")) {
+      elements.forEach(revealElement);
+      return;
+    }
+
+    if (prefersReducedMotion() || !("IntersectionObserver" in window)) {
+      elements.forEach(revealElement);
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        revealElement(entry.target);
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.01, rootMargin: "180px 0px 180px 0px" });
+
+    elements.forEach((element) => observer.observe(element));
+
+    const fallbackKey = root === document ? document.documentElement : root;
+    if (fallbackKey && fallbackKey.dataset.revealFallbackBound !== "true") {
+      fallbackKey.dataset.revealFallbackBound = "true";
+      window.addEventListener("scroll", revealVisibleNow, { passive: true });
+      window.addEventListener("resize", revealVisibleNow, { passive: true });
+      window.addEventListener("load", revealVisibleNow, { passive: true });
+    }
+
+    window.requestAnimationFrame(revealVisibleNow);
+    window.setTimeout(revealVisibleNow, 450);
+    window.setTimeout(revealVisibleNow, 1400);
+  }
+
+  function initRippleInteractions(root = document) {
+    $$('.btn-primary, .btn-outline, .std-cover-button, .login-submit, .concierge-item button, .concierge-item a, .bottom-lightbox-button, .quick-nav a, .quick-nav button, .pass-actions button, .gallery-lightbox nav button', root).forEach((element) => {
+      if (element.dataset.rippleBound === "true") return;
+      element.dataset.rippleBound = "true";
+      element.classList.add("has-ripple");
+      element.addEventListener("pointerdown", (event) => {
+        const rect = element.getBoundingClientRect();
+        const ripple = document.createElement("span");
+        ripple.className = "tap-ripple";
+        ripple.style.left = `${event.clientX - rect.left}px`;
+        ripple.style.top = `${event.clientY - rect.top}px`;
+        element.appendChild(ripple);
+        window.setTimeout(() => ripple.remove(), 650);
+      });
+    });
+  }
+
+  function initParallaxMotion() {
+    if (prefersReducedMotion()) return;
+    const layers = [
+      { element: $(".hero-bg"), speed: -0.075, limit: 34 },
+      { element: $(".final-bg img"), speed: 0.11, limit: 44 },
+      { element: $(".phone-invite"), speed: 0.035, limit: 18 },
+    ].filter((item) => item.element && item.element.dataset.parallaxMotionBound !== "true");
+
+    if (!layers.length) return;
+    layers.forEach((item) => { item.element.dataset.parallaxMotionBound = "true"; });
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      layers.forEach(({ element, speed, limit }) => {
+        const rect = element.getBoundingClientRect();
+        if (rect.bottom < -80 || rect.top > window.innerHeight + 80) return;
+        const center = rect.top + rect.height / 2;
+        const offset = Math.max(Math.min((center - window.innerHeight / 2) * speed, limit), -limit);
+        element.style.setProperty("--scroll-y", `${offset.toFixed(2)}px`);
+      });
+    };
+
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    update();
+  }
+
+  function addParallaxHandler() {
+    // Mantido por compatibilidade com versões anteriores; a animação de scroll actual
+    // é controlada por initParallaxMotion() usando variáveis CSS, sem sobrescrever reveals.
+    initParallaxMotion();
+  }
+
+  function boot() {
+    setupCursor();
+    try {
+      const raw = sessionStorage.getItem(`wedding_guest_${INVITE_SLUG}`);
+      state.authGuest = raw ? JSON.parse(raw) : null;
+    } catch {
+      state.authGuest = null;
+    }
+    if (state.authGuest) renderExperience();
+    else renderEntryCover();
+  }
+
+  document.addEventListener("DOMContentLoaded", boot);
+})();
+
+    </script>
+  </body>
 </html>
