@@ -85,10 +85,11 @@
   const palette = ["#ffffff", "#eff6ff", "#2563eb", "#0f172a"];
 
   const conciergeItems = [
-    { icon: "calendar", title: "Guardar data", text: "Adicione o casamento ao calendário do telemóvel.", action: "Adicionar" },
-    { icon: "map", title: "Localização", text: "Veja os locais da cerimónia e recepção.", action: "Ver mapa", modal: "mapa" },
-    { icon: "gift", title: "Presentes", text: "Contribuição monetária e dados bancários.", action: "Ver", modal: "presentes" },
-    { icon: "rsvp", title: "RSVP", text: "Confirme a sua presença em poucos segundos.", action: "Confirmar", href: "#rsvp" },
+    { icon: "calendar", title: "Guardar data", text: "Reserve este dia no seu calendário com toda a comodidade.", action: "Adicionar" },
+    { icon: "map", title: "Localização", text: "Consulte os locais da cerimónia e da recepção com orientação directa.", action: "Ver mapa", modal: "mapa" },
+    { icon: "gift", title: "Presentes", text: "Encontre os dados para a contribuição e envie o comprovativo com segurança.", action: "Ver", modal: "presentes" },
+    { icon: "rsvp", title: "RSVP", text: "Confirme a sua presença sem voltar a preencher os seus dados.", action: "Confirmar", href: "#rsvp" },
+    { icon: "camera", title: "Cápsula do tempo", text: "Partilhe uma fotografia para ficar guardada na memória dos noivos.", action: "Partilhar foto", modal: "capsula" },
   ];
 
   const demoGuests = [
@@ -174,10 +175,7 @@
     if (window.LirandzoAPI && typeof window.LirandzoAPI.get === "function") {
       try {
         const result = await window.LirandzoAPI.get("find_guest", { name: cleanName });
-        const guest = result.data || result;
-        if (guest && !guest.table && guest.mesa) guest.table = guest.mesa;
-        if (guest && !guest.maxGuests && guest.maxGuestsTotal) guest.maxGuests = guest.maxGuestsTotal;
-        return guest;
+        return result.data || result;
       } catch (err) {
         const localGuest = demoGuests.find((guest) => guest.name.toLowerCase() === cleanName.toLowerCase());
         if (localGuest) return localGuest;
@@ -277,6 +275,35 @@
     if (!response.ok || data.status === "error") throw new Error(data.message || data.error || `Erro ${response.status}`);
     if (!contentType.includes("application/json")) throw new Error("O servidor não respondeu ao envio do comprovativo. Confirme se o Render/API está activo.");
     return data;
+  }
+
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("Não foi possível ler a fotografia seleccionada."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function uploadCapsulePhoto(file) {
+    const photoBase64 = await fileToDataUrl(file);
+    const payload = {
+      action: "save_capsule_photo",
+      slug: INVITE_SLUG,
+      nome: state.authGuest?.name || state.authGuest?.nome || "Convidado",
+      token: guestToken(),
+      photoBase64,
+      mimeType: file.type || "image/jpeg",
+      originalName: file.name || `capsula-${Date.now()}.jpg`,
+    };
+    if (window.LirandzoAPI && typeof window.LirandzoAPI.post === "function") {
+      return await window.LirandzoAPI.post(payload);
+    }
+    return await apiFetch("", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   }
 
   function playChime(freqs, duration = 0.55) {
@@ -564,6 +591,7 @@
       { href: "#detalhes", label: "Detalhes", icon: "map" },
       { href: "#rsvp", label: "RSVP", icon: "rsvp" },
       { href: "#galeria", label: "Galeria", icon: "camera" },
+      { modal: "capsula", label: "Cápsula", icon: "camera" },
     ];
 
     return `<nav class="quick-nav" aria-label="Navegação rápida">
@@ -598,10 +626,6 @@
           <h1><span>${wedding.bride}</span><i>&amp;</i><span>${wedding.groom}</span></h1>
           <p class="hero-date">${wedding.dateLong} · ${wedding.venue}</p>
           ${countdownStrip()}
-          <div class="hero-actions">
-            <button class="btn-outline" type="button" data-modal="rsvp">Confirmar presença</button>
-            <button class="btn-primary" type="button" data-action="calendar">Adicionar ao calendário</button>
-          </div>
         </div>
         <a class="scroll-cue" href="#data" aria-label="Descer para os detalhes">descer</a>
       </section>
@@ -667,25 +691,25 @@
   }
 
   function blessingSection() {
-    return `<section class="story-section blessing-section">
-      ${heading("bênção", "Grandes coisas fez o Senhor", `${wedding.verseReference}`)}
-      <div class="story-timeline blessing-grid">
-        <div class="story-item blessing-card"><div class="story-photo"><img src="${photos.dance}" alt="Flícia e Walter" /></div><div class="story-content"><time>Versículo</time><h3>${escapeHtml(wedding.verseReference)}</h3><p>${escapeHtml(wedding.verse)}</p></div></div>
-        <div class="story-item blessing-card"><div class="story-photo"><img src="${photos.close}" alt="Noivos de mãos dadas" /></div><div class="story-content"><time>Família</time><h3>Pais dos noivos</h3><p><strong>Noiva:</strong> ${escapeHtml(wedding.brideParents)}<br /><strong>Noivo:</strong> ${escapeHtml(wedding.groomParents)}</p></div></div>
+    return `<section class="story-section blessing-section family-blessing-section">
+      ${heading("família", "Com a bênção das nossas famílias", "Os nomes que acompanham este dia com amor, memória e gratidão.")}
+      <div class="story-timeline blessing-grid blessing-grid-single">
+        <div class="story-item blessing-card"><div class="story-photo"><img src="${photos.close}" alt="Noivos de mãos dadas" /></div><div class="story-content"><time>Pais dos noivos</time><h3>Famílias que abençoam este dia</h3><p><strong>Noiva:</strong> ${escapeHtml(wedding.brideParents)}<br /><strong>Noivo:</strong> ${escapeHtml(wedding.groomParents)}</p></div></div>
       </div>
     </section>`;
   }
 
   function detailsIndex() {
     const rows = [
-      ["programa", "01", "Programa", "Horário completo da celebração"],
+      ["programa", "01", "Programa", "A sequência do dia, para chegar a cada momento com serenidade"],
       ["dress", "02", "Dress code", "Azul, branco e elegância romântica"],
-      ["presentes", "03", "Presentes", "Contribuição monetária"],
-      ["apoio", "04", "Apoio", "Contactos para o dia do evento"],
-      ["mapa", "05", "Mapa", "Locais da cerimónia e recepção"],
+      ["presentes", "03", "Presentes", "Dados para contribuição e envio de comprovativo"],
+      ["apoio", "04", "Apoio", "Contactos discretos para qualquer orientação no dia"],
+      ["capsula", "05", "Cápsula do tempo", "Partilhe uma fotografia para os noivos"],
+      ["mapa", "06", "Mapa", "Locais da cerimónia e recepção"],
     ];
     return `<section class="details-index" id="detalhes">
-      ${heading("detalhes", "Tudo o que precisa", "Informações essenciais num convite limpo, elegante e funcional.")}
+      ${heading("detalhes", "Tudo o que precisa", "O essencial para acompanhar a celebração com tranquilidade, elegância e precisão.")}
       <div class="detail-list">
         ${rows.map(([key, number, title, text]) => `<div class="detail-row"><button type="button" data-modal="${key}"><span>${number}</span><strong>${title}</strong><small>${text}</small></button></div>`).join("")}
       </div>
@@ -694,7 +718,7 @@
 
   function conciergeSection() {
     return `<section class="concierge-section" id="concierge">
-      ${heading("concierge", "Tudo a um toque", "Acções rápidas, ícones animados e informação certa no momento certo.")}
+      ${heading("concierge", "Tudo a um toque", "Cada detalhe foi preparado para o orientar com discrição, clareza e conforto.")}
       <div class="concierge-grid">
         ${conciergeItems.map((item) => `<div class="concierge-item">
           ${icon(item.icon)}
@@ -717,7 +741,7 @@
     return `<section class="rsvp-section" id="rsvp">
       <div class="rsvp-title"><p>Confirme</p><h2>RS<br />VP</h2><span>até ${wedding.rsvpDeadline}</span></div>
       <div class="rsvp-action-card">
-        <p>Os seus dados já foram carregados para <strong>${escapeHtml(guest?.name || "Convidado")}</strong>.</p>
+        <p>O seu acesso foi reconhecido para <strong>${escapeHtml(guest?.name || "Convidado")}</strong>.</p>
         <ul class="rsvp-summary-list">
           <li><span>Mesa</span><strong>${tableLabel}</strong></li>
           <li><span>Acompanhantes</span><strong>${companions}</strong></li>
@@ -830,7 +854,13 @@
     shell.querySelector('[data-action="music"]')?.addEventListener("click", toggleMusic);
     shell.querySelector('[data-action="logout"]')?.addEventListener("click", logout);
     shell.querySelector('[data-action="copy-iban"]')?.addEventListener("click", copyIban);
+    shell.querySelectorAll('[data-modal]').forEach((button) => {
+      if (button.dataset.modalBound) return;
+      button.dataset.modalBound = "true";
+      button.addEventListener("click", () => openModal(button.dataset.modal));
+    });
     shell.querySelector("#gift-proof-form")?.addEventListener("submit", handleGiftProofSubmit);
+    shell.querySelector("#capsule-photo-form")?.addEventListener("submit", handleCapsulePhotoSubmit);
     bindCursorTargets();
     initRevealAnimations(shell);
     initRippleInteractions(shell);
@@ -871,7 +901,7 @@
       return `<div class="modal-copy rsvp-modal">
         <p class="modal-eyebrow">confirmar presença</p>
         <h2>RSVP</h2>
-        <p>O convite já reconheceu os seus dados. Confirme a presença ou adicione o casamento ao calendário como lembrete.</p>
+        <p>Os seus dados já estão reservados neste convite. Confirme a sua presença ou guarde o lembrete no calendário.</p>
         <div class="rsvp-choice-card">
           <ul class="rsvp-summary-list">
             <li><span>Convidado</span><strong>${escapeHtml(guest?.name || "Convidado")}</strong></li>
@@ -888,19 +918,40 @@
     }
 
     if (type === "programa") {
-      return `<div class="modal-copy"><p class="modal-eyebrow">programa</p><h2>O dia de Flícia & Walter.</h2><div class="modal-timeline">${program.map(([time, label]) => `<div><time>${time}</time><span>${label}</span></div>`).join("")}</div></div>`;
+      return `<div class="modal-copy"><p class="modal-eyebrow">programa</p><h2>O percurso da celebração.</h2><p>Para que acompanhe cada momento com calma, deixamos abaixo a sequência oficial do dia.</p><div class="modal-timeline">${program.map(([time, label]) => `<div><time>${time}</time><span>${label}</span></div>`).join("")}</div></div>`;
     }
 
     if (type === "dress") {
-      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">dress code</p><h2>Elegante e romântico.</h2><p>Paleta principal em azul e branco, com apresentação clássica, limpa e harmoniosa.</p><div class="palette large">${palette.map((color) => `<span style="background-color:${color}"></span>`).join("")}</div></div><img src="${photos.close}" alt="Inspiração visual do convite" /></div>`;
+      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">dress code</p><h2>Elegância em azul e branco.</h2><p>Escolha um visual cuidado, romântico e harmonioso com a paleta da celebração.</p><div class="palette large">${palette.map((color) => `<span style="background-color:${color}"></span>`).join("")}</div></div><img src="${photos.close}" alt="Inspiração visual do convite" /></div>`;
     }
 
     if (type === "apoio") {
-      return `<div class="modal-copy"><p class="modal-eyebrow">apoio no dia</p><h2>Contactos de apoio</h2><p>${escapeHtml(wedding.supportContacts)}</p><p>Em caso de dúvida no dia do evento, contacte a organização através destes números.</p></div>`;
+      return `<div class="modal-copy"><p class="modal-eyebrow">apoio no dia</p><h2>Estamos ao seu dispor.</h2><p>${escapeHtml(wedding.supportContacts)}</p><p>Para qualquer orientação no dia, estes contactos estarão disponíveis para o receber e acompanhar com discrição.</p></div>`;
     }
 
     if (type === "musica") {
       return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">música</p><h2>Ambiente sonoro escolhido pelos noivos.</h2><p>A música do convite está integrada e pode ser controlada pelo botão de áudio.</p><button class="btn-primary" type="button" data-action="music">Tocar / pausar música</button></div><img src="${photos.portrait}" alt="Flícia e Walter" /></div>`;
+    }
+
+    if (type === "capsula") {
+      return `<div class="modal-copy capsule-guest-modal">
+        <div class="capsule-intro-card">
+          <p class="modal-eyebrow">cápsula do tempo</p>
+          <h2>Partilhe uma fotografia para os noivos.</h2>
+          <p>Este espaço foi reservado para receber apenas fotografias dos convidados. A cápsula completa será organizada e consultada pelos noivos depois da celebração.</p>
+        </div>
+        <form class="capsule-photo-form" id="capsule-photo-form">
+          <label class="capsule-upload-box">
+            <span>Fotografia</span>
+            <strong>Escolher fotografia</strong>
+            <small>Formato recomendado: JPG ou PNG, até 6 MB.</small>
+            <input id="capsule-photo-file" name="capsulePhoto" type="file" accept="image/*" required />
+          </label>
+          <button class="btn-primary" type="submit">Enviar fotografia</button>
+          <p class="capsule-photo-note is-hidden" id="capsule-photo-note"></p>
+        </form>
+        <figure class="capsule-preview-photo"><img src="${photos.portrait}" alt="Flícia e Walter" /></figure>
+      </div>`;
     }
 
     if (type === "presentes") {
@@ -909,7 +960,7 @@
         <h2>A vossa presença é o maior presente.</h2>
         <p>${escapeHtml(wedding.giftText)}</p>
         <ul class="guest-info-list gift-list">
-          <li><span>banco</span><strong>${escapeHtml(wedding.bankName)}</strong></li>
+          <li class="bank-line"><span>banco</span><strong><img class="bank-logo" src="./assets/payment/bim.jpg" alt="BIM" />${escapeHtml(wedding.bankName)}</strong></li>
           <li><span>titular</span><strong>${escapeHtml(wedding.bankHolder)}</strong></li>
           <li><span>conta</span><strong>${escapeHtml(wedding.bankAccount)}</strong></li>
           <li><span>pagamento móvel</span><strong>${escapeHtml(wedding.mobilePayment)}</strong></li>
@@ -931,7 +982,7 @@
       </div>`;
     }
 
-    return `<div class="modal-copy map-modal"><p class="modal-eyebrow">localização</p><h2>${wedding.displayNames}</h2><p><strong>Cerimónia:</strong> ${wedding.ceremonyPlace} · ${wedding.ceremonyTime}</p><p><strong>Recepção:</strong> ${wedding.receptionPlace} · ${wedding.receptionTime}</p><div class="map-visual"><span></span><strong>F&amp;W</strong></div><a class="text-link" href="${wedding.ceremonyMap}" target="_blank" rel="noreferrer">Abrir cerimónia no Google Maps</a><a class="text-link" href="${wedding.receptionMap}" target="_blank" rel="noreferrer">Abrir recepção no Google Maps</a></div>`;
+    return `<div class="modal-copy map-modal"><p class="modal-eyebrow">localização</p><h2>Permita-nos guiá-lo até à celebração.</h2><p><strong>Cerimónia:</strong> ${wedding.ceremonyPlace} · ${wedding.ceremonyTime}</p><p><strong>Recepção:</strong> ${wedding.receptionPlace} · ${wedding.receptionTime}</p><figure class="map-image-card"><img src="./assets/media/mapa.jpg" alt="Mapa de localização do evento" /><figcaption>Referência visual da zona do evento.</figcaption></figure><a class="text-link" href="${wedding.ceremonyMap}" target="_blank" rel="noreferrer">Abrir cerimónia no Google Maps</a><a class="text-link" href="${wedding.receptionMap}" target="_blank" rel="noreferrer">Abrir recepção no Google Maps</a></div>`;
   }
 
   async function confirmPresenceFromGuest() {
@@ -1093,6 +1144,62 @@
       if (button) {
         button.disabled = false;
         button.textContent = "Enviar comprovativo";
+      }
+    }
+  }
+
+  async function handleCapsulePhotoSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const note = form.querySelector("#capsule-photo-note");
+    const button = form.querySelector('button[type="submit"]');
+    const fileInput = form.querySelector("#capsule-photo-file");
+    const file = fileInput?.files?.[0];
+
+    if (!file) {
+      if (note) {
+        note.textContent = "Seleccione uma fotografia antes de enviar.";
+        note.classList.remove("is-hidden");
+      }
+      return;
+    }
+
+    if (!file.type || !file.type.startsWith("image/")) {
+      if (note) {
+        note.textContent = "Envie apenas fotografias em formato de imagem.";
+        note.classList.remove("is-hidden");
+      }
+      return;
+    }
+
+    const maxSize = 6 * 1024 * 1024;
+    if (file.size > maxSize) {
+      if (note) {
+        note.textContent = "A fotografia é demasiado grande. Use uma imagem até 6 MB.";
+        note.classList.remove("is-hidden");
+      }
+      return;
+    }
+
+    if (note) {
+      note.textContent = "A enviar fotografia...";
+      note.classList.remove("is-hidden");
+    }
+    if (button) {
+      button.disabled = true;
+      button.textContent = "A enviar...";
+    }
+
+    try {
+      const result = await uploadCapsulePhoto(file);
+      if (note) note.textContent = result.message || result.data?.message || "Fotografia enviada com sucesso.";
+      form.reset();
+    } catch (err) {
+      if (note) note.textContent = err.message || "Não foi possível enviar a fotografia. Tente novamente.";
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = "Enviar fotografia";
       }
     }
   }

@@ -10,9 +10,9 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; min-width: 320px; min-height: 100vh; overflow-x: hidden; cursor: none; }
-button, input, select, textarea { font: inherit; cursor: none; }
-a { -webkit-tap-highlight-color: transparent; cursor: none; }
+body { margin: 0; min-width: 320px; min-height: 100vh; overflow-x: hidden; cursor: auto; }
+button, input, select, textarea { font: inherit; cursor: pointer; }
+a { -webkit-tap-highlight-color: transparent; cursor: pointer; }
 img { display: block; max-width: 100%; }
 
 /* ─── Custom Cursor ─── */
@@ -157,7 +157,7 @@ img { display: block; max-width: 100%; }
   margin-top: 0.5rem; display: flex; align-items: center; justify-content: space-between;
   border: 1px solid #111111; background: #111111; color: #ffffff;
   padding: 0.95rem 1.25rem; text-transform: uppercase; letter-spacing: 0.18em;
-  font-size: 0.68rem; cursor: none;
+  font-size: 0.68rem; cursor: pointer;
   transition: background 0.25s, color 0.25s, transform 0.25s;
 }
 .login-submit:disabled { opacity: 0.5; }
@@ -2242,4 +2242,203 @@ body,
   .motion-ready [data-reveal="photo"]::after {
     display: none !important;
   }
+}
+
+
+/* Ajustes finais — Flícia & Walter */
+.cursor-dot, .cursor-ring { display: none !important; }
+body, button, input, select, textarea, a, [data-modal], [data-action], .gallery-mosaic button, .detail-row button { cursor: auto; }
+button, a, [data-modal], [data-action], .gallery-mosaic button, .detail-row button { cursor: pointer; }
+.hero-actions { display: none !important; }
+.vow-copy { text-align: center; max-width: 940px; margin-left: auto; margin-right: auto; }
+.vow-copy p { justify-content: center; text-align: center; }
+.vow-copy h2 { text-align: center; margin-left: auto; margin-right: auto; }
+.blessing-grid-single { grid-template-columns: minmax(0, 1fr); max-width: 860px; margin-inline: auto; }
+.family-blessing-section .section-heading { text-align: center; }
+.bank-line strong { display: inline-flex; align-items: center; gap: 0.65rem; }
+.bank-logo { width: 34px; height: 34px; border-radius: 9px; object-fit: cover; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12); }
+.map-image-card { margin: 1.4rem 0; border: 1px solid rgba(15, 23, 42, 0.12); background: #fff; padding: 0.7rem; }
+.map-image-card img { display: block; width: 100%; border-radius: 2px; object-fit: cover; max-height: 420px; }
+.map-image-card figcaption { margin-top: 0.65rem; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(15, 23, 42, 0.56); text-align: center; }
+@media (max-width: 640px) { .vow-copy h2 { font-size: clamp(2.35rem, 12vw, 4.4rem); } .map-image-card img { max-height: 320px; } }
+
+
+/* Ajustes refinados solicitados — Flícia & Walter */
+.phone-invite {
+  width: min(92vw, 24.5rem);
+  padding-bottom: 2.75rem;
+}
+.phone-invite img {
+  height: clamp(24rem, 78vw, 32rem) !important;
+  object-position: center 18% !important;
+}
+
+.modal-close {
+  position: sticky !important;
+  top: 0.8rem !important;
+  z-index: 25 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  margin: 0.8rem 0.8rem 0 auto !important;
+  padding: 0.72rem 1rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 999px !important;
+  background: #0f172a !important;
+  color: #ffffff !important;
+  box-shadow: 0 0.85rem 2rem rgba(15, 23, 42, 0.28) !important;
+  line-height: 1 !important;
+  opacity: 1 !important;
+}
+.modal-close::after {
+  content: "×";
+  font-size: 0.9rem;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.modal-panel img.bank-logo,
+.gift-list .bank-line strong img.bank-logo {
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+  flex: 0 0 38px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  filter: none !important;
+  box-shadow: 0 0.55rem 1.2rem rgba(15, 23, 42, 0.12) !important;
+}
+.gift-list .bank-line strong {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 0.7rem !important;
+  min-width: 0 !important;
+  white-space: normal !important;
+  word-break: normal !important;
+}
+.map-image-card img {
+  height: auto !important;
+  min-height: 0 !important;
+  object-fit: contain !important;
+  filter: none !important;
+}
+
+.capsule-guest-modal {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.82fr);
+  gap: clamp(1.4rem, 4vw, 3rem);
+  align-items: stretch;
+}
+.capsule-intro-card {
+  align-self: start;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  background: linear-gradient(180deg, rgba(239, 246, 255, 0.84), rgba(255, 255, 255, 0.96));
+}
+.capsule-intro-card h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  line-height: 0.98;
+  font-size: clamp(2rem, 7vw, 4.6rem);
+}
+.capsule-intro-card p {
+  margin: 1rem 0 0;
+  line-height: 1.75;
+}
+.capsule-photo-form {
+  display: grid;
+  gap: 1rem;
+  align-self: start;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  background: #fffefa;
+}
+.capsule-upload-box {
+  position: relative;
+  display: grid;
+  gap: 0.45rem;
+  padding: 1.2rem;
+  border: 1px dashed rgba(15, 23, 42, 0.28);
+  background: rgba(248, 250, 252, 0.72);
+  cursor: pointer;
+}
+.capsule-upload-box span {
+  color: #2563eb;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+}
+.capsule-upload-box strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: 400;
+}
+.capsule-upload-box small {
+  color: rgba(15, 23, 42, 0.58);
+}
+.capsule-upload-box input {
+  margin-top: 0.55rem;
+  cursor: pointer;
+}
+.capsule-photo-note {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-left: 2px solid #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  color: rgba(15, 23, 42, 0.84);
+  font-size: 0.84rem;
+}
+.capsule-preview-photo {
+  margin: 0;
+  min-height: 100%;
+  overflow: hidden;
+  background: #e9e7e2;
+}
+.modal-panel .capsule-preview-photo img {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 26rem !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  filter: saturate(1.02) contrast(1.02) !important;
+}
+
+.blessing-card .story-photo {
+  position: relative;
+  aspect-ratio: auto !important;
+  background: #f8f7f4;
+}
+.blessing-card .story-photo img {
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+.blessing-card .story-photo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(248, 247, 244, 1) 0%, rgba(248, 247, 244, 0.96) 18%, rgba(248, 247, 244, 0.58) 50%, rgba(248, 247, 244, 0) 100%);
+}
+
+@media (max-width: 880px) {
+  .capsule-guest-modal { grid-template-columns: 1fr; }
+  .modal-panel .capsule-preview-photo img { min-height: 22rem !important; }
+}
+@media (max-width: 640px) {
+  .phone-invite { width: min(91vw, 22.5rem); }
+  .phone-invite img { height: clamp(23rem, 108vw, 29rem) !important; }
+  .modal-close { margin: 0.65rem 0.65rem 0 auto !important; padding: 0.68rem 0.9rem !important; }
+  .capsule-guest-modal { padding: 1.2rem !important; gap: 1rem; }
+  .capsule-intro-card, .capsule-photo-form { padding: 1rem; }
 }
