@@ -1,21 +1,19 @@
 <!DOCTYPE html>
+
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <title>Convite de Casamento — Patrícia & Guilherme</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
-  <meta property="og:title" content="Convite de Casamento — Patrícia & Guilherme">
-  <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://i.postimg.cc/XvBz2yNj/PG2.jpg">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
-
-  <style>
+<meta charset="utf-8"/>
+<title>Convite de Casamento — Minoca &amp; Abubacar</title>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<link href="https://i.postimg.cc/T3tNdXL6/lirandzo.png" rel="icon" type="image/png"/>
+<meta content="Convite de Casamento — Minoca &amp; Abubacar" property="og:title"/>
+<meta content="Junte-se a nós para celebrar o casamento de Minoca e Abubacar." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="assets/media/minoca-abubacar-hero.jpg" property="og:image"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;family=Parisienne&amp;display=swap" rel="stylesheet"/>
+<style>
     /* ===== RESET E VARIÁVEIS ===== */
     * {
       margin: 0;
@@ -397,87 +395,71 @@
       }
     }
   </style>
-  <script src="./client-config.js"></script>
 </head>
 <body class="loading">
-
-  <!-- PÁGINA PRINCIPAL -->
-  <div class="page">
-    <img class="bg-image" src="https://i.postimg.cc/G3YP2xtK/PG7-jpg.png" alt="background">
-    <div class="overlay"></div>
-
-    <div class="content">
-      <div class="subtitle">CONTAGEM DECRESCENTE PARA O NOSSO DIA</div>
-
-      <div class="countdown-main">
-        <div class="days-label">
-          <span id="days" class="days-number">0</span>
-          <div class="days-text">
-            <div>DIAS</div>
-            <div>ATÉ</div>
-          </div>
-        </div>
-
-        <div class="quotation">"SIM, ACEITO!"</div>
-        <div class="divider"></div>
-
-        <div class="time-row" id="timeRow">
-          <div class="time-box">
-            <span id="hours" class="time-value">00</span>
-            <span class="time-label">HORAS</span>
-          </div>
-          <div class="time-box">
-            <span id="minutes" class="time-value">00</span>
-            <span class="time-label">MINUTOS</span>
-          </div>
-          <div class="time-box">
-            <span id="seconds" class="time-value">00</span>
-            <span class="time-label">SEGUNDOS</span>
-          </div>
-        </div>
-      </div>
-
-      <h1 class="names">Patrícia & Guilherme</h1>
-      <div class="date-text">02 DE MAIO 2026</div>
-      
-      <button class="btn-open" id="openLoginBtn">
+<!-- PÁGINA PRINCIPAL -->
+<div class="page">
+<img alt="Minoca e Abubacar" class="bg-image" src="assets/media/minoca-abubacar-hero.jpg"/>
+<div class="overlay"></div>
+<div class="content">
+<div class="subtitle">CONTAGEM DECRESCENTE PARA O NOSSO DIA</div>
+<div class="countdown-main">
+<div class="days-label">
+<span class="days-number" id="days">0</span>
+<div class="days-text">
+<div>DIAS</div>
+<div>ATÉ</div>
+</div>
+</div>
+<div class="quotation">"SIM, ACEITO!"</div>
+<div class="divider"></div>
+<div class="time-row" id="timeRow">
+<div class="time-box">
+<span class="time-value" id="hours">00</span>
+<span class="time-label">HORAS</span>
+</div>
+<div class="time-box">
+<span class="time-value" id="minutes">00</span>
+<span class="time-label">MINUTOS</span>
+</div>
+<div class="time-box">
+<span class="time-value" id="seconds">00</span>
+<span class="time-label">SEGUNDOS</span>
+</div>
+</div>
+</div>
+<h1 class="names">Minoca &amp; Abubacar</h1>
+<div class="date-text">29 DE AGOSTO 2026</div>
+<button class="btn-open" id="openLoginBtn">
         ABRIR CONVITE
       </button>
-    </div>
-  </div>
-
-  <!-- POPUP DE LOGIN -->
-  <div class="login-overlay" id="loginOverlay">
-    <div class="login-container">
-      <h2 class="names">Patrícia & Guilherme</h2>
-      <p class="login-subtitle">Digite qualquer nome para ver o convite</p>
-      
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="name">Seu nome</label>
-          <input type="text" id="name" placeholder="Ex: João" required autocomplete="off">
-        </div>
-        <button type="submit" class="btn btn-primary" id="submitBtn">
-          <span class="btn-text">Entrar</span>
-          <span class="loading-spinner" style="display: none;"></span>
-        </button>
-        <button type="button" class="btn btn-close" id="closeLoginBtn">Cancelar</button>
-        <p id="loginError" class="login-error-message"></p>
-      </form>
-      
-      <div class="info-text">
-        <p>🔒 Cada convite só pode ser aberto em UM dispositivo</p>
-        <p>💝 Digite qualquer nome para abrir esta versão demo</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
+</div>
+</div>
+<!-- POPUP DE LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+<div class="login-container">
+<h2 class="names">Minoca &amp; Abubacar</h2>
+<p class="login-subtitle">O convite agora é de acesso livre.</p>
+<form id="loginForm">
+<div class="form-group">
+<label for="name">O seu nome</label>
+<input autocomplete="off" id="name" placeholder="Ex: João" required="" type="text"/>
+</div>
+<button class="btn btn-primary" id="submitBtn" type="submit">
+<span class="btn-text">Entrar</span>
+<span class="loading-spinner" style="display: none;"></span>
+</button>
+<button class="btn btn-close" id="closeLoginBtn" type="button">Cancelar</button>
+<p class="login-error-message" id="loginError"></p>
+</form>
+<div class="info-text"><p>💝 Qualquer convidado pode abrir o convite.</p><p>📝 A confirmação da presença será feita dentro do convite.</p></div>
+</div>
+</div>
+<script src="./client-config.js"></script><script src="./event-data.js"></script><script src="./lirandzo-api.js"></script><script>
     // ============================================
     // CONFIGURAÇÕES
     // ============================================
-    const API_URL = "https://api-casamento-mj.onrender.com/api"; // Demo: API real desativada
-    const WEDDING_DATE = new Date("2026-05-02T10:00:00");
+    const WEDDING_DATE = new Date("2026-08-29T09:00:00+02:00");
 
     // ============================================
     // ELEMENTOS DO DOM
@@ -486,7 +468,7 @@
     const hoursEl = document.getElementById("hours");
     const minutesEl = document.getElementById("minutes");
     const secondsEl = document.getElementById("seconds");
-    
+
     const openLoginBtn = document.getElementById('openLoginBtn');
     const closeLoginBtn = document.getElementById('closeLoginBtn');
     const loginOverlay = document.getElementById('loginOverlay');
@@ -524,148 +506,100 @@
       secondsEl.textContent = String(seconds).padStart(2, "0");
     }
 
-    // ============================================
-    // SISTEMA DE TOKEN DE DISPOSITIVO
-    // ============================================
-    function getDeviceToken() {
-      let deviceToken = localStorage.getItem('deviceToken');
-      if (!deviceToken) {
-        deviceToken = generateDeviceToken();
-        localStorage.setItem('deviceToken', deviceToken);
-      }
-      return deviceToken;
-    }
-
-    function generateDeviceToken() {
-      const userAgent = navigator.userAgent;
-      const screenRes = `${screen.width}x${screen.height}`;
-      const timeStamp = Date.now();
-      const random = Math.random().toString(36).substring(2);
-      const rawToken = `${userAgent}-${screenRes}-${timeStamp}-${random}`;
-      return btoa(encodeURIComponent(rawToken)).substring(0, 64);
-    }
-
     function getUserAgentInfo() {
       return navigator.userAgent.substring(0, 100);
     }
 
-    // ============================================
-    // FUNÇÃO JSONP COM TIMEOUT
-    // ============================================
-    function jsonpRequest(url, timeout = 15000) {
-      return new Promise((resolve, reject) => {
-        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-        let timeoutId = setTimeout(() => {
-          cleanup();
-          reject(new Error('Tempo limite excedido. Verifique sua conexão.'));
-        }, timeout);
 
-        function cleanup() {
-          if (timeoutId) clearTimeout(timeoutId);
-          delete window[callbackName];
-          const script = document.querySelector(`script[src*="${callbackName}"]`);
-          if (script) script.remove();
+    function clearPublicInviteSession() {
+      ['guestName', 'guestToken', 'guestMesa', 'guestMaxGuests', 'guestCompanions', 'guestNumber', 'guestStatus']
+        .forEach((key) => {
+          try { localStorage.removeItem(key); } catch (err) {}
+        });
+    }
+
+    // ============================================
+    // LOGIN INTEGRADO COM RENDER / MONGODB
+    // ============================================
+    async function performLogin(name) {
+      const cleanName = (name || '').trim();
+
+      if (!cleanName) {
+        loginError.textContent = "Por favor, digite o seu nome";
+        return;
+      }
+
+      const btnText = submitBtn.querySelector('.btn-text');
+      const spinner = submitBtn.querySelector('.loading-spinner');
+
+      btnText.style.display = 'none';
+      spinner.style.display = 'inline-block';
+      submitBtn.disabled = true;
+      loginError.textContent = '';
+
+      try {
+        if (!window.LirandzoAPI) {
+          throw new Error('API Lirandzo não carregada. Verifique client-config.js e lirandzo-api.js.');
         }
 
-        window[callbackName] = function(data) {
-          cleanup();
-          resolve(data);
-        };
+        const result = await window.LirandzoAPI.get('find_guest', { name: cleanName });
 
-        const script = document.createElement('script');
-        const separator = url.includes('?') ? '&' : '?';
-        script.src = url + separator + 'callback=' + callbackName;
-        
-        script.onerror = function() {
-          cleanup();
-          reject(new Error('Erro de conexão com o servidor'));
-        };
-        
-        document.body.appendChild(script);
-      });
+        if (!result || result.status !== 'success') {
+          throw new Error(result && result.message ? result.message : 'Convidado não encontrado.');
+        }
+
+        const guest = result.data || result;
+        const token = guest.token;
+
+        if (!token) {
+          throw new Error('O servidor abriu o convite, mas não devolveu o token de acesso.');
+        }
+
+        localStorage.setItem('guestName', guest.name || guest.nome || cleanName);
+        localStorage.setItem('guestToken', token);
+        localStorage.setItem('guestMesa', guest.mesa || 'A definir');
+        localStorage.setItem('guestMaxGuests', guest.maxGuests || '1');
+        localStorage.setItem('guestCompanions', guest.companions || Math.max((Number(guest.maxGuests) || 1) - 1, 0));
+        localStorage.setItem('guestNumber', guest.number || '');
+        localStorage.setItem('demoMode', window.LirandzoAPI.isConfigured() ? 'false' : 'true');
+
+        window.LirandzoAPI.post({
+          action: 'open_invite',
+          token,
+          nome: guest.name || guest.nome || cleanName,
+          userAgent: getUserAgentInfo(),
+          timestamp: new Date().toISOString()
+        }).catch(() => {});
+
+        sessionStorage.setItem('lirandzoPlayMusic', '1');
+        window.location.href = `convite.html?t=${encodeURIComponent(token)}`;
+      } catch (err) {
+        loginError.textContent = err.message || 'Não foi possível encontrar este nome na lista.';
+        btnText.style.display = 'inline';
+        spinner.style.display = 'none';
+        submitBtn.disabled = false;
+      }
     }
 
-    // ============================================
-    // FUNÇÃO PRINCIPAL DE LOGIN
-    // ============================================
-    // Substitua a função jsonpRequest por esta:
-async function postRequest(data) {
-  return { status: "success", data };
-}
-
-// MODO DEMO: qualquer nome abre o convite sem validar credenciais externas.
-async function performLogin(name) {
-  const cleanName = (name || '').trim();
-  if (!cleanName) {
-    loginError.textContent = "Por favor, digite seu nome";
-    return;
-  }
-
-  const btnText = submitBtn.querySelector('.btn-text');
-  const spinner = submitBtn.querySelector('.loading-spinner');
-  const deviceToken = getDeviceToken();
-  const tokenSlug = cleanName
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '') || 'convidado';
-  const demoToken = `demo-${tokenSlug}-${Date.now()}`;
-
-  btnText.style.display = 'none';
-  spinner.style.display = 'inline-block';
-  submitBtn.disabled = true;
-  loginError.textContent = '';
-
-  localStorage.setItem('guestName', cleanName);
-  localStorage.setItem('guestToken', demoToken);
-  localStorage.setItem('guestMesa', 'A definir');
-  localStorage.setItem('guestMax', '2');
-  localStorage.setItem('deviceToken', deviceToken);
-
-  window.location.href = `convite.html?t=${encodeURIComponent(demoToken)}`;
-}
-
-    // ============================================
-    // VERIFICAR SE JÁ ESTÁ LOGADO
-    // ============================================
-    async function checkExistingLogin() {
-      // MODO DEMO: mantém a página inicial livre para escrever qualquer nome.
-      return;
-    }
-
-    // ============================================
-    // EVENT LISTENERS
-    // ============================================
-    
-    // Inicialização
     document.addEventListener('DOMContentLoaded', () => {
-      // Remover loading
+      clearPublicInviteSession();
       document.body.classList.remove('loading');
       setTimeout(() => document.body.classList.add('loaded'), 100);
-      
-      // Iniciar countdown
       updateCountdown();
       setInterval(updateCountdown, 1000);
-      
-      // Verificar se já está logado
-      checkExistingLogin();
     });
 
-    // Abrir popup de login
     openLoginBtn.addEventListener('click', () => {
-      loginOverlay.classList.add('visible');
-      nameInput.focus();
+      sessionStorage.setItem('lirandzoPlayMusic', '1');
+      window.location.href = 'convite.html';
     });
 
-    // Fechar popup
     closeLoginBtn.addEventListener('click', () => {
       loginOverlay.classList.remove('visible');
       loginError.textContent = '';
       nameInput.value = '';
     });
 
-    // Fechar ao clicar fora
     loginOverlay.addEventListener('click', (e) => {
       if (e.target === loginOverlay) {
         loginOverlay.classList.remove('visible');
@@ -674,7 +608,6 @@ async function performLogin(name) {
       }
     });
 
-    // Fechar com tecla ESC
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && loginOverlay.classList.contains('visible')) {
         loginOverlay.classList.remove('visible');
@@ -683,30 +616,18 @@ async function performLogin(name) {
       }
     });
 
-    // Submeter formulário
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const name = nameInput.value.trim();
-      if (name) {
-        performLogin(name);
-      }
+      performLogin(nameInput.value);
     });
 
-    // Limpar erro ao digitar
     nameInput.addEventListener('input', () => {
       loginError.textContent = '';
-    });
-
-    // ============================================
-    // TRATAMENTO DE ERROS DE REDE
-    // ============================================
-    window.addEventListener('online', () => {
-      console.log('Conexão restabelecida');
     });
 
     window.addEventListener('offline', () => {
       loginError.textContent = 'Sem conexão com a internet';
     });
-  </script>
+</script>
 </body>
 </html>

@@ -1,24 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="pt">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Convite de Casamento — Patrícia & Guilherme</title>
-  
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
-
-  <meta property="og:title" content="Convite de Casamento — Patrícia & Guilherme">
-  <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://i.postimg.cc/XvBz2yNj/PG2.jpg">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&family=Parisienne&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="style.css">
-  
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Convite de Casamento — Minoca &amp; Abubacar</title>
+<link href="assets/media/lirandzo-logo.svg" rel="icon" type="image/png"/>
+<meta content="Convite de Casamento — Minoca &amp; Abubacar" property="og:title"/>
+<meta content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="assets/media/minoca-abubacar-hero.jpg" property="og:image"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;family=Parisienne&amp;display=swap" rel="stylesheet"/>
+<link href="style.css" rel="stylesheet"/>
+<style>
     /* Estilos para o formulário de mensagens */
     #messageForm {
       max-width: 600px;
@@ -139,479 +135,714 @@
       height: 18px;
       cursor: pointer;
     }
-  </style>
-  <script src="./client-config.js"></script>
+
+
+
+
+    .message-form-grid,
+    .gift-form-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .payment-options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+      margin: 20px 0 24px;
+    }
+    .payment-card {
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      background: #fff;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(84, 56, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .payment-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .payment-card-logo {
+      width: 58px;
+      height: 58px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .payment-card-header h4 {
+      margin: 0;
+      font-size: 1.02rem;
+      color: var(--text-dark);
+    }
+    .payment-card-header p,
+    .payment-card-body p,
+    .payment-card-copy small,
+    .gift-helper-text,
+    .gift-divider-note {
+      margin: 0;
+      color: #6f5b52;
+      line-height: 1.5;
+    }
+    .payment-card-copy {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fbf8f5;
+    }
+    .payment-card-copy .copy-target {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      font-weight: 600;
+      word-break: break-word;
+    }
+    .copy-btn {
+      min-width: auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(176, 137, 104, 0.35);
+      background: #fff;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all .2s ease;
+      white-space: nowrap;
+    }
+    .copy-btn:hover {
+      background: #f3e9e2;
+      border-color: var(--accent);
+    }
+    .gift-account-section {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    .gift-divider-note {
+      font-size: 0.92rem;
+      margin-top: 4px;
+    }
+    .gift-contribution-panel {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-color);
+    }
+    .field-note {
+      display: block;
+      font-size: 0.82rem;
+      color: #8b766b;
+      margin-top: 6px;
+    }
+    .guest-info-empty {
+      padding: 14px 16px;
+      background: #fbf6f1;
+      border: 1px solid rgba(176, 137, 104, 0.22);
+      border-radius: 14px;
+      color: #6f5b52;
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 640px) {
+      .payment-card-copy {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .copy-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Feedback premium após confirmação de presença */
+    .rsvp-success-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(18, 14, 12, .46);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .28s ease, visibility .28s ease;
+      pointer-events: none;
+    }
+    .rsvp-success-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .rsvp-success-card {
+      width: min(330px, 92vw);
+      min-height: 210px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 28px;
+      background: rgba(255, 252, 248, .92);
+      box-shadow: 0 28px 80px rgba(0,0,0,.26);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px 24px;
+      transform: translateY(10px) scale(.96);
+      transition: transform .36s cubic-bezier(.2,.9,.2,1);
+    }
+    .rsvp-success-overlay.show .rsvp-success-card {
+      transform: translateY(0) scale(1);
+    }
+    .rsvp-checkmark {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 18px 36px rgba(34, 197, 94, .28);
+      animation: checkPulse .95s ease both;
+    }
+    .rsvp-checkmark svg {
+      width: 46px;
+      height: 46px;
+      stroke-dasharray: 52;
+      stroke-dashoffset: 52;
+      animation: drawCheck .56s .18s ease forwards;
+    }
+    .rsvp-success-card strong {
+      display: block;
+      margin-top: 18px;
+      font-family: var(--font-heading);
+      color: #2f261f;
+      font-size: 1.55rem;
+      line-height: 1.05;
+    }
+    .rsvp-success-card span {
+      display: block;
+      margin-top: 8px;
+      color: #6f5b4e;
+      font-size: .95rem;
+      line-height: 1.45;
+    }
+    @keyframes checkPulse {
+      0% { transform: scale(.72); opacity: 0; }
+      55% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+
+    .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(138,90,68,.08);text-align:center}
+    .qr-checkin-card img{width:190px;max-width:100%;border-radius:16px;background:#fff;padding:10px;margin:12px auto;display:block}
+    .qr-checkin-card small{display:block;color:var(--text-light);line-height:1.5}
+  
+/* MENU REAL - EDMA & ABEL */
+.menu-real-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  text-align: left;
+}
+.menu-real-category {
+  padding: 14px 14px 12px;
+  border: 1px solid rgba(109, 76, 58, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 252, 247, 0.74);
+}
+.menu-real-category strong {
+  display: block;
+  color: var(--accent);
+  font-size: 0.92rem;
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+.menu-real-category ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.menu-real-category li {
+  margin: 4px 0;
+  color: var(--text-dark);
+  line-height: 1.35;
+  font-size: 0.9rem;
+}
+
+</style>
 </head>
-<body class="loading">
-  
-  <audio id="backgroundMusic" loop src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
-
-  <div class="fixed-ui-container">
-    <button id="fabRsvpBtn" class="fab-item" aria-label="Confirmar presença">
-      <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"/></svg>
-    </button>
-    <button id="fabGiftsBtn" class="fab-item" aria-label="Opções de presente">
-      <svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-    </button>
-    <button id="fabGuestInfoBtn" class="fab-item" aria-label="Ver a sua mesa">
-      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-    </button>
-    <button id="fabMapBtn" class="fab-item" aria-label="Ver mapa do local">
-      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-    </button>
-    <button id="musicControl" aria-label="Controlar música">
-      <svg id="musicIcon" width="20" height="20" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
-    </button>
-  </div>
-
-  <main class="invite-wrap" role="main" aria-labelledby="inviteTitle">
-    
-    <!-- FLORES DECORATIVAS -->
-    <div class="decor-flower-top-right"></div>
-    <div class="decor-flower-bottom-left"></div>
-    
-    <header class="hero">
-      <div class="hero-gradient-overlay"></div>
-      <div class="hero-bottom-content">
-        <p class="lead"><strong>Celebre connosco o nosso casamento</strong></p>
-        <h1 class="names">Patrícia & Guilherme</h1>
-        <p class="lead"><strong>02 de maio de 2026</strong></p>
-        
-        <div id="countdown">
-          <div><span id="days">00</span><small>Dias</small></div>
-          <div><span id="hours">00</span><small>Horas</small></div>
-          <div><span id="minutes">00</span><small>Minutos</small></div>
-          <div><span id="seconds">00</span><small>Segundos</small></div> 
-        </div>
-        
-      </div>
-      <a href="#nossa-historia" class="scroll-down-indicator">
-       <!--  <svg viewBox="0 0 24 24"><path d="M12 19.5l-7-7 1.5-1.5L12 16.5l5.5-5.5L19 12.5z"/></svg> -->
-      </a>
-    </header>
-
-    <section class="section fade-in-section" id="nossa-historia">
-  <p class="verse">"Para que todos vejam, e saibam, e considerem, e juntamente entendam que a mão do Senhor fez isto, e o Santo de Israel o criou."</p>
-  <p class="verse-reference">Isaías 41:20</p>
-  
-  <h2 class="section-title">A Nossa História</h2>
-  
-  <div class="couple-details">
-    <div>
-      <h3>Patrícia</h3>
-      <p>Filha de <strong>Marcos De Oliveira Baptista</strong><br>e de <strong>Maria Julieta Martinho</strong></p>
-    </div>
-    <div class="decorative-ampersand">♡</div>
-    <div>
-      <h3>Guilherme</h3>
-      <p>Filho de <strong>Guilherme Timane</strong><br>e de <strong>Amélia Dimande</strong></p>
-    </div>
-  </div>
-  
-  <!-- Story Timeline com imagem de fundo e overlay -->
-  <div class="story-timeline-container">
-    <div class="story-background-image">
-      <img src="https://i.postimg.cc/Njzn7xcZ/PG6.jpg" alt="Casal Patrícia e Guilherme">
-      <div class="story-overlay"></div>
-    </div>
-    
-    <div class="story-timeline" id="storyTimeline">
-      <!-- Capítulo 1 -->
-      <div class="story-chapter">
-        <div class="chapter-marker">
-          <span class="chapter-number">Ⅰ</span>
-        </div>
-        <div class="chapter-content">
-          <h3 class="chapter-title">O Encontro</h3>
-          <p class="chapter-text">Nós nos conhecemos na igreja, no lugar onde nossa fé sempre foi o nosso alicerce. Por muito tempo, apenas nos víamos sem imaginar que, entre olhares discretos e encontros despretensiosos, Deus já estava escrevendo a nossa história.</p>
-        </div>
-      </div>
-      
-      <!-- Capítulo 2 -->
-      <div class="story-chapter">
-        <div class="chapter-marker">
-          <span class="chapter-number">Ⅱ</span>
-        </div>
-        <div class="chapter-content">
-          <h3 class="chapter-title">A Amizade</h3>
-          <p class="chapter-text">O que começou de forma simples transformou-se em amizade, cuidado, parceria e, quando percebemos, em amor. Passamos por momentos bons, desafios, aprendizados e crescimento lado a lado.</p>
-        </div>
-      </div>
-      
-      <!-- Capítulo 3 -->
-      <div class="story-chapter">
-        <div class="chapter-marker">
-          <span class="chapter-number">Ⅲ</span>
-        </div>
-        <div class="chapter-content">
-          <h3 class="chapter-title">O Crescimento</h3>
-          <p class="chapter-text">Cada etapa fortaleceu o que sentimos e nos preparou para este dia tão especial. Aprendemos a caminhar juntos, a apoiar um ao outro e a construir sonhos compartilhados.</p>
-        </div>
-      </div>
-      
-      <!-- Capítulo 4 -->
-      <div class="story-chapter">
-        <div class="chapter-marker">
-          <span class="chapter-number">Ⅳ</span>
-        </div>
-        <div class="chapter-content">
-          <h3 class="chapter-title">A Promessa</h3>
-          <p class="chapter-text">Hoje, diante de Deus e das pessoas que amamos, celebramos a certeza de que fomos conduzidos até aqui por um propósito maior. O que antes era apenas um encontro na igreja, tornou-se uma promessa de vida inteira.</p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Indicadores de scroll (opcional) -->
-    <div class="scroll-indicator">
-      <span class="scroll-arrow">←</span>
-      <span class="scroll-text">Deslize para navegar pelos capítulos</span>
-      <span class="scroll-arrow">→</span>
-    </div>
-  </div>
+<body class="loading convite-rustic-theme minoca-abubacar-theme">
+<audio autoplay="" id="backgroundMusic" loop="" playsinline="" preload="auto" src="https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3"></audio>
+<div class="fixed-ui-container">
+<button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
+<svg viewbox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
+</button>
+<button aria-label="Opções de presente" class="fab-item" id="fabGiftsBtn">
+<svg viewbox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect height="5" width="20" x="2" y="7"></rect><line x1="12" x2="12" y1="22" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+</button>
+<button aria-label="Ver mapa do local" class="fab-item" id="fabMapBtn">
+<svg viewbox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+</button>
+<button aria-label="Controlar música" id="musicControl">
+<svg height="20" id="musicIcon" viewbox="0 0 24 24" width="20"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path></svg>
+</button>
+</div>
+<main aria-labelledby="inviteTitle" class="invite-wrap" role="main">
+<!-- FLORES DECORATIVAS -->
+<div class="decor-flower-top-right"></div>
+<div class="decor-flower-bottom-left"></div>
+<header class="hero">
+<div class="hero-gradient-overlay"></div>
+<div class="hero-bottom-content">
+<p class="lead"><strong>Celebre connosco o nosso casamento</strong></p>
+<h1 class="names">Minoca &amp; Abubacar</h1>
+<p class="lead"><strong>29 de agosto de 2026</strong></p>
+<div id="countdown">
+<div><span id="days">00</span><small>Dias</small></div>
+<div><span id="hours">00</span><small>Horas</small></div>
+<div><span id="minutes">00</span><small>Minutos</small></div>
+<div><span id="seconds">00</span><small>Segundos</small></div>
+</div>
+</div>
+<a class="scroll-down-indicator" href="#familias-celebracao">
+<!--  <svg viewBox="0 0 24 24"><path d="M12 19.5l-7-7 1.5-1.5L12 16.5l5.5-5.5L19 12.5z"/></svg> -->
+</a>
+</header>
+<section class="section fade-in-section" id="familias-celebracao"><p class="verse">Com amor, gratidão e bênçãos, convidamo-lo(a) a celebrar este momento especial connosco.</p><p class="verse-reference">Minoca Isabel Muianga &amp; Abubacar Amisse Amade</p><h2 class="section-title">As Famílias</h2><p class="section-subtitle">Com a bênção da Família Muianga e da Família Amade, convidamo-lo(a) para celebrar este dia especial.</p><div class="couple-details"><div><h3>Minoca Isabel Muianga</h3><p>Filha da <strong>Família Muianga</strong></p></div><div class="decorative-ampersand">♡</div><div><h3>Abubacar Amisse Amade</h3><p>Filho da <strong>Família Amade</strong></p></div></div></section>
+<!-- SECÇÃO VINTAGE: CARTA DOS NOIVOS -->
+<!-- SECÇÃO VINTAGE: PADRINHOS & HONRA -->
+<section class="section section-highlight fade-in-section" id="agenda-evento">
+<div class="agenda-centered">
+<div class="agenda-header">
+<div class="agenda-icon-divider">
+<span class="divider"></span>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="divider"></span>
+</div>
+<h2 class="section-title">Detalhes do Evento</h2>
+<p class="section-subtitle">Teremos a honra de contar com a sua presença nestes momentos especiais.</p>
+<div class="agenda-icon-small">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<div class="agenda-event">
+<h3 class="event-title">Cerimónia Civil</h3>
+<p class="event-time">09:00</p>
+<div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
+<h4 class="event-location">Palácio dos Casamentos</h4>
+<a class="map-link-button" href="https://www.google.com/maps/search/?api=1&amp;query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique" id="mapBtnCivil" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
+</div>
+<div class="agenda-event">
+<h3 class="event-title">Copo de Água</h3>
+<p class="event-time">13:00</p>
+<div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect fill="none" height="10" rx="2" stroke="currentColor" width="14" x="5" y="7"></rect><circle cx="12" cy="12" fill="none" r="2.5" stroke="currentColor"></circle></svg><span class="divider"></span></div>
+<h4 class="event-location">Thendane Eventos</h4>
+<p class="event-description">Celebração e recepção com familiares e amigos.</p>
+</div>
+</div>
 </section>
-      
-    <section class="section section-highlight fade-in-section" id="agenda-evento">
-      <div class="agenda-centered">
-        <div class="agenda-header">
-          <div class="agenda-icon-divider">
-            <span class="divider"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-            </svg>
-            <span class="divider"></span>
-          </div>
-          <h2 class="section-title">O Grande Dia</h2>
-          <p class="section-subtitle">Temos a honra de convidá-lo(a) a celebrar connosco cada momento.</p>
-          <div class="agenda-icon-small">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="agenda-event">
-          <h3 class="event-title">Cerimónia Religiosa</h3>
-          <p class="event-time">10:00</p>
-          <div class="agenda-icon-divider">
-            <span class="divider"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-            </svg>
-            <span class="divider"></span>
-          </div>
-          <h4 class="event-location">Igreja Universal do Albazine perto do Baricão</h4>
-          <a href="#" class="map-link-button" id="mapBtnReligiosa" target="_blank" rel="noopener noreferrer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-            </svg>
-            Ver no Mapa
-          </a>
-        </div>
-
-        <div class="agenda-event">
-          <h3 class="event-title">Recepção</h3>
-          <p class="event-time">13:30</p>
-          <div class="agenda-icon-divider">
-            <span class="divider"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A3 3 0 0 1 15 7.875v3.375c0 .621-.504 1.125-1.125 1.125H10.125c-.621 0-1.125-.504-1.125-1.125V7.875A3 3 0 0 1 12 4.875Z" />
-            </svg>
-            <span class="divider"></span>
-          </div>
-          <h4 class="event-location"> Eventos & acomodação Águia</h4>
-          <a href="#" class="map-link-button" id="mapBtnCivil" target="_blank" rel="noopener noreferrer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-            </svg>
-            Ver no Mapa
-          </a>
-        </div>
-
-        <!-- <div class="agenda-event">
-          <h3 class="event-title">Sessão de Fotos</h3>
-          <p class="event-time">14:00</p>
-          <div class="agenda-icon-divider">
-            <span class="divider"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574v5.852a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.04l-.821 1.316Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-            </svg>
-            <span class="divider"></span>
-          </div> -->
-          <p class="event-description"><!--Junte-se a nós para registar memórias.--></p>
-        </div>
-
-        <div class="agenda-event">
-          <h3 class="event-title">Copo de Água</h3>
-          <p class="event-time">14:00</p>
-          <div class="agenda-icon-divider">
-            <span class="divider"></span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A3 3 0 0 1 15 7.875v3.375c0 .621-.504 1.125-1.125 1.125H10.125c-.621 0-1.125-.504-1.125-1.125V7.875A3 3 0 0 1 12 4.875Z" />
-            </svg>
-            <span class="divider"></span>
-          </div>
-          <p class="event-description">Celebração e festa no local da recepção.</p>
-        </div>
-      </div>
-    </section>
-    
-    <section class="section fade-in-section" id="galeria">
-      <h2 class="section-title">Momentos</h2>
-      <div class="gallery-grid">
-        <div class="gallery-image-container">
-          <img src="https://i.postimg.cc/GpT5Ms3H/PG1.jpg" alt="Momentos especiais do casal" data-src="https://i.postimg.cc/GpT5Ms3H/PG1.jpg">
-        </div>
-        <div class="gallery-image-container">
-          <img src="https://i.postimg.cc/XvBz2yNj/PG2.jpg" alt="Foto do pedido de noivado" data-src="https://i.postimg.cc/XvBz2yNj/PG2.jpg">
-        </div>
-        <div class="gallery-image-container">
-          <img src="https://i.postimg.cc/6pmPLhXj/PG5.jpg" alt="Foto do pedido de noivado" data-src="https://i.postimg.cc/6pmPLhXj/PG5.jpg">
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-highlight fade-in-section" id="guia-evento">
-      <h2 class="section-title">Guia do Evento</h2>
-      <p class="section-subtitle">Tudo o que precisa de saber para celebrar connosco.</p>
-      
-      <div class="guide-grid">
-        <div class="guide-item">
-          <h4>Confirme a Sua Presença</h4>
-          <p>Por favor, informe-nos se poderemos contar consigo até 20 de Março de 2026.</p>
-          <button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
-        </div>
-        <div class="guide-item">
-          <h4>Inspiração de Vestuário</h4>
-          <p>O código de vestimenta é casual elegante. Sugerimos tons neutros (prata, preto, branco) para a harmonia do evento.</p>
-          <button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
-        </div>
-        <div class="guide-item">
-          <h4>Presentes e Mimos</h4>
-          <p>A sua presença é o nosso maior presente! Se desejar, pode contribuir para o nosso futuro.</p>
-          <button class="btn btn-outline" id="giftsCombinedBtn">Ver Opções de Presente</button>
-        </div>
-      </div>
-    </section>
-    
-    <section class="section fade-in-section" id="mural-felicitacoes">
-      <h2 class="section-title">Mural de Felicitações</h2>
-      <p class="section-subtitle">Deixe-nos uma mensagem de carinho!</p>
-
-      <form id="messageForm">
-        <div style="margin-bottom: 16px;">
-          <label for="messageText">A sua mensagem:</label>
-          <textarea id="messageText" placeholder="Escreva aqui a sua felicitação..." required maxlength="500"></textarea>
-        </div>
-        <div class="form-actions" style="text-align: right;">
-          <button type="submit" class="btn btn-primary">Enviar Mensagem</button>
-        </div>
-        <p id="messageStatus" style="font-size: 0.9rem; margin-top: 16px; text-align: center;"></p>
-      </form>
-
-      <div id="guestbook-feed">
-        <p id="feed-loading">A carregar mensagens...</p>
-      </div>
-    </section>
-    
-    <footer class="footer fade-in-section">
-      <h3 class="names">Patrícia & Guilherme</h3>
-      <p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
-      <div class="footer-contact">
-        <span>Tem dúvidas?</span>
-        <span>+258 84 123 4567 | +258 87 123 4567</span>
-      </div>
-    </footer>
-  </main>
-
-  <!-- MODAIS -->
-  <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
-    <div class="modal-card">
-      <h3 id="rsvpTitle">Confirmar Presença</h3>
-      <p>Preencha os dados e escolha como enviar a confirmação.</p>
-      <form id="rsvpForm">
-        <div>
-          <label for="nome">Nome completo</label>
-          <input type="text" id="nome" required placeholder="O seu nome" disabled>
-        </div>
-        <div class="form-row">
-          <div><label for="guests">Nº de convidados</label><select id="guests"></select></div>
-          <div><label for="phone">Telefone (opcional)</label><input id="phone" placeholder="+258 84X XXX XXX"></div>
-        </div>
-        <div><label for="message">Mensagem (opcional)</label><textarea id="message" placeholder="Deixe uma mensagem para os noivos..."></textarea></div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary" id="sendRsvpServer">Confirmar Presença</button>
-          <button type="button" class="btn btn-outline" id="sendWhatsapp">Enviar por WhatsApp</button>
-          <button type="button" class="btn btn-ghost" data-close-modal>Fechar</button>
-        </div>
-        <p id="rsvpStatus" style="font-size: 0.9rem; margin-top: 16px;"></p>
-      </form>
-    </div>
-  </div>
-
-  <div class="modal" id="dressCodeModal" role="dialog" aria-modal="true" aria-labelledby="dressCodeTitle">
-    <div class="modal-card">
-      <h3 id="dressCodeTitle">Inspiração: Casual Elegante</h3>
-      <p>O objetivo é o conforto sofisticado. Tons neutros, prata, branco e preto são bem-vindos.</p>
-      <div class="dresscode-grid">
-        <img src="https://i.postimg.cc/DzwT2KkS/fato_neutro.jpg" alt="Homem com blazer bege e camisa branca.">
-        <img src="https://i.postimg.cc/QMd3XrGB/vestido_branco.jpg" alt="Mulher com vestido branco">
-        <img src="https://i.postimg.cc/DzwT2Kk8/vestido_preto.jpg" alt="Mulher com vestido preto.">
-      </div>
-      <button type="button" class="btn btn-ghost" data-close-modal>Entendi</button>
-    </div>
-  </div>
-
-  <div class="modal" id="giftsCombinedModal" role="dialog" aria-modal="true" aria-labelledby="giftsCombinedTitle">
-    <div class="modal-card">
-      <h3 id="giftsCombinedTitle">Presentes e Contribuições</h3>
-      <p>A sua presença é o maior presente! Se desejar, temos algumas opções:</p>
-      
-      <div class="tab-buttons">
-        <button class="tab-btn active" data-tab="monetaryContent">Contribuição Monetária</button>
-        <button class="tab-btn" data-tab="loicasContent">Lista de Presentes</button>
-      </div>
-      
-      <div id="monetaryContent" class="tab-content active">
-        <h4>Um Mimo para o Futuro</h4>
-        <div class="info-block"><p><strong>Conta Bancária (Millennium Bim )</strong></p><p>1º Titular: Guilherme Timane<br>NIB: 0001 0000 0080 0000 0000</p>
-          <p>NUIB: 1234567890102030</p><p>IBAN: MZ59 0000 0000 0000 0000 0000 0
-</p></div>
-        <div class="info-block"><p><strong>M-Pesa / e-Mola</strong></p><p>841234567 (Guilherme Timane)<br>871234567 (Guilherme Timane)</p></div>
-        
-        <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);">
-        <h4>Registar Comprovativo</h4>
-        <p style="font-size: 0.9rem; text-align: left; margin-bottom: 16px;">Se desejar, pode partilhar o seu comprovativo de pagamento aqui.</p>
-        
-        <form id="comprovativoForm" enctype="multipart/form-data"> 
-          <div style="margin-bottom: 16px; text-align: left;">
-            <label for="canalPagamento">Canal de Pagamento (ex: M-Pesa, BIM)</label>
-            <input type="text" id="canalPagamento" required placeholder="Canal que utilizou">
-          </div>
-          <div style="margin-bottom: 16px; text-align: left;">
-            <label for="comprovativoFile">Anexar Imagem (PNG, JPG)</label>
-            <input type="file" id="comprovativoFile" name="comprovativoFile" accept="image/png, image/jpeg" required>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Enviar Comprovativo</button>
-          </div>
-          <p id="comprovativoStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
-        </form>
-      </div>
-      
-      <!-- SEÇÃO DE LISTA DE PRESENTES ATUALIZADA -->
-      <div id="loicasContent" class="tab-content">
-        <h4>Lista de Presentes</h4>
-        <p>Selecione os presentes que gostaria de oferecer. <strong>Itens reservados não podem ser selecionados.</strong></p>
-        
-        <div id="giftListContainer" style="margin-top: 24px;">
-          <!-- Loading state -->
-          <div id="giftLoading" style="text-align: center; padding: 40px; color: #777;">
-            A carregar lista de presentes...
-          </div>
-          
-          <!-- Error state -->
-          <div id="giftError" style="display: none; text-align: center; padding: 20px; color: #D93025; background: #ffe6e8; border-radius: 8px; margin-bottom: 20px;"></div>
-          
-          <!-- Gift checklist (populated by JavaScript) -->
-          <div id="giftList" class="gift-checklist" style="display: none;"></div>
-          
-          <!-- Form for submitting gifts -->
-          <form id="giftListForm" style="text-align: left; margin-top: 24px;">
-            <div class="form-actions" style="margin-top: 24px;">
-              <button type="submit" class="btn btn-primary" id="submitGiftsBtn">Registar Presentes Selecionados</button>
-            </div>
-            <p id="giftStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
-          </form>
-        </div>
-      </div>
-      <button type="button" class="btn btn-ghost" data-close-modal style="margin-top: 24px;">Fechar</button>
-    </div>
-  </div>
-  
-  <div class="modal" id="lightboxModal" role="dialog" aria-modal="true">
-    <div class="modal-card" data-close-modal>
-      <img id="lightboxImage" src="" alt="Imagem em destaque da galeria">
-    </div>
-  </div>
-
-  <div class="modal" id="guestInfoModal" role="dialog" aria-modal="true" aria-labelledby="guestInfoTitle">
-    <div class="modal-card" style="text-align: left;">
-      <h3 id="guestInfoTitle" style="text-align: center;">O Seu Lugar</h3>
-      <p style="text-align: center; margin-bottom: 32px;">Informação para o dia da receção.</p>
-      
-      <div class="info-block">
-        <p><strong>Convidado:</strong></p>
-        <p id="guestInfoName" style="font-size: 1.1rem; color: var(--text-dark);">A carregar...</p>
-      </div>
-      <div class="info-block">
-        <p><strong>Mesa:</strong></p>
-        <p id="guestInfoMesa" style="font-size: 1.1rem; color: var(--accent); font-weight: 600;">A carregar...</p>
-      </div>
-      
-      <div class="form-actions" style="margin-top: 32px;">
-        <button type="button" class="btn btn-primary" data-close-modal style="width: 100%;">Fechar</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+<!-- SECÇÃO VINTAGE: MENU DA CELEBRAÇÃO -->
+<section class="section fade-in-section" id="galeria">
+<h2 class="section-title">Momentos</h2>
+<div class="gallery-grid">
+<div class="gallery-image-container">
+<img alt="Save the Date de Minoca e Abubacar" data-src="assets/media/minoca-abubacar-save-the-date.jpg" src="assets/media/minoca-abubacar-save-the-date.jpg"/>
+</div>
+<div class="gallery-image-container">
+<img alt="Celebração de Minoca e Abubacar" data-src="assets/media/minoca-abubacar-comemoracao.jpg" src="assets/media/minoca-abubacar-comemoracao.jpg"/>
+</div>
+<div class="gallery-image-container">
+<img alt="BrindMinoca e Abubacar" data-src="assets/media/minoca-abubacar-brinde.jpg" src="assets/media/minoca-abubacar-brinde.jpg"/>
+</div>
+</div>
+</section>
+<section class="section section-highlight fade-in-section" id="guia-evento">
+<h2 class="section-title">Guia do Evento</h2>
+<p class="section-subtitle">Tudo o que precisa de saber para celebrar connosco.</p>
+<div class="guide-grid">
+<div class="guide-item">
+<h4>Confirme a Sua Presença</h4>
+<p>Por favor, informe-nos se poderemos contar consigo até 27 de maio de 2026.</p>
+<button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
+<button class="btn btn-outline" id="calendarBtn" type="button">Adicionar ao Calendário</button>
+</div>
+<div class="guide-item">
+<h4>Inspiração de Vestuário</h4>
+<p>O dress code inspira-se no estilo rustic chic: tons terrosos, marfim, verde sálvia e castanhos suaves, com presença natural e elegante.</p>
+<button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
+</div>
+<div class="guide-item">
+<h4>Presentes e Mimos</h4>
+<p>A sua presença é o nosso maior presente! Se desejar mimar os noivos, pode reservar um item da lista de presentes.</p>
+<button class="btn btn-outline" id="giftsCombinedBtn">Ver Opções de Presente</button>
+</div>
+</div>
+</section>
+<!-- SECÇÃO VINTAGE: ETIQUETA DO EVENTO -->
+<section class="section vintage-section etiquette-section section-scene fade-in-section" id="etiqueta-evento">
+<div class="vintage-scene">
+<img alt="Fundo da secção etiqueta do evento" src="assets/media/fundo-flores-2.jpg"/>
+<div class="vintage-scene-overlay soft-dark"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewbox="0 0 24 24"><path d="M8 4h8l4 4v8l-4 4H8l-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M9 12h6M12 9v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg>
+</span>
+<h2 class="section-title">Etiqueta do Evento</h2>
+</div>
+<p class="section-subtitle">Pequenas orientações para que todos vivam este dia com elegância, respeito e tranquilidade.</p>
+<div class="etiquette-grid etiquette-visual-grid">
+<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewbox="0 0 24 24"><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="12" cy="12" fill="none" r="8" stroke="currentColor" stroke-width="1.4"></circle></svg></span><p>Chegue com alguma antecedência à cerimónia.</p></div>
+<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewbox="0 0 24 24"><path d="M10 15V9a2 2 0 1 1 4 0v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M6 11v1a6 6 0 0 0 12 0v-1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span><p>Durante os momentos solenes, mantenha o telemóvel em silêncio.</p></div>
+<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewbox="0 0 24 24"><rect fill="none" height="10" rx="2" stroke="currentColor" stroke-width="1.4" width="14" x="5" y="7"></rect><circle cx="12" cy="12" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle></svg></span><p>Registe memórias com discrição e respeite os fotógrafos oficiais.</p></div>
+<div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewbox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg></span><p>Partilhe alegria, carinho e uma presença cheia de boas energias.</p></div>
+</div>
+<button class="btn btn-outline vintage-action" data-open-modal="etiquetaEventoModal" type="button">Ver Recomendações</button>
+</div>
+</section>
+<!-- SECÇÃO VINTAGE: TRANSPORTE, ESTACIONAMENTO & APOIO -->
+<section class="section section-highlight vintage-section travel-section section-scene fade-in-section" id="transporte-apoio">
+<div class="vintage-scene">
+<img alt="Fundo da secção transporte e apoio" src="assets/media/fundo-flores.jpg"/>
+<div class="vintage-scene-overlay warm-light"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.4"></circle></svg>
+</span>
+<h2 class="section-title">Transporte &amp; Apoio</h2>
+</div>
+<p class="section-subtitle">Informação prática para chegar aos locais do evento com segurança e sem pressa.</p>
+<div class="travel-card elevated-card">
+<div aria-hidden="true" class="travel-map-mark">⌖</div>
+<div>
+<h3>Orientações para o dia</h3>
+<p>Guarde os contactos de apoio, consulte os mapas e organize a sua chegada com antecedência.</p>
+<div class="travel-points">
+<span><i></i> Mapa</span>
+<span><i></i> Apoio</span>
+<span><i></i> Localização</span>
+</div>
+</div>
+<button class="btn btn-primary" data-open-modal="transporteApoioModal" type="button">Ver Detalhes de Chegada</button>
+</div>
+</div>
+</section>
+<section class="section fade-in-section" id="mural-felicitacoes">
+<h2 class="section-title">Mural de Felicitações</h2>
+<p class="section-subtitle">Deixe-nos uma mensagem de carinho!</p>
+<form id="messageForm">
+<div class="message-form-grid">
+<div>
+<label for="messageGuestName">O seu nome:</label>
+<input id="messageGuestName" maxlength="120" placeholder="Digite o seu nome" required="" type="text"/>
+</div>
+<div>
+<label for="messageText">A sua mensagem:</label>
+<textarea id="messageText" maxlength="500" placeholder="Escreva aqui a sua felicitação..." required=""></textarea>
+</div>
+</div>
+<div class="form-actions" style="text-align: right; margin-top: 16px;">
+<button class="btn btn-primary" type="submit">Enviar Mensagem</button>
+</div>
+<p id="messageStatus" style="font-size: 0.9rem; margin-top: 16px; text-align: center;"></p>
+</form>
+<div id="guestbook-feed">
+<p id="feed-loading">A carregar mensagens...</p>
+</div>
+</section>
+<footer class="footer fade-in-section">
+<h3 class="names">Minoca &amp; Abubacar</h3>
+<p>Agradecemos por fazer parte da nossa celebração. Esperamos por si!</p>
+<div class="footer-contact"><span>Celebre connosco este momento especial.</span></div>
+</footer>
+<footer aria-label="Rodapé Lirandzo" class="lirandzo-demo-footer">
+<img alt="Lirandzo" loading="lazy" src="assets/media/lirandzo-logo.svg"/>
+</footer>
+</main>
+<!-- MODAIS -->
+<div aria-labelledby="rsvpTitle" aria-modal="true" class="modal" id="rsvpModal" role="dialog">
+<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-rsvp"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<h3 id="rsvpTitle">Confirmar Presença</h3>
+<p>Preencha o seu nome e escolha o número de pessoas. A confirmação será registada no painel do cliente.</p>
+<form id="rsvpForm" autocomplete="on">
+<div class="form-row">
+<div>
+<label for="nome">Nome do convidado</label>
+<input id="nome" name="nome" placeholder="Digite o seu nome" required type="text"/>
+</div>
+<div>
+<label for="guests">Número de pessoas</label>
+<select id="guests" name="guests" required>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+</select>
+</div>
+</div>
+<input id="phone" name="phone" type="hidden" value=""/>
+<input id="message" name="message" type="hidden" value=""/>
+<div class="form-actions">
+<button class="btn btn-primary" id="sendRsvpServer" type="submit">Confirmar Presença</button>
+<button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
+</div>
+</form>
+<p class="rsvp-status" id="rsvpStatus" style="font-size: 0.9rem; margin-top: 16px;"></p>
+</div>
+</div>
+<div aria-labelledby="dressCodeTitle" aria-modal="true" class="modal" id="dressCodeModal" role="dialog">
+<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-dress"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M8 4h8l1 4-2 2v10H9V10L7 8l1-4Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<h3 id="dressCodeTitle">Inspiração: Elegante e Romântico</h3>
+<p>O objectivo é o conforto sofisticado. Tons marfim, bege, verde sálvia, terracota suave e castanhos naturais são bem-vindos.</p>
+<div class="dresscode-grid dresscode-palette">
+<img alt="Paleta de cores do dress code: rustic chic." class="dresscode-palette-img" src="assets/media/dress-code-paleta.jpeg"/>
+</div>
+<button class="btn btn-ghost" data-close-modal="" type="button">Entendi</button>
+</div>
+</div>
+<div aria-labelledby="giftsCombinedTitle" aria-modal="true" class="modal" id="giftsCombinedModal" role="dialog">
+<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-gifts"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><rect fill="none" height="4" stroke="currentColor" stroke-width="1.5" width="18" x="3" y="8"></rect><path d="M12 8v13M5 12v9h14v-9" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="M12 8H8.5a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8Zm0 0h3.5a2.5 2.5 0 1 0 0-5C13 3 12 8 12 8Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<h3 id="giftsCombinedTitle">Presentes e Mimos</h3>
+<p>A sua presença é o maior presente. Caso deseje mimar os noivos, pode usar uma das opções abaixo ou reservar um presente em seu nome.</p>
+<div class="tab-buttons single-tab">
+<button class="tab-btn active" data-tab="giftListContent">Opções de Presente</button>
+</div>
+<div class="tab-content active" id="giftListContent">
+<div class="gift-account-section">
+<h4>Dados para oferta</h4>
+<p class="gift-divider-note">Use o botão <strong>Copiar</strong> ao lado de cada conta para copiar rapidamente os dados.</p>
+<div class="payment-options-grid">
+<article class="payment-card">
+<div class="payment-card-header">
+<img alt="BCI" class="payment-card-logo" src="assets/payment/bci-placeholder.svg"/>
+<div>
+<h4>Conta Bancária BCI</h4>
+<p>Titular: Abubacar Amisse Amade</p>
+</div>
+</div>
+<div class="payment-card-body">
+<div class="payment-card-copy">
+<div>
+<small>Conta BCI</small>
+<span class="copy-target">1847578510001</span>
+</div>
+<button class="copy-btn" data-copy-text="1847578510001" type="button">Copiar</button>
+</div>
+<div class="payment-card-copy">
+<div>
+<small>NIB</small>
+<span class="copy-target">00 0800001847578510180</span>
+</div>
+<button class="copy-btn" data-copy-text="000800001847578510180" type="button">Copiar</button>
+</div>
+</div>
+</article>
+<article class="payment-card">
+<div class="payment-card-header">
+<img alt="M-Pesa" class="payment-card-logo" src="assets/payment/m-pesa-550.jpg"/>
+<div>
+<h4>M-Pesa</h4>
+<p>Titular: Minoca Isabel Muianga</p>
+</div>
+</div>
+<div class="payment-card-copy">
+<div>
+<small>Número</small>
+<span class="copy-target">840299285</span>
+</div>
+<button class="copy-btn" data-copy-text="840299285" type="button">Copiar</button>
+</div>
+</article>
+<article class="payment-card">
+<div class="payment-card-header">
+<img alt="E-Mola" class="payment-card-logo" src="assets/payment/e-mola-550.jpg"/>
+<div>
+<h4>E-Mola</h4>
+<p>Titular: Minoca Isabel Muianga</p>
+</div>
+</div>
+<div class="payment-card-copy">
+<div>
+<small>Número</small>
+<span class="copy-target">870299285</span>
+</div>
+<button class="copy-btn" data-copy-text="870299285" type="button">Copiar</button>
+</div>
+</article>
+</div>
+</div>
+<p class="gift-divider-note" style="margin-top: 16px; text-align: center;">Obrigado pelo carinho e pela presença neste momento especial.</p>
+</div>
+<button class="btn btn-ghost" data-close-modal="" style="margin-top: 24px;" type="button">Fechar</button>
+</div>
+</div>
+<!-- MODAIS VINTAGE ADICIONAIS -->
+<div aria-labelledby="etiquetaEventoTitle" aria-modal="true" class="modal vintage-detail-modal" id="etiquetaEventoModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-etiquette"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M8 4h8l4 4v8l-4 4H8l-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="M9 12h6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Etiqueta do Evento</span>
+<h3 id="etiquetaEventoTitle">Recomendações para os convidados</h3>
+<div class="modal-divider"></div>
+<div class="modal-etiquette-list">
+<p><strong>Pontualidade:</strong> chegar cedo ajuda a viver a cerimónia com tranquilidade.</p>
+<p><strong>Telemóveis:</strong> mantenha o som desligado durante os momentos formais.</p>
+<p><strong>Fotografias:</strong> registe memórias sem interromper a equipa oficial.</p>
+<p><strong>Convivência:</strong> celebre com carinho, respeito e espírito familiar.</p>
+</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Recomendações</button>
+</div>
+</div>
+<div aria-labelledby="transporteApoioTitle" aria-modal="true" class="modal vintage-detail-modal" id="transporteApoioModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-travel"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div></div>
+<span class="modal-kicker">Transporte &amp; Apoio</span>
+<h3 id="transporteApoioTitle">Detalhes de chegada</h3>
+<div class="modal-divider"></div>
+<div class="modal-travel-grid"><div><strong>Cerimónia Civil</strong><p>Palácio dos Casamentos, às 09:00.</p></div><div><strong>Copo de Água</strong><p>Thendane Eventos, às 13:00.</p></div><div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div><div><strong>Chegada</strong><p>Recomendamos que organize a sua deslocação com antecedência.</p></div></div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Detalhes</button>
+</div>
+</div>
+<div aria-labelledby="locationChooserTitle" aria-modal="true" class="modal" id="locationChooserModal" role="dialog">
+<div class="modal-card wide-modal has-modal-hero location-chooser-card">
+<div class="modal-hero modal-hero-mapchooser">
+<div class="modal-hero-overlay"></div>
+<div class="modal-hero-top-accent"></div>
+<div aria-hidden="true" class="modal-hero-badge">
+<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+</div>
+<h3 id="locationChooserTitle">Escolha o local no mapa</h3>
+<p>Toque no local desejado para abrir a rota no Google Maps.</p>
+<div class="location-chooser-grid">
+<article class="location-choice-card">
+<div class="location-choice-preview civil-preview">
+<div class="location-choice-overlay"></div>
+<div class="location-choice-top-accent"></div>
+<div aria-hidden="true" class="location-choice-pin">
+<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+<div class="location-choice-caption">
+<span>Cerimónia Civil</span>
+<strong>Palácio dos Casamentos</strong>
+</div>
+</div>
+<div class="location-choice-body">
+<p>Cerimónia civil no Palácio dos Casamentos. Recomendamos chegada com antecedência.</p>
+<a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&amp;query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique" id="locationMapCivil" rel="noopener noreferrer" target="_blank">Abrir mapa do Civil</a>
+</div>
+</article>
+<article class="location-choice-card">
+<div class="location-choice-preview copo-preview">
+<div class="location-choice-overlay"></div>
+<div class="location-choice-top-accent"></div>
+<div aria-hidden="true" class="location-choice-pin">
+<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+<div class="location-choice-caption">
+<span>Copo de Água</span>
+<strong>Thendane Eventos</strong>
+</div>
+</div>
+<div class="location-choice-body">
+<p>Rota directa para o local do Copo de Água e celebração.</p>
+<a class="btn btn-primary" href="https://www.google.com/maps/search/?api=1&amp;query=Thendane%20Eventos" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa do Thendane Eventos</a>
+</div>
+</article>
+</div>
+<div class="form-actions" style="margin-top: 12px;">
+<button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
+</div>
+</div>
+</div>
+<div aria-modal="true" class="modal" id="lightboxModal" role="dialog">
+<div class="modal-card" data-close-modal="">
+<img alt="Imagem em destaque da galeria" id="lightboxImage" src=""/>
+</div>
+</div>
+<script src="event-data.js"></script>
+<script src="client-config.js"></script>
+<script src="lirandzo-api.js"></script>
+<script>
 
     // ============================================
-// VERIFICAÇÃO DE DISPOSITIVO (ADICIONAR NO INÍCIO)
+// VERIFICAÇÃO DE ACESSO DO CONVIDADO
 // ============================================
 
-// Coloca isto no TOPO absoluto da tua tag <script> no convite.html
-const API_URL = "https://api-casamento-mj.onrender.com/api"; // Demo: API real desativada
+// Configuração basacesso ao convite
+const API_URL = window.LIRANDZO_APPS_SCRIPT_URL || '#demo-offline';
+const DEMO_MODE = !(window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured());
+const DEMO_GIFTS = [
+  { name: 'Jogo de pratos elegante', reserved: false, reserved_by: null },
+  { name: 'Conjunto de talheres', reserved: false, reserved_by: null },
+  { name: 'Jogo de copos', reserved: false, reserved_by: null },
+  { name: 'Liquidificador', reserved: false, reserved_by: null },
+  { name: 'Torradeira', reserved: false, reserved_by: null },
+  { name: 'Jogo de panelas', reserved: false, reserved_by: null }
+];
+const DEMO_MESSAGES = [
+  { nome: 'Convidada Demo', message: 'Que este novo capítulo seja cheio de amor, paz e cumplicidade.', timestamp: '2026-06-10T10:30:00' },
+  { nome: 'Família Demo', message: 'Desejamos muitas bênçãos e felicidade aos noivos.', timestamp: '2026-06-11T18:09:00' }
+];
 
 function jsonpRequest(url) {
-  return new Promise((resolve, reject) => {
-    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-    window[callbackName] = function(data) {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      resolve(data);
-    };
-    const script = document.createElement('script');
-    const separator = url.includes('?') ? '&' : '?';
-    script.src = url + separator + 'callback=' + callbackName;
-    script.onerror = function() {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      reject(new Error('JSONP request failed'));
-    };
-    document.body.appendChild(script);
-  });
+  const parsedUrl = String(url || '');
+  const action = (parsedUrl.match(/[?&]action=([^&]+)/) || [null, ''])[1] || 'get_guest';
+  const tokenMatch = parsedUrl.match(/[?&]token=([^&]+)/);
+  const params = {};
+  if (tokenMatch) params.token = decodeURIComponent(tokenMatch[1]);
+  if (window.LirandzoAPI) return window.LirandzoAPI.get(action, params);
+  return Promise.resolve({ status: 'error', message: 'API não carregada' });
 }
-async function verifyDeviceAccess() {
+async function verifyInviteAccess() {
   const urlParams = new URLSearchParams(window.location.search);
-  const tokenFromUrl = urlParams.get("t");
+  const currentToken = urlParams.get("t") || localStorage.getItem('guestToken') || '';
 
-  // MODO DEMO: o acesso já não depende de credenciais, token real ou dispositivo.
-  // Basta o visitante entrar pelo index.html e escrever qualquer nome.
-  if (!tokenFromUrl) {
-    const savedToken = localStorage.getItem('guestToken');
-    if (savedToken) {
-      window.location.href = `convite.html?t=${encodeURIComponent(savedToken)}`;
-      return false;
+  // Novo cenário: o convite é público. Sem token, abre normalmente e só pede dados no RSVP.
+  if (!currentToken) {
+    localStorage.removeItem('guestToken');
+    localStorage.setItem('guestMesa', 'A definir');
+    localStorage.setItem('guestMaxGuests', '5');
+    localStorage.setItem('guestCompanions', '4');
+    return true;
+  }
+
+  try {
+    const result = await (window.LirandzoAPI ? window.LirandzoAPI.get('get_guest', { token: currentToken }) : Promise.resolve({status:'error'}));
+    if (result && result.status === 'success') {
+      const guest = result.data || result;
+      localStorage.setItem('guestName', guest.name || guest.nome || localStorage.getItem('guestName') || '');
+      localStorage.setItem('guestToken', currentToken);
+      localStorage.setItem('guestMesa', guest.mesa || 'A definir');
+      localStorage.setItem('guestMaxGuests', '5');
+      localStorage.setItem('guestCompanions', '4');
+      localStorage.setItem('guestNumber', guest.number || '');
+      if (!urlParams.get("t")) history.replaceState(null, '', `convite.html?t=${encodeURIComponent(currentToken)}`);
     }
-    window.location.href = 'index.html';
-    return false;
+    return true;
+  } catch (err) {
+    console.warn('Token antigo inválido ou API indisponível. O convite continuará público:', err);
+    localStorage.removeItem('guestToken');
+    localStorage.setItem('guestMaxGuests', '5');
+    localStorage.setItem('guestCompanions', '4');
+    return true;
   }
-
-  if (!localStorage.getItem('guestName')) {
-    localStorage.setItem('guestName', 'Convidado(a)');
-  }
-
-  return true;
 }
 
-// Modificar o DOMContentLoaded para incluir a verificação
+// Verificar acesso antes de iniciar o convite
 document.addEventListener('DOMContentLoaded', async () => {
-  const hasAccess = await verifyDeviceAccess();
+  const hasAccess = await verifyInviteAccess();
   if (!hasAccess) return;
 
   // Resto do código existente...
@@ -621,7 +852,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ... continuar com o código existente
 });
     // ============================================
-    // CONFIGURAÇÃO DO GOOGLE APPS SCRIPT
+    // CONFIGURAÇÃO DO BACKEND RENDER / MONGODB
     // ============================================
     
     function escapeHTML(str) {
@@ -635,119 +866,65 @@ document.addEventListener('DOMContentLoaded', async () => {
     
 
     // Função para requisições POST (com tratamento de CORS)
-    const DEMO_GIFT_KEY = 'lirandzo_demo_gifts';
-const DEMO_MESSAGES_KEY = 'lirandzo_demo_messages';
-
-const DEMO_DEFAULT_GIFTS = [
-  { id: 'gift-01', name: 'Conjunto de pratos', reserved: false, reserved_by: '' },
-  { id: 'gift-02', name: 'Jogo de copos', reserved: false, reserved_by: '' },
-  { id: 'gift-03', name: 'Conjunto de talheres', reserved: false, reserved_by: '' },
-  { id: 'gift-04', name: 'Jogo de panelas', reserved: false, reserved_by: '' },
-  { id: 'gift-05', name: 'Liquidificador', reserved: false, reserved_by: '' },
-  { id: 'gift-06', name: 'Ferro de engomar', reserved: false, reserved_by: '' },
-  { id: 'gift-07', name: 'Jogo de lençóis', reserved: false, reserved_by: '' },
-  { id: 'gift-08', name: 'Toalhas de banho', reserved: false, reserved_by: '' }
-];
-
-function getDemoDefaultMessages() {
-  const now = Date.now();
-  return [
-    {
-      nome: 'Família e Amigos',
-      message: 'Que esta nova etapa seja cheia de amor, união e bênçãos. Felicidades aos noivos!',
-      timestamp: new Date(now - 1000 * 60 * 60 * 24 * 3).toISOString()
-    },
-    {
-      nome: 'Convidado Especial',
-      message: 'Desejamos uma vida a dois repleta de cumplicidade, alegria e muitos sonhos realizados.',
-      timestamp: new Date(now - 1000 * 60 * 60 * 24 * 2).toISOString()
-    },
-    {
-      nome: 'Amigos dos Noivos',
-      message: 'Que o amor que vos une hoje continue a crescer todos os dias. Parabéns por este momento lindo!',
-      timestamp: new Date(now - 1000 * 60 * 60 * 20).toISOString()
-    }
-  ];
-}
-
-function cloneDemoData(data) {
-  return JSON.parse(JSON.stringify(data));
-}
-
-function getDemoGifts() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(DEMO_GIFT_KEY) || 'null');
-    if (Array.isArray(stored) && stored.length) return stored;
-  } catch (error) {}
-  const defaults = cloneDemoData(DEMO_DEFAULT_GIFTS);
-  localStorage.setItem(DEMO_GIFT_KEY, JSON.stringify(defaults));
-  return defaults;
-}
-
-function saveDemoGifts(gifts) {
-  localStorage.setItem(DEMO_GIFT_KEY, JSON.stringify(gifts));
-}
-
-function getDemoMessages() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(DEMO_MESSAGES_KEY) || 'null');
-    if (Array.isArray(stored) && stored.length) return stored;
-  } catch (error) {}
-  const defaults = getDemoDefaultMessages();
-  localStorage.setItem(DEMO_MESSAGES_KEY, JSON.stringify(defaults));
-  return defaults;
-}
-
-function saveDemoMessages(messages) {
-  localStorage.setItem(DEMO_MESSAGES_KEY, JSON.stringify(messages));
-}
-
-// MODO DEMO: grava localmente e não envia dados para a API real.
-async function postRequest(data) {
-  const payload = { ...data, timestamp: new Date().toISOString() };
-
-  switch (data?.action) {
-    case 'rsvp':
-      localStorage.setItem('lirandzo_demo_rsvp', JSON.stringify(payload));
-      break;
-
-    case 'save_gifts': {
-      const selected = Array.isArray(data.selectedGifts) ? data.selectedGifts : [];
-      const gifts = getDemoGifts().map(gift => selected.includes(gift.name)
-        ? { ...gift, reserved: true, reserved_by: data.nome || guestName || 'Convidado(a)' }
-        : gift
-      );
-      saveDemoGifts(gifts);
-      break;
+    async function postRequest(data) {
+      try {
+        if (window.LirandzoAPI) {
+          return await window.LirandzoAPI.post(data);
+        }
+        return { status: "error", message: "API não carregada" };
+      } catch (err) {
+        console.error("Erro na requisição POST:", err);
+        throw err;
+      }
     }
 
-    case 'post_message': {
-      const messages = getDemoMessages();
-      messages.unshift({
-        nome: data.nome || guestName || 'Convidado(a)',
-        message: data.message || '',
-        timestamp: payload.timestamp
-      });
-      saveDemoMessages(messages);
-      break;
+    async function getRsvpStatus() {
+      try {
+        if (!window.LirandzoAPI || !token) return { confirmed: false };
+        const res = await window.LirandzoAPI.get('get_rsvp_status', { token });
+        const data = res && (res.data || res);
+        return {
+          confirmed: Boolean(data && data.confirmed),
+          row: data && (data.rsvp || data.row || null)
+        };
+      } catch (err) {
+        console.warn('Não foi possível confirmar o estado RSVP:', err);
+        return { confirmed: false };
+      }
     }
 
-    case 'upload_comprovativo':
-      localStorage.setItem('lirandzo_demo_comprovativo', JSON.stringify({
-        nome: data.nome || guestName || 'Convidado(a)',
-        canal: data.canal || '',
-        ficheiro: data.comprovativoFile_filename || '',
-        timestamp: payload.timestamp
-      }));
-      break;
-  }
-
-  return { status: 'success' };
-}
+    function setButtonLoading(button, isLoading, loadingText) {
+      if (!button) return;
+      if (isLoading) {
+        if (!button.dataset.originalText) button.dataset.originalText = button.textContent.trim();
+        button.classList.add('is-loading');
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+        button.textContent = loadingText || 'A processar...';
+      } else {
+        button.classList.remove('is-loading');
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        button.textContent = button.dataset.originalText || button.textContent;
+        delete button.dataset.originalText;
+      }
+    }
 
     // Função para upload de arquivo (FormData)
     async function postFormData(formData) {
-      return { status: "success" };
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Importante: no-cors para evitar erro de CORS
+          body: formData
+        });
+        
+        // Com no-cors, não podemos ler a resposta
+        return { status: "success" };
+      } catch (err) {
+        console.error("Erro no upload:", err);
+        throw err;
+      }
     }
     
     // Variáveis globais
@@ -756,25 +933,63 @@ async function postRequest(data) {
     let maxGuests = 1;
     let token = "";
     let rsvpTitle = null; // Declarar para uso posterior
+    let rsvpAlreadyConfirmed = false;
     
     document.addEventListener('DOMContentLoaded', async () => {
 
       const urlParams = new URLSearchParams(window.location.search);
-      token = urlParams.get("t");
-
-      if (!token) {
-        document.body.innerHTML = "Convite inválido.";
-        return;
+      token = urlParams.get("t") || localStorage.getItem('guestToken') || '';
+      if (token && !urlParams.get("t")) {
+        history.replaceState(null, '', `convite.html?t=${encodeURIComponent(token)}`);
       }
 
       async function loadGuest() {
-        // MODO DEMO: o nome vem do formulário do index.html.
-        const savedName = (localStorage.getItem('guestName') || '').trim();
-        guestName = savedName || 'Convidado(a)';
-        guestMesa = localStorage.getItem('guestMesa') || 'A definir';
-        maxGuests = Number(localStorage.getItem('guestMax')) || 2;
+        try {
+          if (!token) {
+            guestName = localStorage.getItem('guestName') || '';
+            guestMesa = 'A definir';
+            maxGuests = 5;
+            localStorage.setItem('guestMesa', guestMesa);
+            localStorage.setItem('guestMaxGuests', '5');
+            localStorage.setItem('guestCompanions', '4');
+            return true;
+          }
 
-        return true;
+          const result = await jsonpRequest(`${API_URL}?action=get_guest&token=${encodeURIComponent(token)}`);
+
+          if (!result || result.status !== "success") {
+            guestName = localStorage.getItem('guestName') || '';
+            guestMesa = 'A definir';
+            maxGuests = 5;
+            return true;
+          }
+
+          const guest = result.data || result;
+          guestName = guest.name || guest.nome || 'Convidado';
+          guestMesa = guest.mesa || guest.table || '';
+          maxGuests = Number(guest.maxGuests || guest.maxGuestsTotal || 1) || 1;
+          const companions = Math.max(maxGuests - 1, 0);
+
+          localStorage.setItem('guestName', guestName);
+          localStorage.setItem('guestMesa', guestMesa);
+          localStorage.setItem('guestMaxGuests', String(maxGuests));
+          localStorage.setItem('guestCompanions', String(companions));
+          localStorage.setItem('guestNumber', guest.number || localStorage.getItem('guestNumber') || '');
+
+          if (window.LirandzoAPI) {
+            window.LirandzoAPI.post({ action: 'open_invite', token, nome: guestName, timestamp: new Date().toISOString() }).catch(() => {});
+          }
+
+          return true;
+        } catch(err) {
+          console.warn("Não foi possível carregar um token antigo. O convite continuará público:", err);
+          token = '';
+          localStorage.removeItem('guestToken');
+          guestName = '';
+          guestMesa = '';
+          maxGuests = 1;
+          return true;
+        }
       }
 
       const success = await loadGuest();
@@ -789,15 +1004,7 @@ async function postRequest(data) {
 
     function initializeUI() {
       const guestStatus = localStorage.getItem('guestStatus'); 
-      
-      // Adicionar mensagem de boas-vindas
-      const heroContent = document.querySelector('.hero-bottom-content');
-      if (heroContent) {
-        const welcomeMessage = document.createElement('p');
-        welcomeMessage.className = 'welcome-guest';
-        welcomeMessage.textContent = `Bem-vindo(a), ${guestName}!`;
-        heroContent.prepend(welcomeMessage);
-      }
+      rsvpAlreadyConfirmed = Boolean(token) && /confirmado/i.test(guestStatus || '');
 
       // Configurar RSVP
       const rsvpModal = document.getElementById('rsvpModal');
@@ -809,16 +1016,19 @@ async function postRequest(data) {
         const rsvpSubmitBtn = rsvpForm.querySelector('#sendRsvpServer');
 
         if (nameInput) {
-          nameInput.value = guestName;
-          nameInput.disabled = true; 
+          nameInput.value = token ? (guestName || '') : '';
+          const messageNameInput = document.getElementById('messageGuestName');
+          if (messageNameInput && guestName) messageNameInput.value = guestName;
+          nameInput.disabled = false;
+          nameInput.required = true;
         }
         
-        // Configurar dropdown de convidados
-        function buildDropdown(maxConvidados) {
-          const max = Number(maxConvidados) || 1;
+        // Configurar dropdown público de 1 a 5 pessoas.
+        function buildDropdown() {
+          if (!guestsSelect) return;
           guestsSelect.innerHTML = '';
 
-          for (let i = 1; i <= max; i++) {
+          for (let i = 1; i <= 5; i++) {
             const option = document.createElement('option');
             option.value = i;
             option.textContent = i;
@@ -826,9 +1036,10 @@ async function postRequest(data) {
           }
         }
 
-        buildDropdown(maxGuests);
+        buildDropdown();
+        maxGuests = 5;
 
-        if (guestStatus && guestStatus.toLowerCase().startsWith('confirmado')) {
+        if (token && guestStatus && guestStatus.toLowerCase().startsWith('confirmado')) {
           const guestsMatch = guestStatus.match(/\(([^)]+)\)/); 
           if (guestsMatch && guestsMatch[1]) {
             const confirmedGuests = guestsMatch[1];
@@ -841,39 +1052,20 @@ async function postRequest(data) {
         }
       }
 
-      // Configurar modal de informação do convidado
-      const guestInfoModal = document.getElementById('guestInfoModal');
-      if (guestInfoModal) {
-        const infoNameEl = document.getElementById('guestInfoName');
-        const infoMesaEl = document.getElementById('guestInfoMesa');
-        
-        if (infoNameEl) {
-          infoNameEl.textContent = guestName;
-        }
-        if (infoMesaEl) {
-          // Verificar se guestMesa existe e é uma string
-          if (guestMesa && typeof guestMesa === 'string' && guestMesa !== "A definir" && guestMesa !== "undefined" && guestMesa.trim() !== "") {
-            infoMesaEl.textContent = guestMesa;
-          } else {
-            infoMesaEl.textContent = "A sua mesa será indicada à entrada.";
-            infoMesaEl.style.color = "var(--text-light)";
-            infoMesaEl.style.fontWeight = "400";
-          }
-        }
-      }
-
       // Constantes
-      const HOST_WHATSAPP_NUMBER = '+258847352713';
-      const ADDRESS_RELIGIOSA = 'Igreja Universal - Albazine, Maputo';
-      const ADDRESS_CIVIL_COPO_DE_AGUA = 'Eventos & acomodação Águia, Zimpeto, Maputo'; 
-      const EVENT_DATE = "2026-05-02T10:00:00"; 
+      const HOST_WHATSAPP_NUMBER = ''; // sem contacto definido
+      const ADDRESS_RELIGIOSA = 'Palácio dos Casamentos, Maputo';
+      const ADDRESS_CIVIL = 'Palácio dos Casamentos, Maputo';
+      const ADDRESS_COPO_DE_AGUA = 'Thendane Eventos, Maputo';
+      const MAP_FAROL2_URL = 'https://maps.app.goo.gl/rbzP3MeZPr2s3x4i6';
+      const MAP_CIVIL_URL = 'https://www.google.com/maps/search/?api=1&query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique'; 
+      const EVENT_DATE = "2026-08-29T09:00:00+02:00"; 
       const body = document.body;
       const music = document.getElementById('backgroundMusic');
       const musicControl = document.getElementById('musicControl');
       
       const fabRsvpBtn = document.getElementById('fabRsvpBtn');
       const fabGiftsBtn = document.getElementById('fabGiftsBtn');
-      const fabGuestInfoBtn = document.getElementById('fabGuestInfoBtn');
       const fabMapBtn = document.getElementById('fabMapBtn'); 
       
       const rsvpBtn = document.getElementById('rsvpBtn');
@@ -881,6 +1073,8 @@ async function postRequest(data) {
       const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
       const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
       const mapBtnCivil = document.getElementById('mapBtnCivil');
+      const mapBtnCopo = document.getElementById('mapBtnCopo');
+      const mapBtnWelcome = document.getElementById('mapBtnWelcome');
       const galleryImages = document.querySelectorAll('.gallery-grid img');
       const lightboxModal = document.getElementById('lightboxModal');
       const lightboxImage = document.getElementById('lightboxImage');
@@ -891,10 +1085,98 @@ async function postRequest(data) {
         if (isDirections) return `${baseUrl}/dir/?api=1&destination=${encodedAddress}`;
         return `${baseUrl}/search/?api=1&query=${encodedAddress}`;
       };
-      
+      let preservedScrollY = 0;
+      const MODAL_CLOSE_ANIMATION_MS = 420;
+
+      const getCurrentScrollY = () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      const lockPageScrollForModal = () => {
+        // Não bloqueamos html/body com overflow/position.
+        // Isso era a origem do salto para o topo em alguns navegadores.
+        preservedScrollY = getCurrentScrollY();
+      };
+
+      const unlockPageScrollAfterModal = () => {
+        document.documentElement.classList.remove('modal-is-open');
+        document.body.classList.remove('modal-open');
+      };
+
       const openModal = (modalId) => {
         const modal = document.getElementById(modalId);
-        if(modal) modal.classList.add('open');
+        if (!modal) return;
+
+        const beforeOpenScrollY = getCurrentScrollY();
+        lockPageScrollForModal();
+        document.documentElement.classList.remove('modal-is-open');
+        document.body.classList.remove('modal-open');
+
+        if (modal.__closeTimer) clearTimeout(modal.__closeTimer);
+        modal.classList.remove('is-closing');
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+
+        const modalCard = modal.querySelector('.modal-card');
+        if (modalCard) modalCard.scrollTop = 0;
+
+        // Garantia anti-salto: abrir modal nunca altera a posição do convite.
+        requestAnimationFrame(() => {
+          if (Math.abs(getCurrentScrollY() - beforeOpenScrollY) > 2) {
+            window.scrollTo({ top: beforeOpenScrollY, left: 0, behavior: 'auto' });
+          }
+        });
+      };
+
+      const closeModal = (modal) => {
+        if (!modal || !modal.classList.contains('open')) return;
+
+        const beforeCloseScrollY = getCurrentScrollY();
+        modal.classList.add('is-closing');
+        modal.setAttribute('aria-hidden', 'true');
+
+        if (modal.__closeTimer) clearTimeout(modal.__closeTimer);
+        modal.__closeTimer = setTimeout(() => {
+          modal.classList.remove('open', 'is-closing');
+          modal.__closeTimer = null;
+
+          if (!document.querySelector('.modal.open')) {
+            unlockPageScrollAfterModal();
+          }
+
+          // Garantia anti-salto também ao fechar.
+          requestAnimationFrame(() => {
+            if (Math.abs(getCurrentScrollY() - beforeCloseScrollY) > 2) {
+              window.scrollTo({ top: beforeCloseScrollY, left: 0, behavior: 'auto' });
+            }
+          });
+        }, MODAL_CLOSE_ANIMATION_MS);
+      };
+      
+      const showRsvpSuccessFeedback = (message = 'A vossa presença foi registada com sucesso.') => {
+        const existing = document.querySelector('.rsvp-success-overlay');
+        if (existing) existing.remove();
+        const overlay = document.createElement('div');
+        overlay.className = 'rsvp-success-overlay';
+        overlay.setAttribute('aria-live', 'polite');
+        overlay.innerHTML = `
+          <div class="rsvp-success-card" role="status">
+            <div class="rsvp-checkmark" aria-hidden="true">
+              <svg viewBox="0 0 52 52" fill="none">
+                <path d="M14 27.5 23 36 39 17" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <div>
+              <strong>Presença confirmada</strong>
+              <span>${message}</span>
+            </div>
+          </div>`;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('show'));
+        return new Promise(resolve => {
+          setTimeout(() => {
+            overlay.classList.remove('show');
+            setTimeout(() => { overlay.remove(); resolve(); }, 320);
+          }, 1700);
+        });
       };
       
       body.classList.remove('loading');
@@ -907,49 +1189,303 @@ async function postRequest(data) {
           : `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>`;
         musicControl.classList.toggle('playing', !music.paused);
       };
-      
-      if (music) {
-        const tryAutoplay = music.play();
 
-        if (tryAutoplay !== undefined) {
-          tryAutoplay.catch(() => {
-            const playOnFirstInteraction = () => {
-              music.play().then(() => {
-                updateMusicIcon();
-                document.removeEventListener('click', playOnFirstInteraction);
-                document.removeEventListener('touchstart', playOnFirstInteraction);
-              });
-            };
+      const MUSIC_URL = 'https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3';
 
-            document.addEventListener('click', playOnFirstInteraction);
-            document.addEventListener('touchstart', playOnFirstInteraction);
+      const prepareMusic = () => {
+        if (!music) return;
+        if (music.getAttribute('src') !== MUSIC_URL) music.setAttribute('src', MUSIC_URL);
+        music.loop = true;
+        music.preload = 'auto';
+        music.autoplay = true;
+        music.setAttribute('playsinline', '');
+        music.volume = 0.72;
+      };
+
+      const safePlayMusic = () => {
+        if (!music) return Promise.resolve(false);
+        prepareMusic();
+        return music.play()
+          .then(() => {
+            sessionStorage.removeItem('lirandzoPlayMusic');
+            document.body.classList.remove('music-needs-tap');
+            updateMusicIcon();
+            return true;
+          })
+          .catch(() => {
+            document.body.classList.add('music-needs-tap');
+            updateMusicIcon();
+            return false;
           });
-        }
+      };
+
+      if (music) {
+        prepareMusic();
+
+        const playOnFirstInteraction = () => {
+          safePlayMusic().then((played) => {
+            if (played) {
+              document.removeEventListener('click', playOnFirstInteraction, true);
+              document.removeEventListener('touchstart', playOnFirstInteraction, true);
+              document.removeEventListener('pointerdown', playOnFirstInteraction, true);
+              document.removeEventListener('keydown', playOnFirstInteraction, true);
+            }
+          });
+        };
+
+        const bindMusicFallback = () => {
+          document.addEventListener('click', playOnFirstInteraction, true);
+          document.addEventListener('touchstart', playOnFirstInteraction, true);
+          document.addEventListener('pointerdown', playOnFirstInteraction, true);
+          document.addEventListener('keydown', playOnFirstInteraction, true);
+        };
+
+        requestAnimationFrame(() => {
+          safePlayMusic().then((played) => {
+            if (!played) bindMusicFallback();
+          });
+        });
+
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden && music.paused) safePlayMusic();
+        });
       }
       
       if(musicControl) {
-        musicControl.addEventListener('click', () => {
-          music.paused ? music.play() : music.pause();
-          updateMusicIcon();
+        musicControl.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (!music) return;
+          if (music.paused) {
+            safePlayMusic();
+          } else {
+            music.pause();
+            updateMusicIcon();
+          }
         });
       }
       updateMusicIcon();
       
-      if (mapBtnReligiosa) mapBtnReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true); 
-      if (mapBtnCivil) mapBtnCivil.href = createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true); 
+      const locationMapReligiosa = document.getElementById('locationMapReligiosa');
+      const locationMapCivil = document.getElementById('locationMapCivil');
+      const locationMapCopo = document.getElementById('locationMapCopo');
+
+      if (mapBtnReligiosa) mapBtnReligiosa.href = MAP_FAROL2_URL;
+      if (mapBtnWelcome) mapBtnWelcome.href = MAP_FAROL2_URL; 
+      if (mapBtnCivil) mapBtnCivil.href = MAP_CIVIL_URL;
+      if (mapBtnCopo) mapBtnCopo.href = MAP_FAROL2_URL; 
+      if (locationMapReligiosa) locationMapReligiosa.href = MAP_FAROL2_URL;
+      if (locationMapCivil) locationMapCivil.href = MAP_CIVIL_URL;
+      if (locationMapCopo) locationMapCopo.href = MAP_FAROL2_URL;
       
-      [fabRsvpBtn, rsvpBtn].forEach(btn => btn?.addEventListener('click', () => openModal('rsvpModal')));
-      [fabGiftsBtn, giftsCombinedBtn].forEach(btn => btn?.addEventListener('click', () => openModal('giftsCombinedModal')));
-      fabGuestInfoBtn?.addEventListener('click', () => openModal('guestInfoModal'));
-      dressCodeBtn?.addEventListener('click', () => openModal('dressCodeModal'));
-      fabMapBtn?.addEventListener('click', () => window.open(createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true), '_blank'));
+      const EVENT_END_DATE = "2026-09-12T22:00:00+02:00";
+      const EVENT_TITLE = "Casamento de Minoca & Abubacar";
+      const EVENT_LOCATION = `${ADDRESS_RELIGIOSA} / ${ADDRESS_CIVIL} / ${ADDRESS_COPO_DE_AGUA}`;
+
+      const padCalendarValue = (value) => String(value).padStart(2, '0');
+      const formatIcsDate = (date) => {
+        return `${date.getFullYear()}${padCalendarValue(date.getMonth() + 1)}${padCalendarValue(date.getDate())}T${padCalendarValue(date.getHours())}${padCalendarValue(date.getMinutes())}${padCalendarValue(date.getSeconds())}`;
+      };
+
+      const escapeIcsText = (value) => String(value || '')
+        .replace(/\\/g, '\\\\')
+        .replace(/;/g, '\\;')
+        .replace(/,/g, '\\,')
+        .replace(/\n/g, '\\n');
+
+      const addEventToCalendar = () => {
+        const description = "Lembrete do casamento de Minoca e Abubacar. Confirme a sua presença e guarde esta data especial.";
+        const calendarUrl = new URL('https://calendar.google.com/calendar/render');
+        calendarUrl.searchParams.set('action', 'TEMPLATE');
+        calendarUrl.searchParams.set('text', EVENT_TITLE);
+        calendarUrl.searchParams.set('dates', '20260912T100000/20260912T220000');
+        calendarUrl.searchParams.set('ctz', 'Africa/Maputo');
+        calendarUrl.searchParams.set('location', EVENT_LOCATION);
+        calendarUrl.searchParams.set('details', description);
+
+        window.open(calendarUrl.toString(), '_blank', 'noopener,noreferrer');
+      };
+
+      const calendarBtn = document.getElementById('calendarBtn');
+      const addCalendarBtn = document.getElementById('addCalendarBtn');
+      const confirmPresenceBtn = document.getElementById('confirmPresenceBtn');
+      const pendingPresenceBtn = document.getElementById('pendingPresenceBtn');
+      const rsvpOptionsStatus = document.getElementById('rsvpStatus');
+
+      const applyRsvpConfirmedState = () => {
+        if (!rsvpAlreadyConfirmed) return;
+        if (confirmPresenceBtn) {
+          confirmPresenceBtn.disabled = true;
+          confirmPresenceBtn.classList.add('is-confirmed');
+          confirmPresenceBtn.textContent = 'Presença já confirmada';
+          confirmPresenceBtn.setAttribute('aria-disabled', 'true');
+        }
+        if (pendingPresenceBtn) {
+          pendingPresenceBtn.disabled = true;
+          pendingPresenceBtn.classList.add('is-confirmed');
+          pendingPresenceBtn.textContent = 'Estado fechado';
+          pendingPresenceBtn.title = 'A presença já foi confirmada. Esta opção já não está disponível.';
+          pendingPresenceBtn.setAttribute('aria-disabled', 'true');
+        }
+        if (rsvpOptionsStatus) {
+          rsvpOptionsStatus.style.color = '#15803d';
+          rsvpOptionsStatus.textContent = 'A sua presença já foi confirmada. Não é necessário confirmar novamente.';
+        }
+      };
+
+      getRsvpStatus().then(status => {
+        if (status.confirmed || /confirmado/i.test(localStorage.getItem('guestStatus') || '')) {
+          rsvpAlreadyConfirmed = true;
+          applyRsvpConfirmedState();
+        }
+      });
+
+      const setRsvpChoice = async (choice, sourceButton) => {
+        const currentGuestName = guestName || localStorage.getItem('guestName') || 'Convidado';
+
+        if (rsvpAlreadyConfirmed || /confirmado/i.test(localStorage.getItem('guestStatus') || '')) {
+          rsvpAlreadyConfirmed = true;
+          applyRsvpConfirmedState();
+          if (rsvpOptionsStatus) {
+            rsvpOptionsStatus.style.color = '#15803d';
+            rsvpOptionsStatus.textContent = 'A sua presença já foi confirmada. As opções de RSVP foram bloqueadas para evitar alterações duplicadas.';
+          }
+          return;
+        }
+
+        if (choice !== 'confirmed') {
+          const statusBeforeChange = await getRsvpStatus();
+          if (statusBeforeChange.confirmed) {
+            rsvpAlreadyConfirmed = true;
+            applyRsvpConfirmedState();
+            return;
+          }
+        }
+
+        const payload = {
+          choice,
+          guestName: currentGuestName,
+          event: EVENT_TITLE,
+          savedAt: new Date().toISOString()
+        };
+
+        try {
+          setButtonLoading(sourceButton, true, choice === 'confirmed' ? 'A confirmar...' : 'A guardar...');
+
+          if (choice === 'confirmed') {
+            const currentStatus = await getRsvpStatus();
+            if (rsvpAlreadyConfirmed || currentStatus.confirmed) {
+              rsvpAlreadyConfirmed = true;
+              applyRsvpConfirmedState();
+              return;
+            }
+          }
+
+          localStorage.setItem('rsvpChoice', JSON.stringify(payload));
+          if (window.LirandzoAPI) {
+            await window.LirandzoAPI.post({ action: 'rsvp_choice', token, nome: currentGuestName, choice, guests: maxGuests, timestamp: new Date().toISOString() });
+          }
+          if (choice === 'confirmed') {
+            rsvpAlreadyConfirmed = true;
+            localStorage.setItem('guestStatus', `Confirmado (${maxGuests})`);
+            if (rsvpOptionsStatus) rsvpOptionsStatus.textContent = '';
+            await showRsvpSuccessFeedback('Obrigado. A confirmação foi guardada para a organização do evento.');
+            closeModal(document.getElementById('rsvpModal'));
+            applyRsvpConfirmedState();
+            return;
+          }
+          if (rsvpOptionsStatus) {
+            rsvpOptionsStatus.style.color = '#9E7A13';
+            rsvpOptionsStatus.textContent = 'Estado guardado como “ainda por confirmar”.';
+          }
+        } catch (err) {
+          console.error('Erro ao guardar RSVP:', err);
+          if (rsvpOptionsStatus) {
+            rsvpOptionsStatus.style.color = '#D93025';
+            rsvpOptionsStatus.textContent = 'Não foi possível guardar agora. Tente novamente.';
+          }
+        } finally {
+          if (!(choice === 'confirmed' && rsvpAlreadyConfirmed)) {
+            setButtonLoading(sourceButton, false);
+          }
+        }
+      };
+
+      calendarBtn?.addEventListener('click', addEventToCalendar);
+      addCalendarBtn?.addEventListener('click', () => {
+        addEventToCalendar();
+        if (rsvpOptionsStatus) {
+          rsvpOptionsStatus.style.color = '#9E7A13';
+          rsvpOptionsStatus.textContent = 'O calendário foi aberto numa nova aba com o evento já preenchido. Basta confirmar para guardar.';
+        }
+      });
+      confirmPresenceBtn?.addEventListener('click', () => setRsvpChoice('confirmed', confirmPresenceBtn));
+      pendingPresenceBtn?.addEventListener('click', () => setRsvpChoice('pending', pendingPresenceBtn));
+
+
+      document.addEventListener('click', (event) => {
+        const emptyAnchor = event.target.closest('a[href="#"]');
+        if (!emptyAnchor) return;
+        const isModalTrigger = emptyAnchor.hasAttribute('data-open-modal') || emptyAnchor.closest('[data-open-modal]');
+        const isCloseTrigger = emptyAnchor.hasAttribute('data-close-modal') || emptyAnchor.closest('[data-close-modal]');
+        const isPlaceholderMap = emptyAnchor.id && /map/i.test(emptyAnchor.id);
+        if (isModalTrigger || isCloseTrigger || isPlaceholderMap) {
+          event.preventDefault();
+        }
+      }, true);
+
+      const bindModalTrigger = (element, modalId) => {
+        element?.addEventListener('click', (event) => {
+          event.preventDefault();
+          openModal(modalId);
+        });
+      };
+
+      [fabRsvpBtn, rsvpBtn].forEach(btn => bindModalTrigger(btn, 'rsvpModal'));
+      [fabGiftsBtn, giftsCombinedBtn].forEach(btn => bindModalTrigger(btn, 'giftsCombinedModal'));
+
+      document.querySelectorAll('[data-copy-text]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const value = button.getAttribute('data-copy-text') || '';
+          const original = button.textContent;
+          try {
+            await navigator.clipboard.writeText(value);
+            button.textContent = 'Copiado!';
+          } catch (err) {
+            const area = document.createElement('textarea');
+            area.value = value;
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand('copy');
+            area.remove();
+            button.textContent = 'Copiado!';
+          }
+          setTimeout(() => { button.textContent = original; }, 1600);
+        });
+      });
+      bindModalTrigger(dressCodeBtn, 'dressCodeModal');
+      document.querySelectorAll('[data-open-modal]').forEach(btn => {
+        btn.addEventListener('click', (event) => {
+          event.preventDefault();
+          const targetModal = btn.getAttribute('data-open-modal');
+          if (targetModal) openModal(targetModal);
+        });
+      });
+      bindModalTrigger(fabMapBtn, 'locationChooserModal');
       
       document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
           if (e.target === modal || e.target.closest('[data-close-modal]')) {
-            modal.classList.remove('open');
+            e.preventDefault();
+            closeModal(modal);
           }
         });
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.modal.open').forEach(modal => closeModal(modal));
+        }
       });
       
       const countdownInterval = setInterval(() => {
@@ -968,6 +1504,176 @@ async function postRequest(data) {
         document.getElementById("seconds").innerText = format(Math.floor((distance % (1000 * 60)) / 1000));
       }, 1000);
       
+
+      // Cápsula do Tempo — activa apenas no dia do casamento
+      const timeCapsuleForm = document.getElementById('timeCapsuleForm');
+      const timeCapsuleFiles = document.getElementById('timeCapsuleFiles');
+      const timeCapsuleSubmit = document.getElementById('timeCapsuleSubmit');
+      const timeCapsuleStatus = document.getElementById('timeCapsuleStatus');
+      const timeCapsuleGallery = document.getElementById('timeCapsuleGallery');
+      const timeCapsuleEmpty = document.getElementById('timeCapsuleEmpty');
+      const timeCapsuleState = document.getElementById('timeCapsuleState');
+      const timeCapsuleStateTitle = document.getElementById('timeCapsuleStateTitle');
+      const timeCapsuleStateText = document.getElementById('timeCapsuleStateText');
+
+      const isSameCalendarDay = (a, b) => (
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate()
+      );
+
+      const formatEventDay = (date) => date.toLocaleDateString('pt-PT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      const readCapsuleFile = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({
+          src: reader.result,
+          dataUrl: reader.result,
+          nome: guestName || 'Convidado',
+          token: token || '',
+          filename: file.name,
+          mimeType: file.type || 'image/jpeg',
+          size: file.size || 0,
+          timestamp: new Date().toISOString()
+        });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const renderTimeCapsuleGallery = async () => {
+        if (!timeCapsuleGallery) return;
+        let savedPhotos = [];
+        try {
+          const res = await LirandzoAPI.get('list_capsule_photos');
+          savedPhotos = res.data || [];
+        } catch (err) {
+          savedPhotos = JSON.parse(localStorage.getItem('rm_capsulePhotos') || '[]');
+        }
+
+        timeCapsuleGallery.querySelectorAll('.time-capsule-photo').forEach(item => item.remove());
+        if (timeCapsuleEmpty) timeCapsuleEmpty.style.display = savedPhotos.length ? 'none' : 'block';
+
+        savedPhotos.slice(0, 12).forEach(photo => {
+          const item = document.createElement('article');
+          item.className = 'time-capsule-photo';
+          const src = photo.thumbnailUrl || photo.viewUrl || photo.src || photo.dataUrl || '';
+          const when = photo.timestamp || photo.createdAt || new Date().toISOString();
+          item.innerHTML = `
+            <img src="${src}" alt="Foto partilhada por ${escapeHTML(photo.nome || photo.name || 'Convidado')}" loading="lazy" />
+            <div>
+              <strong>${escapeHTML(photo.nome || photo.name || 'Convidado')}</strong>
+              <span>${new Date(when).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' })}</span>
+            </div>
+          `;
+          timeCapsuleGallery.appendChild(item);
+        });
+      };
+
+      const configureTimeCapsule = () => {
+        const eventDate = new Date(EVENT_DATE);
+        const today = new Date();
+        const capsuleIsOpen = isSameCalendarDay(today, eventDate);
+        const eventDayLabel = formatEventDay(eventDate);
+
+        if (!timeCapsuleForm || !timeCapsuleFiles || !timeCapsuleSubmit) return;
+
+        if (capsuleIsOpen) {
+          timeCapsuleForm.classList.remove('is-locked');
+          timeCapsuleFiles.disabled = false;
+          timeCapsuleSubmit.disabled = false;
+          if (timeCapsuleState) timeCapsuleState.classList.add('is-open');
+          if (timeCapsuleStateTitle) timeCapsuleStateTitle.textContent = 'Cápsula aberta hoje';
+          if (timeCapsuleStateText) timeCapsuleStateText.textContent = 'Partilhe as fotografias tiradas durante a celebração. As memórias ficarão guardadas na galeria do evento.';
+        } else {
+          timeCapsuleForm.classList.add('is-locked');
+          timeCapsuleFiles.disabled = true;
+          timeCapsuleSubmit.disabled = true;
+          if (timeCapsuleState) timeCapsuleState.classList.remove('is-open');
+          if (timeCapsuleStateTitle) timeCapsuleStateTitle.textContent = 'Disponível apenas no dia do casamento';
+          if (timeCapsuleStateText) {
+            timeCapsuleStateText.textContent = today < eventDate
+              ? `A cápsula será aberta automaticamente no dia ${eventDayLabel}.`
+              : `A cápsula esteve disponível apenas no dia ${eventDayLabel}.`;
+          }
+        }
+
+        renderTimeCapsuleGallery();
+      };
+
+      if (timeCapsuleForm) {
+        timeCapsuleForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const eventDate = new Date(EVENT_DATE);
+          const today = new Date();
+
+          if (!isSameCalendarDay(today, eventDate)) {
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = '#9E7A13';
+              timeCapsuleStatus.textContent = 'A Cápsula do Tempo só fica disponível no próprio dia do casamento.';
+            }
+            return;
+          }
+
+          const files = Array.from(timeCapsuleFiles.files || []).slice(0, 8);
+          if (!files.length) {
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = '#9E7A13';
+              timeCapsuleStatus.textContent = 'Seleccione pelo menos uma fotografia.';
+            }
+            return;
+          }
+
+          const validFiles = files.filter(file => file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024);
+          if (!validFiles.length) {
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = '#D93025';
+              timeCapsuleStatus.textContent = 'Só são aceites imagens até 5 MB.';
+            }
+            return;
+          }
+
+          setButtonLoading(timeCapsuleSubmit, true, 'A guardar...');
+          if (timeCapsuleStatus) timeCapsuleStatus.textContent = '';
+
+          try {
+            const photos = await Promise.all(validFiles.map(readCapsuleFile));
+            for (const photo of photos) {
+              await LirandzoAPI.post({
+                action: 'save_capsule_photo',
+                token: photo.token,
+                nome: photo.nome,
+                filename: photo.filename,
+                mimeType: photo.mimeType,
+                size: photo.size,
+                dataUrl: photo.dataUrl,
+                timestamp: photo.timestamp
+              });
+            }
+            await renderTimeCapsuleGallery();
+            timeCapsuleForm.reset();
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = 'green';
+              timeCapsuleStatus.textContent = 'Fotografias adicionadas à Cápsula do Tempo.';
+            }
+          } catch (err) {
+            console.error('Erro na Cápsula do Tempo:', err);
+            if (timeCapsuleStatus) {
+              timeCapsuleStatus.style.color = '#D93025';
+              timeCapsuleStatus.textContent = 'Erro ao guardar as fotografias. Tente novamente.';
+            }
+          } finally {
+            setButtonLoading(timeCapsuleSubmit, false);
+            timeCapsuleSubmit.disabled = !isSameCalendarDay(new Date(), new Date(EVENT_DATE));
+          }
+        });
+      }
+
+      configureTimeCapsule();
+
       const giftsModal = document.getElementById('giftsCombinedModal');
       if (giftsModal) {
         const tabButtons = giftsModal.querySelectorAll('.tab-btn');
@@ -983,7 +1689,7 @@ async function postRequest(data) {
           });
         });
       }
-      
+
       // RSVP Form - Corrigido para CORS
       if (rsvpForm) {
         const rsvpStatus = document.getElementById('rsvpStatus');
@@ -991,278 +1697,124 @@ async function postRequest(data) {
         
         const getRsvpData = () => ({
           action: "rsvp",
-          nome: guestName, 
-          token: token,
-          guests: rsvpForm.querySelector('#guests').value,
-          phone: rsvpForm.querySelector('#phone').value.trim(),
-          message: rsvpForm.querySelector('#message').value.trim()
+          nome: (rsvpForm.querySelector('#nome')?.value || '').trim(),
+          token: token || '',
+          guests: rsvpForm.querySelector('#guests')?.value || '1',
+          phone: (rsvpForm.querySelector('#phone')?.value || '').trim(),
+          message: (rsvpForm.querySelector('#message')?.value || '').trim()
         });
 
         rsvpForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           const data = getRsvpData();
+          if (!data.nome) {
+            rsvpStatus.style.color = "#D93025";
+            rsvpStatus.textContent = "Digite o seu nome para confirmar a presença.";
+            return;
+          }
+          guestName = data.nome;
+          maxGuests = Number(data.guests) || 1;
+          localStorage.setItem('guestName', guestName);
+          localStorage.setItem('guestMaxGuests', String(maxGuests));
+          localStorage.setItem('guestCompanions', String(Math.max(maxGuests - 1, 0)));
           
           const originalButtonText = submitButton.textContent; 
-          submitButton.disabled = true;
-          submitButton.textContent = "A enviar...";
+          setButtonLoading(submitButton, true, 'A enviar...');
           rsvpStatus.textContent = "";
 
           try {
-            await postRequest(data);
-            
-            // Se chegou aqui, assumimos que deu certo
-            localStorage.setItem('guestStatus', `Confirmado (${data.guests})`);
-            rsvpStatus.style.color = "green";
-            rsvpStatus.textContent = "Confirmação recebida com sucesso! Obrigado.";
-            submitButton.textContent = "Atualizado!";
-            
-            setTimeout(() => {
-              document.getElementById('rsvpModal').classList.remove('open');
-              submitButton.disabled = false;
-              submitButton.textContent = "Atualizar Confirmação";
-              if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
-            }, 2000);
+            const response = await postRequest(data);
+            const responseGuest = response && (response.data || {});
+            guestName = responseGuest.name || responseGuest.nome || data.nome;
+            token = responseGuest.token || token || '';
+            guestMesa = responseGuest.mesa || guestMesa || '';
+            maxGuests = Number(responseGuest.maxGuests || data.guests || 1) || 1;
+            try {
+              if (token) localStorage.setItem('guestToken', token);
+              localStorage.setItem('guestName', guestName);
+              localStorage.setItem('guestMesa', guestMesa || '');
+            } catch (err) {}
+            localStorage.setItem('guestStatus', `Confirmado (${maxGuests})`);
+            rsvpAlreadyConfirmed = true;
+            rsvpStatus.textContent = "";
+            submitButton.textContent = "Confirmado";
+            await showRsvpSuccessFeedback('Obrigado. A vossa presença foi registada com sucesso.');
+            closeModal(document.getElementById('rsvpModal'));
+            setButtonLoading(submitButton, false);
+            submitButton.textContent = "Atualizar Confirmação";
+            const messageNameInput = document.getElementById('messageGuestName');
+            if (messageNameInput && !messageNameInput.value.trim()) messageNameInput.value = guestName;
+            if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
             
           } catch (err) {
             rsvpStatus.style.color = "#D93025";
-            rsvpStatus.textContent = "Erro ao enviar. Tente por WhatsApp.";
-            submitButton.disabled = false;
+            rsvpStatus.textContent = err.message || "Erro ao registar. Tente novamente.";
+            setButtonLoading(submitButton, false);
             submitButton.textContent = originalButtonText; 
           }
         });
         
-        rsvpForm.querySelector('#sendWhatsapp').addEventListener('click', () => {
+        rsvpForm.querySelector('#sendWhatsapp')?.addEventListener('click', () => {
           const data = getRsvpData();
-          const text = `RSVP - Olá! Confirmo a minha presença. Nome: ${data.nome}, Convidados: ${data.guests}. Mensagem: ${data.message}`;
+          const text = `RSVP - Olá! Sim! confirmo.. Nome: ${data.nome}, Convidados: ${data.guests}. Mensagem: ${data.message}`;
           window.open(`https://wa.me/${HOST_WHATSAPP_NUMBER.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`, '_blank');
-          document.getElementById('rsvpModal').classList.remove('open');
+          closeModal(document.getElementById('rsvpModal'));
         });
       }
       
+      // Abrir confirmação de presença 5 segundos depois de chegar ao fim do convite
+      let endOfInviteRsvpTimer = null;
+      let endOfInviteRsvpOpened = false;
+      const isAtEndOfInvite = () => {
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const documentHeight = Math.max(
+          document.documentElement.scrollHeight,
+          document.body.scrollHeight
+        );
+        return scrollPosition >= documentHeight - 90;
+      };
+
+      const scheduleEndOfInviteRsvp = () => {
+        if (endOfInviteRsvpOpened) return;
+        if (isAtEndOfInvite()) {
+          if (!endOfInviteRsvpTimer) {
+            endOfInviteRsvpTimer = window.setTimeout(() => {
+              endOfInviteRsvpTimer = null;
+              if (endOfInviteRsvpOpened || !isAtEndOfInvite() || document.querySelector('.modal.open')) return;
+              endOfInviteRsvpOpened = true;
+              openModal('rsvpModal');
+            }, 5000);
+          }
+        } else if (endOfInviteRsvpTimer) {
+          window.clearTimeout(endOfInviteRsvpTimer);
+          endOfInviteRsvpTimer = null;
+        }
+      };
+
+      window.addEventListener('scroll', scheduleEndOfInviteRsvp, { passive: true });
+      window.addEventListener('resize', scheduleEndOfInviteRsvp);
+      scheduleEndOfInviteRsvp();
+
       // Galeria
       galleryImages.forEach(img => {
         img.addEventListener('click', () => {
           lightboxImage.src = img.getAttribute('data-src') || img.src;
-          lightboxModal.classList.add('open');
+          openModal('lightboxModal');
         });
       });
 
-      // Função para carregar a lista de presentes (usando JSONP)
-      async function loadGiftList() {
-        const giftLoading = document.getElementById('giftLoading');
-        const giftError = document.getElementById('giftError');
-        const giftList = document.getElementById('giftList');
-
-        try {
-          const gifts = getDemoGifts();
-          
-          giftLoading.style.display = 'none';
-          giftError.style.display = 'none';
-          giftList.style.display = 'grid';
-          giftList.innerHTML = '';
-          
-          gifts.forEach(gift => {
-            const item = document.createElement('label');
-            item.className = `gift-item ${gift.reserved ? 'reserved' : ''}`;
-            
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.name = 'gift';
-            checkbox.value = gift.name;
-            checkbox.disabled = gift.reserved;
-            
-            item.appendChild(checkbox);
-            item.appendChild(document.createTextNode(gift.name));
-            
-            if (gift.reserved_by && gift.reserved_by === guestName) {
-              const reservedSpan = document.createElement('span');
-              reservedSpan.style.marginLeft = 'auto';
-              reservedSpan.style.fontSize = '0.8rem';
-              reservedSpan.style.color = '#666';
-              reservedSpan.textContent = '(seu)';
-              item.appendChild(reservedSpan);
-            }
-            
-            giftList.appendChild(item);
-          });
-        } catch (error) {
-          giftLoading.style.display = 'none';
-          giftError.style.display = 'block';
-          giftError.textContent = 'Erro ao carregar lista de presentes.';
-          console.error('Erro ao carregar presentes:', error);
-        }
-      }
-
-      // Carregar lista de presentes quando o modal for aberto
-      const giftsCombinedModal = document.getElementById('giftsCombinedModal');
-      if (giftsCombinedModal) {
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-              if (giftsCombinedModal.classList.contains('open')) {
-                const loicasContent = document.getElementById('loicasContent');
-                if (loicasContent && loicasContent.classList.contains('active')) {
-                  loadGiftList();
-                }
-              }
-            }
-          });
-        });
-
-        observer.observe(giftsCombinedModal, { attributes: true });
-
-        const tabButtons = giftsCombinedModal.querySelectorAll('.tab-btn');
-        tabButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            if (button.getAttribute('data-tab') === 'loicasContent' && giftsCombinedModal.classList.contains('open')) {
-              loadGiftList();
-            }
-          });
-        });
-      }
-
-      // Gift List Form - Corrigido para CORS
-      const giftListForm = document.getElementById('giftListForm');
-      if (giftListForm) {
-        const giftStatus = document.getElementById('giftStatus');
-        const submitButton = document.getElementById('submitGiftsBtn');
-
-        giftListForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          
-          const selectedCheckboxes = document.querySelectorAll('#giftList input[name="gift"]:checked:not(:disabled)');
-          const selectedGifts = Array.from(selectedCheckboxes).map(cb => cb.value);
-
-          if (selectedGifts.length === 0) {
-            giftStatus.style.color = "#D93025"; 
-            giftStatus.textContent = "Por favor, selecione pelo menos um item disponível.";
-            return;
-          }
-
-          submitButton.disabled = true;
-          submitButton.textContent = "A registar...";
-          giftStatus.textContent = "";
-
-          const data = {
-            action: "save_gifts",
-            nome: guestName,
-            token: token, 
-            selectedGifts: selectedGifts
-          };
-
-          try {
-            await postRequest(data);
-            
-            giftStatus.style.color = "green";
-            giftStatus.textContent = "Presentes registados com sucesso! Obrigado.";
-            submitButton.textContent = "Registado!";
-            
-            await loadGiftList();
-            
-            setTimeout(() => {
-              submitButton.disabled = false;
-              submitButton.textContent = "Registar Presentes Selecionados";
-              giftStatus.textContent = "";
-            }, 2500);
-            
-          } catch (err) {
-            giftStatus.style.color = "#D93025";
-            giftStatus.textContent = "Erro ao registar presentes. Tente novamente.";
-            submitButton.disabled = false;
-            submitButton.textContent = "Registar Presentes Selecionados";
-          }
-        });
-      }
-      
-      // Comprovativo Form - CORRIGIDO PARA BASE64
-      const comprovativoForm = document.getElementById('comprovativoForm');
-      if (comprovativoForm) {
-        const comprovativoStatus = document.getElementById('comprovativoStatus');
-        const submitButton = comprovativoForm.querySelector('button[type="submit"]');
-
-        comprovativoForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          const canal = document.getElementById('canalPagamento').value;
-          const fileInput = document.getElementById('comprovativoFile');
-          const file = fileInput.files[0];
-
-          if (!file || !canal) {
-            comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Por favor, preencha o canal e anexe um ficheiro.";
-            return;
-          }
-
-          submitButton.disabled = true;
-          submitButton.textContent = "A processar imagem...";
-          comprovativoStatus.textContent = "";
-
-          // LER O FICHEIRO COMO BASE64 ANTES DE ENVIAR
-          const reader = new FileReader();
-          reader.onload = async function() {
-            const base64File = reader.result.split(',')[1]; 
-            
-            const data = {
-              action: 'upload_comprovativo',
-              nome: guestName,
-              token: token,
-              canal: canal,
-              comprovativoFile: base64File,
-              comprovativoFile_filename: file.name,
-              comprovativoFile_type: file.type
-            };
-
-            submitButton.textContent = "A enviar...";
-
-            try {
-              // Agora usamos o postRequest normal em vez do postFormData
-              await postRequest(data); 
-              
-              comprovativoStatus.style.color = "green";
-              comprovativoStatus.textContent = "Comprovativo enviado com sucesso!";
-              submitButton.textContent = "Enviado!";
-              comprovativoForm.reset();
-              
-              setTimeout(() => {
-                submitButton.disabled = false;
-                submitButton.textContent = "Enviar Comprovativo";
-                comprovativoStatus.textContent = "";
-              }, 3000);
-              
-            } catch (err) {
-              comprovativoStatus.style.color = "#D93025";
-              comprovativoStatus.textContent = "Erro ao enviar comprovativo. Tente novamente.";
-              submitButton.disabled = false;
-              submitButton.textContent = "Enviar Comprovativo";
-            }
-          };
-
-          reader.onerror = function() {
-            comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Erro ao ler o ficheiro no seu dispositivo.";
-            submitButton.disabled = false;
-            submitButton.textContent = "Enviar Comprovativo";
-          };
-
-          // Inicia a leitura do ficheiro
-          reader.readAsDataURL(file);
-        });
-      }
-
-      // Animações de scroll
+      // Animações de scroll reversíveis por secção
       const animatedSections = document.querySelectorAll('.fade-in-section');
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
+          entry.target.classList.toggle('is-visible', entry.isIntersecting);
         });
-      }, { threshold: 0.15 });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
       animatedSections.forEach(section => observer.observe(section));
 
       // Mural de mensagens - Usando JSONP para carregar
       const messageForm = document.getElementById('messageForm');
+      const messageNameInput = document.getElementById('messageGuestName');
       const messageText = document.getElementById('messageText');
       const messageStatus = document.getElementById('messageStatus');
       const guestbookFeed = document.getElementById('guestbook-feed');
@@ -1284,37 +1836,43 @@ async function postRequest(data) {
 
       async function loadMessages() {
         try {
-          const messages = getDemoMessages();
+          const result = await jsonpRequest(`${API_URL}?action=messages`);
           
-          if (messages.length > 0) {
+          if (result.status === "success" && result.data.length > 0) {
             guestbookFeed.innerHTML = '';
-            messages.forEach(message => {
+            result.data.forEach(message => {
               guestbookFeed.appendChild(renderMessage(message));
             });
-          } else if (feedLoading) {
+          } else {
             feedLoading.textContent = "Ainda ninguém deixou uma mensagem. Seja o primeiro!";
           }
         } catch (err) {
-          if (feedLoading) feedLoading.textContent = "Erro ao carregar mensagens.";
+          feedLoading.textContent = "Erro ao carregar mensagens.";
         }
-      }      
+      }
+      
       loadMessages();
 
       if (messageForm) {
         messageForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           
+          const senderName = (messageNameInput?.value || '').trim();
           const message = messageText.value;
+          if (!senderName) {
+            messageStatus.style.color = '#D93025';
+            messageStatus.textContent = 'Digite o seu nome antes de enviar a mensagem.';
+            return;
+          }
           if (!message.trim()) return;
 
           const submitButton = messageForm.querySelector('button[type="submit"]');
-          submitButton.disabled = true;
-          submitButton.textContent = "A enviar...";
+          setButtonLoading(submitButton, true, 'A enviar...');
           messageStatus.textContent = "";
 
           const data = {
             action: "post_message",
-            nome: guestName,
+            nome: senderName,
             token: token,
             message: message
           };
@@ -1323,8 +1881,9 @@ async function postRequest(data) {
             await postRequest(data);
             
             messageStatus.style.color = "green";
-            messageStatus.textContent = "Mensagem enviada. Obrigado!";
+            messageStatus.textContent = "Mensagem publicada. Obrigado!";
             messageText.value = "";
+            if (messageNameInput && !messageNameInput.value.trim() && guestName) messageNameInput.value = guestName;
             
             // Recarregar mensagens
             await loadMessages();
@@ -1334,8 +1893,7 @@ async function postRequest(data) {
             messageStatus.style.color = "#D93025";
             messageStatus.textContent = "Erro ao enviar mensagem.";
           } finally {
-            submitButton.disabled = false;
-            submitButton.textContent = "Enviar Mensagem";
+            setButtonLoading(submitButton, false);
           }
         });
       }
@@ -1390,18 +1948,117 @@ async function postRequest(data) {
         });
       });
       
-      const scrollElements = document.querySelectorAll('.scroll-animate');
+      const magicRevealSelectors = [
+        '.section:not(.hero) > .verse',
+        '.section:not(.hero) > .verse-reference',
+        '.section:not(.hero) > .section-title',
+        '.section:not(.hero) > .section-subtitle',
+        '.section:not(.hero) .vintage-section-kicker',
+        '.section:not(.hero) .vintage-title-wrap',
+        '.section:not(.hero) .couple-details > *',
+        '.section:not(.hero) .story-chapter',
+        '.section:not(.hero) .agenda-header > *',
+        '.section:not(.hero) .agenda-event',
+        '.section:not(.hero) .gallery-image-container',
+        '.section:not(.hero) .guide-item',
+        '.section:not(.hero) .honor-card',
+        '.section:not(.hero) .menu-preview-card',
+        '.section:not(.hero) .etiquette-item',
+        '.section:not(.hero) .travel-card',
+        '.section:not(.hero) .vintage-letter-preview',
+        '.section:not(.hero) #messageForm',
+        '.section:not(.hero) #guestbook-feed',
+        '.section:not(.hero) .time-capsule-card',
+        '.section:not(.hero) .time-capsule-state',
+        '.section:not(.hero) .time-capsule-form',
+        '.section:not(.hero) .time-capsule-gallery',
+        '.footer > *'
+      ];
+
+      const magicRevealElements = Array.from(document.querySelectorAll(magicRevealSelectors.join(',')));
+      magicRevealElements.forEach((element, index) => {
+        if (!element.classList.contains('magic-reveal')) {
+          element.classList.add('magic-reveal');
+        }
+
+        if (element.closest('.honor-grid, .menu-preview-grid, .etiquette-grid, .gallery-grid, .guide-grid, .couple-details')) {
+          const siblings = Array.from(element.parentElement.children);
+          element.style.setProperty('--reveal-delay', `${Math.min(siblings.indexOf(element) * 90, 360)}ms`);
+        } else {
+          element.style.setProperty('--reveal-delay', `${Math.min(index % 5 * 55, 220)}ms`);
+        }
+
+        if (element.matches('.gallery-image-container')) element.dataset.reveal = 'zoom';
+        if (element.matches('.story-chapter')) element.dataset.reveal = 'slide';
+        if (element.matches('.agenda-event')) element.dataset.reveal = 'lift';
+        if (element.matches('.vintage-title-wrap, .section-title')) element.dataset.reveal = 'title';
+      });
+
+      let lastScrollY = window.scrollY;
+      document.documentElement.dataset.scrollDirection = 'down';
+
+      window.addEventListener('scroll', () => {
+        const currentY = window.scrollY;
+        document.documentElement.dataset.scrollDirection = currentY >= lastScrollY ? 'down' : 'up';
+        lastScrollY = currentY;
+      }, { passive: true });
+
+      const scrollElements = document.querySelectorAll('.scroll-animate, .magic-reveal');
       const scrollObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-          } else {
-            entry.target.classList.remove('is-visible');
-          }
+          entry.target.classList.toggle('is-visible', entry.isIntersecting);
         });
-      }, { threshold: 0.2 });
+      }, { threshold: 0.18, rootMargin: '0px 0px -6% 0px' });
       scrollElements.forEach(el => scrollObserver.observe(el));
     }
+
+
+    function initElegantStoryCarousel() {
+      const track = document.getElementById('storyTimeline');
+      if (!track) return;
+      const slides = Array.from(track.querySelectorAll('.story-slide'));
+      const dots = Array.from(document.querySelectorAll('.story-dot'));
+      const controls = Array.from(document.querySelectorAll('[data-story-direction]'));
+      if (!slides.length) return;
+
+      function activeIndex() {
+        const trackRect = track.getBoundingClientRect();
+        let closestIndex = 0;
+        let closestDistance = Infinity;
+        slides.forEach((slide, index) => {
+          const rect = slide.getBoundingClientRect();
+          const distance = Math.abs(rect.left - trackRect.left);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        });
+        return closestIndex;
+      }
+
+      function updateDots() {
+        const index = activeIndex();
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      }
+
+      function goToSlide(index) {
+        const target = slides[Math.max(0, Math.min(index, slides.length - 1))];
+        if (target) track.scrollTo({ left: target.offsetLeft - track.offsetLeft, behavior: 'smooth' });
+      }
+
+      controls.forEach(button => {
+        button.addEventListener('click', () => {
+          const direction = button.getAttribute('data-story-direction');
+          const nextIndex = activeIndex() + (direction === 'next' ? 1 : -1);
+          goToSlide(nextIndex);
+        });
+      });
+
+      dots.forEach((dot, index) => dot.addEventListener('click', () => goToSlide(index)));
+      track.addEventListener('scroll', () => requestAnimationFrame(updateDots), { passive: true });
+      updateDots();
+    }
+    initElegantStoryCarousel();
 
     // Navegação por setas (opcional)
     document.addEventListener('keydown', (e) => {

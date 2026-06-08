@@ -1,0 +1,1 @@
+nome;mesa;acompanhantes;telefone;notas;categoria;número

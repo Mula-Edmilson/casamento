@@ -1,0 +1,108 @@
+{
+  "event": {
+    "slug": "minoca-abubacar",
+    "coupleNames": "Minoca & Abubacar",
+    "displayNames": "Minoca e Abubacar",
+    "bride": "Minoca Isabel Muianga",
+    "groom": "Abubacar Amisse Amade",
+    "monogram": "MA",
+    "eventType": "Casamento",
+    "language": "Português",
+    "visualStyle": "Elegante, romântico e minimalista, com sensibilidade estética apropriada para noivos muçulmanos",
+    "colors": "Marfim, branco, dourado suave, verde sálvia e castanho quente",
+    "dateISO": "2026-08-29T09:00:00+02:00",
+    "eventDateLong": "29 de agosto de 2026",
+    "rsvpDeadline": "",
+    "timezone": "Africa/Maputo",
+    "verse": "Com amor, gratidão e bênçãos, convidamo-lo(a) a celebrar este momento especial connosco.",
+    "verseReference": "Celebração com amor e gratidão",
+    "brideParents": "Família Muianga",
+    "groomParents": "Família Amade",
+    "ceremonyTitle": "Cerimónia Civil",
+    "ceremonyPlace": "Palácio dos Casamentos",
+    "ceremonyTime": "09:00",
+    "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique",
+    "receptionTitle": "Copo de Água",
+    "receptionPlace": "Thendane Eventos",
+    "receptionTime": "13:00",
+    "receptionMap": "https://www.google.com/maps/search/?api=1&query=Thendane%20Eventos",
+    "additionalTitle": "",
+    "additionalPlace": "",
+    "additionalTime": "",
+    "photoTitle": "",
+    "photoPlace": "",
+    "photoTime": "",
+    "welcomeDrinkTitle": "",
+    "welcomeDrinkPlace": "",
+    "welcomeDrinkTime": "",
+    "supportContacts": "",
+    "supportWhatsapp": "",
+    "estimatedGuests": 0,
+    "guestRows": 0,
+    "giftSectionType": "Lista de presentes",
+    "bankAccounts": [],
+    "mobilePayments": [],
+    "program": [
+      {
+        "title": "Cerimónia Civil",
+        "place": "Palácio dos Casamentos",
+        "time": "09:00"
+      },
+      {
+        "title": "Copo de Água",
+        "place": "Thendane Eventos",
+        "time": "13:00"
+      }
+    ],
+    "story": {},
+    "letter": "Querido(a) convidado(a),\n\nSerá uma honra partilhar consigo este momento único das nossas vidas. Esperamos por si para celebrarmos juntos com alegria, carinho e gratidão.\n\nCom carinho,\nMinoca e Abubacar",
+    "audioYoutube": "",
+    "audioMp3": "",
+    "civilMap": "https://www.google.com/maps/search/?api=1&query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique",
+    "guestListVersion": "Lista de convidados",
+    "guestListUpdatedAt": "2026-06-05"
+  },
+  "guests": [],
+  "giftOptions": [
+    {
+      "id": "gift-01",
+      "name": "Geleira",
+      "category": "Lista de presentes",
+      "reserved": false,
+      "reserved_by": "",
+      "reservedBy": ""
+    },
+    {
+      "id": "gift-02",
+      "name": "Fogão",
+      "category": "Lista de presentes",
+      "reserved": false,
+      "reserved_by": "",
+      "reservedBy": ""
+    },
+    {
+      "id": "gift-03",
+      "name": "Congelador",
+      "category": "Lista de presentes",
+      "reserved": false,
+      "reserved_by": "",
+      "reservedBy": ""
+    },
+    {
+      "id": "gift-04",
+      "name": "TV",
+      "category": "Lista de presentes",
+      "reserved": false,
+      "reserved_by": "",
+      "reservedBy": ""
+    },
+    {
+      "id": "gift-05",
+      "name": "Máquina de lavar",
+      "category": "Lista de presentes",
+      "reserved": false,
+      "reserved_by": "",
+      "reservedBy": ""
+    }
+  ]
+}
