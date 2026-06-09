@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+
+<html lang="pt">
+<head>
+<meta charset="utf-8"/>
+<title>Convite de Casamento — Minoca &amp; Abubacar</title>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+<link href="https://i.postimg.cc/T3tNdXL6/lirandzo.png" rel="icon" type="image/png"/>
+<meta content="Convite de Casamento — Minoca &amp; Abubacar" property="og:title"/>
+<meta content="Junte-se a nós para celebrar o casamento de Minoca e Abubacar." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="assets/media/minoca-abubacar-hero.jpg" property="og:image"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;family=Parisienne&amp;display=swap" rel="stylesheet"/>
+<style>
+    /* ===== RESET E VARIÁVEIS ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #F8F9FC;
+      --accent: #9BA3B0;
+      --text: #ffffff;
+      --text-dark: #2C3E4F;
+      --text-light: #333d47;
+      --text-muted: #6c757d;
+      --border-color: #D5DCE6;
+      --card: #FFFFFF;
+      --font-heading: 'Cormorant Garamond', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-script: 'Parisienne', cursive;
+      --section-bg: #F0F2F7;
+      --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+
+    body.loading {
+      opacity: 0;
+    }
+
+    body.loaded {
+      opacity: 1;
+    }
+
+    .page {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bg-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.35),
+        rgba(0, 0, 0, 0.6)
+      );
+      z-index: -1;
+    }
+
+    .content {
+      position: relative;
+      text-align: center;
+      max-width: 600px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .subtitle {
+      letter-spacing: 0.25em;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .countdown-main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 1rem 0;
+    }
+
+    .days-label {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+
+    .days-number {
+      font-family: var(--font-heading);
+      font-size: clamp(4rem, 10vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1;
+      color: white;
+    }
+
+    .days-text {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      text-align: left;
+      line-height: 1.2;
+    }
+
+    .quotation {
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .divider {
+      width: 120px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.7);
+      margin: 0.7rem auto 0.4rem;
+    }
+
+    .time-row {
+      display: flex;
+      gap: 1.4rem;
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.9;
+    }
+
+    .time-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.1rem;
+    }
+
+    .time-value {
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .time-label {
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .names {
+      font-family: var(--font-script);
+      font-size: 5rem;
+      color: white;
+      line-height: 1;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+      margin: 1rem 0 0.5rem;
+    }
+
+    .date-text {
+      font-size: 0.9rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+
+    .btn-open {
+      padding: 0.85rem 2.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      margin-top: 2rem;
+    }
+
+    .btn-open:hover {
+      background: #8A939F;
+      border-color: #8A939F;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .login-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 48px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 100%;
+      transform: scale(0.95);
+      transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .login-overlay.visible .login-container {
+      transform: scale(1);
+    }
+
+    .login-container .names {
+      font-size: 3.5rem;
+      color: var(--accent);
+      text-shadow: none;
+      margin-bottom: 0.5rem;
+    }
+
+    .login-subtitle {
+      margin: 8px 0 24px 0;
+      font-size: 1rem;
+      color: var(--text-light);
+    }
+
+    #loginForm .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    #loginForm label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    #loginForm input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      font-size: 1rem;
+      font-family: var(--font-body);
+      transition: all 0.3s ease;
+    }
+
+    #loginForm input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(155, 163, 176, 0.2);
+    }
+
+    .btn {
+      display: inline-block;
+      font-family: var(--font-body);
+      padding: 12px 28px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-size: 0.9rem;
+      transition: var(--transition-smooth);
+      text-align: center;
+      width: 100%;
+    }
+
+    .btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: #8A939F;
+      border-color: #8A939F;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(155, 163, 176, 0.2);
+    }
+
+    .btn-close {
+      background-color: transparent;
+      color: var(--text-light);
+      border-color: var(--border-color);
+      margin-top: 8px;
+    }
+
+    .btn-close:hover:not(:disabled) {
+      background-color: var(--section-bg);
+    }
+
+    .login-error-message {
+      font-size: 0.9rem;
+      color: var(--danger);
+      margin-top: 16px;
+      min-height: 1.2em;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .info-text {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding-top: 16px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .info-text p {
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .names {
+        font-size: 3.5rem;
+      }
+      .login-container {
+        padding: 32px 24px;
+      }
+      .login-container .names {
+        font-size: 3rem;
+      }
+      .time-row {
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="loading">
+<!-- PÁGINA PRINCIPAL -->
+<div class="page">
+<img alt="Minoca e Abubacar" class="bg-image" src="assets/media/minoca-abubacar-hero.jpg"/>
+<div class="overlay"></div>
+<div class="content">
+<div class="subtitle">CONTAGEM DECRESCENTE PARA O NOSSO DIA</div>
+<div class="countdown-main">
+<div class="days-label">
+<span class="days-number" id="days">0</span>
+<div class="days-text">
+<div>DIAS</div>
+<div>ATÉ</div>
+</div>
+</div>
+<div class="quotation">"SIM, ACEITO!"</div>
+<div class="divider"></div>
+<div class="time-row" id="timeRow">
+<div class="time-box">
+<span class="time-value" id="hours">00</span>
+<span class="time-label">HORAS</span>
+</div>
+<div class="time-box">
+<span class="time-value" id="minutes">00</span>
+<span class="time-label">MINUTOS</span>
+</div>
+<div class="time-box">
+<span class="time-value" id="seconds">00</span>
+<span class="time-label">SEGUNDOS</span>
+</div>
+</div>
+</div>
+<h1 class="names">Minoca &amp; Abubacar</h1>
+<div class="date-text">29 DE AGOSTO 2026</div>
+<button class="btn-open" id="openLoginBtn">
+        ABRIR CONVITE
+      </button>
+</div>
+</div>
+<!-- POPUP DE LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+<div class="login-container">
+<h2 class="names">Minoca &amp; Abubacar</h2>
+<p class="login-subtitle">O convite agora é de acesso livre.</p>
+<form id="loginForm">
+<div class="form-group">
+<label for="name">O seu nome</label>
+<input autocomplete="off" id="name" placeholder="Ex: João" required="" type="text"/>
+</div>
+<button class="btn btn-primary" id="submitBtn" type="submit">
+<span class="btn-text">Entrar</span>
+<span class="loading-spinner" style="display: none;"></span>
+</button>
+<button class="btn btn-close" id="closeLoginBtn" type="button">Cancelar</button>
+<p class="login-error-message" id="loginError"></p>
+</form>
+<div class="info-text"><p>💝 Qualquer convidado pode abrir o convite.</p><p>📝 A confirmação da presença será feita dentro do convite.</p></div>
+</div>
+</div>
+<script src="./client-config.js"></script><script src="./event-data.js"></script><script src="./lirandzo-api.js"></script><script>
+    // ============================================
+    // CONFIGURAÇÕES
+    // ============================================
+    const WEDDING_DATE = new Date("2026-08-29T09:00:00+02:00");
+
+    // ============================================
+    // ELEMENTOS DO DOM
+    // ============================================
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
+
+    const openLoginBtn = document.getElementById('openLoginBtn');
+    const closeLoginBtn = document.getElementById('closeLoginBtn');
+    const loginOverlay = document.getElementById('loginOverlay');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const submitBtn = document.getElementById('submitBtn');
+    const nameInput = document.getElementById('name');
+
+    // ============================================
+    // FUNÇÃO DE COUNTDOWN
+    // ============================================
+    function updateCountdown() {
+      const now = new Date();
+      const diff = WEDDING_DATE.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        daysEl.textContent = "0";
+        hoursEl.textContent = "00";
+        minutesEl.textContent = "00";
+        secondsEl.textContent = "00";
+        return;
+      }
+
+      let totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / (3600 * 24));
+      totalSeconds -= days * 3600 * 24;
+      const hours = Math.floor(totalSeconds / 3600);
+      totalSeconds -= hours * 3600;
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds - minutes * 60;
+
+      daysEl.textContent = days;
+      hoursEl.textContent = String(hours).padStart(2, "0");
+      minutesEl.textContent = String(minutes).padStart(2, "0");
+      secondsEl.textContent = String(seconds).padStart(2, "0");
+    }
+
+    function getUserAgentInfo() {
+      return navigator.userAgent.substring(0, 100);
+    }
+
+
+    function clearPublicInviteSession() {
+      ['guestName', 'guestToken', 'guestMesa', 'guestMaxGuests', 'guestCompanions', 'guestNumber', 'guestStatus']
+        .forEach((key) => {
+          try { localStorage.removeItem(key); } catch (err) {}
+        });
+    }
+
+    // ============================================
+    // LOGIN INTEGRADO COM RENDER / MONGODB
+    // ============================================
+    async function performLogin(name) {
+      const cleanName = (name || '').trim();
+
+      if (!cleanName) {
+        loginError.textContent = "Por favor, digite o seu nome";
+        return;
+      }
+
+      const btnText = submitBtn.querySelector('.btn-text');
+      const spinner = submitBtn.querySelector('.loading-spinner');
+
+      btnText.style.display = 'none';
+      spinner.style.display = 'inline-block';
+      submitBtn.disabled = true;
+      loginError.textContent = '';
+
+      try {
+        if (!window.LirandzoAPI) {
+          throw new Error('API Lirandzo não carregada. Verifique client-config.js e lirandzo-api.js.');
+        }
+
+        const result = await window.LirandzoAPI.get('find_guest', { name: cleanName });
+
+        if (!result || result.status !== 'success') {
+          throw new Error(result && result.message ? result.message : 'Convidado não encontrado.');
+        }
+
+        const guest = result.data || result;
+        const token = guest.token;
+
+        if (!token) {
+          throw new Error('O servidor abriu o convite, mas não devolveu o token de acesso.');
+        }
+
+        localStorage.setItem('guestName', guest.name || guest.nome || cleanName);
+        localStorage.setItem('guestToken', token);
+        localStorage.setItem('guestMesa', guest.mesa || 'A definir');
+        localStorage.setItem('guestMaxGuests', guest.maxGuests || '1');
+        localStorage.setItem('guestCompanions', guest.companions || Math.max((Number(guest.maxGuests) || 1) - 1, 0));
+        localStorage.setItem('guestNumber', guest.number || '');
+        localStorage.setItem('demoMode', window.LirandzoAPI.isConfigured() ? 'false' : 'true');
+
+        window.LirandzoAPI.post({
+          action: 'open_invite',
+          token,
+          nome: guest.name || guest.nome || cleanName,
+          userAgent: getUserAgentInfo(),
+          timestamp: new Date().toISOString()
+        }).catch(() => {});
+
+        sessionStorage.setItem('lirandzoPlayMusic', '1');
+        window.location.href = `convite.html?t=${encodeURIComponent(token)}`;
+      } catch (err) {
+        loginError.textContent = err.message || 'Não foi possível encontrar este nome na lista.';
+        btnText.style.display = 'inline';
+        spinner.style.display = 'none';
+        submitBtn.disabled = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      clearPublicInviteSession();
+      document.body.classList.remove('loading');
+      setTimeout(() => document.body.classList.add('loaded'), 100);
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+
+    openLoginBtn.addEventListener('click', () => {
+      sessionStorage.setItem('lirandzoPlayMusic', '1');
+      window.location.href = 'convite.html';
+    });
+
+    closeLoginBtn.addEventListener('click', () => {
+      loginOverlay.classList.remove('visible');
+      loginError.textContent = '';
+      nameInput.value = '';
+    });
+
+    loginOverlay.addEventListener('click', (e) => {
+      if (e.target === loginOverlay) {
+        loginOverlay.classList.remove('visible');
+        loginError.textContent = '';
+        nameInput.value = '';
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && loginOverlay.classList.contains('visible')) {
+        loginOverlay.classList.remove('visible');
+        loginError.textContent = '';
+        nameInput.value = '';
+      }
+    });
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      performLogin(nameInput.value);
+    });
+
+    nameInput.addEventListener('input', () => {
+      loginError.textContent = '';
+    });
+
+    window.addEventListener('offline', () => {
+      loginError.textContent = 'Sem conexão com a internet';
+    });
+</script>
+</body>
+</html>
