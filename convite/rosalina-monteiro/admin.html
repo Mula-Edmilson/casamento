@@ -1908,8 +1908,84 @@
         feather.replace();
       }
 
-      function guestChecked(token) {
-        return DATA.checkins.some(c => String(c.token) === String(token)) || DATA.guests.find(g => String(g.token) === String(token) && (g.checkedIn === true || String(g.status).toLowerCase() === 'entrou'));
+      function normalizeKey(value) {
+        return text(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      }
+
+      function sameId(a, b) {
+        return Boolean(a && b && String(a) === String(b));
+      }
+
+      function guestIdOf(g) {
+        return text(g && (g.id || g._id || g.guestId || ''));
+      }
+
+      function guestTokenOf(g) {
+        return text(g && (g.token || g.inviteToken || g.publicToken || ''));
+      }
+
+      function guestStatusText(g) {
+        return normalizeKey(g && (g.status || g.guestStatus || ''));
+      }
+
+      function rsvpMatchesGuest(r, g) {
+        const rGuestId = text(r && (r.guestId || r.guest_id || r.guest || ''));
+        const rToken = text(r && (r.token || r.inviteToken || ''));
+        const gId = guestIdOf(g);
+        const gToken = guestTokenOf(g);
+
+        if (sameId(rGuestId, gId)) return true;
+        if (sameId(rToken, gToken)) return true;
+
+        // Recurso de compatibilidade para confirmações antigas sem guestId/token gravados.
+        // Só é usado quando não existe identificador melhor disponível.
+        if (!rGuestId && !rToken) {
+          const rName = normalizeKey(nameOf(r));
+          const gName = normalizeKey(nameOf(g));
+          return Boolean(rName && gName && rName === gName);
+        }
+        return false;
+      }
+
+      function checkinMatchesGuest(c, g) {
+        const cGuestId = text(c && (c.guestId || c.guest_id || c.guest || ''));
+        const cToken = text(c && (c.token || c.inviteToken || ''));
+        const gId = guestIdOf(g);
+        const gToken = guestTokenOf(g);
+
+        if (sameId(cGuestId, gId)) return true;
+        if (sameId(cToken, gToken)) return true;
+
+        if (!cGuestId && !cToken) {
+          const cName = normalizeKey(nameOf(c));
+          const gName = normalizeKey(nameOf(g));
+          return Boolean(cName && gName && cName === gName);
+        }
+        return false;
+      }
+
+      function guestRsvpConfirmed(g) {
+        return DATA.rsvps.some(r => rsvpMatchesGuest(r, g)) || guestStatusText(g).includes('confirmado');
+      }
+
+      function guestChecked(g) {
+        const checkedByRow = DATA.checkins.some(c => checkinMatchesGuest(c, g));
+        const status = guestStatusText(g);
+        return checkedByRow || g?.checkedIn === true || status === 'entrou' || status.includes('checked-in');
+      }
+
+      function guestAdminState(g) {
+        const status = guestStatusText(g);
+        if (guestChecked(g)) return { label: 'Entrou', badge: 'ok' };
+        if (guestRsvpConfirmed(g)) return { label: 'Confirmado', badge: 'blue' };
+        if (status.includes('ainda por confirmar')) return { label: 'Ainda por confirmar', badge: 'warn' };
+        if (status.includes('convite aberto')) return { label: 'Convite aberto', badge: 'warn' };
+        return { label: 'Pendente', badge: 'warn' };
+      }
+
+      function guestStateBadge(g) {
+        const state = guestAdminState(g);
+        return `<span class="status-badge ${esc(state.badge)}">${esc(state.label)}</span>`;
       }
 
       function filtered(list, inputId) {
@@ -1928,9 +2004,9 @@
             <td>${esc(g.mesa || 'A definir')}</td>
             <td>${esc(g.maxGuests || g.guests || 1)}</td>
             <td><small>${esc(g.token || '')}</small></td>
-            <td>${guestChecked(g.token) ? '<span class="status-badge ok">Entrou</span>' : '<span class="status-badge warn">Pendente</span>'}</td>
+            <td>${guestStateBadge(g)}</td>
           </tr>`).join('') : '<tr><td colspan="7" class="empty">Sem convidados para mostrar.</td></tr>';
-        $('guestMobile').innerHTML = mobileCards(list, g => `${esc(String(g.category).toLowerCase() === 'couple' ? 'Casal' : 'Individual')} · ${esc(g.maxGuests || 1)} pessoa(s) · Mesa: ${esc(g.mesa || 'A definir')}`, g => guestChecked(g.token) ? '<span class="status-badge ok">Entrou</span>' : '<span class="status-badge warn">Pendente</span>');
+        $('guestMobile').innerHTML = mobileCards(list, g => `${esc(String(g.category).toLowerCase() === 'couple' ? 'Casal' : 'Individual')} · ${esc(g.maxGuests || 1)} pessoa(s) · Mesa: ${esc(g.mesa || 'A definir')}`, g => guestStateBadge(g));
       }
 
       function renderRsvps() {
