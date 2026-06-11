@@ -13,11 +13,6 @@
 <script src="https://unpkg.com/feather-icons"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="event-data.js"></script>
-<script>
-  window.LIRANDZO_INVITE_SLUG = window.LIRANDZO_INVITE_SLUG || (window.LIRANDZO_EVENT && window.LIRANDZO_EVENT.slug) || 'calate-helder';
-  window.LIRANDZO_API_BASE_URL = window.LIRANDZO_API_BASE_URL || 'https://api-casamento-mj.onrender.com';
-  window.LIRANDZO_API_URL = window.LIRANDZO_API_URL || window.LIRANDZO_API_BASE_URL.replace(/\/+$/, '') + '/api';
-</script>
 <script src="client-config.js"></script>
 <script src="lirandzo-api.js"></script>
 <script>window.feather = window.feather || { replace: function(){} };</script>
@@ -533,7 +528,27 @@
     .mobile-card strong { display:block; color: var(--text); font-size: 13px; margin-bottom: 3px; }
     .mobile-card span { display:block; color: var(--muted); font-size: 12px; line-height: 1.4; }
     .mobile-card .status-badge { margin-top: 8px; }
-.contribution-cell { display: flex; align-items: center; gap: 10px; min-width: 240px; }
+
+    .capsule-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(152px, 1fr)); gap: 10px; }
+    .photo-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(33, 28, 25, .36);
+    }
+    .photo-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: #171310;
+    }
+    .photo-meta { padding: 9px; }
+    .photo-meta strong { color: var(--text); font-size: 12px; display:block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .photo-meta span { color: var(--muted); font-size: 11px; display:block; margin: 3px 0 8px; }
+    .photo-meta .btn { width: 100%; }
+
+    .contribution-cell { display: flex; align-items: center; gap: 10px; min-width: 240px; }
     .contribution-thumb {
       width: 54px;
       height: 54px;
@@ -845,7 +860,8 @@
       .activity-list { max-height: none; }
       .activity-item { grid-template-columns: 32px minmax(0,1fr); }
       .activity-item .status-badge { grid-column: 2; width: max-content; }
-}
+      .capsule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
 
     @media (max-width: 420px) {
       .topbar { padding-left: 10px; padding-right: 10px; }
@@ -853,7 +869,8 @@
       .btn.icon-only { width: 38px; }
       .metrics-grid { grid-template-columns: 1fr 1fr; }
       .login-card { padding: 24px 20px; border-radius: 24px; }
-}
+      .capsule-grid { grid-template-columns: 1fr; }
+    }
 
 
     /* FIX DEFINITIVO: largura real do painel + tabelas compactas sem corte horizontal */
@@ -932,7 +949,7 @@
 
     #rsvpRows tr > :nth-child(1),
     #giftRows tr > :nth-child(1),
-    #messageRows tr > :nth-child(1) { width: 15%; }
+    #messageRows tr > :nth-child(1),
     #rsvpRows tr > :nth-child(3),
     #rsvpRows tr > :nth-child(4),
     #rsvpRows tr > :nth-child(5),
@@ -1228,7 +1245,7 @@
 <div class="section-title">
 <div>
 <h1>Painel do Evento</h1>
-<p>Resumo operacional do convite, confirmações, contribuições e mensagens.</p>
+<p>Resumo operacional do convite, confirmações, mensagens e contribuições.</p>
 </div>
 <div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">29 de agosto de 2026</span></div>
 </div>
@@ -1273,9 +1290,9 @@
 <div class="compact-info">
 <div class="info-row"><span>Evento</span><strong id="eventName">Casamento</strong></div>
 <div class="info-row"><span>Data</span><strong id="eventDate">29 de agosto de 2026</strong></div>
-<div class="info-row"><span>RSVP até</span><strong id="rsvpDate">30 de junho de 2026</strong></div>
-<div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">09:00 · Paróquia São Gabriel Arcanjo</strong></div>
-<div class="info-row"><span>Recepção</span><strong id="receptionInfo">13:00 · Hotel Polana</strong></div>
+<div class="info-row"><span>RSVP até</span><strong id="rsvpDate">20 de junho de 2026</strong></div>
+<div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">10:00 · Cerimónia Religiosa Igreja Universal de Marracuene</strong></div>
+<div class="info-row"><span>Recepção</span><strong id="receptionInfo">15:00 · Eventos &amp; Acomodações Águia</strong></div>
 <div class="info-row"><span>Apoio</span><strong id="supportInfo">Clemente / Nelson</strong></div>
 </div>
 </div>
@@ -1285,7 +1302,7 @@
 </div>
 </section>
 <section class="page-panel" id="guestsPanel">
-<div class="section-title"><div><h1>Convidados</h1><p>Lista geral com mesa, acompanhantes, token e estado de confirmação.</p></div><span class="event-chip" id="guestBadge">0 registos</span></div>
+<div class="section-title"><div><h1>Convidados</h1><p>Lista geral com mesa, acompanhantes, token e estado de entrada.</p></div><span class="event-chip" id="guestBadge">0 registos</span></div>
 <section class="panel-card admin-form-card">
 <div class="panel-head"><h2><i data-feather="user-plus"></i> Adicionar convidado</h2><span class="status-badge blue">Novo registo</span></div>
 <div class="panel-body">
@@ -1674,8 +1691,8 @@
         $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Calate e Helder'}`;
         $('eventDate').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
         $('rsvpDate').textContent = EVENT.rsvpDeadline || '30 de junho de 2026';
-        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '09:00'} · ${EVENT.ceremonyPlace || 'Paróquia São Gabriel Arcanjo'}`;
-        $('receptionInfo').textContent = `${EVENT.receptionTime || '13:00'} · ${EVENT.receptionPlace || 'Hotel Polana'}`;
+        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '10:00'} · ${EVENT.ceremonyPlace || 'Igreja Universal de Marracuene'}`;
+        $('receptionInfo').textContent = `${EVENT.receptionTime || '15:00'} · ${EVENT.receptionPlace || 'Eventos & Acomodações Águia'}`;
         $('supportInfo').textContent = EVENT.supportContacts || 'Apoio no dia do evento';
       }
 
@@ -1685,7 +1702,7 @@
         dataSourceBadge.className = 'status-badge ' + (configured ? 'ok' : 'warn');
         dataSourceBadge.textContent = configured ? 'Sistema activo' : 'Modo teste';
         backendNote.innerHTML = configured
-          ? 'Painel sincronizado. Os dados são actualizados sempre que houver novas confirmações, contribuições ou mensagens.'
+          ? 'Painel sincronizado. Os dados são actualizados sempre que houver novas confirmações, contribuições, mensagens ou entradas.'
           : 'Modo de teste activo. Alguns dados podem estar guardados apenas neste navegador.';
       }
 
@@ -1749,15 +1766,7 @@
         const totalPeople = num(DATA.stats.totalPeople) || DATA.guests.reduce((sum, g) => sum + (num(g.maxGuests) || 1), 0) || num(EVENT.estimatedGuests) || 0;
         const confirmedPeople = num(DATA.stats.confirmed) || DATA.rsvps.reduce((sum, r) => sum + peopleFromRsvp(r), 0);
         const confirmedRows = num(DATA.stats.confirmedRows) || DATA.rsvps.length;
-        return {
-          guestsCount,
-          totalPeople,
-          confirmedPeople,
-          pendingPeople: Math.max(totalPeople - confirmedPeople, 0),
-          confirmedRows,
-          gifts: DATA.gifts.length,
-          messages: DATA.messages.length
-        };
+        return { guestsCount, totalPeople, confirmedPeople, pendingPeople: Math.max(totalPeople - confirmedPeople, 0), confirmedRows, gifts: DATA.gifts.length, messages: DATA.messages.length };
       }
 
       function renderAll() {
@@ -1832,7 +1841,7 @@
         renderRsvps();
         renderGifts();
         renderMessages();
-        feather.replace();
+                feather.replace();
       }
 
       function normalizeKey(value) {
@@ -1873,18 +1882,13 @@
         }
         return false;
       }
+
       function guestRsvpConfirmed(g) {
         return DATA.rsvps.some(r => rsvpMatchesGuest(r, g)) || guestStatusText(g).includes('confirmado');
       }
 
-      function guestChecked(g) {
-        return false;
-      }
-
       function guestAdminState(g) {
-        const status = guestStatusText(g);
-        if (guestChecked(g)) return { label: 'Entrou', badge: 'ok' };
-        if (guestRsvpConfirmed(g)) return { label: 'Confirmado', badge: 'blue' };
+        const status = guestStatusText(g);        if (guestRsvpConfirmed(g)) return { label: 'Confirmado', badge: 'blue' };
         if (status.includes('ainda por confirmar')) return { label: 'Ainda por confirmar', badge: 'warn' };
         if (status.includes('convite aberto')) return { label: 'Convite aberto', badge: 'warn' };
         return { label: 'Pendente', badge: 'warn' };

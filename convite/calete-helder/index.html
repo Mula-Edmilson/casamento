@@ -9,7 +9,7 @@
   <meta property="og:title" content="Convite de Casamento — Calate & Helder">
   <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/media/fundo-flores-2.jpg">
+  <meta property="og:image" content="assets/media/fundo-flores.jpg">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -290,7 +290,7 @@
     .login-hero {
       position: relative;
       min-height: 180px;
-      background-image: url('assets/media/fundo-flores-2.jpg');
+      background-image: url('assets/media/fundo-flores.jpg');
       background-size: cover;
       background-position: center 30%;
       overflow: hidden;
@@ -1010,7 +1010,7 @@
   
 
     /* =========================================================
-       TEMA CALATE & HELDER — landing/login rustic chic
+       TEMA EDMA & ABEL — landing/login rustic chic
        ========================================================= */
     body.calate-helder-theme {
       --bg: #F4EFE7;
@@ -1077,7 +1077,7 @@
     }
 
 
-    /* CORRECÇÃO FINAL CALATE & HELDER — cover/index sem dourado e sem gradientes metálicos */
+    /* CORRECÇÃO FINAL EDMA & ABEL — cover/index sem dourado e sem gradientes metálicos */
     body.convite-rustic-theme .btn-primary,
     body.calate-helder-theme .btn-primary,
     body.convite-rustic-theme button.btn-primary,
@@ -1120,11 +1120,6 @@
 
   </style>
   <script src="event-data.js"></script>
-  <script>
-    window.LIRANDZO_INVITE_SLUG = window.LIRANDZO_INVITE_SLUG || (window.LIRANDZO_EVENT && window.LIRANDZO_EVENT.slug) || 'calate-helder';
-    window.LIRANDZO_API_BASE_URL = window.LIRANDZO_API_BASE_URL || 'https://api-casamento-mj.onrender.com';
-    window.LIRANDZO_API_URL = window.LIRANDZO_API_URL || window.LIRANDZO_API_BASE_URL.replace(/\/+$/, '') + '/api';
-  </script>
   <script src="client-config.js"></script>
   <script src="lirandzo-api.js"></script>
 </head>
@@ -1132,7 +1127,7 @@
 
   <!-- PÁGINA PRINCIPAL -->
   <div class="page">
-    <img class="bg-image" src="assets/media/fundo-flores-2.jpg" alt="Calate e Helder — Save the Date">
+    <img class="bg-image" src="assets/media/fundo-flores.jpg" alt="Calate e Helder — Save the Date">
     <div class="overlay"></div>
 
     <div class="content">
@@ -1218,7 +1213,7 @@
     // CONFIGURAÇÕES
     // ============================================
     const API_URL = window.LIRANDZO_APPS_SCRIPT_URL || '#demo-offline';
-    const WEDDING_DATE = new Date("2026-08-29T15:00:00+02:00");
+    const WEDDING_DATE = new Date((window.LIRANDZO_EVENT && window.LIRANDZO_EVENT.dateISO) || '2026-08-29T15:00:00+02:00');
 
     // ============================================
     // ELEMENTOS DO DOM
