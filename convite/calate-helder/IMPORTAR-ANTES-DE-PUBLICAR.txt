@@ -1,0 +1,23 @@
+IMPORTANTE — Calate & Helder
+
+Slug oficial do convite: calate-helder
+Endpoint configurado: https://api-casamento-mj.onrender.com
+
+Antes de testar RSVP no convite publicado, o convite precisa existir no MongoDB do Render.
+Se o MongoDB ainda não tiver o slug calate-helder, o backend vai responder: "Slug do convite não enviado ou convite inexistente".
+
+Importação sugerida:
+1. Abrir terminal na pasta calate-helder.
+2. Definir MONGODB_URI com o mesmo valor usado no Render.
+3. Executar:
+   node import-calate-helder-to-mongodb.js
+
+Funcionalidades removidas deste pacote:
+- QR Code
+- Check-in
+- Cápsula do Tempo
+
+Admin alinhado:
+- Sem painel de Check-in
+- Sem painel de Cápsula
+- Sem chamadas list_checkins/list_capsule_photos

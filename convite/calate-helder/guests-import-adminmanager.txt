@@ -1,0 +1,82 @@
+Adelaide Muianga;A definir;0;;Token: calate-helder-001-adelaide-muianga | Categoria: Individual | Nº: 1
+Admiro e Esposa;A definir;1;;Token: calate-helder-002-admiro-e-esposa | Categoria: Casal | Nº: 2
+Agnaldo e Esposa;A definir;1;;Token: calate-helder-003-agnaldo-e-esposa | Categoria: Casal | Nº: 3
+Agy e Esposa;A definir;1;;Token: calate-helder-004-agy-e-esposa | Categoria: Casal | Nº: 4
+Albino Mateus e Esposa;A definir;1;;Token: calate-helder-005-albino-mateus-e-esposa | Categoria: Casal | Nº: 5
+Alda;A definir;0;;Token: calate-helder-006-alda | Categoria: Individual | Nº: 6
+Amelia Miambo;A definir;0;;Token: calate-helder-007-amelia-miambo | Categoria: Individual | Nº: 7
+Antonio Hobjuane e Esposa;A definir;1;;Token: calate-helder-008-antonio-hobjuane-e-esposa | Categoria: Casal | Nº: 8
+Artur Muianga;A definir;0;;Token: calate-helder-009-artur-muianga | Categoria: Individual | Nº: 9
+Assau;A definir;0;;Token: calate-helder-010-assau | Categoria: Individual | Nº: 10
+Belmiro Lumbela;A definir;0;;Token: calate-helder-011-belmiro-lumbela | Categoria: Individual | Nº: 11
+Bento Munguambe e Esposa;A definir;1;;Token: calate-helder-012-bento-munguambe-e-esposa | Categoria: Casal | Nº: 12
+Bernardo e Esposa;A definir;1;;Token: calate-helder-013-bernardo-e-esposa | Categoria: Casal | Nº: 13
+Berta Muianga;A definir;0;;Token: calate-helder-014-berta-muianga | Categoria: Individual | Nº: 14
+Carla Banze;A definir;0;;Token: calate-helder-015-carla-banze | Categoria: Individual | Nº: 15
+Carlitos e Esposa;A definir;1;;Token: calate-helder-016-carlitos-e-esposa | Categoria: Casal | Nº: 16
+Carlos e Esposa;A definir;1;;Token: calate-helder-017-carlos-e-esposa | Categoria: Casal | Nº: 17
+Carlos Macuacua e Esposa;A definir;1;;Token: calate-helder-018-carlos-macuacua-e-esposa | Categoria: Casal | Nº: 18
+César Langa;A definir;0;;Token: calate-helder-019-cesar-langa | Categoria: Individual | Nº: 19
+Claudio Muianga;A definir;0;;Token: calate-helder-020-claudio-muianga | Categoria: Individual | Nº: 20
+Cremildo e Esposa;A definir;1;;Token: calate-helder-021-cremildo-e-esposa | Categoria: Casal | Nº: 21
+Crisalda Langa e Esposo;A definir;1;;Token: calate-helder-022-crisalda-langa-e-esposo | Categoria: Casal | Nº: 22
+Daniel Castigo e Esposa;A definir;1;;Token: calate-helder-023-daniel-castigo-e-esposa | Categoria: Casal | Nº: 23
+Dinis Manhice;A definir;0;;Token: calate-helder-024-dinis-manhice | Categoria: Individual | Nº: 24
+Efigenio Mandlate;A definir;0;;Token: calate-helder-025-efigenio-mandlate | Categoria: Individual | Nº: 25
+Emidio Tovela;A definir;0;;Token: calate-helder-026-emidio-tovela | Categoria: Individual | Nº: 26
+Eunice Manhiça;A definir;0;;Token: calate-helder-027-eunice-manhica | Categoria: Individual | Nº: 27
+Filomena Trita;A definir;0;;Token: calate-helder-028-filomena-trita | Categoria: Individual | Nº: 28
+Francisca Titi;A definir;0;;Token: calate-helder-029-francisca-titi | Categoria: Individual | Nº: 29
+Francisco Lumbela;A definir;0;;Token: calate-helder-030-francisco-lumbela | Categoria: Individual | Nº: 30
+Francisco Mateus e Esposa;A definir;1;;Token: calate-helder-031-francisco-mateus-e-esposa | Categoria: Casal | Nº: 31
+Gildo e Esposa;A definir;1;;Token: calate-helder-032-gildo-e-esposa | Categoria: Casal | Nº: 32
+Gildo Tamele e Esposa;A definir;1;;Token: calate-helder-033-gildo-tamele-e-esposa | Categoria: Casal | Nº: 33
+Gino Bsilio e Esposa;A definir;1;;Token: calate-helder-034-gino-bsilio-e-esposa | Categoria: Casal | Nº: 34
+Helton Sergio;A definir;0;;Token: calate-helder-035-helton-sergio | Categoria: Individual | Nº: 35
+Hilario Muianga;A definir;0;;Token: calate-helder-036-hilario-muianga | Categoria: Individual | Nº: 36
+Hilario Palma e Esposa;A definir;1;;Token: calate-helder-037-hilario-palma-e-esposa | Categoria: Casal | Nº: 37
+Ilda e Esposo;A definir;1;;Token: calate-helder-038-ilda-e-esposo | Categoria: Casal | Nº: 38
+Ines Munguambe e Esposo;A definir;1;;Token: calate-helder-039-ines-munguambe-e-esposo | Categoria: Casal | Nº: 39
+Isau e Esposa;A definir;1;;Token: calate-helder-040-isau-e-esposa | Categoria: Casal | Nº: 40
+Jaquelina;A definir;0;;Token: calate-helder-041-jaquelina | Categoria: Individual | Nº: 41
+Jerry;A definir;0;;Token: calate-helder-042-jerry | Categoria: Individual | Nº: 42
+Jorge Mateus e Esposa;A definir;1;;Token: calate-helder-043-jorge-mateus-e-esposa | Categoria: Casal | Nº: 43
+Jorge Muianga;A definir;0;;Token: calate-helder-044-jorge-muianga | Categoria: Individual | Nº: 44
+Jove;A definir;0;;Token: calate-helder-045-jove | Categoria: Individual | Nº: 45
+Julio Agibo e Esposa;A definir;1;;Token: calate-helder-046-julio-agibo-e-esposa | Categoria: Casal | Nº: 46
+Leonel Machanguana;A definir;0;;Token: calate-helder-047-leonel-machanguana | Categoria: Individual | Nº: 47
+Lourenço Nhamue;A definir;0;;Token: calate-helder-048-lourenco-nhamue | Categoria: Individual | Nº: 48
+Magrete;A definir;0;;Token: calate-helder-049-magrete | Categoria: Individual | Nº: 49
+Mama Isabel;A definir;0;;Token: calate-helder-050-mama-isabel | Categoria: Individual | Nº: 50
+Manusao e Esposa;A definir;1;;Token: calate-helder-051-manusao-e-esposa | Categoria: Casal | Nº: 51
+Marcela de Morais;A definir;0;;Token: calate-helder-052-marcela-de-morais | Categoria: Individual | Nº: 52
+Marcelo e Esposa;A definir;1;;Token: calate-helder-053-marcelo-e-esposa | Categoria: Casal | Nº: 53
+Marcia e Esposo;A definir;1;;Token: calate-helder-054-marcia-e-esposo | Categoria: Casal | Nº: 54
+Margarida Muianga;A definir;0;;Token: calate-helder-055-margarida-muianga | Categoria: Individual | Nº: 55
+Mequelina e Esposo;A definir;1;;Token: calate-helder-056-mequelina-e-esposo | Categoria: Casal | Nº: 56
+Miguel e Esposa;A definir;1;;Token: calate-helder-057-miguel-e-esposa | Categoria: Casal | Nº: 57
+Miranda e Esposo;A definir;1;;Token: calate-helder-058-miranda-e-esposo | Categoria: Casal | Nº: 58
+Neninha e Esposo;A definir;1;;Token: calate-helder-059-neninha-e-esposo | Categoria: Casal | Nº: 59
+Nercia Muianga;A definir;0;;Token: calate-helder-060-nercia-muianga | Categoria: Individual | Nº: 60
+Olinda e Esposo;A definir;1;;Token: calate-helder-061-olinda-e-esposo | Categoria: Casal | Nº: 61
+Pai Muianga;A definir;0;;Token: calate-helder-062-pai-muianga | Categoria: Individual | Nº: 62
+Pedro e Esposa;A definir;1;;Token: calate-helder-063-pedro-e-esposa | Categoria: Casal | Nº: 63
+Pinto e Esposa;A definir;1;;Token: calate-helder-064-pinto-e-esposa | Categoria: Casal | Nº: 64
+Pinto filho 1;A definir;0;;Token: calate-helder-065-pinto-filho-1 | Categoria: Individual | Nº: 65
+Pinto Filho 2;A definir;0;;Token: calate-helder-066-pinto-filho-2 | Categoria: Individual | Nº: 66
+Pinto Filho 3;A definir;0;;Token: calate-helder-067-pinto-filho-3 | Categoria: Individual | Nº: 67
+Pinto Filho 4;A definir;0;;Token: calate-helder-068-pinto-filho-4 | Categoria: Individual | Nº: 68
+Ramos;A definir;0;;Token: calate-helder-069-ramos | Categoria: Individual | Nº: 69
+Raul Guezimane e Esposa;A definir;1;;Token: calate-helder-070-raul-guezimane-e-esposa | Categoria: Casal | Nº: 70
+Roberto e Esposa;A definir;1;;Token: calate-helder-071-roberto-e-esposa | Categoria: Casal | Nº: 71
+Rolina;A definir;0;;Token: calate-helder-072-rolina | Categoria: Individual | Nº: 72
+Rosa Muianga;A definir;0;;Token: calate-helder-073-rosa-muianga | Categoria: Individual | Nº: 73
+Sarito e Esposa;A definir;1;;Token: calate-helder-074-sarito-e-esposa | Categoria: Casal | Nº: 74
+Sergio e Esposa;A definir;1;;Token: calate-helder-075-sergio-e-esposa | Categoria: Casal | Nº: 75
+Sergio Muianga e Esposa;A definir;1;;Token: calate-helder-076-sergio-muianga-e-esposa | Categoria: Casal | Nº: 76
+Silvia Muianga;A definir;0;;Token: calate-helder-077-silvia-muianga | Categoria: Individual | Nº: 77
+Socrates Mateus e Esposa;A definir;1;;Token: calate-helder-078-socrates-mateus-e-esposa | Categoria: Casal | Nº: 78
+Taxinha;A definir;0;;Token: calate-helder-079-taxinha | Categoria: Individual | Nº: 79
+Tino e Esposa;A definir;1;;Token: calate-helder-080-tino-e-esposa | Categoria: Casal | Nº: 80
+Vovo Zunguza e Esposa;A definir;1;;Token: calate-helder-081-vovo-zunguza-e-esposa | Categoria: Casal | Nº: 81
+Zito Mateus;A definir;0;;Token: calate-helder-082-zito-mateus | Categoria: Individual | Nº: 82
