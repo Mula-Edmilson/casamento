@@ -5,7 +5,7 @@
 
   function stripSlash(value) { return String(value || '').replace(/\/+$/, ''); }
   function apiBase() { return stripSlash(window.LIRANDZO_API_BASE_URL || ''); }
-  function slug() { return String(window.LIRANDZO_INVITE_SLUG || '').trim(); }
+  function slug() { return String(window.LIRANDZO_INVITE_SLUG || (window.LIRANDZO_EVENT && window.LIRANDZO_EVENT.slug) || 'calate-helder').trim(); }
   function isConfigured() { return Boolean(apiBase() && slug()); }
   function cleanName(value) {
     return String(value || '')

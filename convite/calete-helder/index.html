@@ -1120,6 +1120,11 @@
 
   </style>
   <script src="event-data.js"></script>
+  <script>
+    window.LIRANDZO_INVITE_SLUG = window.LIRANDZO_INVITE_SLUG || (window.LIRANDZO_EVENT && window.LIRANDZO_EVENT.slug) || 'calate-helder';
+    window.LIRANDZO_API_BASE_URL = window.LIRANDZO_API_BASE_URL || 'https://api-casamento-mj.onrender.com';
+    window.LIRANDZO_API_URL = window.LIRANDZO_API_URL || window.LIRANDZO_API_BASE_URL.replace(/\/+$/, '') + '/api';
+  </script>
   <script src="client-config.js"></script>
   <script src="lirandzo-api.js"></script>
 </head>
