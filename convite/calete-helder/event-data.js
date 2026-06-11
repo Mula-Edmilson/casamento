@@ -1,37 +1,47 @@
 // Dados do casamento Calate & Helder - gerado pela Lirandzo
-window.LIRANDZO_INVITE_SLUG = window.LIRANDZO_INVITE_SLUG || "calate-helder";
 window.LIRANDZO_EVENT = {
   "slug": "calate-helder",
   "coupleNames": "Calate & Helder",
-  "displayNames": "Calate & Helder",
+  "displayNames": "Calate e Helder",
   "bride": "Calate Salazar Hojuane",
   "groom": "Hélder Jorge Muianga",
+  "clientName": "Hélder Jorge Muianga",
+  "clientWhatsapp": "+258 87 465 3598",
+  "clientEmail": "socratesfrancisco75@gmail.com",
+  "cityCountry": "Marracuene, Maputo, Moçambique",
   "monogram": "CH",
   "eventType": "Casamento",
   "language": "Português",
   "visualStyle": "Elegante e romântico",
-  "colors": "Full black para os convidados",
+  "colors": "Full back para os convidados",
   "dateISO": "2026-08-29T15:00:00+02:00",
   "eventDateLong": "29 de agosto de 2026",
-  "eventDateCaps": "29 DE AGOSTO 2026",
   "rsvpDeadline": "30 de junho de 2026",
   "rsvpDeadlineISO": "2026-06-30",
   "timezone": "Africa/Maputo",
   "verse": "É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa.",
   "verseReference": "Gênesis 2:24 NTLH",
+  "brideParents": "",
+  "groomParents": "",
   "ceremonyTitle": "Cerimónia Religiosa",
-  "ceremonyPlace": "Cerimónia Religiosa Igreja Universal de Marracuene",
+  "ceremonyPlace": "Igreja Universal de Marracuene",
   "ceremonyTime": "10:00",
-  "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Cerimónia%20Religiosa%20Igreja%20Universal%20de%20Marracuene",
+  "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Igreja+Universal+de+Marracuene,+Marracuene,+Maputo",
   "receptionTitle": "Copo de Água",
   "receptionPlace": "Eventos & Acomodações Águia",
   "receptionTime": "15:00",
   "receptionMap": "https://maps.google.com/?q=-25.741796,32.648743",
-  "additionalTitle": "Programa adicional",
-  "additionalPlace": "15h copo de água no Salão de Eventos & Acomodações Águia 🦅",
-  "additionalTime": "15:00",
+  "additionalTitle": "",
+  "additionalPlace": "",
+  "additionalTime": "",
+  "photoTitle": "",
+  "photoPlace": "",
+  "photoTime": "",
+  "welcomeDrinkTitle": "",
+  "welcomeDrinkPlace": "",
+  "welcomeDrinkTime": "",
   "supportContacts": "+258 87 465 3598",
-  "supportWhatsapp": "+258874653598",
+  "supportWhatsapp": "258874653598",
   "estimatedGuests": 123,
   "guestRows": 82,
   "giftSectionType": "Lista de presentes",
@@ -40,21 +50,26 @@ window.LIRANDZO_EVENT = {
   "program": [
     {
       "title": "Cerimónia Religiosa",
-      "place": "Cerimónia Religiosa Igreja Universal de Marracuene",
-      "time": "10:00",
-      "map": "ceremony"
+      "place": "Igreja Universal de Marracuene",
+      "time": "10:00"
     },
     {
       "title": "Copo de Água",
       "place": "Eventos & Acomodações Águia",
       "time": "15:00",
-      "description": "15h copo de água no Salão de Eventos & Acomodações Águia 🦅",
-      "map": "reception"
+      "note": "15h copo de água no Salão de Eventos & Acomodações Águia 🦅"
     }
   ],
-  "letter": "Querido(a) convidado(a),\n\nCom alegria e gratidão, convidamo-lo(a) a testemunhar a nossa união e a celebrar connosco este dia tão especial.\n\nA sua presença é importante para nós e tornará este momento ainda mais memorável.\n\nCom carinho,\nCalate & Helder",
-  "audioYoutube": "",
+  "story": {
+    "encontro": "Uma história vivida com fé, respeito e carinho.",
+    "amizade": "Um caminho fortalecido por apoio, família e bênçãos.",
+    "crescimento": "Hoje, esta união celebra uma nova etapa partilhada com quem é especial.",
+    "promessa": "Com gratidão, Calate e Helder recebem cada convidado para celebrar este momento."
+  },
+  "letter": "Querido(a) convidado(a),\n\nCom alegria e gratidão, convidamo-lo(a) a celebrar connosco o nosso casamento. Este dia marca uma nova etapa das nossas vidas, vivida com fé, amor e bênção familiar.\n\nA sua presença tornará este momento ainda mais especial. Contamos consigo para partilhar esta celebração com carinho, elegância e muita alegria.\n\nCom gratidão,\nCalate e Helder",
+  "audioYoutube": "C4Pedro casamento",
   "audioMp3": "",
+  "civilMap": "",
   "guestListVersion": "Lista de convidados Calate & Helder",
   "guestListUpdatedAt": "2026-06-11"
 };
@@ -71,8 +86,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 2,
@@ -85,8 +101,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 3,
@@ -99,8 +116,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 4,
@@ -113,8 +131,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 5,
@@ -127,8 +146,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 6,
@@ -141,8 +161,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 7,
@@ -155,8 +176,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 8,
@@ -169,8 +191,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 9,
@@ -183,8 +206,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 10,
@@ -197,8 +221,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 11,
@@ -211,8 +236,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 12,
@@ -225,8 +251,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 13,
@@ -239,8 +266,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 14,
@@ -253,8 +281,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 15,
@@ -267,8 +296,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 16,
@@ -281,8 +311,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 17,
@@ -295,8 +326,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 18,
@@ -309,8 +341,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 19,
@@ -323,8 +356,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 20,
@@ -337,8 +371,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 21,
@@ -351,8 +386,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 22,
@@ -365,8 +401,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 23,
@@ -379,8 +416,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 24,
@@ -393,8 +431,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 25,
@@ -407,8 +446,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 26,
@@ -421,8 +461,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 27,
@@ -435,8 +476,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 28,
@@ -449,8 +491,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 29,
@@ -463,8 +506,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 30,
@@ -477,8 +521,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 31,
@@ -491,8 +536,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 32,
@@ -505,8 +551,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 33,
@@ -519,8 +566,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 34,
@@ -533,8 +581,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 35,
@@ -547,8 +596,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 36,
@@ -561,8 +611,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 37,
@@ -575,8 +626,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 38,
@@ -589,8 +641,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 39,
@@ -603,8 +656,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 40,
@@ -617,8 +671,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 41,
@@ -631,8 +686,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 42,
@@ -645,8 +701,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 43,
@@ -659,8 +716,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 44,
@@ -673,8 +731,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 45,
@@ -687,8 +746,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 46,
@@ -701,8 +761,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 47,
@@ -715,8 +776,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 48,
@@ -729,8 +791,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 49,
@@ -743,8 +806,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 50,
@@ -757,8 +821,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 51,
@@ -771,8 +836,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 52,
@@ -785,8 +851,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 53,
@@ -799,8 +866,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 54,
@@ -813,8 +881,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 55,
@@ -827,8 +896,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 56,
@@ -841,8 +911,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 57,
@@ -855,8 +926,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 58,
@@ -869,8 +941,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 59,
@@ -883,8 +956,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 60,
@@ -897,8 +971,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 61,
@@ -911,8 +986,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 62,
@@ -925,8 +1001,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 63,
@@ -939,8 +1016,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 64,
@@ -953,8 +1031,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 65,
@@ -967,8 +1046,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 66,
@@ -981,8 +1061,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 67,
@@ -995,8 +1076,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 68,
@@ -1009,8 +1091,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 69,
@@ -1023,8 +1106,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 70,
@@ -1037,8 +1121,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 71,
@@ -1051,8 +1136,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 72,
@@ -1065,8 +1151,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 73,
@@ -1079,8 +1166,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 74,
@@ -1093,8 +1181,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 75,
@@ -1107,8 +1196,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 76,
@@ -1121,8 +1211,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 77,
@@ -1135,8 +1226,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 78,
@@ -1149,8 +1241,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 79,
@@ -1163,8 +1256,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 80,
@@ -1177,8 +1271,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 81,
@@ -1191,8 +1286,9 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 2,
     "companions": 1,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   },
   {
     "number": 82,
@@ -1205,9 +1301,10 @@ window.LIRANDZO_GUESTS = [
     "tableNumber": 0,
     "maxGuests": 1,
     "companions": 0,
-    "table": "A definir",
-    "status": "Pendente"
+    "checked_in": false,
+    "checkedIn": false,
+    "table": "A definir"
   }
 ];
 
-window.LIRANDZO_GIFT_OPTIONS = window.LIRANDZO_GIFT_OPTIONS || [];
+window.LIRANDZO_GIFT_OPTIONS = [];

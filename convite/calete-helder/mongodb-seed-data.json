@@ -2,35 +2,46 @@
   "event": {
     "slug": "calate-helder",
     "coupleNames": "Calate & Helder",
-    "displayNames": "Calate & Helder",
+    "displayNames": "Calate e Helder",
     "bride": "Calate Salazar Hojuane",
     "groom": "Hélder Jorge Muianga",
+    "clientName": "Hélder Jorge Muianga",
+    "clientWhatsapp": "+258 87 465 3598",
+    "clientEmail": "socratesfrancisco75@gmail.com",
+    "cityCountry": "Marracuene, Maputo, Moçambique",
     "monogram": "CH",
     "eventType": "Casamento",
     "language": "Português",
     "visualStyle": "Elegante e romântico",
-    "colors": "Full black para os convidados",
+    "colors": "Full back para os convidados",
     "dateISO": "2026-08-29T15:00:00+02:00",
     "eventDateLong": "29 de agosto de 2026",
-    "eventDateCaps": "29 DE AGOSTO 2026",
     "rsvpDeadline": "30 de junho de 2026",
     "rsvpDeadlineISO": "2026-06-30",
     "timezone": "Africa/Maputo",
     "verse": "É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa.",
     "verseReference": "Gênesis 2:24 NTLH",
+    "brideParents": "",
+    "groomParents": "",
     "ceremonyTitle": "Cerimónia Religiosa",
-    "ceremonyPlace": "Cerimónia Religiosa Igreja Universal de Marracuene",
+    "ceremonyPlace": "Igreja Universal de Marracuene",
     "ceremonyTime": "10:00",
-    "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Cerimónia%20Religiosa%20Igreja%20Universal%20de%20Marracuene",
+    "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Igreja+Universal+de+Marracuene,+Marracuene,+Maputo",
     "receptionTitle": "Copo de Água",
     "receptionPlace": "Eventos & Acomodações Águia",
     "receptionTime": "15:00",
     "receptionMap": "https://maps.google.com/?q=-25.741796,32.648743",
-    "additionalTitle": "Programa adicional",
-    "additionalPlace": "15h copo de água no Salão de Eventos & Acomodações Águia 🦅",
-    "additionalTime": "15:00",
+    "additionalTitle": "",
+    "additionalPlace": "",
+    "additionalTime": "",
+    "photoTitle": "",
+    "photoPlace": "",
+    "photoTime": "",
+    "welcomeDrinkTitle": "",
+    "welcomeDrinkPlace": "",
+    "welcomeDrinkTime": "",
     "supportContacts": "+258 87 465 3598",
-    "supportWhatsapp": "+258874653598",
+    "supportWhatsapp": "258874653598",
     "estimatedGuests": 123,
     "guestRows": 82,
     "giftSectionType": "Lista de presentes",
@@ -39,21 +50,26 @@
     "program": [
       {
         "title": "Cerimónia Religiosa",
-        "place": "Cerimónia Religiosa Igreja Universal de Marracuene",
-        "time": "10:00",
-        "map": "ceremony"
+        "place": "Igreja Universal de Marracuene",
+        "time": "10:00"
       },
       {
         "title": "Copo de Água",
         "place": "Eventos & Acomodações Águia",
         "time": "15:00",
-        "description": "15h copo de água no Salão de Eventos & Acomodações Águia 🦅",
-        "map": "reception"
+        "note": "15h copo de água no Salão de Eventos & Acomodações Águia 🦅"
       }
     ],
-    "letter": "Querido(a) convidado(a),\n\nCom alegria e gratidão, convidamo-lo(a) a testemunhar a nossa união e a celebrar connosco este dia tão especial.\n\nA sua presença é importante para nós e tornará este momento ainda mais memorável.\n\nCom carinho,\nCalate & Helder",
-    "audioYoutube": "",
+    "story": {
+      "encontro": "Uma história vivida com fé, respeito e carinho.",
+      "amizade": "Um caminho fortalecido por apoio, família e bênçãos.",
+      "crescimento": "Hoje, esta união celebra uma nova etapa partilhada com quem é especial.",
+      "promessa": "Com gratidão, Calate e Helder recebem cada convidado para celebrar este momento."
+    },
+    "letter": "Querido(a) convidado(a),\n\nCom alegria e gratidão, convidamo-lo(a) a celebrar connosco o nosso casamento. Este dia marca uma nova etapa das nossas vidas, vivida com fé, amor e bênção familiar.\n\nA sua presença tornará este momento ainda mais especial. Contamos consigo para partilhar esta celebração com carinho, elegância e muita alegria.\n\nCom gratidão,\nCalate e Helder",
+    "audioYoutube": "C4Pedro casamento",
     "audioMp3": "",
+    "civilMap": "",
     "guestListVersion": "Lista de convidados Calate & Helder",
     "guestListUpdatedAt": "2026-06-11"
   },
@@ -69,8 +85,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 2,
@@ -83,8 +100,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 3,
@@ -97,8 +115,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 4,
@@ -111,8 +130,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 5,
@@ -125,8 +145,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 6,
@@ -139,8 +160,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 7,
@@ -153,8 +175,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 8,
@@ -167,8 +190,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 9,
@@ -181,8 +205,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 10,
@@ -195,8 +220,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 11,
@@ -209,8 +235,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 12,
@@ -223,8 +250,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 13,
@@ -237,8 +265,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 14,
@@ -251,8 +280,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 15,
@@ -265,8 +295,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 16,
@@ -279,8 +310,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 17,
@@ -293,8 +325,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 18,
@@ -307,8 +340,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 19,
@@ -321,8 +355,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 20,
@@ -335,8 +370,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 21,
@@ -349,8 +385,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 22,
@@ -363,8 +400,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 23,
@@ -377,8 +415,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 24,
@@ -391,8 +430,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 25,
@@ -405,8 +445,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 26,
@@ -419,8 +460,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 27,
@@ -433,8 +475,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 28,
@@ -447,8 +490,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 29,
@@ -461,8 +505,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 30,
@@ -475,8 +520,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 31,
@@ -489,8 +535,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 32,
@@ -503,8 +550,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 33,
@@ -517,8 +565,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 34,
@@ -531,8 +580,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 35,
@@ -545,8 +595,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 36,
@@ -559,8 +610,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 37,
@@ -573,8 +625,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 38,
@@ -587,8 +640,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 39,
@@ -601,8 +655,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 40,
@@ -615,8 +670,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 41,
@@ -629,8 +685,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 42,
@@ -643,8 +700,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 43,
@@ -657,8 +715,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 44,
@@ -671,8 +730,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 45,
@@ -685,8 +745,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 46,
@@ -699,8 +760,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 47,
@@ -713,8 +775,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 48,
@@ -727,8 +790,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 49,
@@ -741,8 +805,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 50,
@@ -755,8 +820,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 51,
@@ -769,8 +835,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 52,
@@ -783,8 +850,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 53,
@@ -797,8 +865,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 54,
@@ -811,8 +880,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 55,
@@ -825,8 +895,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 56,
@@ -839,8 +910,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 57,
@@ -853,8 +925,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 58,
@@ -867,8 +940,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 59,
@@ -881,8 +955,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 60,
@@ -895,8 +970,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 61,
@@ -909,8 +985,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 62,
@@ -923,8 +1000,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 63,
@@ -937,8 +1015,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 64,
@@ -951,8 +1030,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 65,
@@ -965,8 +1045,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 66,
@@ -979,8 +1060,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 67,
@@ -993,8 +1075,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 68,
@@ -1007,8 +1090,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 69,
@@ -1021,8 +1105,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 70,
@@ -1035,8 +1120,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 71,
@@ -1049,8 +1135,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 72,
@@ -1063,8 +1150,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 73,
@@ -1077,8 +1165,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 74,
@@ -1091,8 +1180,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 75,
@@ -1105,8 +1195,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 76,
@@ -1119,8 +1210,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 77,
@@ -1133,8 +1225,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 78,
@@ -1147,8 +1240,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 79,
@@ -1161,8 +1255,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 80,
@@ -1175,8 +1270,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 81,
@@ -1189,8 +1285,9 @@
       "tableNumber": 0,
       "maxGuests": 2,
       "companions": 1,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     },
     {
       "number": 82,
@@ -1203,8 +1300,9 @@
       "tableNumber": 0,
       "maxGuests": 1,
       "companions": 0,
-      "table": "A definir",
-      "status": "Pendente"
+      "checked_in": false,
+      "checkedIn": false,
+      "table": "A definir"
     }
   ],
   "giftOptions": []

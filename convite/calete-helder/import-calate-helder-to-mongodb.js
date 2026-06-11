@@ -52,6 +52,8 @@ const GuestSchema = new mongoose.Schema({
   maxGuests: { type: Number, default: 1 },
   phone: { type: String, default: '' },
   notes: { type: String, default: '' },
+  checkedIn: { type: Boolean, default: false },
+  checkedInAt: { type: Date }
 }, { timestamps: true });
 
 const GiftItemSchema = new mongoose.Schema({
@@ -123,6 +125,7 @@ async function main() {
       table: g.mesa || g.table || 'A definir',
       companions: Number(g.companions) || Math.max((Number(g.maxGuests) || 1) - 1, 0),
       maxGuests: Number(g.maxGuests) || 1,
+      checkedIn: Boolean(g.checkedIn),
       status: existing ? existing.status : 'Não aberto'
     };
     if (existing) { await Guest.updateOne({ _id: existing._id }, { $set: payload }); updated += 1; }

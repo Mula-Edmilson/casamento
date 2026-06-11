@@ -4,10 +4,10 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Convite · Calate &amp; Helder</title>
+<title>Convite de Casamento — Calate &amp; Helder</title>
 <link href="assets/media/lirandzo-logo.svg" rel="icon" type="image/png"/>
 <meta content="Convite de Casamento — Calate &amp; Helder" property="og:title"/>
-<meta content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas." property="og:description"/>
+<meta content="Junte-se a nós para celebrar este momento especial." property="og:description"/>
 <meta content="website" property="og:type"/>
 <meta content="assets/media/PG2.jpg" property="og:image"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -214,8 +214,12 @@
       100% { transform: scale(1); opacity: 1; }
     }
     @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+
+    .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(138,90,68,.08);text-align:center}
+    .qr-checkin-card img{width:190px;max-width:100%;border-radius:16px;background:#fff;padding:10px;margin:12px auto;display:block}
+    .qr-checkin-card small{display:block;color:var(--text-light);line-height:1.5}
   
-/* MENU RCHL - EDMA & ABEL */
+/* MENU REAL - EDMA & ABEL */
 .menu-real-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -249,7 +253,7 @@
 </style>
 </head>
 <body class="loading convite-rustic-theme calate-helder-theme">
-<audio autoplay="" data-audio-pending="true" id="backgroundMusic" loop="" playsinline="" preload="auto" src=""></audio>
+<audio autoplay="" id="backgroundMusic" loop="" playsinline="" preload="auto" src="https://static.wixstatic.com/mp3/35b7f9_46603560222842afab5f5ec002881590.mp3"></audio>
 <div class="fixed-ui-container">
 <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
 <svg viewbox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
@@ -263,7 +267,7 @@
 <button aria-label="Ver mapa do local" class="fab-item" id="fabMapBtn">
 <svg viewbox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 </button>
-<button aria-label="Controlar música" id="musicControl" style="display:none;">
+<button aria-label="Controlar música" id="musicControl">
 <svg height="20" id="musicIcon" viewbox="0 0 24 24" width="20"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path></svg>
 </button>
 </div>
@@ -284,11 +288,14 @@
 <div><span id="seconds">00</span><small>Segundos</small></div>
 </div>
 </div>
-<a class="scroll-down-indicator" href="#mensagem-biblica">
+<a class="scroll-down-indicator" href="#versiculo-biblico">
 <!--  <svg viewBox="0 0 24 24"><path d="M12 19.5l-7-7 1.5-1.5L12 16.5l5.5-5.5L19 12.5z"/></svg> -->
 </a>
 </header>
-<section class="section fade-in-section" id="mensagem-biblica"><p class="verse">“É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa.”</p><p class="verse-reference">Gênesis 2:24 NTLH</p><h2 class="section-title">Calate &amp; Helder</h2><p class="section-subtitle">Com alegria e gratidão, convidamo-lo(a) a celebrar connosco este momento especial.</p><div class="couple-details"><div><h3>Calate</h3><p>Noiva</p></div><div class="decorative-ampersand">♡</div><div><h3>Helder</h3><p>Noivo</p></div></div></section>
+<section class="section fade-in-section" id="versiculo-biblico">
+<p class="verse">"É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa."</p>
+<p class="verse-reference">Gênesis 2:24 NTLH</p>
+</section>
 <!-- SECÇÃO VINTAGE: CARTA DOS NOIVOS -->
 <section class="section vintage-section section-scene fade-in-section" id="carta-dos-noivos">
 <div class="vintage-scene">
@@ -312,14 +319,60 @@
 <span><i></i> Gratidão</span>
 </div>
 <p class="letter-intro">Querido(a) convidado(a),</p>
-<p>Com alegria e gratidão, este convite chega até si para partilharmos um dos momentos mais importantes das nossas vidas.</p>
+<p>"É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa."</p>
+<p class="verse-reference">Gênesis 2:24 NTLH</p>
 <div class="letter-signature">Calate &amp; Helder</div>
 <button class="btn btn-primary vintage-action" data-open-modal="cartaNoivosModal" type="button">Ler a Carta Completa</button>
 </div>
 </div>
 </section>
 <!-- SECÇÃO VINTAGE: PADRINHOS & HONRA -->
-
+<section class="section section-highlight vintage-section section-scene fade-in-section" id="padrinhos-honra">
+<div class="vintage-scene">
+<img alt="Fundo da secção padrinhos e honra" src="assets/media/fundo-flores.jpg"/>
+<div class="vintage-scene-overlay soft-dark"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewbox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg>
+</span>
+<h2 class="section-title">Padrinhos &amp; Honra</h2>
+</div>
+<p class="section-subtitle">Uma homenagem às pessoas que acompanham esta união com carinho, apoio e presença especial.</p>
+<div class="honor-grid">
+<article class="honor-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.4"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
+<span class="honor-number">01</span>
+<h3>Madrinha de Honra</h3>
+<p>Uma presença delicada, próxima e essencial neste caminho até ao altar.</p>
+<button class="btn btn-outline" data-open-modal="madrinhaHonraModal" type="button">Ver Dedicatória</button>
+</article>
+<article class="honor-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.4"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M15.5 7.5 18 10l3.5-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg></span>
+<span class="honor-number">02</span>
+<h3>Padrinho de Honra</h3>
+<p>Um apoio firme, discreto e especial para este momento tão importante.</p>
+<button class="btn btn-outline" data-open-modal="padrinhoHonraModal" type="button">Ver Dedicatória</button>
+</article>
+<article class="honor-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewbox="0 0 24 24"><path d="M7.5 18.5a5.5 5.5 0 0 1 9 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="9" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle><circle cx="15" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
+<span class="honor-number">03</span>
+<h3>Damas &amp; Cavalheiros</h3>
+<p>Amigos e familiares escolhidos para caminhar connosco neste dia de celebração.</p>
+<button class="btn btn-outline" data-open-modal="damasCavalheirosModal" type="button">Ver Dedicatória</button>
+</article>
+<article class="honor-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewbox="0 0 24 24"><path d="M4 17c1.5-2.7 4.1-4 8-4s6.5 1.3 8 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="8" cy="8.5" fill="none" r="2.3" stroke="currentColor" stroke-width="1.4"></circle><circle cx="16" cy="8.5" fill="none" r="2.3" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
+<span class="honor-number">04</span>
+<h3>Famílias</h3>
+<p>A base, a bênção e a memória viva de tudo o que somos e celebramos.</p>
+<button class="btn btn-outline" data-open-modal="familiasModal" type="button">Ver Homenagem</button>
+</article>
+</div>
+</div>
+</section>
 <section class="section section-highlight fade-in-section" id="agenda-evento">
 <div class="agenda-centered">
 <div class="agenda-header">
@@ -341,26 +394,74 @@
 
 
 
-
-
-<div class="agenda-event"><h3 class="event-title">Cerimónia Religiosa</h3><p class="event-time">10:00</p><div class="agenda-icon-divider"><span class="divider"></span><span class="divider"></span></div><h4 class="event-location">Cerimónia Religiosa Igreja Universal de Marracuene</h4><a class="map-link-button" href="#" id="mapBtnReligiosa" rel="noopener noreferrer" target="_blank">Ver no Mapa</a></div><div class="agenda-event"><h3 class="event-title">Copo de Água</h3><p class="event-time">15:00</p><div class="agenda-icon-divider"><span class="divider"></span><span class="divider"></span></div><h4 class="event-location">Eventos &amp; Acomodações Águia</h4><p class="event-description">15h copo de água no Salão de Eventos &amp; Acomodações Águia 🦅</p><a class="map-link-button" href="#" id="mapBtnCopo" rel="noopener noreferrer" target="_blank">Ver no Mapa</a></div></div>
+<div class="agenda-event">
+<h3 class="event-title">Cerimónia Religiosa</h3>
+<p class="event-time">10:00</p>
+<div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
+<h4 class="event-location">Igreja Universal de Marracuene</h4>
+<a class="map-link-button" href="#" id="mapBtnReligiosa" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
+</div>
+<div class="agenda-event">
+<h3 class="event-title">Copo de Água</h3>
+<p class="event-time">15:00</p>
+<div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
+<h4 class="event-location">Eventos &amp; Acomodações Águia</h4>
+<p class="event-description">Recepção no Salão de Eventos &amp; Acomodações Águia 🦅.</p>
+<a class="map-link-button" href="#" id="mapBtnCopo" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
+</div>
+</div>
 </section>
 <!-- SECÇÃO VINTAGE: MENU DA CELEBRAÇÃO -->
-
-
+<section class="section vintage-section section-scene fade-in-section" id="menu-celebracao">
+<div class="vintage-scene">
+<img alt="Fundo da secção menu da celebração" src="assets/media/menu.jpg"/>
+<div class="vintage-scene-overlay warm-light"></div>
+</div>
+<div class="vintage-content">
+<div class="vintage-section-kicker">------</div>
+<div class="vintage-title-wrap">
+<span aria-hidden="true" class="vintage-icon-badge">
+<svg viewbox="0 0 24 24"><path d="M7 3v9.5a2.5 2.5 0 0 0 5 0V3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M14 3v7m3-7v16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg>
+</span>
+<h2 class="section-title">Menu da Celebração</h2>
+</div>
+<p class="section-subtitle">Uma pequena antevisão dos sabores que farão parte da nossa recepção.</p>
+<div class="menu-preview-grid menu-visual-grid">
+<div class="menu-preview-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewbox="0 0 24 24"><path d="M7 7h10M6 12h12M8 17h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
+<span>Pratos quentes</span>
+<h3>Molhos &amp; clássicos</h3>
+<p>Caril, carne assada, lasanha, pato, matapa, feijoada e mariscos.</p>
+</div>
+<div class="menu-preview-card featured elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewbox="0 0 24 24"><path d="M6 8h12M7 12h10M8 16h8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="18" cy="6" fill="none" r="2" stroke="currentColor" stroke-width="1.4"></circle></svg></span>
+<span>Grelhados</span>
+<h3>Frango &amp; peixe fresco</h3>
+<p>Frango grelhado ao molho de salsa e manteiga e peixe fresco.</p>
+</div>
+<div class="menu-preview-card elevated-card has-icon">
+<span aria-hidden="true" class="card-icon"><svg viewbox="0 0 24 24"><path d="M7 17a5 5 0 0 1 10 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><path d="M9 14a3 3 0 1 1 6 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span>
+<span>Rodízio &amp; tradição</span>
+<h3>Sabores de família</h3>
+<p>Picanha, babalaza, ananás grelhado, asinhas e pratos típicos.</p>
+</div>
+</div>
+<button class="btn btn-primary vintage-action" data-open-modal="menuCelebracaoModal" type="button">Ver Menu Completo</button>
+</div>
+</section>
 <section class="section section-highlight fade-in-section" id="guia-evento">
 <h2 class="section-title">Guia do Evento</h2>
 <p class="section-subtitle">Tudo o que precisa de saber para celebrar connosco.</p>
 <div class="guide-grid">
 <div class="guide-item">
 <h4>Confirme a Sua Presença</h4>
-<p>Por favor, informe-nos se poderemos contar consigo até 30 de junho de 2026.</p>
+<p>Por favor, informe-nos se poderemos contar consigo até 30 de Junho de 2026.</p>
 <button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
 <button class="btn btn-outline" id="calendarBtn" type="button">Adicionar ao Calendário</button>
 </div>
 <div class="guide-item">
 <h4>Inspiração de Vestuário</h4>
-<p>O dress code segue um estilo elegante e romântico, com uma presença clássica e cuidada para a celebração.</p>
+<p>O dress code inspira-se no estilo elegante romântico: tons terrosos, marfim, verde sálvia e castanhos suaves, com presença natural e elegante.</p>
 <button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
 </div>
 <div class="guide-item">
@@ -447,7 +548,7 @@
 <p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
 <div class="footer-contact">
 <span>Tem dúvidas?</span>
-<span>+258 87 465 3598</span>
+<span>+258 86 699 1615, 86 424 2225, 82 761 9991</span>
 </div>
 </footer>
 <footer aria-label="Rodapé Lirandzo" class="lirandzo-demo-footer">
@@ -501,19 +602,76 @@
 <div aria-labelledby="cartaNoivosTitle" aria-modal="true" class="modal vintage-detail-modal" id="cartaNoivosModal" role="dialog">
 <div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-letter"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
 <span class="modal-kicker">Carta dos Noivos</span>
-<h3 id="cartaNoivosTitle">Com gratidão</h3>
+<h3 id="cartaNoivosTitle">Com o coração cheio de gratidão</h3>
 <div class="modal-divider"></div>
-
-
-
+<p>Querido(a) convidado(a), obrigado por fazer parte deste momento tão especial. A nossa história é marcada por fé, carinho, respeito e pela bênção das nossas famílias.</p>
+<p>A sua presença será uma bênção e uma memória que levaremos connosco para a vida inteira. Esperamos por si para celebrar este capítulo com alegria e gratidão.</p>
+<p class="modal-signature">Calate &amp; Helder</p>
 <button class="btn btn-primary" data-close-modal="" type="button">Fechar Carta</button>
-<p>Querido(a) convidado(a),</p><p>Com alegria e gratidão, convidamo-lo(a) a testemunhar a nossa união e a celebrar connosco este dia tão especial.</p><p>A sua presença é importante para nós e tornará este momento ainda mais memorável.</p><div class="modal-signature">Calate &amp; Helder</div></div>
 </div>
-
-
-
-
-
+</div>
+<div aria-labelledby="madrinhaHonraTitle" aria-modal="true" class="modal vintage-detail-modal" id="madrinhaHonraModal" role="dialog">
+<div class="modal-card vintage-modal-card has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Padrinhos &amp; Honra</span>
+<h3 id="madrinhaHonraTitle">Madrinha de Honra</h3>
+<div class="modal-divider"></div>
+<p>Uma pessoa escolhida pela delicadeza, proximidade e carinho. A madrinha de honra representa apoio, cuidado e uma presença feminina especial neste caminho até ao altar.</p>
+<div class="modal-note">“Atxa, obrigada por caminhar connosco com amor e por fazer parte deste capítulo tão bonito.”</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
+</div>
+</div>
+<div aria-labelledby="padrinhoHonraTitle" aria-modal="true" class="modal vintage-detail-modal" id="padrinhoHonraModal" role="dialog">
+<div class="modal-card vintage-modal-card has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Padrinhos &amp; Honra</span>
+<h3 id="padrinhoHonraTitle">Padrinho de Honra</h3>
+<div class="modal-divider"></div>
+<p>Uma presença firme, discreta e importante. O padrinho de honra simboliza amizade, confiança e apoio para este compromisso de vida.</p>
+<div class="modal-note">“A tua presença honra a nossa união e torna este dia ainda mais especial.”</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
+</div>
+</div>
+<div aria-labelledby="damasCavalheirosTitle" aria-modal="true" class="modal vintage-detail-modal" id="damasCavalheirosModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-honor"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><circle cx="9" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><circle cx="15" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M6 18c1-2.5 2.8-4 6-4s5 1.5 6 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Padrinhos &amp; Honra</span>
+<h3 id="damasCavalheirosTitle">Damas &amp; Cavalheiros</h3>
+<div class="modal-divider"></div>
+<p>São amigos e familiares que trazem leveza, alegria e cumplicidade à celebração. Cada presença foi escolhida pelo valor afectivo que tem na nossa caminhada.</p>
+<div class="honor-modal-list">
+<span>Companhia</span>
+<span>Alegria</span>
+<span>Memória</span>
+<span>Família</span>
+</div>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar</button>
+</div>
+</div>
+<div aria-labelledby="familiasTitle" aria-modal="true" class="modal vintage-detail-modal" id="familiasModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-family"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><circle cx="8" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><circle cx="16" cy="9" fill="none" r="2.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M4 18c1-2.7 3.3-4 8-4s7 1.3 8 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Homenagem</span>
+<h3 id="familiasTitle">Às nossas famílias</h3>
+<div class="modal-divider"></div>
+<p>Às nossas famílias, deixamos uma homenagem de profundo reconhecimento. Obrigado pelos ensinamentos, pelas orações, pelo apoio e por tudo o que nos trouxe até este momento.</p>
+<p>Este dia também é vosso, porque cada gesto de amor recebido ao longo da vida está presente nesta união.</p>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Homenagem</button>
+</div>
+</div>
+<div aria-labelledby="menuCelebracaoTitle" aria-modal="true" class="modal vintage-detail-modal" id="menuCelebracaoModal" role="dialog">
+<div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-menu"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M7 3v9.5a2.5 2.5 0 0 0 5 0V3M14 3v7m3-7v18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+<span class="modal-kicker">Menu da Celebração</span>
+<h3 id="menuCelebracaoTitle">Sabores do nosso dia</h3>
+<div class="modal-divider"></div>
+<div class="modal-menu-list menu-real-list">
+<div class="menu-real-category"><strong>Pratos Quentes &amp; Molhos</strong><ul><li>Caril de carne à indiana</li><li>Carne assada na panela (Biff)</li><li>Lasanha de carne</li><li>Pato estufado ao molho de laranja</li><li>Matapa tradicional de camarão</li><li>Feijoada com todos</li><li>Estufado de camarão e lulas</li></ul></div>
+<div class="menu-real-category"><strong>Grelhados</strong><ul><li>Frango grelhado ao molho de salsa e manteiga</li><li>Peixe grelhado fresco (vermelho ou garoupa)</li></ul></div>
+<div class="menu-real-category"><strong>Acompanhantes</strong><ul><li>Arroz branco</li><li>Xima</li><li>Arroz de vegetais</li><li>Arroz Bryan</li><li>Batata frita crocante</li><li>Apas</li></ul></div>
+<div class="menu-real-category"><strong>Saladas Frescas</strong><ul><li>Vegetais salteados</li><li>Beterraba com maçã</li><li>Salada russa com peito de frango e passas</li><li>Maionese cremosa</li><li>Repolho roxo com lascas de maca e milho doce</li><li>Massa chinesa de vegetais</li></ul></div>
+<div class="menu-real-category"><strong>Rodízio Premium</strong><ul><li>Picanha suculenta</li><li>Babalaza</li><li>Ananás grelhado</li><li>Asinhas marinadas</li></ul></div>
+<div class="menu-real-category"><strong>Pratos Típicos - Família</strong><ul><li>Tihove</li><li>Xiguinha</li><li>Mukapata</li></ul></div>
+</div>
+<p class="small-modal-text">Celebramos o amor em cada detalhe.</p>
+<button class="btn btn-primary" data-close-modal="" type="button">Fechar Menu</button>
+</div>
+</div>
 <div aria-labelledby="etiquetaEventoTitle" aria-modal="true" class="modal vintage-detail-modal" id="etiquetaEventoModal" role="dialog">
 <div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-etiquette"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M8 4h8l4 4v8l-4 4H8l-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="M9 12h6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
 <span class="modal-kicker">Etiqueta do Evento</span>
@@ -534,10 +692,10 @@
 <h3 id="transporteApoioTitle">Detalhes de chegada</h3>
 <div class="modal-divider"></div>
 <div class="modal-travel-grid">
-<div><strong>Cerimónia</strong><p>Cerimónia Religiosa Igreja Universal de Marracuene. A cerimónia religiosa inicia às 10:00.</p></div>
-<div><strong>Copo de Água</strong><p>Eventos &amp; Acomodações Águia. A recepção inicia às 15:00.</p></div>
+<div><strong>Cerimónia</strong><p>Igreja Universal de Marracuene. A cerimónia religiosa inicia às 10:00.</p></div>
+<div><strong>Civil</strong><p>Igreja Universal de Marracuene. O civil inicia às 10:00.</p></div>
 <div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div>
-<div><strong>Apoio</strong><p>Dúvidas no dia: +258 87 465 3598.</p></div>
+<div><strong>Apoio</strong><p>Dúvidas no dia: +258 86 699 1615, 86 424 2225, 82 761 9991.</p></div>
 </div>
 <button class="btn btn-primary" data-close-modal="" type="button">Fechar Detalhes</button>
 </div>
@@ -551,19 +709,55 @@
 <svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
 </div>
 </div>
-<h3 id="locationChooserTitle">Localização do Evento</h3>
+<h3 id="locationChooserTitle">Escolha o local no mapa</h3>
 <p>Toque no local desejado para abrir a rota no Google Maps.</p>
 <div class="location-chooser-grid">
-
-
-
+<article class="location-choice-card">
+<div class="location-choice-preview religious-preview">
+<div class="location-choice-overlay"></div>
+<div class="location-choice-top-accent"></div>
+<div aria-hidden="true" class="location-choice-pin">
+<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
 </div>
-<article class="location-choice-card"><h4>Copo de Água</h4><p>Eventos &amp; Acomodações Águia</p><a class="btn btn-outline" href="#" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa</a></article><article class="location-choice-card"><h4>Cerimónia Religiosa</h4><p>Cerimónia Religiosa Igreja Universal de Marracuene</p><a class="btn btn-primary" href="#" id="locationMapReligiosa" rel="noopener noreferrer" target="_blank">Abrir mapa</a></article><div class="form-actions" style="margin-top: 12px;">
+<div class="location-choice-caption">
+<span>Cerimónia Religiosa</span>
+<strong>Igreja Universal de Marracuene</strong>
+</div>
+</div>
+<div class="location-choice-body">
+<p>Cerimónia religiosa na Igreja Universal de Marracuene. Recomendamos chegada com antecedência.</p>
+<a class="btn btn-primary" href="#" id="locationMapReligiosa" rel="noopener noreferrer" target="_blank">Abrir mapa da cerimónia</a>
+</div>
+</article>
+
+<article class="location-choice-card">
+<div class="location-choice-preview copo-preview">
+<div class="location-choice-overlay"></div>
+<div class="location-choice-top-accent"></div>
+<div aria-hidden="true" class="location-choice-pin">
+<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
+</div>
+<div class="location-choice-caption">
+<span>Copo de Água</span>
+<strong>Eventos &amp; Acomodações Águia</strong>
+</div>
+</div>
+<div class="location-choice-body">
+<p>Rota directa para o local do Copo de Água e celebração.</p>
+<a class="btn btn-primary" href="#" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa da recepção</a>
+</div>
+</article>
+</div>
+<div class="form-actions" style="margin-top: 12px;">
 <button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
 </div>
 </div>
 </div>
-
+<div aria-modal="true" class="modal" id="lightboxModal" role="dialog">
+<div class="modal-card" data-close-modal="">
+<img alt="Imagem em destaque da galeria" id="lightboxImage" src=""/>
+</div>
+</div>
 <div aria-labelledby="guestInfoTitle" aria-modal="true" class="modal" id="guestInfoModal" role="dialog">
 <div class="modal-card has-modal-hero" style="text-align: left;"><div class="modal-hero modal-hero-guest"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" fill="none" r="3.5" stroke="currentColor" stroke-width="1.5"></circle><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
 <h3 id="guestInfoTitle" style="text-align: center;">O Seu Lugar</h3>
@@ -866,7 +1060,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (guestInfoModal) {
         const infoNameEl = document.getElementById('guestInfoName');
         const infoMesaEl = document.getElementById('guestInfoMesa');
-        const infoGuestsEl = document.getElementById('guestInfoGuests');        
+        const infoGuestsEl = document.getElementById('guestInfoGuests');
+        
         const safeGuestName = guestName || localStorage.getItem('guestName') || 'Convidado';
         const safeMaxGuests = Number(maxGuests || localStorage.getItem('guestMaxGuests') || 1) || 1;
         const safeCompanions = Math.max(safeMaxGuests - 1, 0);
@@ -875,7 +1070,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (infoGuestsEl) {
           infoGuestsEl.textContent = safeCompanions === 0 ? 'Sem acompanhante registado' : safeCompanions + ' acompanhante(s)';
-        }        if (infoMesaEl) {
+        }
+        if (infoMesaEl) {
           // Verificar se guestMesa existe e é uma string
           const safeMesa = guestMesa || localStorage.getItem('guestMesa') || 'A definir';
           if (safeMesa && typeof safeMesa === 'string' && safeMesa !== "A definir" && safeMesa !== "undefined" && safeMesa.trim() !== "") {
@@ -890,12 +1086,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Constantes
       const HOST_WHATSAPP_NUMBER = '+258874653598';
-      const ADDRESS_RELIGIOSA = "Cerimónia Religiosa Igreja Universal de Marracuene";
-      const ADDRESS_CIVIL = '';
-      const ADDRESS_COPO_DE_AGUA = "Eventos & Acomodações Águia";
-      const MAP_FAROL2_URL = "https://maps.google.com/?q=-25.741796,32.648743";
-      const MAP_CIVIL_URL = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(ADDRESS_RELIGIOSA); 
-      const EVENT_DATE = (window.LIRANDZO_EVENT && window.LIRANDZO_EVENT.dateISO) || '2026-08-29T15:00:00+02:00'; 
+      const ADDRESS_RELIGIOSA = 'Igreja Universal de Marracuene, Marracuene, Maputo';
+      const ADDRESS_CIVIL = 'Igreja Universal de Marracuene, Marracuene, Maputo';
+      const ADDRESS_COPO_DE_AGUA = 'Eventos & Acomodações Águia, Marracuene, Maputo';
+      const MAP_FAROL2_URL = 'https://maps.google.com/?q=-25.741796,32.648743';
+      const MAP_CIVIL_URL = 'https://www.google.com/maps/search/?api=1&query=Igreja+Universal+de+Marracuene,+Marracuene,+Maputo'; 
+      const EVENT_DATE = "2026-08-29T15:00:00+02:00"; 
       const body = document.body;
       const music = document.getElementById('backgroundMusic');
       const musicControl = document.getElementById('musicControl');
@@ -1027,7 +1223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         musicControl.classList.toggle('playing', !music.paused);
       };
 
-      const MUSIC_URL = '';
+      const MUSIC_URL = 'https://static.wixstatic.com/mp3/35b7f9_46603560222842afab5f5ec002881590.mp3';
 
       const prepareMusic = () => {
         if (!music) return;
@@ -1115,9 +1311,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (locationMapCivil) locationMapCivil.href = MAP_CIVIL_URL;
       if (locationMapCopo) locationMapCopo.href = MAP_FAROL2_URL;
       
-      const EVENT_END_DATE = '2026-08-29T22:00:00+02:00';
-      const EVENT_TITLE = 'Casamento de Calate & Helder';
-      const EVENT_LOCATION = `${ADDRESS_RELIGIOSA} / ${ADDRESS_CIVIL} / ${ADDRESS_COPO_DE_AGUA}`;
+      const EVENT_END_DATE = "2026-08-29T22:00:00+02:00";
+      const EVENT_TITLE = "Casamento de Calate & Helder";
+      const EVENT_LOCATION = `${ADDRESS_RELIGIOSA} / ${ADDRESS_COPO_DE_AGUA}`;
 
       const padCalendarValue = (value) => String(value).padStart(2, '0');
       const formatIcsDate = (date) => {
@@ -1131,11 +1327,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         .replace(/\n/g, '\\n');
 
       const addEventToCalendar = () => {
-        const description = "Lembrete do casamento de Calate & Helder. Confirme a sua presença e guarde esta data especial.";
+        const description = "Lembrete do casamento de Calate e Helder. Confirme a sua presença e guarde esta data especial.";
         const calendarUrl = new URL('https://calendar.google.com/calendar/render');
         calendarUrl.searchParams.set('action', 'TEMPLATE');
         calendarUrl.searchParams.set('text', EVENT_TITLE);
-        calendarUrl.searchParams.set('dates', '20260829T150000/20260829T220000');
+        calendarUrl.searchParams.set('dates', '20260912T100000/20260912T220000');
         calendarUrl.searchParams.set('ctz', 'Africa/Maputo');
         calendarUrl.searchParams.set('location', EVENT_LOCATION);
         calendarUrl.searchParams.set('details', description);
@@ -1736,6 +1932,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         '.section:not(.hero) .vintage-letter-preview',
         '.section:not(.hero) #messageForm',
         '.section:not(.hero) #guestbook-feed',
+        '.section:not(.hero) .time-capsule-card',
+        '.section:not(.hero) .time-capsule-state',
+        '.section:not(.hero) .time-capsule-form',
+        '.section:not(.hero) .time-capsule-gallery',
         '.footer > *'
       ];
 
@@ -1776,6 +1976,65 @@ document.addEventListener('DOMContentLoaded', async () => {
       scrollElements.forEach(el => scrollObserver.observe(el));
     }
 
+
+    function initElegantStoryCarousel() {
+      const track = document.getElementById('storyTimeline');
+      if (!track) return;
+      const slides = Array.from(track.querySelectorAll('.story-slide'));
+      const dots = Array.from(document.querySelectorAll('.story-dot'));
+      const controls = Array.from(document.querySelectorAll('[data-story-direction]'));
+      if (!slides.length) return;
+
+      function activeIndex() {
+        const trackRect = track.getBoundingClientRect();
+        let closestIndex = 0;
+        let closestDistance = Infinity;
+        slides.forEach((slide, index) => {
+          const rect = slide.getBoundingClientRect();
+          const distance = Math.abs(rect.left - trackRect.left);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        });
+        return closestIndex;
+      }
+
+      function updateDots() {
+        const index = activeIndex();
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      }
+
+      function goToSlide(index) {
+        const target = slides[Math.max(0, Math.min(index, slides.length - 1))];
+        if (target) track.scrollTo({ left: target.offsetLeft - track.offsetLeft, behavior: 'smooth' });
+      }
+
+      controls.forEach(button => {
+        button.addEventListener('click', () => {
+          const direction = button.getAttribute('data-story-direction');
+          const nextIndex = activeIndex() + (direction === 'next' ? 1 : -1);
+          goToSlide(nextIndex);
+        });
+      });
+
+      dots.forEach((dot, index) => dot.addEventListener('click', () => goToSlide(index)));
+      track.addEventListener('scroll', () => requestAnimationFrame(updateDots), { passive: true });
+      updateDots();
+    }
+    initElegantStoryCarousel();
+
+    // Navegação por setas (opcional)
+    document.addEventListener('keydown', (e) => {
+      const timeline = document.getElementById('storyTimeline');
+      if (!timeline) return;
+      
+      if (e.key === 'ArrowRight') {
+        timeline.scrollBy({ left: 400, behavior: 'smooth' });
+      } else if (e.key === 'ArrowLeft') {
+        timeline.scrollBy({ left: -400, behavior: 'smooth' });
+      }
+    });
   </script>
 </body>
 </html>

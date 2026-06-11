@@ -106,7 +106,7 @@ p:last-child {
 .hero {
   position: relative;
   min-height: 100vh;
-  background-image: url('assets/media/fundo-flores-2.jpg');
+  background-image: url('assets/media/calate-helder-hero.jpg');
   background-size: cover;
   background-position: center 32%;
   display: flex;
@@ -2295,16 +2295,16 @@ html[data-scroll-direction="up"] .magic-reveal[data-reveal="slide"]:not(.is-visi
   height: 28px;
 }
 
-.modal-hero-rsvp { background-image: url('assets/media/fundo-flores-2.jpg'); }
+.modal-hero-rsvp { background-image: url('assets/media/TR-ET.jpg'); }
 .modal-hero-dress { background-image: url('assets/media/dress-code-paleta.jpg'); background-position: center; }
-.modal-hero-gifts { background-image: url('assets/media/fundo-flores-2.jpg'); }
-.modal-hero-letter { background-image: url('assets/media/fundo-flores-2.jpg'); }
-.modal-hero-honor { background-image: url('assets/media/fundo-flores-2.jpg'); }
-.modal-hero-family { background-image: url('assets/media/fundo-flores-2.jpg'); }
-.modal-hero-menu { background-image: url('assets/media/fundo-flores-2.jpg'); }
-.modal-hero-etiquette { background-image: url('assets/media/fundo-flores-2.jpg'); }
-.modal-hero-travel { background-image: url('assets/media/fundo-flores-2.jpg'); }
-.modal-hero-guest { background-image: url('assets/media/fundo-flores-2.jpg'); }
+.modal-hero-gifts { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-letter { background-image: url('assets/media/TR-ET.jpg'); }
+.modal-hero-honor { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-family { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-menu { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-etiquette { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-travel { background-image: url('assets/media/CAPA FUNDO.jpg'); }
+.modal-hero-guest { background-image: url('assets/media/CAPA FUNDO.jpg'); }
 .modal-hero-mapchooser { background-image: url('assets/media/mapa-pin.jpg'); }
 
 .modal-card.has-modal-hero p:not(.small-modal-text) {
