@@ -1,0 +1,77 @@
+// Dados do casamento Calate & Helder - gerado pela Lirandzo
+window.LIRANDZO_EVENT = {
+  "slug": "calate-helder",
+  "coupleNames": "Calate & Helder",
+  "displayNames": "Calate e Helder",
+  "bride": "Calate Salazar Hojuane",
+  "groom": "Hélder Jorge Muianga",
+  "monogram": "CH",
+  "eventType": "Casamento",
+  "language": "Português",
+  "visualStyle": "Elegante e romântico",
+  "colors": "Full back para os convidados",
+  "dateISO": "2026-08-29T15:00:00+02:00",
+  "eventDateLong": "29 de agosto de 2026",
+  "rsvpDeadline": "30 de junho de 2026",
+  "timezone": "Africa/Maputo",
+  "verse": "É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa.",
+  "verseReference": "Gênesis 2:24 — NTLH",
+  "brideParents": "",
+  "groomParents": "",
+  "ceremonyTitle": "Cerimónia Religiosa",
+  "ceremonyPlace": "Igreja Universal de Marracuene",
+  "ceremonyTime": "10:00",
+  "ceremonyMap": "https://maps.google.com/?q=-25.741796,32.648743",
+  "receptionTitle": "Copo de Água",
+  "receptionPlace": "Eventos & Acomodações Águia",
+  "receptionTime": "15:00",
+  "receptionMap": "https://maps.google.com/?q=-25.741796,32.648743",
+  "additionalTitle": "",
+  "additionalPlace": "",
+  "additionalTime": "",
+  "photoTitle": "",
+  "photoPlace": "",
+  "photoTime": "",
+  "welcomeDrinkTitle": "",
+  "welcomeDrinkPlace": "",
+  "welcomeDrinkTime": "",
+  "supportContacts": "+258 87 465 3598",
+  "supportWhatsapp": "+258874653598",
+  "clientName": "Hélder Jorge Muianga",
+  "clientEmail": "socratesfrancisco75@gmail.com",
+  "clientCity": "Marracuene, Maputo, Moçambique",
+  "estimatedGuests": 0,
+  "guestRows": 0,
+  "giftSectionType": "Lista de presentes",
+  "bankAccounts": [],
+  "mobilePayments": [],
+  "program": [
+    {
+      "title": "Cerimónia Religiosa",
+      "place": "Igreja Universal de Marracuene",
+      "time": "10:00"
+    },
+    {
+      "title": "Copo de Água",
+      "place": "Eventos & Acomodações Águia",
+      "time": "15:00"
+    }
+  ],
+  "story": {},
+  "letter": "Querido(a) convidado(a),\n\nCom alegria e gratidão, convidamo-lo(a) a fazer parte do nosso casamento. A sua presença tornará este momento ainda mais especial para nós.\n\nContamos consigo para celebrar este dia com fé, amor e alegria.\n\nCom gratidão,\nCalate e Helder",
+  "audioYoutube": "",
+  "audioMp3": "",
+  "guestListVersion": "Lista de convidados por importar",
+  "guestListUpdatedAt": "2026-06-11",
+  "features": {
+    "qrCode": false,
+    "checkin": false,
+    "timeCapsule": false,
+    "rsvp": true,
+    "guestMessages": true,
+    "gifts": true,
+    "guestInfo": true
+  }
+};
+
+window.LIRANDZO_GUESTS = [];
