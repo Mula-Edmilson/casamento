@@ -1,0 +1,2364 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=yes, viewport-fit=cover">
+  <title>Painel Admin · Casamento</title>
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  
+  <!-- Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800&family=Parisienne&display=swap" rel="stylesheet">
+  
+  <!-- Feather Icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    /* [MANTENHA TODO O CSS EXISTENTE AQUI - É IGUAL AO SEU ARQUIVO] */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Cores idênticas ao style.css (tema escuro) */
+      --bg: #2B2623;
+      --bg-rgb: 43, 38, 35;
+      --accent: #B08968;
+      --accent-gradient: linear-gradient(135deg, #B08968, #9A6F50);
+      --text-dark: #F5EFEA;
+      --text-light: #C8C0B9;
+      --text-muted: #A69B94;
+      --card: #352F2C;
+      --section-bg: #302A27;
+      --border-color: #4D4641;
+      --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --info: #3B82F6;
+      --neutral-bg: rgba(156, 163, 175, 0.15);
+      
+      --font-heading: 'Cormorant Garamond', serif;
+      --font-body: 'Inter', sans-serif;
+      --font-script: 'Parisienne', cursive;
+      
+      --transition-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      --transition-fast: all 0.2s ease-out;
+      
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      
+      --header-height: 64px;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text-light);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ===== SISTEMA DE NOTIFICAÇÕES ===== */
+    .notification-center {
+      position: fixed;
+      top: calc(var(--header-height) + var(--safe-top) + 10px);
+      right: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 350px;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .notification {
+      background: var(--card);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transform: translateX(120%);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: auto;
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .notification.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-gradient);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notification-icon i {
+      width: 20px;
+      height: 20px;
+      color: white;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+      font-family: var(--font-heading);
+    }
+
+    .notification-message {
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.4;
+    }
+
+    .notification-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .notification-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .notification-close:hover {
+      background: var(--section-bg);
+      color: var(--text-dark);
+    }
+
+    .notification-close i {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Tipos de notificação */
+    .notification.rsvp {
+      border-left-color: var(--success);
+    }
+    .notification.rsvp .notification-icon {
+      background: linear-gradient(135deg, var(--success), #059669);
+    }
+
+    .notification.gift {
+      border-left-color: var(--warning);
+    }
+    .notification.gift .notification-icon {
+      background: linear-gradient(135deg, var(--warning), #D97706);
+    }
+
+    .notification.message {
+      border-left-color: var(--info);
+    }
+    .notification.message .notification-icon {
+      background: linear-gradient(135deg, var(--info), #2563EB);
+    }
+
+    .notification.comprovativo {
+      border-left-color: var(--accent);
+    }
+    .notification.comprovativo .notification-icon {
+      background: var(--accent-gradient);
+    }
+
+    /* Badge de notificação no topbar */
+    .notification-badge {
+      position: relative;
+    }
+
+    .notification-badge::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 2px solid var(--card);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* ===== ESTILOS PARA TENDÊNCIAS ===== */
+    .stat-change {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 30px;
+      font-weight: 600;
+    }
+
+    .stat-change.positive {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .stat-change.neutral {
+      background: var(--neutral-bg);
+      color: var(--text-muted);
+    }
+
+    /* ===== POPUP PROFISSIONAL PARA APP ===== */
+    .app-popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .app-popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .app-popup {
+      background: var(--card);
+      border-radius: var(--radius-xl);
+      width: 90%;
+      max-width: 400px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid var(--border-color);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-popup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--accent-gradient);
+    }
+
+    .app-popup.active {
+      transform: scale(1) translateY(0);
+    }
+
+    .popup-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--accent-gradient);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 10px 20px rgba(176, 137, 104, 0.3);
+    }
+
+    .popup-icon i {
+      width: 40px;
+      height: 40px;
+      color: white;
+      stroke-width: 1.5;
+    }
+
+    .app-popup h3 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+      font-family: var(--font-heading);
+      letter-spacing: -0.5px;
+    }
+
+    .app-popup p {
+      color: var(--text-light);
+      margin-bottom: 24px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .popup-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-download {
+      background: var(--accent-gradient);
+      color: white;
+      border: none;
+      padding: 16px 24px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      box-shadow: 0 4px 12px rgba(176, 137, 104, 0.3);
+      font-family: var(--font-body);
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(176, 137, 104, 0.4);
+    }
+
+    .btn-download:active {
+      transform: translateY(0);
+    }
+
+    .btn-later {
+      background: transparent;
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+      padding: 14px 24px;
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 15px;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      font-family: var(--font-body);
+    }
+
+    .btn-later:hover {
+      background: var(--section-bg);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .dont-show-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-top: 1px solid var(--border-color);
+      margin-top: 8px;
+    }
+
+    .dont-show-container input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    .dont-show-container label {
+      color: var(--text-muted);
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Login Screen */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      padding: 16px;
+      background-image: radial-gradient(circle at 10% 20%, rgba(176, 137, 104, 0.1) 0%, transparent 20%);
+    }
+
+    .login-card {
+      background: var(--card);
+      padding: 40px 32px;
+      border-radius: 40px;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+    }
+
+    .login-logo {
+      width: 88px;
+      height: 88px;
+      border-radius: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+      border: 2px solid var(--accent);
+    }
+
+    .login-card h2 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+      color: var(--text-dark);
+      font-family: var(--font-heading);
+    }
+
+    .login-card h2 span {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .login-card p {
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      font-size: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      font-size: 16px;
+      background: var(--bg);
+      transition: var(--transition-fast);
+      font-family: var(--font-body);
+      color: var(--text-dark);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(176, 137, 104, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 24px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      width: 100%;
+      min-height: 56px;
+      font-family: var(--font-body);
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+      box-shadow: 0 4px 12px rgba(176, 137, 104, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(176, 137, 104, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: var(--section-bg);
+      color: var(--text-light);
+      border: 2px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+    }
+
+    /* App Container */
+    .admin-app {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      background: var(--bg);
+    }
+
+    /* Mobile Top Bar */
+    .mobile-topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: calc(var(--header-height) + var(--safe-top));
+      background: rgba(53, 47, 44, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: var(--safe-top) 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 800;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+    }
+
+    .mobile-topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mobile-menu-btn {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--section-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .mobile-menu-btn:hover {
+      background: var(--border-color);
+      color: var(--text-dark);
+    }
+
+    .mobile-menu-btn:active {
+      transform: scale(0.95);
+    }
+
+    .mobile-title {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text-dark);
+      font-family: var(--font-heading);
+      letter-spacing: -0.3px;
+    }
+
+    .mobile-refresh-btn {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--section-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      position: relative;
+    }
+
+    .mobile-refresh-btn:hover {
+      background: var(--border-color);
+      color: var(--text-dark);
+    }
+
+    .mobile-refresh-btn:active {
+      transform: rotate(180deg);
+    }
+
+    .mobile-refresh-btn.has-notifications::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      background: var(--danger);
+      border-radius: 50%;
+      border: 2px solid var(--card);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 300px;
+      background: var(--card);
+      border-right: 1px solid var(--border-color);
+      padding: calc(var(--safe-top) + 20px) 20px 20px;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+      overflow-y: auto;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    }
+
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding: 0 12px;
+    }
+
+    .sidebar-logo img {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      box-shadow: var(--shadow-md);
+      border: 2px solid var(--accent);
+    }
+
+    .sidebar-logo h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-dark);
+      font-family: var(--font-heading);
+      line-height: 1.3;
+    }
+
+    .sidebar-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: -8px;
+      margin-bottom: 32px;
+      padding: 0 12px;
+      font-weight: 500;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: 15px;
+      transition: var(--transition-fast);
+      cursor: pointer;
+      min-height: 52px;
+    }
+
+    .nav-item:hover {
+      background: var(--section-bg);
+      color: var(--text-dark);
+    }
+
+    .nav-item:active {
+      transform: scale(0.98);
+    }
+
+    .nav-item.active {
+      background: var(--accent-gradient);
+      color: white;
+    }
+
+    .nav-item.active i {
+      color: white;
+    }
+
+    .sidebar-footer {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* Mobile Overlay */
+    .mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 900;
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.3s ease;
+    }
+
+    .mobile-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 0;
+      padding: calc(var(--header-height) + var(--safe-top) + 24px) 24px calc(var(--safe-bottom) + 24px);
+      width: 100%;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      transition: var(--transition-smooth);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-gradient);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .stat-icon i {
+      width: 24px;
+      height: 24px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1.2;
+      margin-bottom: 4px;
+      font-family: var(--font-heading);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--card);
+      border-radius: 28px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(48, 42, 39, 0.5);
+    }
+
+    .section-header h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      font-family: var(--font-heading);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-header h3 i {
+      width: 22px;
+      height: 22px;
+      color: var(--accent);
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .section-actions .btn {
+      padding: 10px 16px;
+      min-height: 40px;
+      font-size: 13px;
+      border-radius: 14px;
+      background: var(--section-bg);
+      color: var(--text-light);
+      border: 1px solid var(--border-color);
+      width: auto;
+    }
+
+    .section-actions .btn:hover {
+      background: var(--border-color);
+      color: var(--text-dark);
+    }
+
+    /* Desktop Tables */
+    .desktop-table {
+      overflow-x: auto;
+      padding: 24px;
+    }
+
+    .desktop-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .desktop-table th {
+      text-align: left;
+      padding: 16px 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .desktop-table td {
+      padding: 16px 12px;
+      color: var(--text-light);
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .desktop-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .desktop-table tr:hover td {
+      background: var(--section-bg);
+    }
+
+    .desktop-table a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .desktop-table a:hover {
+      text-decoration: underline;
+    }
+
+    /* Mobile Tables */
+    .mobile-view {
+      display: none;
+    }
+
+    .mobile-row {
+      background: var(--section-bg);
+      border-radius: 20px;
+      padding: 16px;
+      margin: 12px;
+      border: 1px solid var(--border-color);
+      transition: var(--transition-fast);
+    }
+
+    .mobile-row:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .mobile-row-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .mobile-row-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .mobile-row-label {
+      min-width: 90px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .mobile-row-value {
+      flex: 1;
+      color: var(--text-light);
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .mobile-row-value strong {
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    .mobile-row-value a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(176, 137, 104, 0.15);
+      color: var(--accent);
+    }
+
+    .status-available {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .status-reserved {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    /* Gift Cards */
+    .gift-inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      padding: 24px;
+    }
+
+    .gift-card {
+      background: var(--section-bg);
+      border-radius: 20px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      transition: var(--transition-smooth);
+    }
+
+    .gift-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .gift-card h4 {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: var(--text-dark);
+      font-family: var(--font-heading);
+    }
+
+    .gift-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Loading e Utilitários */
+    .text-center {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    .feather {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2;
+    }
+
+    /* Responsividade */
+    @media (min-width: 1024px) {
+      .sidebar {
+        transform: translateX(0);
+        box-shadow: none;
+      }
+      
+      .mobile-topbar {
+        left: 300px;
+        width: calc(100% - 300px);
+      }
+      
+      .main-content {
+        margin-left: 300px;
+      }
+      
+      .mobile-menu-btn {
+        display: none;
+      }
+      
+      .mobile-overlay {
+        display: none;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      
+      .desktop-table {
+        display: none;
+      }
+      
+      .mobile-view {
+        display: block;
+      }
+      
+      .section-header {
+        padding: 16px;
+      }
+      
+      .main-content {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .notification-center {
+        max-width: calc(100% - 32px);
+        right: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stat-card {
+        padding: 16px;
+      }
+      
+      .stat-value {
+        font-size: 28px;
+      }
+      
+      .section-actions {
+        flex-direction: column;
+      }
+      
+      .gift-inventory-grid {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+    }
+
+    /* Safe area */
+    @supports (padding: max(0px)) {
+      .main-content {
+        padding-left: max(24px, env(safe-area-inset-left));
+        padding-right: max(24px, env(safe-area-inset-right));
+      }
+    }
+
+    /* Touch feedback */
+    @media (hover: none) {
+      .nav-item:active,
+      .btn:active,
+      .stat-card:active,
+      .mobile-row:active,
+      .gift-card:active {
+        opacity: 0.7;
+        transform: scale(0.98);
+        transition: 0.1s;
+      }
+    }
+
+    /* Animações */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section-content {
+      animation: slideIn 0.3s ease;
+    }
+
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--section-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9A6F50;
+    }
+  </style>
+  <script src="lirandzo-api.js"></script>
+  <script src="./client-config.js"></script>
+</head>
+<body>
+
+<!-- CENTRO DE NOTIFICAÇÕES -->
+<div class="notification-center" id="notificationCenter"></div>
+
+<!-- POPUP PROFISSIONAL PARA APP -->
+<div class="app-popup-overlay" id="appPopup">
+  <div class="app-popup" id="appPopupContent">
+    <div class="popup-icon">
+      <i data-feather="smartphone"></i>
+    </div>
+    <h3>Experiência Mobile Premium</h3>
+    <p>Baixe nosso app para ter acesso rápido, notificações em tempo real e uma experiência ainda mais fluida no seu celular.</p>
+    
+    <div class="popup-buttons">
+      <button class="btn-download" onclick="window.open('https://drive.google.com/uc?export=download&id=1LbQRtpfq3GTu2-VajLS6kyvxWGoS4NdZ', '_blank')">
+        <i data-feather="download"></i>
+        Baixar App
+      </button>
+      <button class="btn-later" id="closePopupLater">
+        Agora não
+      </button>
+    </div>
+    
+    <div class="dont-show-container">
+      <input type="checkbox" id="dontShowAgain">
+      <label for="dontShowAgain">Não mostrar novamente</label>
+    </div>
+  </div>
+</div>
+
+<div id="loginScreen" class="login-container">
+  <div class="login-card">
+    <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Logo" class="login-logo">
+    <h2><span>Bem</span>-vindo</h2>
+    <p>Painel de gestão administrativa</p>
+    
+    <form id="adminLoginForm">
+      <div class="form-group">
+        <label for="adminPassword">Senha de acesso</label>
+        <input type="password" id="adminPassword" placeholder="••••••••" required autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i data-feather="log-in"></i>
+        Aceder ao Painel
+      </button>
+      <p id="adminLoginError" style="color: var(--danger); margin-top: 20px; font-size: 14px;"></p>
+    </form>
+  </div>
+</div>
+
+<div id="adminApp" style="display: none;" class="admin-app">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <div class="mobile-topbar">
+    <div class="mobile-topbar-left">
+      <button class="mobile-menu-btn" id="menuToggle">
+        <i data-feather="menu"></i>
+      </button>
+      <span class="mobile-title" id="mobilePageTitle">Dashboard</span>
+    </div>
+    <div class="mobile-topbar-right">
+      <button class="mobile-refresh-btn" id="mobileRefreshBtn">
+        <i data-feather="refresh-cw"></i>
+      </button>
+    </div>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Logo">
+      <h1>Patrícia & Guilherme</h1>
+    </div>
+    <div class="sidebar-subtitle">Painel Administrativo</div>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+      <div class="nav-item active" data-section="dashboard">
+        <i data-feather="home"></i>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-section="rsvps">
+        <i data-feather="users"></i>
+        <span>Confirmações</span>
+      </div>
+      <div class="nav-item" data-section="gifts">
+        <i data-feather="gift"></i>
+        <span>Presentes</span>
+      </div>
+      <div class="nav-item" data-section="comprovativos">
+        <i data-feather="file-text"></i>
+        <span>Comprovativos</span>
+      </div>
+      <div class="nav-item" data-section="messages">
+        <i data-feather="message-circle"></i>
+        <span>Mensagens</span>
+      </div>
+      <div class="nav-item" data-section="inventory">
+        <i data-feather="package"></i>
+        <span>Inventário</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="nav-item" id="logoutAdmin">
+        <i data-feather="log-out"></i>
+        <span>Sair</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="section-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon"><i data-feather="check-circle"></i></div>
+            <span class="stat-change" id="rsvpTrend">+12%</span>
+          </div>
+          <div class="stat-value" id="rsvpCount">0</div>
+          <div class="stat-label">Confirmações totais</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon"><i data-feather="users"></i></div>
+            <span class="stat-change" id="guestsTrend">+8%</span>
+          </div>
+          <div class="stat-value" id="guestTotalCount">0</div>
+          <div class="stat-label">Total de convidados</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon"><i data-feather="gift"></i></div>
+            <span class="stat-change" id="giftsTrend">+5%</span>
+          </div>
+          <div class="stat-value" id="giftsCount">0</div>
+          <div class="stat-label">Presentes registados</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon"><i data-feather="message-square"></i></div>
+            <span class="stat-change" id="messagesTrend">+15%</span>
+          </div>
+          <div class="stat-value" id="messagesCount">0</div>
+          <div class="stat-label">Mensagens</div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i data-feather="activity"></i> Atividade Recente</h3>
+        </div>
+        <div class="mobile-view" id="recentActivityMobile"></div>
+        <div class="desktop-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Ação</th>
+                <th>Detalhes</th>
+              </tr>
+            </thead>
+            <tbody id="recentActivityBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RSVPs Section -->
+    <div id="rsvpsSection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i data-feather="users"></i> Confirmações</h3>
+          <div class="section-actions">
+            <button class="btn" id="export-rsvps-csv">📥 Exportar CSV</button>
+          </div>
+        </div>
+        <div class="mobile-view" id="rsvpMobileList"></div>
+        <div class="desktop-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Convidados</th>
+                <th>Mesa</th>
+                <th>Telefone</th>
+                <th>Mensagem</th>
+              </tr>
+            </thead>
+            <tbody id="rsvpTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gifts Section -->
+    <div id="giftsSection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i data-feather="gift"></i> Presentes</h3>
+        </div>
+        <div class="mobile-view" id="giftMobileList"></div>
+        <div class="desktop-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Presentes</th>
+              </tr>
+            </thead>
+            <tbody id="giftTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comprovativos Section -->
+    <div id="comprovativosSection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i data-feather="file-text"></i> Comprovativos</h3>
+        </div>
+        <div class="mobile-view" id="comprovativoMobileList"></div>
+        <div class="desktop-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Canal</th>
+                <th>Comprovativo</th>
+              </tr>
+            </thead>
+            <tbody id="comprovativoTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Section -->
+    <div id="messagesSection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i data-feather="message-circle"></i> Mensagens</h3>
+        </div>
+        <div class="mobile-view" id="messageMobileList"></div>
+        <div class="desktop-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Mensagem</th>
+              </tr>
+            </thead>
+            <tbody id="messageTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guests Section (NOVA) -->
+<div id="guestsSection" class="section-content" style="display: none;">
+  <div class="section-card">
+    <div class="section-header">
+      <h3><i data-feather="users"></i> Convidados</h3>
+      <div class="section-actions">
+        <button class="btn" id="export-guests-csv">📥 Exportar CSV</button>
+      </div>
+    </div>
+    <div class="mobile-view" id="guestsMobileList"></div>
+    <div class="desktop-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Mesa</th>
+            <th>Máx</th>
+            <th>Status Dispositivo</th>
+            <th>Aberto em</th>
+            <th>Dispositivo</th>
+            <th>Check-in</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="guestsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+    <!-- Inventory Section -->
+    <div id="inventorySection" class="section-content" style="display: none;">
+      <div class="section-card">
+        <div class="section-header">
+          <h3><i data-feather="package"></i> Inventário de Presentes</h3>
+        </div>
+        <div id="giftInventoryContainer" class="mobile-view"></div>
+        <div class="desktop-table" id="giftInventoryDesktop"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // ============================================
+  // VARIÁVEIS GLOBAIS (APENAS UMA VEZ)
+  // ============================================
+  let adminToken = null;
+  let RSVPS_DATA = [];
+  let GIFTS_DATA = [];
+  let COMPROV_DATA = [];
+  let MESSAGES_DATA = [];
+  let lastCheckTimestamp = Date.now();
+  let notificationCheckInterval = null;
+
+  // Elementos
+  const loginScreen = document.getElementById('loginScreen');
+  const adminApp = document.getElementById('adminApp');
+  const adminLoginForm = document.getElementById('adminLoginForm');
+  const adminLoginError = document.getElementById('adminLoginError');
+  const mobileRefreshBtn = document.getElementById('mobileRefreshBtn');
+  const logoutBtn = document.getElementById('logoutAdmin');
+  const navItems = document.querySelectorAll('.nav-item[data-section]');
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const mobileOverlay = document.getElementById('mobileOverlay');
+  const mobilePageTitle = document.getElementById('mobilePageTitle');
+  const notificationCenter = document.getElementById('notificationCenter');
+
+  // Elementos do popup
+  const appPopup = document.getElementById('appPopup');
+  const dontShowAgain = document.getElementById('dontShowAgain');
+  const closePopupLater = document.getElementById('closePopupLater');
+
+  // Inicializar Feather Icons
+  feather.replace();
+
+  // ============================================
+  // FUNÇÕES DE API (Usando LIRANDZO_API do arquivo externo)
+  // ============================================
+  async function fetchData(action) {
+    switch(action) {
+      case "get_rsvps":
+        return LIRANDZO_API.getRSVPs();
+      case "get_gifts":
+        return LIRANDZO_API.getGifts();
+      case "get_comprovativos":
+        return LIRANDZO_API.getComprovativos();
+      case "get_messages":
+        return LIRANDZO_API.getMessages();
+      default:
+        return { status: "error", data: [] };
+    }
+  }
+
+  // ============================================
+  // FUNÇÕES DE TENDÊNCIAS
+  // ============================================
+  function calculateTrend(data, days = 7) {
+    const now = Date.now();
+    const weekInMs = days * 24 * 60 * 60 * 1000;
+    
+    const currentPeriod = data.filter(item => {
+      const itemTime = new Date(item.timestamp).getTime();
+      return itemTime >= (now - weekInMs);
+    }).length;
+    
+    const previousPeriod = data.filter(item => {
+      const itemTime = new Date(item.timestamp).getTime();
+      return itemTime >= (now - 2 * weekInMs) && itemTime < (now - weekInMs);
+    }).length;
+    
+    if (previousPeriod === 0) {
+      return {
+        value: currentPeriod,
+        percentage: currentPeriod > 0 ? 100 : 0,
+        text: currentPeriod > 0 ? `+${currentPeriod}` : '0',
+        isPositive: currentPeriod > 0
+      };
+    }
+    
+    const difference = currentPeriod - previousPeriod;
+    
+    return {
+      value: difference,
+      percentage: Math.round((difference / previousPeriod) * 100),
+      text: difference > 0 ? `+${difference}` : (difference < 0 ? difference.toString() : '0'),
+      isPositive: difference >= 0
+    };
+  }
+
+  function updateTrends() {
+    // Tendência de RSVPs
+    const rsvpTrend = calculateTrend(RSVPS_DATA, 7);
+    const rsvpTrendEl = document.getElementById('rsvpTrend');
+    if (rsvpTrendEl) {
+      rsvpTrendEl.textContent = rsvpTrend.text;
+      rsvpTrendEl.className = 'stat-change ' + 
+        (rsvpTrend.value > 0 ? 'positive' : (rsvpTrend.value < 0 ? 'negative' : 'neutral'));
+    }
+    
+    // Tendência de convidados
+    const guestsData = RSVPS_DATA.map(r => ({
+      timestamp: r.timestamp,
+      value: parseInt(String(r.guests).replace('+', '')) || 0
+    }));
+    
+    const now = Date.now();
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+    
+    const currentGuests = guestsData
+      .filter(g => new Date(g.timestamp).getTime() >= (now - weekInMs))
+      .reduce((sum, g) => sum + g.value, 0);
+    
+    const previousGuests = guestsData
+      .filter(g => {
+        const time = new Date(g.timestamp).getTime();
+        return time >= (now - 2 * weekInMs) && time < (now - weekInMs);
+      })
+      .reduce((sum, g) => sum + g.value, 0);
+    
+    let guestsTrend = { text: '0', isPositive: true };
+    if (previousGuests === 0) {
+      guestsTrend.text = currentGuests > 0 ? `+${currentGuests}` : '0';
+    } else {
+      const diff = currentGuests - previousGuests;
+      guestsTrend.text = diff > 0 ? `+${diff}` : (diff < 0 ? diff.toString() : '0');
+    }
+    
+    const guestsTrendEl = document.getElementById('guestsTrend');
+    if (guestsTrendEl) {
+      guestsTrendEl.textContent = guestsTrend.text;
+      guestsTrendEl.className = 'stat-change ' + 
+        (guestsTrend.text.startsWith('+') ? 'positive' : 
+         guestsTrend.text.startsWith('-') ? 'negative' : 'neutral');
+    }
+    
+    // Tendência de presentes
+    const giftTrend = calculateTrend(GIFTS_DATA, 7);
+    const giftTrendEl = document.getElementById('giftsTrend');
+    if (giftTrendEl) {
+      giftTrendEl.textContent = giftTrend.text;
+      giftTrendEl.className = 'stat-change ' + 
+        (giftTrend.value > 0 ? 'positive' : (giftTrend.value < 0 ? 'negative' : 'neutral'));
+    }
+    
+    // Tendência de mensagens
+    const messageTrend = calculateTrend(MESSAGES_DATA, 7);
+    const messageTrendEl = document.getElementById('messagesTrend');
+    if (messageTrendEl) {
+      messageTrendEl.textContent = messageTrend.text;
+      messageTrendEl.className = 'stat-change ' + 
+        (messageTrend.value > 0 ? 'positive' : (messageTrend.value < 0 ? 'negative' : 'neutral'));
+    }
+  }
+
+  // ============================================
+  // SISTEMA DE NOTIFICAÇÕES
+  // ============================================
+  function showNotification(type, title, message, data = {}) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    const icons = {
+      rsvp: 'check-circle',
+      gift: 'gift',
+      message: 'message-circle',
+      comprovativo: 'file-text'
+    };
+
+    notification.innerHTML = `
+      <div class="notification-icon">
+        <i data-feather="${icons[type] || 'bell'}"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-title">${title}</div>
+        <div class="notification-message">${message}</div>
+        <div class="notification-time">Agora mesmo</div>
+      </div>
+      <button class="notification-close" onclick="this.parentElement.remove()">
+        <i data-feather="x"></i>
+      </button>
+    `;
+
+    notificationCenter.appendChild(notification);
+    feather.replace();
+
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.remove();
+          }
+        }, 400);
+      }
+    }, 8000);
+
+    mobileRefreshBtn.classList.add('has-notifications');
+  }
+
+  async function checkForNewData() {
+    try {
+      const [rsvpData, giftData, comprovativoData, messageData] = await Promise.all([
+        fetchData("get_rsvps"),
+        fetchData("get_gifts"),
+        fetchData("get_comprovativos"),
+        fetchData("get_messages")
+      ]);
+
+      const newRsvps = (rsvpData.data || []).filter(item => new Date(item.timestamp) > lastCheckTimestamp);
+      const newGifts = (giftData.data || []).filter(item => new Date(item.timestamp) > lastCheckTimestamp);
+      const newComprovs = (comprovativoData.data || []).filter(item => new Date(item.timestamp) > lastCheckTimestamp);
+      const newMessages = (messageData.data || []).filter(item => new Date(item.timestamp) > lastCheckTimestamp);
+
+      newRsvps.forEach(rsvp => {
+        showNotification('rsvp', 'Nova Confirmação', 
+          `${rsvp.nome} confirmou presença com ${rsvp.guests} convidado(s)`);
+      });
+
+      newGifts.forEach(gift => {
+        const giftsList = gift.gifts ? (Array.isArray(gift.gifts) ? gift.gifts.join(', ') : gift.gifts) : '';
+        showNotification('gift', 'Novo Presente', 
+          `${gift.nome} presenteou: ${giftsList}`);
+      });
+
+      newMessages.forEach(message => {
+        showNotification('message', 'Nova Mensagem', 
+          `${message.nome}: ${message.message.substring(0, 50)}${message.message.length > 50 ? '...' : ''}`);
+      });
+
+      newComprovs.forEach(comp => {
+        showNotification('comprovativo', 'Novo Comprovativo', 
+          `${comp.nome} enviou comprovativo via ${comp.canal}`);
+      });
+
+      RSVPS_DATA = rsvpData.data || [];
+      GIFTS_DATA = giftData.data || [];
+      COMPROV_DATA = comprovativoData.data || [];
+      MESSAGES_DATA = messageData.data || [];
+      
+      updateAllTables();
+      loadGiftInventory();
+
+      if (newRsvps.length > 0 || newGifts.length > 0 || newComprovs.length > 0 || newMessages.length > 0) {
+        lastCheckTimestamp = Date.now();
+      }
+
+    } catch (error) {
+      console.error("Erro ao verificar notificações:", error);
+    }
+  }
+
+  function startNotificationPolling() {
+    if (notificationCheckInterval) {
+      clearInterval(notificationCheckInterval);
+    }
+    notificationCheckInterval = setInterval(checkForNewData, 10000);
+  }
+
+  function stopNotificationPolling() {
+    if (notificationCheckInterval) {
+      clearInterval(notificationCheckInterval);
+      notificationCheckInterval = null;
+    }
+  }
+
+  // ============================================
+  // POPUP LÓGICA
+  // ============================================
+  function checkAndShowPopup() {
+    const dontShow = localStorage.getItem('dontShowAppPopup');
+    if (dontShow !== 'true') {
+      setTimeout(() => {
+        appPopup.classList.add('active');
+      }, 1000);
+    }
+  }
+
+  function closePopup() {
+    appPopup.classList.remove('active');
+    if (dontShowAgain.checked) {
+      localStorage.setItem('dontShowAppPopup', 'true');
+    }
+  }
+
+  closePopupLater.addEventListener('click', closePopup);
+  
+  appPopup.addEventListener('click', (e) => {
+    if (e.target === appPopup) {
+      closePopup();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && appPopup.classList.contains('active')) {
+      closePopup();
+    }
+  });
+
+  // ============================================
+  // MOBILE MENU
+  // ============================================
+  function openMobileMenu() { 
+    sidebar.classList.add('open'); 
+    mobileOverlay.classList.add('active'); 
+    document.body.style.overflow = 'hidden'; 
+  }
+  
+  function closeMobileMenu() { 
+    sidebar.classList.remove('open'); 
+    mobileOverlay.classList.remove('active'); 
+    document.body.style.overflow = ''; 
+  }
+  
+  menuToggle.addEventListener('click', (e) => { 
+    e.stopPropagation(); 
+    sidebar.classList.contains('open') ? closeMobileMenu() : openMobileMenu(); 
+  });
+  
+  mobileOverlay.addEventListener('click', closeMobileMenu);
+  
+  navItems.forEach(item => item.addEventListener('click', () => { 
+    if (window.innerWidth <= 1023) closeMobileMenu(); 
+  }));
+
+  // ============================================
+  // NAVEGAÇÃO
+  // ============================================
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      navItems.forEach(nav => nav.classList.remove('active'));
+      item.classList.add('active');
+      showSection(item.dataset.section);
+    });
+  });
+
+  function showSection(section) {
+    document.querySelectorAll('.section-content').forEach(el => el.style.display = 'none');
+    document.getElementById(`${section}Section`).style.display = 'block';
+    const titles = { 
+      dashboard:'Dashboard', 
+      rsvps:'Confirmações', 
+      gifts:'Presentes', 
+      comprovativos:'Comprovativos', 
+      messages:'Mensagens', 
+      inventory:'Inventário',
+      guests: 'Gestão de Convidados' // <-- ADICIONADO AQUI
+    };
+    mobilePageTitle.textContent = titles[section];
+    // Carregar a lista de convidados do servidor SEMPRE que a aba for aberta
+    if (section === 'guests') {
+      loadGuests(); 
+    }
+  }
+
+  // ============================================
+  // LOGIN (CORRIGIDO - APENAS UM HANDLER)
+  // ============================================
+  adminLoginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = document.getElementById('adminPassword').value.trim();
+    
+    if (!password) { 
+      adminLoginError.textContent = "Senha obrigatória"; 
+      return; 
+    }
+
+    try {
+      // Usar LIRANDZO_API do arquivo externo
+      const auth = await LIRANDZO_API.authenticateAdmin(password);
+      
+      if (auth.status === 'success') {
+        adminToken = auth.token;
+        LIRANDZO_API.ADMIN_TOKEN = adminToken;
+        
+        // Carregar dados iniciais
+        const [rsvpData, giftData, comprovativoData, messageData] = await Promise.all([
+          LIRANDZO_API.getRSVPs(),
+          LIRANDZO_API.getGifts(),
+          LIRANDZO_API.getComprovativos(),
+          LIRANDZO_API.getMessages()
+        ]);
+
+        loginScreen.style.display = 'none';
+        adminApp.style.display = 'flex';
+        
+        RSVPS_DATA = rsvpData.data || [];
+        GIFTS_DATA = giftData.data || [];
+        COMPROV_DATA = comprovativoData.data || [];
+        MESSAGES_DATA = messageData.data || [];
+        
+        lastCheckTimestamp = Date.now();
+        updateAllTables();
+        loadGiftInventory();
+        startNotificationPolling();
+        checkAndShowPopup();
+      } else {
+        adminLoginError.textContent = "Senha incorreta";
+      }
+    } catch (err) {
+      adminLoginError.textContent = err.message || "Erro de conexão";
+    }
+  });
+
+  // ============================================
+  // LOGOUT
+  // ============================================
+  logoutBtn.addEventListener('click', () => {
+    adminToken = null;
+    LIRANDZO_API.ADMIN_TOKEN = null;
+    adminApp.style.display = 'none'; 
+    loginScreen.style.display = 'flex';
+    document.getElementById('adminPassword').value = '';
+    adminLoginError.textContent = '';
+    stopNotificationPolling();
+    mobileRefreshBtn.classList.remove('has-notifications');
+    
+    notificationCenter.innerHTML = '';
+  });
+
+  // ============================================
+  // REFRESH
+  // ============================================
+  function refreshData() {
+    Promise.all([
+      LIRANDZO_API.getRSVPs(),
+      LIRANDZO_API.getGifts(),
+      LIRANDZO_API.getComprovativos(),
+      LIRANDZO_API.getMessages()
+    ])
+    .then(([rsvpData, giftData, comprovativoData, messageData]) => {
+      RSVPS_DATA = rsvpData.data || [];
+      GIFTS_DATA = giftData.data || [];
+      COMPROV_DATA = comprovativoData.data || [];
+      MESSAGES_DATA = messageData.data || [];
+      
+      lastCheckTimestamp = Date.now();
+      updateAllTables();
+      loadGiftInventory();
+      mobileRefreshBtn.classList.remove('has-notifications');
+    })
+    .catch(err => alert("Erro: " + err.message));
+  }
+
+  mobileRefreshBtn.addEventListener('click', refreshData);
+
+  // ============================================
+  // ATUALIZAÇÃO DE TABELAS
+  // ============================================
+  function updateAllTables() {
+    updateStats();
+    updateTrends();
+    renderMobileLists();
+    renderDesktopTables();
+  }
+
+  function renderDesktopTables() {
+    const recentBody = document.getElementById('recentActivityBody');
+    recentBody.innerHTML = '';
+    
+    // Atividades recentes (excluindo os presentes para evitar datas inválidas)
+    let activities = [
+      ...RSVPS_DATA.map(r => ({...r, type:'rsvp', action:'Confirmou', detail:`${r.guests} convidados`})),
+      ...MESSAGES_DATA.map(m => ({...m, type:'message', action:'Mensagem', detail:m.message}))
+    ].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0,10);
+    
+    activities.forEach(a => {
+      recentBody.innerHTML += `<tr>
+        <td>${new Date(a.timestamp).toLocaleString('pt-PT').slice(0,10)}</td>
+        <td><strong>${escapeHtml(a.nome)}</strong></td>
+        <td><span class="status-badge">${a.action}</span></td>
+        <td>${escapeHtml(a.detail)}</td>
+      </tr>`;
+    });
+
+    // RSVPs Tabela
+    const rsvpBody = document.getElementById('rsvpTableBody');
+    rsvpBody.innerHTML = '';
+    RSVPS_DATA.forEach(r => {
+      rsvpBody.innerHTML += `<tr>
+        <td>${new Date(r.timestamp).toLocaleString('pt-PT')}</td>
+        <td><strong>${escapeHtml(r.nome)}</strong></td>
+        <td>${escapeHtml(r.guests)}</td>
+        <td><span class="status-badge">${escapeHtml(r.mesa || 'A definir')}</span></td>
+        <td>${escapeHtml(r.phone || '-')}</td>
+        <td>${escapeHtml(r.message || '-')}</td>
+      </tr>`;
+    });
+
+    // Presentes Tabela (CORRIGIDO: Agrupando por quem reservou)
+    const giftBody = document.getElementById('giftTableBody');
+    giftBody.innerHTML = '';
+    
+    const giftsByGuest = {};
+    GIFTS_DATA.filter(g => g.reserved && g.reserved_by).forEach(g => {
+      if (!giftsByGuest[g.reserved_by]) giftsByGuest[g.reserved_by] = [];
+      giftsByGuest[g.reserved_by].push(g.name);
+    });
+
+    Object.keys(giftsByGuest).forEach(guestName => {
+      const giftsList = giftsByGuest[guestName].join(', ');
+      giftBody.innerHTML += `<tr>
+        <td>-</td>
+        <td><strong>${escapeHtml(guestName)}</strong></td>
+        <td>${escapeHtml(giftsList)}</td>
+      </tr>`;
+    });
+    
+    if(Object.keys(giftsByGuest).length === 0) {
+      giftBody.innerHTML = `<tr><td colspan="3" class="text-center">Nenhum presente registado</td></tr>`;
+    }
+
+    // Comprovativos
+    const compBody = document.getElementById('comprovativoTableBody');
+    compBody.innerHTML = '';
+    COMPROV_DATA.forEach(c => {
+      compBody.innerHTML += `<tr>
+        <td>${new Date(c.timestamp).toLocaleString('pt-PT')}</td>
+        <td><strong>${escapeHtml(c.nome)}</strong></td>
+        <td>${escapeHtml(c.canal)}</td>
+        <td><a href="${escapeHtml(c.file)}" target="_blank">📎 Ver comprovativo</a></td>
+      </tr>`;
+    });
+
+    // Mensagens
+    const msgBody = document.getElementById('messageTableBody');
+    msgBody.innerHTML = '';
+    MESSAGES_DATA.forEach(m => {
+      msgBody.innerHTML += `<tr>
+        <td>${new Date(m.timestamp).toLocaleString('pt-PT')}</td>
+        <td><strong>${escapeHtml(m.nome)}</strong></td>
+        <td>${escapeHtml(m.message)}</td>
+      </tr>`;
+    });
+  }
+
+  function renderMobileLists() {
+    // 1. Presentes (Agrupados)
+    const giftList = document.getElementById('giftMobileList');
+    if (giftList) {
+      giftList.innerHTML = '';
+      const giftsByGuest = {};
+      GIFTS_DATA.filter(g => g.reserved && g.reserved_by).forEach(g => {
+        if (!giftsByGuest[g.reserved_by]) giftsByGuest[g.reserved_by] = [];
+        giftsByGuest[g.reserved_by].push(g.name);
+      });
+
+      Object.keys(giftsByGuest).forEach(guestName => {
+        const giftsList = giftsByGuest[guestName].join(', ');
+        giftList.innerHTML += `<div class="mobile-row">
+          <div class="mobile-row-item">
+            <span class="mobile-row-label">Nome:</span>
+            <span class="mobile-row-value"><strong>${escapeHtml(guestName)}</strong></span>
+          </div>
+          <div class="mobile-row-item">
+            <span class="mobile-row-label">Presentes:</span>
+            <span class="mobile-row-value">${escapeHtml(giftsList)}</span>
+          </div>
+        </div>`;
+      });
+      if(Object.keys(giftsByGuest).length === 0) giftList.innerHTML = '<div class="text-center">Nenhum presente registado</div>';
+    }
+    
+    // 2. Confirmações (RSVPs)
+    const rsvpList = document.getElementById('rsvpMobileList');
+    if (rsvpList) {
+      rsvpList.innerHTML = '';
+      RSVPS_DATA.forEach(r => {
+        rsvpList.innerHTML += `<div class="mobile-row">
+          <div class="mobile-row-item"><span class="mobile-row-label">Nome:</span><span class="mobile-row-value"><strong>${escapeHtml(r.nome)}</strong></span></div>
+          <div class="mobile-row-item"><span class="mobile-row-label">Pessoas:</span><span class="mobile-row-value">${escapeHtml(r.guests)}</span></div>
+          <div class="mobile-row-item"><span class="mobile-row-label">Mesa:</span><span class="mobile-row-value"><span class="status-badge">${escapeHtml(r.mesa || 'A definir')}</span></span></div>
+        </div>`;
+      });
+    }
+
+    // 3. Comprovativos
+    const compList = document.getElementById('comprovativoMobileList');
+    if (compList) {
+      compList.innerHTML = '';
+      COMPROV_DATA.forEach(c => {
+        compList.innerHTML += `<div class="mobile-row">
+          <div class="mobile-row-item"><span class="mobile-row-label">Nome:</span><span class="mobile-row-value"><strong>${escapeHtml(c.nome)}</strong></span></div>
+          <div class="mobile-row-item"><span class="mobile-row-label">Canal:</span><span class="mobile-row-value">${escapeHtml(c.canal)}</span></div>
+          <div class="mobile-row-item"><span class="mobile-row-label">Anexo:</span><span class="mobile-row-value"><a href="${escapeHtml(c.file)}" target="_blank">📎 Ver Comprovativo</a></span></div>
+        </div>`;
+      });
+    }
+
+    // 4. Mensagens
+    const msgList = document.getElementById('messageMobileList');
+    if (msgList) {
+      msgList.innerHTML = '';
+      MESSAGES_DATA.forEach(m => {
+        msgList.innerHTML += `<div class="mobile-row">
+          <div class="mobile-row-item"><span class="mobile-row-label">Nome:</span><span class="mobile-row-value"><strong>${escapeHtml(m.nome)}</strong></span></div>
+          <div class="mobile-row-item"><span class="mobile-row-label">Mensagem:</span><span class="mobile-row-value">${escapeHtml(m.message)}</span></div>
+        </div>`;
+      });
+    }
+  }
+
+  function updateStats() {
+    document.getElementById('rsvpCount').textContent = RSVPS_DATA.length;
+    let total = RSVPS_DATA.reduce((acc, r) => acc + (parseInt(String(r.guests).replace('+',''))||0), 0);
+    document.getElementById('guestTotalCount').textContent = total;
+    document.getElementById('giftsCount').textContent = GIFTS_DATA.length;
+    document.getElementById('messagesCount').textContent = MESSAGES_DATA.length;
+  }
+
+  function escapeHtml(str) { 
+    if (!str) return '-';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  // ============================================
+  // INVENTÁRIO DE PRESENTES
+  // ============================================
+  async function loadGiftInventory() {
+    try {
+      const result = await LIRANDZO_API.getGiftInventory();
+      const container = document.getElementById('giftInventoryContainer');
+      const desktopContainer = document.getElementById('giftInventoryDesktop');
+      
+      container.innerHTML = '';
+      desktopContainer.innerHTML = '';
+      
+      if(result.status === 'success' && result.data && result.data.length > 0) {
+        // Mobile view
+        result.data.forEach(gift => {
+          container.innerHTML += `<div class="gift-card">
+            <h4>${escapeHtml(gift.name)}</h4>
+            <div class="gift-details">
+              <span class="status-badge ${gift.reserved ? 'status-reserved' : 'status-available'}">
+                ${gift.reserved ? 'Reservado' : 'Disponível'}
+              </span>
+              ${gift.reserved ? `<span>por ${escapeHtml(gift.reserved_by || 'Desconhecido')}</span>` : ''}
+            </div>
+          </div>`;
+        });
+
+        // Desktop view
+        let tableHtml = '<table><thead><tr><th>Presente</th><th>Status</th><th>Reservado por</th></tr></thead><tbody>';
+        result.data.forEach(gift => {
+          tableHtml += `<tr>
+            <td><strong>${escapeHtml(gift.name)}</strong></td>
+            <td><span class="status-badge ${gift.reserved ? 'status-reserved' : 'status-available'}">${gift.reserved ? 'Reservado' : 'Disponível'}</span></td>
+            <td>${gift.reserved ? escapeHtml(gift.reserved_by || 'Desconhecido') : '-'}</td>
+          </tr>`;
+        });
+        tableHtml += '</tbody></table>';
+        desktopContainer.innerHTML = tableHtml;
+      } else {
+        container.innerHTML = '<div class="text-center">Nenhum presente no inventário</div>';
+        desktopContainer.innerHTML = '<div class="text-center">Nenhum presente no inventário</div>';
+      }
+    } catch (error) { 
+      console.error(error); 
+    }
+  }
+
+  // ============================================
+  // EXPORT CSV
+  // ============================================
+  document.getElementById('export-rsvps-csv')?.addEventListener('click', () => { 
+    if(RSVPS_DATA.length) exportCSV(); 
+    else alert('Sem dados para exportar'); 
+  });
+
+  function exportCSV() {
+    const BOM = "\uFEFF";
+    let csv = "Data/Hora,Nome,Convidados,Telefone,Mesa,Mensagem\r\n";
+    
+    RSVPS_DATA.forEach(r => {
+      const data = new Date(r.timestamp).toLocaleString('pt-PT');
+      const nome = (r.nome || '').replace(/"/g, '""');
+      const guests = r.guests || '';
+      const phone = (r.phone || '').replace(/"/g, '""');
+      const mesa = (r.mesa || '').replace(/"/g, '""');
+      const message = (r.message || '').replace(/"/g, '""').replace(/\n/g, ' ');
+      
+      csv += `"${data}","${nome}","${guests}","${phone}","${mesa}","${message}"\r\n`;
+    });
+    
+    const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' }); 
+    const a = document.createElement('a'); 
+    a.href = URL.createObjectURL(blob); 
+    a.download = `confirmacoes-${new Date().toLocaleDateString('pt-PT').replace(/\//g, '-')}.csv`; 
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ============================================
+// FUNÇÕES PARA GESTÃO DE CONVIDADOS
+// ============================================
+async function loadGuests() {
+  try {
+    const result = await LIRANDZO_API.getGuests();
+    if (result.status === 'success') {
+      renderGuestsTable(result.data);
+    }
+  } catch (error) {
+    console.error('Erro ao carregar convidados:', error);
+  }
+}
+
+function renderGuestsTable(guests) {
+  const tbody = document.getElementById('guestsTableBody');
+  const mobileList = document.getElementById('guestsMobileList');
+  
+  if (!tbody || !mobileList) return;
+  
+  tbody.innerHTML = '';
+  mobileList.innerHTML = '';
+  
+  guests.forEach(guest => {
+    // Desktop view
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><strong>${escapeHtml(guest.nome)}</strong></td>
+      <td><span class="status-badge">${escapeHtml(guest.mesa || 'A definir')}</span></td>
+      <td>${guest.maxGuests}</td>
+      <td>
+        ${guest.device_token ? 
+          '<span class="badge success">Vinculado</span>' : 
+          '<span class="badge warning">Não vinculado</span>'}
+      </td>
+      <td>${guest.opened_at ? new Date(guest.opened_at).toLocaleString('pt-PT') : '-'}</td>
+      <td><small>${escapeHtml(guest.device_info || '-')}</small></td>
+      <td>
+        ${guest.checked_in ? 
+          '<span class="badge success">✔ Presente</span>' : 
+          '<span class="badge warning">⏳ Ausente</span>'}
+      </td>
+      <td>
+        ${guest.device_token ? 
+          `<button class="btn-small" onclick="resetDevice('${guest.token}')" title="Resetar dispositivo">
+            <i data-feather="smartphone"></i> Reset
+          </button>` : 
+          '-'}
+      </td>
+    `;
+    tbody.appendChild(row);
+    
+    // Mobile view
+    mobileList.innerHTML += `
+      <div class="mobile-row">
+        <div class="mobile-row-item">
+          <span class="mobile-row-label">Nome:</span>
+          <span class="mobile-row-value"><strong>${escapeHtml(guest.nome)}</strong></span>
+        </div>
+        <div class="mobile-row-item">
+          <span class="mobile-row-label">Mesa:</span>
+          <span class="mobile-row-value">${escapeHtml(guest.mesa || 'A definir')}</span>
+        </div>
+        <div class="mobile-row-item">
+          <span class="mobile-row-label">Status:</span>
+          <span class="mobile-row-value">
+            ${guest.device_token ? 
+              '<span class="badge success">Vinculado</span>' : 
+              '<span class="badge warning">Não vinculado</span>'}
+            ${guest.checked_in ? ' <span class="badge success">✔ Presente</span>' : ''}
+          </span>
+        </div>
+        <div class="mobile-row-item">
+          <span class="mobile-row-label">Aberto:</span>
+          <span class="mobile-row-value">${guest.opened_at ? new Date(guest.opened_at).toLocaleString('pt-PT') : '-'}</span>
+        </div>
+        ${guest.device_token ? `
+        <div class="mobile-row-item">
+          <span class="mobile-row-label">Ações:</span>
+          <span class="mobile-row-value">
+            <button class="btn-small" onclick="resetDevice('${guest.token}')">Resetar Dispositivo</button>
+          </span>
+        </div>` : ''}
+      </div>
+    `;
+  });
+  
+  feather.replace();
+}
+
+async function resetDevice(token) {
+  if (!confirm('Tem certeza que deseja resetar o dispositivo deste convidado? Ele poderá acessar de outro aparelho.')) {
+    return;
+  }
+  
+  try {
+    const result = await LIRANDZO_API.postRequest({
+      action: 'reset_device',
+      admin_token: LIRANDZO_API.ADMIN_TOKEN,
+      token: token,
+      admin: 'Admin'
+    });
+    
+    if (result.status === 'success') {
+      alert('Dispositivo resetado com sucesso!');
+      loadGuests(); // Recarregar lista
+    } else {
+      alert('Erro ao resetar dispositivo');
+    }
+  } catch (error) {
+    console.error('Erro:', error);
+    alert('Erro ao resetar dispositivo');
+  }
+}
+
+// Adicionar no menu de navegação
+// Adicione este item no sidebarNav:
+/*
+<div class="nav-item" data-section="guests">
+  <i data-feather="users"></i>
+  <span>Convidados</span>
+</div>
+*/
+
+// Adicionar no showSection:
+// guests:'Convidados'
+
+// Carregar convidados quando a seção for aberta
+// Adicionar no evento de clique dos navItems
+
+  // ============================================
+  // EVENTOS GLOBAIS
+  // ============================================
+  document.addEventListener('keydown', (e) => { 
+    if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+      closeMobileMenu(); 
+    }
+  });
+
+  setInterval(() => {
+    feather.replace();
+  }, 1000);
+</script>
+</body>
+</html>
