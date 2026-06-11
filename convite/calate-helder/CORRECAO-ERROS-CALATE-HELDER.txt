@@ -1,0 +1,53 @@
+CORREÇÃO DOS ERROS — CONVITE CALATE & HELDER
+
+1) Caminho correcto no site
+O convite deve ficar exactamente em:
+https://lirandzo.com/convite/calate-helder/
+
+No console apareceu:
+https://lirandzo.com/convite/calete-helder/...
+
+A pasta estava/foi chamada como "calete-helder" em algum ponto do deploy. O slug oficial e correcto é:
+calate-helder
+
+Acção necessária:
+- No GitHub/servidor estático, a pasta deve chamar-se "calate-helder".
+- Remover ou ignorar a pasta errada "calete-helder" para não continuar a abrir assets no caminho errado.
+
+2) Imagens 404
+O CSS usa estes aliases:
+- assets/media/calate-helder-hero.jpg
+- assets/media/calate-helder-save-the-date.jpg
+
+Este ZIP já inclui esses ficheiros alias para evitar 404.
+
+3) Erro 400 da API: "Slug do convite não enviado ou convite inexistente"
+O front já envia:
+slug=calate-helder
+
+Logo, o problema não é o envio do slug pelo front. O servidor só aceita pedidos se existir um documento Invite no MongoDB com:
+slug: calate-helder
+status diferente de archived
+
+Acção necessária no backend/MongoDB:
+A) Criar o convite pelo AdminManager com slug "calate-helder" e estado published;
+ou
+B) Executar o importador incluído neste pacote:
+
+No Render Shell ou local com a mesma MONGODB_URI:
+cd convite/calate-helder
+npm install
+node import-calate-helder-to-mongodb.js
+
+Se for executar localmente, antes defina:
+MONGODB_URI=mongodb+srv://...
+PUBLIC_SITE_URL=https://lirandzo.com
+INVITE_SLUG=calate-helder
+
+4) Sobre server.js
+Sim: o server.js principal deve continuar fora da pasta do convite, como já usas nos outros convites.
+Não é obrigatório colocar server.js dentro da pasta calate-helder para o convite funcionar.
+O importante é o servidor externo reconhecer o slug no MongoDB.
+
+5) Erro "Cannot read properties of undefined (reading 'addListener')"
+Esse erro vem de um script/extension do navegador/Edge/Copilot, não do convite Lirandzo. Não bloqueia a correção do convite.

@@ -214,10 +214,6 @@
       100% { transform: scale(1); opacity: 1; }
     }
     @keyframes drawCheck { to { stroke-dashoffset: 0; } }
-
-    .qr-checkin-card{margin-top:20px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:rgba(138,90,68,.08);text-align:center}
-    .qr-checkin-card img{width:190px;max-width:100%;border-radius:16px;background:#fff;padding:10px;margin:12px auto;display:block}
-    .qr-checkin-card small{display:block;color:var(--text-light);line-height:1.5}
   
 /* MENU REAL - EDMA & ABEL */
 .menu-real-list {
@@ -391,9 +387,6 @@
 </svg>
 </div>
 </div>
-
-
-
 <div class="agenda-event">
 <h3 class="event-title">Cerimónia Religiosa</h3>
 <p class="event-time">10:00</p>
@@ -525,7 +518,6 @@
 </div>
 </div>
 </section>
-
 <section class="section fade-in-section" id="mural-felicitacoes">
 <h2 class="section-title">Mural de Felicitações</h2>
 <p class="section-subtitle">Deixe-nos uma mensagem de carinho!</p>
@@ -548,7 +540,7 @@
 <p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
 <div class="footer-contact">
 <span>Tem dúvidas?</span>
-<span>+258 86 699 1615, 86 424 2225, 82 761 9991</span>
+<span>+258 87 465 3598</span>
 </div>
 </footer>
 <footer aria-label="Rodapé Lirandzo" class="lirandzo-demo-footer">
@@ -574,8 +566,8 @@
 <h3 id="dressCodeTitle">Inspiração: Elegante e Romântico</h3>
 <p>O objectivo é o conforto sofisticado. Tons marfim, bege, verde sálvia, terracota suave e castanhos naturais são bem-vindos.</p>
 <div class="dresscode-grid dresscode-palette">
-<img alt="Paleta de cores do dress code: elegante romântico." class="dresscode-palette-img" src="assets/media/dress-code-paleta.jpg">
-</img></div>
+<img alt="Paleta de cores do dress code: elegante romântico." class="dresscode-palette-img" src="assets/media/dress-code-paleta.jpg"/>
+</div>
 <button class="btn btn-ghost" data-close-modal="" type="button">Entendi</button>
 </div>
 </div>
@@ -693,9 +685,9 @@
 <div class="modal-divider"></div>
 <div class="modal-travel-grid">
 <div><strong>Cerimónia</strong><p>Igreja Universal de Marracuene. A cerimónia religiosa inicia às 10:00.</p></div>
-<div><strong>Civil</strong><p>Igreja Universal de Marracuene. O civil inicia às 10:00.</p></div>
+
 <div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div>
-<div><strong>Apoio</strong><p>Dúvidas no dia: +258 86 699 1615, 86 424 2225, 82 761 9991.</p></div>
+<div><strong>Apoio</strong><p>Dúvidas no dia: +258 87 465 3598.</p></div>
 </div>
 <button class="btn btn-primary" data-close-modal="" type="button">Fechar Detalhes</button>
 </div>
@@ -729,7 +721,6 @@
 <a class="btn btn-primary" href="#" id="locationMapReligiosa" rel="noopener noreferrer" target="_blank">Abrir mapa da cerimónia</a>
 </div>
 </article>
-
 <article class="location-choice-card">
 <div class="location-choice-preview copo-preview">
 <div class="location-choice-overlay"></div>
@@ -774,7 +765,6 @@
 <p><strong>Acompanhantes:</strong></p>
 <p id="guestInfoGuests" style="font-size: 1.1rem; color: var(--text-dark);">A carregar...</p>
 </div>
-
 <div class="form-actions" style="margin-top: 32px;">
 <button class="btn btn-primary" data-close-modal="" style="width: 100%;" type="button">Fechar</button>
 </div>
@@ -1105,8 +1095,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const dressCodeBtn = document.getElementById('dressCodeBtn');
       const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
       const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
-      const mapBtnCivil = document.getElementById('mapBtnCivil');
-      const mapBtnCopo = document.getElementById('mapBtnCopo');
+            const mapBtnCopo = document.getElementById('mapBtnCopo');
       const mapBtnWelcome = document.getElementById('mapBtnWelcome');
       const galleryImages = document.querySelectorAll('.gallery-grid img');
       const lightboxModal = document.getElementById('lightboxModal');
@@ -1300,16 +1289,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       updateMusicIcon();
       
       const locationMapReligiosa = document.getElementById('locationMapReligiosa');
-      const locationMapCivil = document.getElementById('locationMapCivil');
-      const locationMapCopo = document.getElementById('locationMapCopo');
+            const locationMapCopo = document.getElementById('locationMapCopo');
 
       if (mapBtnReligiosa) mapBtnReligiosa.href = MAP_FAROL2_URL;
       if (mapBtnWelcome) mapBtnWelcome.href = MAP_FAROL2_URL; 
-      if (mapBtnCivil) mapBtnCivil.href = MAP_CIVIL_URL;
-      if (mapBtnCopo) mapBtnCopo.href = MAP_FAROL2_URL; 
+            if (mapBtnCopo) mapBtnCopo.href = MAP_FAROL2_URL; 
       if (locationMapReligiosa) locationMapReligiosa.href = MAP_FAROL2_URL;
-      if (locationMapCivil) locationMapCivil.href = MAP_CIVIL_URL;
-      if (locationMapCopo) locationMapCopo.href = MAP_FAROL2_URL;
+            if (locationMapCopo) locationMapCopo.href = MAP_FAROL2_URL;
       
       const EVENT_END_DATE = "2026-08-29T22:00:00+02:00";
       const EVENT_TITLE = "Casamento de Calate & Helder";
@@ -1932,10 +1918,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         '.section:not(.hero) .vintage-letter-preview',
         '.section:not(.hero) #messageForm',
         '.section:not(.hero) #guestbook-feed',
-        '.section:not(.hero) .time-capsule-card',
-        '.section:not(.hero) .time-capsule-state',
-        '.section:not(.hero) .time-capsule-form',
-        '.section:not(.hero) .time-capsule-gallery',
         '.footer > *'
       ];
 

@@ -21,7 +21,7 @@ Deploy rápido — Calate & Helder
 
 5. Testar:
    /convite/calate-helder/index.html
-   Login com um nome da lista, por exemplo: Helena e Mário Nobre
+   Login com um nome da lista, por exemplo: Adelaide Muianga
 
 Lista actualizada: 102 entradas de convidados · 202 pessoas autorizadas.
 

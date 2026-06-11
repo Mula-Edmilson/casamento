@@ -6,8 +6,6 @@ Arquivos principais:
 - index.html: entrada do convite por nome do convidado
 - convite.html: convite principal
 - admin.html: painel do cliente
-- checkin.html: scanner/check-in por QR Code
-- capsula.html: galeria da Cápsula do Tempo
 - client-config.js: define API Render e slug do convite
 - lirandzo-api.js: cliente oficial para comunicar com Render/MongoDB
 - mongodb-seed-data.json: evento + convidados + lista de presentes

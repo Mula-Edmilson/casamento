@@ -1,22 +1,22 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="pt">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-  <title>Painel do Cliente · Calate & Helder</title>
-  <meta name="robots" content="noindex,nofollow">
-  <link rel="icon" type="image/svg+xml" href="assets/media/lirandzo-logo.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/feather-icons"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="event-data.js"></script>
-  <script src="client-config.js"></script>
-  <script src="lirandzo-api.js"></script>
-  <script>window.feather = window.feather || { replace: function(){} };</script>
-
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" name="viewport"/>
+<title>Painel do Cliente · Calate &amp; Helder</title>
+<meta content="noindex,nofollow" name="robots"/>
+<link href="assets/media/lirandzo-logo.svg" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="event-data.js"></script>
+<script src="client-config.js"></script>
+<script src="lirandzo-api.js"></script>
+<script>window.feather = window.feather || { replace: function(){} };</script>
+<style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -528,8 +528,6 @@
     .mobile-card strong { display:block; color: var(--text); font-size: 13px; margin-bottom: 3px; }
     .mobile-card span { display:block; color: var(--muted); font-size: 12px; line-height: 1.4; }
     .mobile-card .status-badge { margin-top: 8px; }
-
-    .capsule-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(152px, 1fr)); gap: 10px; }
     .photo-card {
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -860,7 +858,6 @@
       .activity-list { max-height: none; }
       .activity-item { grid-template-columns: 32px minmax(0,1fr); }
       .activity-item .status-badge { grid-column: 2; width: max-content; }
-      .capsule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
     @media (max-width: 420px) {
@@ -869,7 +866,6 @@
       .btn.icon-only { width: 38px; }
       .metrics-grid { grid-template-columns: 1fr 1fr; }
       .login-card { padding: 24px 20px; border-radius: 24px; }
-      .capsule-grid { grid-template-columns: 1fr; }
     }
 
 
@@ -950,14 +946,12 @@
     #rsvpRows tr > :nth-child(1),
     #giftRows tr > :nth-child(1),
     #messageRows tr > :nth-child(1),
-    #checkinRows tr > :nth-child(1) { width: 15%; }
     #rsvpRows tr > :nth-child(3),
     #rsvpRows tr > :nth-child(4),
     #rsvpRows tr > :nth-child(5),
-    #checkinRows tr > :nth-child(3),
-    #checkinRows tr > :nth-child(4),
-    #checkinRows tr > :nth-child(5),
-    #checkinRows tr > :nth-child(6) { width: 12%; }
+    #entryRows tr > :nth-child(3),
+    #entryRows tr > :nth-child(4),
+    #entryRows tr > :nth-child(5),
     #giftRows tr > :nth-child(3) { width: 15%; }
     #messageRows tr > :nth-child(2) { width: 24%; }
 
@@ -1199,198 +1193,166 @@
 
   </style>
 
-<style id="remove-checkin-capsule-ui">
-  [data-page="checkins"], [data-page="capsule"],
-  #checkinsPanel, #capsulePanel,
-  #checkinChart, #checkinChart canvas { display: none !important; }
-</style>
 </head>
 <body>
-  <div id="loginScreen" class="login-screen">
-    <section class="login-card" aria-labelledby="loginTitle">
-      <img src="assets/media/lirandzo-logo.svg" alt="Lirandzo" class="login-logo">
-      <h1 id="loginTitle">Painel do Cliente</h1>
-      <p>Gestão compacta do casamento Calate & Helder.</p>
-      <form id="loginForm">
-        <div class="field">
-          <label for="adminPassword">Senha de acesso</label>
-          <input id="adminPassword" type="password" placeholder="Introduza a senha" autocomplete="current-password" required autofocus>
-        </div>
-        <button class="btn full" type="submit"><i data-feather="lock"></i> Entrar no painel</button>
-        <div id="loginError" class="login-error" role="alert"></div>
-      </form>
-    </section>
-  </div>
+<div class="login-screen" id="loginScreen">
+<section aria-labelledby="loginTitle" class="login-card">
+<img alt="Lirandzo" class="login-logo" src="assets/media/lirandzo-logo.svg"/>
+<h1 id="loginTitle">Painel do Cliente</h1>
+<p>Gestão compacta do casamento Calate &amp; Helder.</p>
+<form id="loginForm">
+<div class="field">
+<label for="adminPassword">Senha de acesso</label>
+<input autocomplete="current-password" autofocus="" id="adminPassword" placeholder="Introduza a senha" required="" type="password"/>
+</div>
+<button class="btn full" type="submit"><i data-feather="lock"></i> Entrar no painel</button>
+<div class="login-error" id="loginError" role="alert"></div>
+</form>
+</section>
+</div>
+<div class="app" id="app">
+<div class="overlay" id="overlay"></div>
+<aside aria-label="Menu principal" class="sidebar" id="sidebar">
+<div class="brand">
+<img alt="Lirandzo" src="assets/media/lirandzo-logo.svg"/>
+<div>
+<div class="brand-title">R&amp;M</div>
+<div class="brand-subtitle">Painel administrativo</div>
+</div>
+</div>
+<nav class="nav" id="sideNav"></nav>
+<div class="sidebar-footer">
+<button class="nav-item" id="logoutBtn" type="button"><i data-feather="log-out"></i><span>Sair</span></button>
+</div>
+</aside>
+<header class="topbar">
+<div class="topbar-left">
+<button aria-label="Abrir menu" class="btn secondary icon-only menu-trigger" id="menuBtn" type="button"><i data-feather="menu"></i></button>
+<div class="topbar-title">
+<strong id="topbarTitle">Dashboard</strong>
+<span id="topbarSubtitle">Calate &amp; Helder · 29/08/2026</span>
+</div>
+</div>
+<div class="topbar-actions">
+<div class="sync-pill"><span class="sync-dot" id="syncDot"></span><span id="syncText">A carregar</span></div>
+<button aria-label="Mudar para tema claro" class="btn secondary icon-only theme-toggle" id="themeToggle" title="Mudar tema" type="button"><i data-feather="sun"></i></button>
+<button aria-label="Actualizar dados" class="btn secondary icon-only" id="refreshBtn" type="button"><i data-feather="refresh-cw"></i></button>
+</div>
+</header>
+<main class="main">
+<div aria-label="Navegação rápida" class="mobile-tabs" id="mobileTabs"></div>
+<section class="page-panel active" id="dashboardPanel">
+<div class="section-title">
+<div>
+<h1>Painel do Evento</h1>
+<p>Resumo operacional do convite, confirmações, mensagens e contribuições.</p>
+</div>
+<div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">29 de agosto de 2026</span></div>
+</div>
+<div class="metrics-grid" id="metricsGrid"></div>
+<div class="dashboard-grid">
+<div>
+<section class="panel-card">
+<div class="panel-head">
+<h2><i data-feather="pie-chart"></i> Indicadores</h2>
+<span class="status-badge" id="dataSourceBadge">Sistema activo</span>
+</div>
+<div class="panel-body">
+<div class="chart-grid">
+<article class="chart-box">
+<h3>RSVP</h3>
+<div class="chart-canvas"><canvas id="rsvpChart"></canvas></div>
+</article>
 
-  <div id="app" class="app">
-    <div id="overlay" class="overlay"></div>
-
-    <aside id="sidebar" class="sidebar" aria-label="Menu principal">
-      <div class="brand">
-        <img src="assets/media/lirandzo-logo.svg" alt="Lirandzo">
-        <div>
-          <div class="brand-title">R&M</div>
-          <div class="brand-subtitle">Painel administrativo</div>
-        </div>
-      </div>
-      <nav id="sideNav" class="nav"></nav>
-      <div class="sidebar-footer">
-        <button id="logoutBtn" class="nav-item" type="button"><i data-feather="log-out"></i><span>Sair</span></button>
-      </div>
-    </aside>
-
-    <header class="topbar">
-      <div class="topbar-left">
-        <button id="menuBtn" class="btn secondary icon-only menu-trigger" type="button" aria-label="Abrir menu"><i data-feather="menu"></i></button>
-        <div class="topbar-title">
-          <strong id="topbarTitle">Dashboard</strong>
-          <span id="topbarSubtitle">Calate & Helder · 29/08/2026</span>
-        </div>
-      </div>
-      <div class="topbar-actions">
-        <div class="sync-pill"><span id="syncDot" class="sync-dot"></span><span id="syncText">A carregar</span></div>
-        <button id="themeToggle" class="btn secondary icon-only theme-toggle" type="button" aria-label="Mudar para tema claro" title="Mudar tema"><i data-feather="sun"></i></button>
-        <button id="refreshBtn" class="btn secondary icon-only" type="button" aria-label="Actualizar dados"><i data-feather="refresh-cw"></i></button>
-      </div>
-    </header>
-
-    <main class="main">
-      <div id="mobileTabs" class="mobile-tabs" aria-label="Navegação rápida"></div>
-
-      <section id="dashboardPanel" class="page-panel active">
-        <div class="section-title">
-          <div>
-            <h1>Painel do Evento</h1>
-            <p>Resumo operacional do convite, confirmações, entrada, mensagens e cápsula.</p>
-          </div>
-          <div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">29 de agosto de 2026</span></div>
-        </div>
-
-        <div id="metricsGrid" class="metrics-grid"></div>
-
-        <div class="dashboard-grid">
-          <div>
-            <section class="panel-card">
-              <div class="panel-head">
-                <h2><i data-feather="pie-chart"></i> Indicadores</h2>
-                <span class="status-badge" id="dataSourceBadge">Sistema activo</span>
-              </div>
-              <div class="panel-body">
-                <div class="chart-grid">
-                  <article class="chart-box">
-                    <h3>RSVP</h3>
-                    <div class="chart-canvas"><canvas id="rsvpChart"></canvas></div>
-                  </article>
-                  <article class="chart-box">
-                    <h3>Check-in</h3>
-                    <div class="chart-canvas"><canvas id="checkinChart"></canvas></div>
-                  </article>
-                  <article class="chart-box">
-                    <h3>Interacções</h3>
-                    <div class="chart-canvas"><canvas id="interactionChart"></canvas></div>
-                  </article>
-                </div>
-              </div>
-            </section>
-
-            <section class="panel-card">
-              <div class="panel-head">
-                <h2><i data-feather="activity"></i> Actividade recente</h2>
-                <span id="activityBadge" class="status-badge blue">0 registos</span>
-              </div>
-              <div class="panel-body">
-                <div id="activityList" class="activity-list"></div>
-              </div>
-            </section>
-          </div>
-
-          <aside>
-            <section class="panel-card">
-              <div class="panel-head">
-                <h2><i data-feather="info"></i> Detalhes essenciais</h2>
-              </div>
-              <div class="panel-body">
-                <div class="compact-info">
-                  <div class="info-row"><span>Evento</span><strong id="eventName">Casamento</strong></div>
-                  <div class="info-row"><span>Data</span><strong id="eventDate">29 de agosto de 2026</strong></div>
-                  <div class="info-row"><span>RSVP até</span><strong id="rsvpDate">30 de junho de 2026</strong></div>
-                  <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">09:00 · Paróquia São Gabriel Arcanjo</strong></div>
-                  <div class="info-row"><span>Recepção</span><strong id="receptionInfo">13:00 · Hotel Polana</strong></div>
-                  <div class="info-row"><span>Apoio</span><strong id="supportInfo">Clemente / Nelson</strong></div>
-                </div>
-              </div>
-            </section>
-            <div id="backendNote" class="backend-note"></div>
-          </aside>
-        </div>
-      </section>
-
-      <section id="guestsPanel" class="page-panel">
-        <div class="section-title"><div><h1>Convidados</h1><p>Lista geral com mesa, acompanhantes, token e estado de entrada.</p></div><span id="guestBadge" class="event-chip">0 registos</span></div>
-        <section class="panel-card admin-form-card">
-          <div class="panel-head"><h2><i data-feather="user-plus"></i> Adicionar convidado</h2><span class="status-badge blue">Novo registo</span></div>
-          <div class="panel-body">
-            <form id="addGuestForm" class="admin-form-grid">
-              <div class="admin-field"><label for="newGuestName">Nome</label><input id="newGuestName" name="name" type="text" placeholder="Ex.: Armindo & Esposa" required></div>
-              <div class="admin-field"><label for="newGuestCategory">Categoria</label><select id="newGuestCategory" name="category"><option value="Individual">Individual</option><option value="Couple">Casal</option><option value="Família">Família</option><option value="VIP">VIP</option></select></div>
-              <div class="admin-field"><label for="newGuestTable">Mesa</label><input id="newGuestTable" name="table" type="text" placeholder="A definir"></div>
-              <div class="admin-field"><label for="newGuestMax">Pessoas</label><input id="newGuestMax" name="maxGuests" type="number" min="1" step="1" value="1"></div>
-              <div class="admin-field"><label for="newGuestPhone">Telefone</label><input id="newGuestPhone" name="phone" type="tel" placeholder="Opcional"></div>
-              <div class="admin-field"><label for="newGuestNumber">Nº</label><input id="newGuestNumber" name="number" type="number" min="0" step="1" placeholder="Auto"></div>
-              <div class="admin-field"><label for="newGuestNotes">Notas</label><textarea id="newGuestNotes" name="notes" rows="1" placeholder="Observações internas"></textarea></div>
-              <div class="admin-form-actions"><button id="addGuestBtn" class="btn small" type="submit"><i data-feather="plus"></i> Adicionar</button></div>
-            </form>
-            <p class="action-note">O sistema cria automaticamente o token do convidado e deixa o estado como “Não aberto”.</p>
-          </div>
-        </section>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="guestSearch" class="search-input" type="search" placeholder="Pesquisar por nome, mesa ou token"></div><div class="toolbar-right"><button class="btn secondary small" data-export="guests" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>#</th><th>Convidado</th><th>Categoria</th><th>Mesa</th><th>Pessoas</th><th>Token</th><th>Estado</th></tr></thead><tbody id="guestRows"></tbody></table></div><div id="guestMobile" class="mobile-list"></div></div></section>
-      </section>
-
-      <section id="rsvpsPanel" class="page-panel">
-        <div class="section-title"><div><h1>RSVP</h1><p>Confirmações recebidas pelo convite digital.</p></div><span id="rsvpBadge" class="event-chip">0 confirmações</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="check-circle"></i> Confirmações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="rsvpSearch" class="search-input" type="search" placeholder="Pesquisar confirmação"></div><div class="toolbar-right"><button class="btn secondary small" data-export="rsvps" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Telefone</th><th>Resposta</th><th>Mensagem</th><th>Acção</th></tr></thead><tbody id="rsvpRows"></tbody></table></div><div id="rsvpMobile" class="mobile-list"></div></div></section>
-      </section>
-
-      <section id="giftsPanel" class="page-panel">
-        <div class="section-title"><div><h1>Contribuições</h1><p>Registos de contribuição monetária e comprovativos.</p></div><span id="giftBadge" class="event-chip">0 registos</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="gift"></i> Contribuições monetárias</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="giftSearch" class="search-input" type="search" placeholder="Pesquisar contribuição"></div><div class="toolbar-right"><button class="btn secondary small" data-export="gifts" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Convidado</th><th>Canal</th><th>Comprovativo / detalhes</th></tr></thead><tbody id="giftRows"></tbody></table></div><div id="giftMobile" class="mobile-list"></div></div></section>
-      </section>
-
-      <section id="messagesPanel" class="page-panel">
-        <div class="section-title"><div><h1>Mensagens</h1><p>Mural de felicitações enviado pelos convidados.</p></div><span id="messageBadge" class="event-chip">0 mensagens</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="message-circle"></i> Felicitações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="messageSearch" class="search-input" type="search" placeholder="Pesquisar mensagem"><select id="messageVisibilityFilter" class="filter-select" aria-label="Filtrar mensagens"><option value="all">Todas</option><option value="visible">Visíveis</option><option value="hidden">Ocultas</option></select></div><div class="toolbar-right"><button class="btn secondary small" data-export="messages" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="messageRows"></tbody></table></div><div id="messageMobile" class="mobile-list"></div></div></section>
-      </section>
-
-      <section id="checkinsPanel" class="page-panel">
-        <div class="section-title"><div><h1>Check-in</h1><p>Entradas confirmadas no salão através do QR Code.</p></div><span id="checkinBadge" class="event-chip">0 entradas</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="log-in"></i> Entradas no salão</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="checkinSearch" class="search-input" type="search" placeholder="Pesquisar check-in"></div><div class="toolbar-right"><button class="btn secondary small" data-export="checkins" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Mesa</th><th>Operador</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="checkinRows"></tbody></table></div><div id="checkinMobile" class="mobile-list"></div></div></section>
-      </section>
-
-      <section id="capsulePanel" class="page-panel">
-        <div class="section-title"><div><h1>Cápsula</h1><p>Fotografias partilhadas pelos convidados para recordação do dia.</p></div><span id="capsuleBadge" class="event-chip">0 fotos</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="image"></i> Galeria da cápsula</h2><button class="btn secondary small" data-export="photos" type="button"><i data-feather="download"></i> CSV</button></div><div class="panel-body"><div id="capsuleGrid" class="capsule-grid"></div></div></section>
-      </section>
-    </main>
-  </div>
+<article class="chart-box">
+<h3>Interacções</h3>
+<div class="chart-canvas"><canvas id="interactionChart"></canvas></div>
+</article>
+</div>
+</div>
+</section>
+<section class="panel-card">
+<div class="panel-head">
+<h2><i data-feather="activity"></i> Actividade recente</h2>
+<span class="status-badge blue" id="activityBadge">0 registos</span>
+</div>
+<div class="panel-body">
+<div class="activity-list" id="activityList"></div>
+</div>
+</section>
+</div>
+<aside>
+<section class="panel-card">
+<div class="panel-head">
+<h2><i data-feather="info"></i> Detalhes essenciais</h2>
+</div>
+<div class="panel-body">
+<div class="compact-info">
+<div class="info-row"><span>Evento</span><strong id="eventName">Casamento</strong></div>
+<div class="info-row"><span>Data</span><strong id="eventDate">29 de agosto de 2026</strong></div>
+<div class="info-row"><span>RSVP até</span><strong id="rsvpDate">30 de junho de 2026</strong></div>
+<div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">09:00 · Paróquia São Gabriel Arcanjo</strong></div>
+<div class="info-row"><span>Recepção</span><strong id="receptionInfo">13:00 · Hotel Polana</strong></div>
+<div class="info-row"><span>Apoio</span><strong id="supportInfo">Clemente / Nelson</strong></div>
+</div>
+</div>
+</section>
+<div class="backend-note" id="backendNote"></div>
+</aside>
+</div>
+</section>
+<section class="page-panel" id="guestsPanel">
+<div class="section-title"><div><h1>Convidados</h1><p>Lista geral com mesa, acompanhantes, token e estado do convite.</p></div><span class="event-chip" id="guestBadge">0 registos</span></div>
+<section class="panel-card admin-form-card">
+<div class="panel-head"><h2><i data-feather="user-plus"></i> Adicionar convidado</h2><span class="status-badge blue">Novo registo</span></div>
+<div class="panel-body">
+<form class="admin-form-grid" id="addGuestForm">
+<div class="admin-field"><label for="newGuestName">Nome</label><input id="newGuestName" name="name" placeholder="Ex.: Armindo &amp; Esposa" required="" type="text"/></div>
+<div class="admin-field"><label for="newGuestCategory">Categoria</label><select id="newGuestCategory" name="category"><option value="Individual">Individual</option><option value="Couple">Casal</option><option value="Família">Família</option><option value="VIP">VIP</option></select></div>
+<div class="admin-field"><label for="newGuestTable">Mesa</label><input id="newGuestTable" name="table" placeholder="A definir" type="text"/></div>
+<div class="admin-field"><label for="newGuestMax">Pessoas</label><input id="newGuestMax" min="1" name="maxGuests" step="1" type="number" value="1"/></div>
+<div class="admin-field"><label for="newGuestPhone">Telefone</label><input id="newGuestPhone" name="phone" placeholder="Opcional" type="tel"/></div>
+<div class="admin-field"><label for="newGuestNumber">Nº</label><input id="newGuestNumber" min="0" name="number" placeholder="Auto" step="1" type="number"/></div>
+<div class="admin-field"><label for="newGuestNotes">Notas</label><textarea id="newGuestNotes" name="notes" placeholder="Observações internas" rows="1"></textarea></div>
+<div class="admin-form-actions"><button class="btn small" id="addGuestBtn" type="submit"><i data-feather="plus"></i> Adicionar</button></div>
+</form>
+<p class="action-note">O sistema cria automaticamente o token do convidado e deixa o estado como “Não aberto”.</p>
+</div>
+</section>
+<section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input class="search-input" id="guestSearch" placeholder="Pesquisar por nome, mesa ou token" type="search"/></div><div class="toolbar-right"><button class="btn secondary small" data-export="guests" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>#</th><th>Convidado</th><th>Categoria</th><th>Mesa</th><th>Pessoas</th><th>Token</th><th>Estado</th></tr></thead><tbody id="guestRows"></tbody></table></div><div class="mobile-list" id="guestMobile"></div></div></section>
+</section>
+<section class="page-panel" id="rsvpsPanel">
+<div class="section-title"><div><h1>RSVP</h1><p>Confirmações recebidas pelo convite digital.</p></div><span class="event-chip" id="rsvpBadge">0 confirmações</span></div>
+<section class="panel-card"><div class="panel-head"><h2><i data-feather="check-circle"></i> Confirmações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input class="search-input" id="rsvpSearch" placeholder="Pesquisar confirmação" type="search"/></div><div class="toolbar-right"><button class="btn secondary small" data-export="rsvps" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Telefone</th><th>Resposta</th><th>Mensagem</th><th>Acção</th></tr></thead><tbody id="rsvpRows"></tbody></table></div><div class="mobile-list" id="rsvpMobile"></div></div></section>
+</section>
+<section class="page-panel" id="giftsPanel">
+<div class="section-title"><div><h1>Contribuições</h1><p>Registos de contribuição monetária e comprovativos.</p></div><span class="event-chip" id="giftBadge">0 registos</span></div>
+<section class="panel-card"><div class="panel-head"><h2><i data-feather="gift"></i> Contribuições monetárias</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input class="search-input" id="giftSearch" placeholder="Pesquisar contribuição" type="search"/></div><div class="toolbar-right"><button class="btn secondary small" data-export="gifts" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Convidado</th><th>Canal</th><th>Comprovativo / detalhes</th></tr></thead><tbody id="giftRows"></tbody></table></div><div class="mobile-list" id="giftMobile"></div></div></section>
+</section>
+<section class="page-panel" id="messagesPanel">
+<div class="section-title"><div><h1>Mensagens</h1><p>Mural de felicitações enviado pelos convidados.</p></div><span class="event-chip" id="messageBadge">0 mensagens</span></div>
+<section class="panel-card"><div class="panel-head"><h2><i data-feather="message-circle"></i> Felicitações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input class="search-input" id="messageSearch" placeholder="Pesquisar mensagem" type="search"/><select aria-label="Filtrar mensagens" class="filter-select" id="messageVisibilityFilter"><option value="all">Todas</option><option value="visible">Visíveis</option><option value="hidden">Ocultas</option></select></div><div class="toolbar-right"><button class="btn secondary small" data-export="messages" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="messageRows"></tbody></table></div><div class="mobile-list" id="messageMobile"></div></div></section>
+</section>
 
 
-  <div id="mediaModal" class="media-modal" aria-hidden="true" role="dialog" aria-label="Pré-visualização do comprovativo">
-    <div class="media-modal-card">
-      <div class="media-modal-head">
-        <span id="mediaModalTitle">Comprovativo</span>
-        <button id="mediaModalClose" class="btn secondary icon-only" type="button" aria-label="Fechar"><i data-feather="x"></i></button>
-      </div>
-      <div class="media-modal-body">
-        <img id="mediaModalImg" src="" alt="Comprovativo">
-      </div>
-      <div class="media-modal-actions">
-        <a id="mediaModalOpen" class="btn secondary small" href="#" target="_blank" rel="noopener"><i data-feather="external-link"></i> Abrir ficheiro</a>
-        <button id="mediaModalCloseBottom" class="btn ghost small" type="button">Fechar</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+</main>
+</div>
+<div aria-hidden="true" aria-label="Pré-visualização do comprovativo" class="media-modal" id="mediaModal" role="dialog">
+<div class="media-modal-card">
+<div class="media-modal-head">
+<span id="mediaModalTitle">Comprovativo</span>
+<button aria-label="Fechar" class="btn secondary icon-only" id="mediaModalClose" type="button"><i data-feather="x"></i></button>
+</div>
+<div class="media-modal-body">
+<img alt="Comprovativo" id="mediaModalImg" src=""/>
+</div>
+<div class="media-modal-actions">
+<a class="btn secondary small" href="#" id="mediaModalOpen" rel="noopener" target="_blank"><i data-feather="external-link"></i> Abrir ficheiro</a>
+<button class="btn ghost small" id="mediaModalCloseBottom" type="button">Fechar</button>
+</div>
+</div>
+</div>
+<script>
     (function () {
       'use strict';
 
@@ -1403,7 +1365,7 @@
         { id: 'gifts', label: 'Contribuições', icon: 'gift' },
         { id: 'messages', label: 'Mensagens', icon: 'message-circle' },
       ];
-      const DATA = { stats: {}, guests: [], rsvps: [], gifts: [], messages: [], checkins: [], photos: [] };
+      const DATA = { stats: {}, guests: [], rsvps: [], gifts: [], messages: [] };
       const charts = {};
 
       const $ = (id) => document.getElementById(id);
@@ -1437,7 +1399,7 @@
       };
       const contains = (obj, query) => JSON.stringify(obj || {}).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
       const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-      const idOf = (o) => text(o && (o._id || o.id || o.messageId || o.rsvpId || o.checkinId || ''));
+      const idOf = (o) => text(o && (o._id || o.id || o.messageId || o.rsvpId || ''));
       const apiBase = () => String(window.LIRANDZO_API_BASE_URL || '').replace(/\/+$/, '');
       const inviteSlug = () => String(window.LIRANDZO_INVITE_SLUG || '').trim();
       const adminPass = () => sessionStorage.getItem('rm_admin_password') || adminPassword?.value || '';
@@ -1692,10 +1654,7 @@
           confirmText = `Restaurar a confirmação de presença de ${name}? O convidado poderá confirmar novamente.`;
           busyText = 'A restaurar';
           successText = 'Confirmação restaurada com sucesso.';
-        } else if (action === 'restore_checkin') {
-          confirmText = `Restaurar o check-in de ${name}? A entrada volta a ficar pendente.`;
-          busyText = 'A restaurar';
-          successText = 'Check-in restaurado com sucesso.';
+
         } else if (action === 'delete_message') {
           const typed = prompt(`Para eliminar definitivamente a mensagem de ${name}, escreva ELIMINAR.`);
           if (typed !== 'ELIMINAR') return;
@@ -1768,9 +1727,9 @@
         $('activityList').innerHTML = Array.from({ length: 5 }).map(() => '<article class="activity-item"><div class="skeleton-card" style="width:34px;min-height:34px"></div><div style="display:grid;gap:7px"><span class="skeleton-line" style="width:72%"></span><span class="skeleton-line" style="width:92%;height:12px"></span></div><span class="skeleton-line" style="width:86px;height:24px;border-radius:999px"></span></article>').join('');
         const tableSkeleton = (cols) => Array.from({ length: 5 }).map(() => '<tr>' + Array.from({ length: cols }).map(() => '<td><span class="skeleton-cell"></span></td>').join('') + '</tr>').join('');
         const mobileSkeleton = Array.from({ length: 4 }).map(() => '<article class="mobile-card"><span class="skeleton-line" style="width:62%"></span><span class="skeleton-line" style="width:88%;height:12px;margin-top:8px"></span></article>').join('');
-        ['guestRows','rsvpRows','giftRows','messageRows','checkinRows'].forEach((id, index) => { const el = $(id); if (el) el.innerHTML = tableSkeleton([7,7,4,5,7][index]); });
-        ['guestMobile','rsvpMobile','giftMobile','messageMobile','checkinMobile'].forEach(id => { const el = $(id); if (el) el.innerHTML = mobileSkeleton; });
-        if ($('capsuleGrid')) $('capsuleGrid').innerHTML = Array.from({ length: 6 }).map(() => '<article class="photo-card"><div class="skeleton-card" style="aspect-ratio:1/1;border-radius:0;min-height:auto"></div><div class="photo-meta"><span class="skeleton-line" style="width:70%"></span><span class="skeleton-line" style="width:48%;height:12px;margin-top:8px"></span></div></article>').join('');
+        ['guestRows','rsvpRows','giftRows','messageRows'].forEach((id, index) => { const el = $(id); if (el) el.innerHTML = tableSkeleton([7,7,4,5][index]); });
+        ['guestMobile','rsvpMobile','giftMobile','messageMobile'].forEach(id => { const el = $(id); if (el) el.innerHTML = mobileSkeleton; });
+
       }
 
       async function loadAll() {
@@ -1780,22 +1739,18 @@
         renderSkeletons();
         try {
           const adminMessagesPromise = adminPost('get_messages').catch(() => LirandzoAPI.get('list_messages'));
-          const [stats, guests, rsvps, gifts, messages, checkins, photos] = await Promise.all([
+          const [stats, guests, rsvps, gifts, messages] = await Promise.all([
             LirandzoAPI.get('stats'),
             LirandzoAPI.get('list_guests'),
             LirandzoAPI.get('list_rsvps'),
             LirandzoAPI.get('list_gift_records'),
-            adminMessagesPromise,
-            LirandzoAPI.get('list_checkins'),
-            LirandzoAPI.get('list_capsule_photos')
+            adminMessagesPromise
           ]);
           DATA.stats = stats.data || {};
           DATA.guests = guests.data || [];
           DATA.rsvps = rsvps.data || [];
           DATA.gifts = gifts.data || [];
           DATA.messages = messages.data || [];
-          DATA.checkins = checkins.data || [];
-          DATA.photos = photos.data || [];
           renderAll();
         } catch (error) {
           console.error(error);
@@ -1812,21 +1767,19 @@
         const guestsCount = num(DATA.stats.guestsCount) || DATA.guests.length || num(EVENT.guestRows) || 0;
         const totalPeople = num(DATA.stats.totalPeople) || DATA.guests.reduce((sum, g) => sum + (num(g.maxGuests) || 1), 0) || num(EVENT.estimatedGuests) || 0;
         const confirmedPeople = num(DATA.stats.confirmed) || DATA.rsvps.reduce((sum, r) => sum + peopleFromRsvp(r), 0);
-        const checkedPeople = num(DATA.stats.checkedPeople) || DATA.checkins.reduce((sum, c) => sum + (num(c.guests || c.maxGuests) || 1), 0);
+        const checkedPeople = 0;
         const confirmedRows = num(DATA.stats.confirmedRows) || DATA.rsvps.length;
-        const checkedRows = num(DATA.stats.checkedIn) || DATA.checkins.length;
+        const checkedRows = 0;
         return {
           guestsCount,
           totalPeople,
           confirmedPeople,
           pendingPeople: Math.max(totalPeople - confirmedPeople, 0),
           checkedPeople,
-          pendingCheckin: Math.max(totalPeople - checkedPeople, 0),
           confirmedRows,
-          checkedRows,
           gifts: DATA.gifts.length,
           messages: DATA.messages.length,
-          photos: DATA.photos.length
+          messages: DATA.messages.length
         };
       }
 
@@ -1843,9 +1796,8 @@
           ['Convidados', s.guestsCount, 'registos'],
           ['Pessoas', s.totalPeople, 'previstas'],
           ['RSVP', s.confirmedPeople, `${percent(s.confirmedPeople, s.totalPeople)}% confirmado`],
-          ['Check-in', s.checkedPeople, `${percent(s.checkedPeople, s.totalPeople)}% no salão`],
           ['Contribuições', s.gifts, 'registos'],
-          ['Cápsula', s.photos, 'fotos']
+          ['Mensagens', s.messages, 'registos']
         ];
         $('metricsGrid').innerHTML = metrics.map(item => `<article class="metric-card"><span>${esc(item[0])}</span><strong>${esc(item[1])}</strong><small>${esc(item[2])}</small></article>`).join('');
       }
@@ -1878,7 +1830,6 @@
         const s = summary();
         const empty = cssVar('--chart-empty') || '#4c4540';
         makeChart('rsvpChart', ['Confirmados', 'Pendentes'], [s.confirmedPeople, s.pendingPeople], [cssVar('--accent') || '#b08968', empty]);
-        makeChart('checkinChart', ['Entraram', 'Por entrar'], [s.checkedPeople, s.pendingCheckin], [cssVar('--green') || '#18b783', empty]);
         makeChart('interactionChart', ['RSVP', 'Contrib.', 'Msgs'], [s.confirmedRows, s.gifts, s.messages], [cssVar('--accent-2') || '#d0ad8f', cssVar('--orange') || '#f2a84a', cssVar('--blue') || '#6aa5ff']);
       }
 
@@ -1886,9 +1837,7 @@
         const items = [
           ...DATA.rsvps.map(x => ({ ...x, type: 'RSVP', icon: 'check-circle', detail: `${peopleFromRsvp(x) || '-'} pessoa(s) confirmada(s)` })),
           ...DATA.gifts.map(x => ({ ...x, type: 'Contribuição', icon: 'gift', detail: giftDetail(x) })),
-          ...DATA.messages.map(x => ({ ...x, type: 'Mensagem', icon: 'message-circle', detail: text(x.message).slice(0, 90) })),
-          ...DATA.checkins.map(x => ({ ...x, type: 'Check-in', icon: 'log-in', detail: `${num(x.guests || x.maxGuests) || 1} pessoa(s) · ${x.mesa || 'Mesa a definir'}` })),
-          ...DATA.photos.map(x => ({ ...x, type: 'Cápsula', icon: 'image', detail: x.filename || 'Foto enviada' }))
+          ...DATA.messages.map(x => ({ ...x, type: 'Mensagem', icon: 'message-circle', detail: text(x.message).slice(0, 90) }))
         ].sort((a, b) => new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt));
         const maxItems = window.matchMedia('(max-width: 760px)').matches ? 5 : 9;
         const visibleItems = items.slice(0, maxItems);
@@ -1906,8 +1855,6 @@
         renderRsvps();
         renderGifts();
         renderMessages();
-        renderCheckins();
-        renderCapsule();
         feather.replace();
       }
 
@@ -1950,36 +1897,12 @@
         return false;
       }
 
-      function checkinMatchesGuest(c, g) {
-        const cGuestId = text(c && (c.guestId || c.guest_id || c.guest || ''));
-        const cToken = text(c && (c.token || c.inviteToken || ''));
-        const gId = guestIdOf(g);
-        const gToken = guestTokenOf(g);
-
-        if (sameId(cGuestId, gId)) return true;
-        if (sameId(cToken, gToken)) return true;
-
-        if (!cGuestId && !cToken) {
-          const cName = normalizeKey(nameOf(c));
-          const gName = normalizeKey(nameOf(g));
-          return Boolean(cName && gName && cName === gName);
-        }
-        return false;
-      }
-
       function guestRsvpConfirmed(g) {
         return DATA.rsvps.some(r => rsvpMatchesGuest(r, g)) || guestStatusText(g).includes('confirmado');
       }
 
-      function guestChecked(g) {
-        const checkedByRow = DATA.checkins.some(c => checkinMatchesGuest(c, g));
-        const status = guestStatusText(g);
-        return checkedByRow || g?.checkedIn === true || status === 'entrou' || status.includes('checked-in');
-      }
-
       function guestAdminState(g) {
         const status = guestStatusText(g);
-        if (guestChecked(g)) return { label: 'Entrou', badge: 'ok' };
         if (guestRsvpConfirmed(g)) return { label: 'Confirmado', badge: 'blue' };
         if (status.includes('ainda por confirmar')) return { label: 'Ainda por confirmar', badge: 'warn' };
         if (status.includes('convite aberto')) return { label: 'Convite aberto', badge: 'warn' };
@@ -2111,36 +2034,12 @@
         }).join('') : '<div class="empty">Sem mensagens neste filtro.</div>';
       }
 
-      function renderCheckins() {
-        const list = filtered(DATA.checkins, 'checkinSearch');
-        $('checkinBadge').textContent = `${list.length} entradas`;
-        $('checkinRows').innerHTML = list.length ? list.map(c => {
-          const id = idOf(c);
-          const action = id ? `<button class="btn warning small" type="button" data-admin-action="restore_checkin" data-id="${esc(id)}" data-name="${esc(nameOf(c))}"><i data-feather="rotate-ccw"></i> Restaurar</button>` : '<span class="status-badge warn">Sem ID</span>';
-          return `<tr><td>${esc(dateFmt(c.timestamp))}</td><td><strong>${esc(nameOf(c))}</strong></td><td>${esc(c.guests || c.maxGuests || 1)}</td><td>${esc(c.mesa || 'A definir')}</td><td>${esc(c.operator || 'Recepção')}</td><td><span class="status-badge ok">${esc(c.status || 'Confirmado')}</span></td><td><div class="row-actions">${action}</div></td></tr>`;
-        }).join('') : '<tr><td colspan="7" class="empty">Ainda não há check-ins.</td></tr>';
-        $('checkinMobile').innerHTML = list.length ? list.map(c => {
-          const id = idOf(c);
-          const action = id ? `<button class="btn warning small" type="button" data-admin-action="restore_checkin" data-id="${esc(id)}" data-name="${esc(nameOf(c))}"><i data-feather="rotate-ccw"></i> Restaurar check-in</button>` : '';
-          return `<article class="mobile-card"><strong>${esc(nameOf(c))}</strong><span>${esc(c.guests || 1)} pessoa(s) · Mesa: ${esc(c.mesa || 'A definir')} · ${esc(dateFmt(c.timestamp))}</span><span class="status-badge ok">Confirmado</span><div class="row-actions">${action}</div></article>`;
-        }).join('') : '<div class="empty">Sem dados para mostrar.</div>';
-      }
-
-      function renderCapsule() {
-        $('capsuleBadge').textContent = `${DATA.photos.length} fotos`;
-        $('capsuleGrid').innerHTML = DATA.photos.length ? DATA.photos.map(photo => {
-          const src = photo.thumbnailUrl || photo.viewUrl || photo.src || '';
-          const download = photo.downloadUrl || photo.viewUrl || photo.src || '#';
-          return `<article class="photo-card"><img src="${esc(src)}" alt="${esc(photo.filename || 'Foto da cápsula')}"><div class="photo-meta"><strong>${esc(nameOf(photo))}</strong><span>${esc(dateFmt(photo.timestamp || photo.createdAt))}</span><a class="btn secondary small" href="${esc(download)}" target="_blank" download><i data-feather="download"></i> Baixar</a></div></article>`;
-        }).join('') : '<div class="empty">Ainda não há fotografias partilhadas na cápsula.</div>';
-      }
-
       function mobileCards(list, lineFn, badgeFn) {
         return list.length ? list.map(item => `<article class="mobile-card"><strong>${esc(nameOf(item))}</strong><span>${lineFn(item)}</span>${badgeFn ? badgeFn(item) : ''}</article>`).join('') : '<div class="empty">Sem dados para mostrar.</div>';
       }
 
       function exportCSV(type) {
-        const map = { guests: DATA.guests, rsvps: DATA.rsvps, gifts: DATA.gifts, messages: DATA.messages, checkins: DATA.checkins, photos: DATA.photos };
+        const map = { guests: DATA.guests, rsvps: DATA.rsvps, gifts: DATA.gifts, messages: DATA.messages };
         const rows = map[type] || [];
         if (!rows.length) { alert('Sem dados para exportar.'); return; }
         const keys = [...new Set(rows.flatMap(row => Object.keys(row || {})))];
