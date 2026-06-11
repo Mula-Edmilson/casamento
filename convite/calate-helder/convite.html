@@ -7,9 +7,9 @@
 <title>Convite de Casamento — Calate &amp; Helder</title>
 <link href="assets/media/lirandzo-logo.svg" rel="icon" type="image/png"/>
 <meta content="Convite de Casamento — Calate &amp; Helder" property="og:title"/>
-<meta content="Junte-se a nós para celebrar este momento especial." property="og:description"/>
+<meta content="Junte-se a nós para celebrar este casamento e o início de uma nova etapa." property="og:description"/>
 <meta content="website" property="og:type"/>
-<meta content="assets/media/PG2.jpg" property="og:image"/>
+<meta content="assets/media/fundo-flores-2.jpg" property="og:image"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;family=Parisienne&amp;display=swap" rel="stylesheet"/>
@@ -215,7 +215,7 @@
     }
     @keyframes drawCheck { to { stroke-dashoffset: 0; } }
   
-/* MENU REAL - EDMA & ABEL */
+/* MENU REAL - CALATE & HELDER */
 .menu-real-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -249,7 +249,6 @@
 </style>
 </head>
 <body class="loading convite-rustic-theme calate-helder-theme">
-<audio autoplay="" id="backgroundMusic" loop="" playsinline="" preload="auto" src="https://static.wixstatic.com/mp3/35b7f9_46603560222842afab5f5ec002881590.mp3"></audio>
 <div class="fixed-ui-container">
 <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
 <svg viewbox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
@@ -263,9 +262,7 @@
 <button aria-label="Ver mapa do local" class="fab-item" id="fabMapBtn">
 <svg viewbox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 </button>
-<button aria-label="Controlar música" id="musicControl">
-<svg height="20" id="musicIcon" viewbox="0 0 24 24" width="20"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path></svg>
-</button>
+
 </div>
 <main aria-labelledby="inviteTitle" class="invite-wrap" role="main">
 <!-- FLORES DECORATIVAS -->
@@ -284,13 +281,20 @@
 <div><span id="seconds">00</span><small>Segundos</small></div>
 </div>
 </div>
-<a class="scroll-down-indicator" href="#versiculo-biblico">
+<a class="scroll-down-indicator" href="#nossa-historia">
 <!--  <svg viewBox="0 0 24 24"><path d="M12 19.5l-7-7 1.5-1.5L12 16.5l5.5-5.5L19 12.5z"/></svg> -->
 </a>
 </header>
-<section class="section fade-in-section" id="versiculo-biblico">
-<p class="verse">"É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa."</p>
-<p class="verse-reference">Gênesis 2:24 NTLH</p>
+<section class="section fade-in-section" id="nossa-historia">
+<p class="verse">“É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa.”</p>
+<p class="verse-reference">Gênesis 2:24 — NTLH</p>
+<h2 class="section-title">A Nossa História</h2>
+<div class="couple-details">
+<div><h3>Calate</h3><p>Noiva<br/><strong>Calate Salazar Hojuane</strong></p></div>
+<div class="decorative-ampersand">♡</div>
+<div><h3>Helder</h3><p>Noivo<br/><strong>Hélder Jorge Muianga</strong></p></div>
+</div>
+<p class="section-subtitle">Com fé, amor e gratidão, celebramos este novo capítulo ao lado das pessoas que fazem parte da nossa caminhada.</p>
 </section>
 <!-- SECÇÃO VINTAGE: CARTA DOS NOIVOS -->
 <section class="section vintage-section section-scene fade-in-section" id="carta-dos-noivos">
@@ -315,8 +319,7 @@
 <span><i></i> Gratidão</span>
 </div>
 <p class="letter-intro">Querido(a) convidado(a),</p>
-<p>"É por isso que o homem deixa o seu pai e a sua mãe para se unir com a sua mulher, e os dois se tornam uma só pessoa."</p>
-<p class="verse-reference">Gênesis 2:24 NTLH</p>
+<p>Com alegria e gratidão, queremos celebrar este dia com quem faz parte da nossa caminhada. A sua presença tornará este momento ainda mais especial.</p>
 <div class="letter-signature">Calate &amp; Helder</div>
 <button class="btn btn-primary vintage-action" data-open-modal="cartaNoivosModal" type="button">Ler a Carta Completa</button>
 </div>
@@ -369,41 +372,32 @@
 </div>
 </div>
 </section>
+
 <section class="section section-highlight fade-in-section" id="agenda-evento">
 <div class="agenda-centered">
 <div class="agenda-header">
-<div class="agenda-icon-divider">
-<span class="divider"></span>
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-<span class="divider"></span>
-</div>
+<div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
 <h2 class="section-title">O Grande Dia</h2>
 <p class="section-subtitle">Temos a honra de convidá-lo(a) a celebrar connosco cada momento.</p>
-<div class="agenda-icon-small">
-<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-<path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-</div>
 </div>
 <div class="agenda-event">
 <h3 class="event-title">Cerimónia Religiosa</h3>
 <p class="event-time">10:00</p>
 <div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
 <h4 class="event-location">Igreja Universal de Marracuene</h4>
-<a class="map-link-button" href="#" id="mapBtnReligiosa" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
+<a class="map-link-button" href="https://maps.google.com/?q=-25.741796,32.648743" id="mapBtnReligiosa" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
 </div>
 <div class="agenda-event">
 <h3 class="event-title">Copo de Água</h3>
 <p class="event-time">15:00</p>
 <div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
 <h4 class="event-location">Eventos &amp; Acomodações Águia</h4>
-<p class="event-description">Recepção no Salão de Eventos &amp; Acomodações Águia 🦅.</p>
-<a class="map-link-button" href="#" id="mapBtnCopo" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
+<p class="event-description">Copo de água no Salão de Eventos &amp; Acomodações Águia 🦅.</p>
+<a class="map-link-button" href="https://maps.google.com/?q=-25.741796,32.648743" id="mapBtnCopo" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
 </div>
 </div>
 </section>
+
 <!-- SECÇÃO VINTAGE: MENU DA CELEBRAÇÃO -->
 <section class="section vintage-section section-scene fade-in-section" id="menu-celebracao">
 <div class="vintage-scene">
@@ -442,19 +436,20 @@
 <button class="btn btn-primary vintage-action" data-open-modal="menuCelebracaoModal" type="button">Ver Menu Completo</button>
 </div>
 </section>
+
 <section class="section section-highlight fade-in-section" id="guia-evento">
 <h2 class="section-title">Guia do Evento</h2>
 <p class="section-subtitle">Tudo o que precisa de saber para celebrar connosco.</p>
 <div class="guide-grid">
 <div class="guide-item">
 <h4>Confirme a Sua Presença</h4>
-<p>Por favor, informe-nos se poderemos contar consigo até 30 de Junho de 2026.</p>
+<p>Por favor, informe-nos se poderemos contar consigo até 30 de junho de 2026.</p>
 <button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
 <button class="btn btn-outline" id="calendarBtn" type="button">Adicionar ao Calendário</button>
 </div>
 <div class="guide-item">
 <h4>Inspiração de Vestuário</h4>
-<p>O dress code inspira-se no estilo elegante romântico: tons terrosos, marfim, verde sálvia e castanhos suaves, com presença natural e elegante.</p>
+<p>O dress code inspira-se num estilo elegante e romântico, com presença cuidada e confortável para a celebração.</p>
 <button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
 </div>
 <div class="guide-item">
@@ -518,6 +513,7 @@
 </div>
 </div>
 </section>
+
 <section class="section fade-in-section" id="mural-felicitacoes">
 <h2 class="section-title">Mural de Felicitações</h2>
 <p class="section-subtitle">Deixe-nos uma mensagem de carinho!</p>
@@ -537,7 +533,7 @@
 </section>
 <footer class="footer fade-in-section">
 <h3 class="names">Calate &amp; Helder</h3>
-<p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
+<p>Agradecemos por fazer parte deste momento. Esperamos por si!</p>
 <div class="footer-contact">
 <span>Tem dúvidas?</span>
 <span>+258 87 465 3598</span>
@@ -564,10 +560,10 @@
 <div aria-labelledby="dressCodeTitle" aria-modal="true" class="modal" id="dressCodeModal" role="dialog">
 <div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-dress"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M8 4h8l1 4-2 2v10H9V10L7 8l1-4Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
 <h3 id="dressCodeTitle">Inspiração: Elegante e Romântico</h3>
-<p>O objectivo é o conforto sofisticado. Tons marfim, bege, verde sálvia, terracota suave e castanhos naturais são bem-vindos.</p>
+<p>O objectivo é conforto com presença elegante e romântica.</p>
 <div class="dresscode-grid dresscode-palette">
-<img alt="Paleta de cores do dress code: elegante romântico." class="dresscode-palette-img" src="assets/media/dress-code-paleta.jpg"/>
-</div>
+<img alt="Paleta de cores do dress code: elegante romântico." class="dresscode-palette-img" src="assets/media/dress-code-paleta.jpg">
+</img></div>
 <button class="btn btn-ghost" data-close-modal="" type="button">Entendi</button>
 </div>
 </div>
@@ -596,7 +592,7 @@
 <span class="modal-kicker">Carta dos Noivos</span>
 <h3 id="cartaNoivosTitle">Com o coração cheio de gratidão</h3>
 <div class="modal-divider"></div>
-<p>Querido(a) convidado(a), obrigado por fazer parte deste momento tão especial. A nossa história é marcada por fé, carinho, respeito e pela bênção das nossas famílias.</p>
+<p>Querido(a) convidado(a), obrigado por fazer parte deste momento tão especial. A nossa união é celebrada com fé, carinho e gratidão.</p>
 <p>A sua presença será uma bênção e uma memória que levaremos connosco para a vida inteira. Esperamos por si para celebrar este capítulo com alegria e gratidão.</p>
 <p class="modal-signature">Calate &amp; Helder</p>
 <button class="btn btn-primary" data-close-modal="" type="button">Fechar Carta</button>
@@ -685,7 +681,7 @@
 <div class="modal-divider"></div>
 <div class="modal-travel-grid">
 <div><strong>Cerimónia</strong><p>Igreja Universal de Marracuene. A cerimónia religiosa inicia às 10:00.</p></div>
-
+<div><strong>Recepção</strong><p>Eventos &amp; Acomodações Águia. O copo de água inicia às 15:00.</p></div>
 <div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div>
 <div><strong>Apoio</strong><p>Dúvidas no dia: +258 87 465 3598.</p></div>
 </div>
@@ -705,38 +701,12 @@
 <p>Toque no local desejado para abrir a rota no Google Maps.</p>
 <div class="location-chooser-grid">
 <article class="location-choice-card">
-<div class="location-choice-preview religious-preview">
-<div class="location-choice-overlay"></div>
-<div class="location-choice-top-accent"></div>
-<div aria-hidden="true" class="location-choice-pin">
-<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
-</div>
-<div class="location-choice-caption">
-<span>Cerimónia Religiosa</span>
-<strong>Igreja Universal de Marracuene</strong>
-</div>
-</div>
-<div class="location-choice-body">
-<p>Cerimónia religiosa na Igreja Universal de Marracuene. Recomendamos chegada com antecedência.</p>
-<a class="btn btn-primary" href="#" id="locationMapReligiosa" rel="noopener noreferrer" target="_blank">Abrir mapa da cerimónia</a>
-</div>
+<div class="location-choice-preview religious-preview"><div class="location-choice-overlay"></div><div class="location-choice-top-accent"></div><div aria-hidden="true" class="location-choice-pin"><svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div><div class="location-choice-caption"><span>Cerimónia Religiosa</span><strong>Igreja Universal de Marracuene</strong></div></div>
+<div class="location-choice-body"><p>Cerimónia religiosa às 10:00. Recomendamos chegada com antecedência.</p><a class="btn btn-primary" href="https://maps.google.com/?q=-25.741796,32.648743" id="locationMapReligiosa" rel="noopener noreferrer" target="_blank">Abrir mapa da cerimónia</a></div>
 </article>
 <article class="location-choice-card">
-<div class="location-choice-preview copo-preview">
-<div class="location-choice-overlay"></div>
-<div class="location-choice-top-accent"></div>
-<div aria-hidden="true" class="location-choice-pin">
-<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
-</div>
-<div class="location-choice-caption">
-<span>Copo de Água</span>
-<strong>Eventos &amp; Acomodações Águia</strong>
-</div>
-</div>
-<div class="location-choice-body">
-<p>Rota directa para o local do Copo de Água e celebração.</p>
-<a class="btn btn-primary" href="#" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa da recepção</a>
-</div>
+<div class="location-choice-preview copo-preview"><div class="location-choice-overlay"></div><div class="location-choice-top-accent"></div><div aria-hidden="true" class="location-choice-pin"><svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div><div class="location-choice-caption"><span>Copo de Água</span><strong>Eventos &amp; Acomodações Águia</strong></div></div>
+<div class="location-choice-body"><p>Rota directa para o local do copo de água e celebração.</p><a class="btn btn-primary" href="https://maps.google.com/?q=-25.741796,32.648743" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa da recepção</a></div>
 </article>
 </div>
 <div class="form-actions" style="margin-top: 12px;">
@@ -765,6 +735,7 @@
 <p><strong>Acompanhantes:</strong></p>
 <p id="guestInfoGuests" style="font-size: 1.1rem; color: var(--text-dark);">A carregar...</p>
 </div>
+
 <div class="form-actions" style="margin-top: 32px;">
 <button class="btn btn-primary" data-close-modal="" style="width: 100%;" type="button">Fechar</button>
 </div>
@@ -1076,11 +1047,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Constantes
       const HOST_WHATSAPP_NUMBER = '+258874653598';
-      const ADDRESS_RELIGIOSA = 'Igreja Universal de Marracuene, Marracuene, Maputo';
-      const ADDRESS_CIVIL = 'Igreja Universal de Marracuene, Marracuene, Maputo';
-      const ADDRESS_COPO_DE_AGUA = 'Eventos & Acomodações Águia, Marracuene, Maputo';
+      const ADDRESS_RELIGIOSA = 'Igreja Universal de Marracuene, Marracuene';
+      const ADDRESS_CIVIL = 'Igreja Universal de Marracuene, Marracuene';
+      const ADDRESS_COPO_DE_AGUA = 'Eventos & Acomodações Águia, Marracuene';
       const MAP_FAROL2_URL = 'https://maps.google.com/?q=-25.741796,32.648743';
-      const MAP_CIVIL_URL = 'https://www.google.com/maps/search/?api=1&query=Igreja+Universal+de+Marracuene,+Marracuene,+Maputo'; 
+      const MAP_CIVIL_URL = 'https://maps.google.com/?q=-25.741796,32.648743'; 
       const EVENT_DATE = "2026-08-29T15:00:00+02:00"; 
       const body = document.body;
       const music = document.getElementById('backgroundMusic');
@@ -1095,7 +1066,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const dressCodeBtn = document.getElementById('dressCodeBtn');
       const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
       const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
-            const mapBtnCopo = document.getElementById('mapBtnCopo');
+      const mapBtnCivil = document.getElementById('mapBtnCivil');
+      const mapBtnCopo = document.getElementById('mapBtnCopo');
       const mapBtnWelcome = document.getElementById('mapBtnWelcome');
       const galleryImages = document.querySelectorAll('.gallery-grid img');
       const lightboxModal = document.getElementById('lightboxModal');
@@ -1212,7 +1184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         musicControl.classList.toggle('playing', !music.paused);
       };
 
-      const MUSIC_URL = 'https://static.wixstatic.com/mp3/35b7f9_46603560222842afab5f5ec002881590.mp3';
+      const MUSIC_URL = ''; // Áudio C4 Pedro ainda sem ficheiro/link fornecido
 
       const prepareMusic = () => {
         if (!music) return;
@@ -1289,13 +1261,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       updateMusicIcon();
       
       const locationMapReligiosa = document.getElementById('locationMapReligiosa');
-            const locationMapCopo = document.getElementById('locationMapCopo');
+      const locationMapCivil = document.getElementById('locationMapCivil');
+      const locationMapCopo = document.getElementById('locationMapCopo');
 
       if (mapBtnReligiosa) mapBtnReligiosa.href = MAP_FAROL2_URL;
       if (mapBtnWelcome) mapBtnWelcome.href = MAP_FAROL2_URL; 
-            if (mapBtnCopo) mapBtnCopo.href = MAP_FAROL2_URL; 
+      if (mapBtnCivil) mapBtnCivil.href = MAP_CIVIL_URL;
+      if (mapBtnCopo) mapBtnCopo.href = MAP_FAROL2_URL; 
       if (locationMapReligiosa) locationMapReligiosa.href = MAP_FAROL2_URL;
-            if (locationMapCopo) locationMapCopo.href = MAP_FAROL2_URL;
+      if (locationMapCivil) locationMapCivil.href = MAP_CIVIL_URL;
+      if (locationMapCopo) locationMapCopo.href = MAP_FAROL2_URL;
       
       const EVENT_END_DATE = "2026-08-29T22:00:00+02:00";
       const EVENT_TITLE = "Casamento de Calate & Helder";
@@ -1317,7 +1292,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const calendarUrl = new URL('https://calendar.google.com/calendar/render');
         calendarUrl.searchParams.set('action', 'TEMPLATE');
         calendarUrl.searchParams.set('text', EVENT_TITLE);
-        calendarUrl.searchParams.set('dates', '20260912T100000/20260912T220000');
+        calendarUrl.searchParams.set('dates', '20260829T150000/20260829T220000');
         calendarUrl.searchParams.set('ctz', 'Africa/Maputo');
         calendarUrl.searchParams.set('location', EVENT_LOCATION);
         calendarUrl.searchParams.set('details', description);

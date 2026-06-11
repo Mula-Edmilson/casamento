@@ -91,7 +91,7 @@ async function main() {
     {
       $set: {
         slug: SLUG,
-        clientName: event.bride || 'Calate Salazar Hojuane',
+        clientName: event.clientName || event.groom || 'Hélder Jorge Muianga',
         coupleNames: event.coupleNames || 'Calate & Helder',
         bride: event.bride || 'Calate Salazar Hojuane',
         groom: event.groom || 'Hélder Jorge Muianga',

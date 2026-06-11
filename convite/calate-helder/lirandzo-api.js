@@ -90,7 +90,6 @@
     for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
     return new Blob([bytes], { type: mime || 'application/octet-stream' });
   }
-  function qrUrl() { return ''; }
 
   const Local = {
     get: function (action, params) {
@@ -115,7 +114,6 @@
     local: Local,
     findLocalGuestByToken: findLocalGuestByToken,
     findLocalGuestByName: findLocalGuestByName,
-    qrUrl: qrUrl,
     async get(action, params) {
       const p = params || {};
       if (!isConfigured()) return Local.get(action, p);
