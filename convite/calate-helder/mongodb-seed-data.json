@@ -19,9 +19,9 @@
     "brideParents": "",
     "groomParents": "",
     "ceremonyTitle": "Cerimónia Religiosa",
-    "ceremonyPlace": "Igreja Universal de Marracuene",
+    "ceremonyPlace": "",
     "ceremonyTime": "10:00",
-    "ceremonyMap": "https://maps.google.com/?q=-25.741796,32.648743",
+    "ceremonyMap": "",
     "receptionTitle": "Copo de Água",
     "receptionPlace": "Eventos & Acomodações Águia",
     "receptionTime": "15:00",
@@ -48,7 +48,7 @@
     "program": [
       {
         "title": "Cerimónia Religiosa",
-        "place": "Igreja Universal de Marracuene",
+        "place": "",
         "time": "10:00"
       },
       {
@@ -60,7 +60,7 @@
     "story": {},
     "letter": "Querido(a) convidado(a),\n\nCom alegria e gratidão, convidamo-lo(a) a fazer parte do nosso casamento. A sua presença tornará este momento ainda mais especial para nós.\n\nContamos consigo para celebrar este dia com fé, amor e alegria.\n\nCom gratidão,\nCalate e Helder",
     "audioYoutube": "",
-    "audioMp3": "",
+    "audioMp3": "https://static.wixstatic.com/mp3/172317_a34784b239814fcf9e37ff8c56122569.mp3",
     "guestListVersion": "Lista de convidados por importar",
     "guestListUpdatedAt": "2026-06-11",
     "features": {

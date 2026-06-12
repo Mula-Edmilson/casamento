@@ -250,6 +250,10 @@
 </head>
 <body class="loading convite-rustic-theme calate-helder-theme">
 <div class="fixed-ui-container">
+<audio id="backgroundMusic" preload="auto" loop playsinline src="https://static.wixstatic.com/mp3/172317_a34784b239814fcf9e37ff8c56122569.mp3"></audio>
+<button aria-label="Tocar música" id="musicControl" type="button">
+<svg viewbox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path></svg>
+</button>
 <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
 <svg viewbox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
 </button>
@@ -383,9 +387,6 @@
 <div class="agenda-event">
 <h3 class="event-title">Cerimónia Religiosa</h3>
 <p class="event-time">10:00</p>
-<div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
-<h4 class="event-location">Igreja Universal de Marracuene</h4>
-<a class="map-link-button" href="https://maps.google.com/?q=-25.741796,32.648743" id="mapBtnReligiosa" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
 </div>
 <div class="agenda-event">
 <h3 class="event-title">Copo de Água</h3>
@@ -680,7 +681,7 @@
 <h3 id="transporteApoioTitle">Detalhes de chegada</h3>
 <div class="modal-divider"></div>
 <div class="modal-travel-grid">
-<div><strong>Cerimónia</strong><p>Igreja Universal de Marracuene. A cerimónia religiosa inicia às 10:00.</p></div>
+<div><strong>Cerimónia</strong><p>A cerimónia religiosa inicia às 10:00.</p></div>
 <div><strong>Recepção</strong><p>Eventos &amp; Acomodações Águia. O copo de água inicia às 15:00.</p></div>
 <div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div>
 <div><strong>Apoio</strong><p>Dúvidas no dia: +258 87 465 3598.</p></div>
@@ -700,10 +701,6 @@
 <h3 id="locationChooserTitle">Escolha o local no mapa</h3>
 <p>Toque no local desejado para abrir a rota no Google Maps.</p>
 <div class="location-chooser-grid">
-<article class="location-choice-card">
-<div class="location-choice-preview religious-preview"><div class="location-choice-overlay"></div><div class="location-choice-top-accent"></div><div aria-hidden="true" class="location-choice-pin"><svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div><div class="location-choice-caption"><span>Cerimónia Religiosa</span><strong>Igreja Universal de Marracuene</strong></div></div>
-<div class="location-choice-body"><p>Cerimónia religiosa às 10:00. Recomendamos chegada com antecedência.</p><a class="btn btn-primary" href="https://maps.google.com/?q=-25.741796,32.648743" id="locationMapReligiosa" rel="noopener noreferrer" target="_blank">Abrir mapa da cerimónia</a></div>
-</article>
 <article class="location-choice-card">
 <div class="location-choice-preview copo-preview"><div class="location-choice-overlay"></div><div class="location-choice-top-accent"></div><div aria-hidden="true" class="location-choice-pin"><svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div><div class="location-choice-caption"><span>Copo de Água</span><strong>Eventos &amp; Acomodações Águia</strong></div></div>
 <div class="location-choice-body"><p>Rota directa para o local do copo de água e celebração.</p><a class="btn btn-primary" href="https://maps.google.com/?q=-25.741796,32.648743" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa da recepção</a></div>
@@ -1047,8 +1044,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Constantes
       const HOST_WHATSAPP_NUMBER = '+258874653598';
-      const ADDRESS_RELIGIOSA = 'Igreja Universal de Marracuene, Marracuene';
-      const ADDRESS_CIVIL = 'Igreja Universal de Marracuene, Marracuene';
+      const ADDRESS_RELIGIOSA = '';
+      const ADDRESS_CIVIL = '';
       const ADDRESS_COPO_DE_AGUA = 'Eventos & Acomodações Águia, Marracuene';
       const MAP_FAROL2_URL = 'https://maps.google.com/?q=-25.741796,32.648743';
       const MAP_CIVIL_URL = 'https://maps.google.com/?q=-25.741796,32.648743'; 
@@ -1065,7 +1062,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const rsvpBtn = document.getElementById('rsvpBtn');
       const dressCodeBtn = document.getElementById('dressCodeBtn');
       const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
-      const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
       const mapBtnCivil = document.getElementById('mapBtnCivil');
       const mapBtnCopo = document.getElementById('mapBtnCopo');
       const mapBtnWelcome = document.getElementById('mapBtnWelcome');
@@ -1184,7 +1180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         musicControl.classList.toggle('playing', !music.paused);
       };
 
-      const MUSIC_URL = ''; // Áudio C4 Pedro ainda sem ficheiro/link fornecido
+      const MUSIC_URL = 'https://static.wixstatic.com/mp3/172317_a34784b239814fcf9e37ff8c56122569.mp3';
 
       const prepareMusic = () => {
         if (!music) return;
@@ -1260,21 +1256,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       updateMusicIcon();
       
-      const locationMapReligiosa = document.getElementById('locationMapReligiosa');
       const locationMapCivil = document.getElementById('locationMapCivil');
       const locationMapCopo = document.getElementById('locationMapCopo');
 
-      if (mapBtnReligiosa) mapBtnReligiosa.href = MAP_FAROL2_URL;
       if (mapBtnWelcome) mapBtnWelcome.href = MAP_FAROL2_URL; 
       if (mapBtnCivil) mapBtnCivil.href = MAP_CIVIL_URL;
       if (mapBtnCopo) mapBtnCopo.href = MAP_FAROL2_URL; 
-      if (locationMapReligiosa) locationMapReligiosa.href = MAP_FAROL2_URL;
       if (locationMapCivil) locationMapCivil.href = MAP_CIVIL_URL;
       if (locationMapCopo) locationMapCopo.href = MAP_FAROL2_URL;
       
       const EVENT_END_DATE = "2026-08-29T22:00:00+02:00";
       const EVENT_TITLE = "Casamento de Calate & Helder";
-      const EVENT_LOCATION = `${ADDRESS_RELIGIOSA} / ${ADDRESS_COPO_DE_AGUA}`;
+      const EVENT_LOCATION = `${ADDRESS_COPO_DE_AGUA}`;
 
       const padCalendarValue = (value) => String(value).padStart(2, '0');
       const formatIcsDate = (date) => {
