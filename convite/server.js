@@ -357,6 +357,29 @@ const Rsvp = mongoose.model('Rsvp', RsvpSchema);
 const Message = mongoose.model('Message', MessageSchema);
 const GiftItem = mongoose.model('GiftItem', GiftItemSchema);
 const Contribution = mongoose.model('Contribution', ContributionSchema);
+
+async function ensureGiftIndexes() {
+  try {
+    const collection = mongoose.connection.collection('giftitems');
+    const indexes = await collection.indexes();
+
+    for (const index of indexes) {
+      const keys = index.key || {};
+      const isSingleNameIndex = index.name !== '_id_' && Object.keys(keys).length === 1 && keys.name === 1;
+      if (isSingleNameIndex) {
+        await collection.dropIndex(index.name);
+        console.log(`Índice antigo removido em giftitems: ${index.name}`);
+      }
+    }
+
+    await collection.createIndex(
+      { inviteId: 1, name: 1 },
+      { unique: true, name: 'inviteId_1_name_1' }
+    );
+  } catch (err) {
+    console.error('Falha ao validar índices de giftitems:', err.message);
+  }
+}
 const CheckIn = mongoose.model('CheckIn', CheckInSchema);
 const CapsulePhoto = mongoose.model('CapsulePhoto', CapsulePhotoSchema);
 const Activity = mongoose.model('Activity', ActivitySchema);
@@ -478,8 +501,22 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
 
 const DEFAULT_GIFTS = ['Geleira', 'Fogão', 'Congelador', 'TV', 'Batedeira', 'Mesa', 'Cadeira', 'Panela', 'Ar Condicionado', 'Micro-ondas', 'Ferro a vapor', 'Mesa de centro', 'Vaso', 'Pratos', 'Colcha', 'Cobertor', 'Colchão', 'Forno eléctrico', 'Jogo de facas', 'Máquina de lavar', 'Tapete', 'Saladeira', 'Panela de pressão', 'Porta-temperos', 'Copos', 'Fritadeira eléctrica', 'Bandeja', 'Torradeira', 'Frigideira eléctrica'];
 async function seedDefaultGifts(invite) {
+  if (!invite || !invite._id) return;
+
   for (const name of DEFAULT_GIFTS) {
-    await GiftItem.findOneAndUpdate({ inviteId: invite._id, name }, { $setOnInsert: { inviteId: invite._id, slug: invite.slug, name, category: 'Geral', reserved: false } }, { upsert: true });
+    try {
+      await GiftItem.updateOne(
+        { inviteId: invite._id, name },
+        { $setOnInsert: { inviteId: invite._id, slug: invite.slug, name, category: 'Geral', reserved: false } },
+        { upsert: true }
+      );
+    } catch (err) {
+      if (err && err.code === 11000) {
+        console.warn(`Presente duplicado ignorado em ${invite.slug}: ${name}`);
+        continue;
+      }
+      throw err;
+    }
   }
 }
 
@@ -1358,6 +1395,7 @@ async function start() {
   if (!process.env.MONGODB_URI) throw new Error('MONGODB_URI não configurado.');
   await mongoose.connect(process.env.MONGODB_URI);
   console.log('MongoDB conectado.');
+  await ensureGiftIndexes();
   app.listen(PORT, () => console.log(`Lirandzo AdminManager API a correr na porta ${PORT}`));
 }
 start().catch(err => { console.error('Falha ao iniciar servidor:', err); process.exit(1); });
