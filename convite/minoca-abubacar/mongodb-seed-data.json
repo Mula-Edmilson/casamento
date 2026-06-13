@@ -19,9 +19,9 @@
     "brideParents": "Família Muianga",
     "groomParents": "Família Amade",
     "ceremonyTitle": "Cerimónia Civil",
-    "ceremonyPlace": "Palácio dos Casamentos",
+    "ceremonyPlace": "Thendane Eventos",
     "ceremonyTime": "09:00",
-    "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique",
+    "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Thendane%20Eventos",
     "receptionTitle": "Copo de Água",
     "receptionPlace": "Thendane Eventos",
     "receptionTime": "13:00",
@@ -45,7 +45,7 @@
     "program": [
       {
         "title": "Cerimónia Civil",
-        "place": "Palácio dos Casamentos",
+        "place": "Thendane Eventos",
         "time": "09:00"
       },
       {
@@ -58,7 +58,7 @@
     "letter": "Querido(a) convidado(a),\n\nSerá uma honra partilhar consigo este momento único das nossas vidas. Esperamos por si para celebrarmos juntos com alegria, carinho e gratidão.\n\nCom carinho,\nMinoca e Abubacar",
     "audioYoutube": "",
     "audioMp3": "",
-    "civilMap": "https://www.google.com/maps/search/?api=1&query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique",
+    "civilMap": "https://www.google.com/maps/search/?api=1&query=Thendane%20Eventos",
     "guestListVersion": "Lista de convidados",
     "guestListUpdatedAt": "2026-06-05"
   },

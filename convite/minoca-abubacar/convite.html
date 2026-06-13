@@ -437,8 +437,7 @@
 <h3 class="event-title">Cerimónia Civil</h3>
 <p class="event-time">09:00</p>
 <div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
-<h4 class="event-location">Palácio dos Casamentos</h4>
-<a class="map-link-button" href="https://www.google.com/maps/search/?api=1&amp;query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique" id="mapBtnCivil" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
+<h4 class="event-location">Thendane Eventos</h4>
 </div>
 <div class="agenda-event">
 <h3 class="event-title">Copo de Água</h3>
@@ -710,7 +709,7 @@
 <span class="modal-kicker">Transporte &amp; Apoio</span>
 <h3 id="transporteApoioTitle">Detalhes de chegada</h3>
 <div class="modal-divider"></div>
-<div class="modal-travel-grid"><div><strong>Cerimónia Civil</strong><p>Palácio dos Casamentos, às 09:00.</p></div><div><strong>Copo de Água</strong><p>Thendane Eventos, às 13:00.</p></div><div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div><div><strong>Chegada</strong><p>Recomendamos que organize a sua deslocação com antecedência.</p></div></div>
+<div class="modal-travel-grid"><div><strong>Cerimónia Civil</strong><p>Thendane Eventos, às 09:00.</p></div><div><strong>Copo de Água</strong><p>Thendane Eventos, às 13:00.</p></div><div><strong>Estacionamento</strong><p>Ao chegar, siga as indicações da equipa de apoio do local.</p></div><div><strong>Chegada</strong><p>Recomendamos que organize a sua deslocação com antecedência.</p></div></div>
 <button class="btn btn-primary" data-close-modal="" type="button">Fechar Detalhes</button>
 </div>
 </div>
@@ -727,23 +726,6 @@
 <p>Toque no local desejado para abrir a rota no Google Maps.</p>
 <div class="location-chooser-grid">
 <article class="location-choice-card">
-<div class="location-choice-preview civil-preview">
-<div class="location-choice-overlay"></div>
-<div class="location-choice-top-accent"></div>
-<div aria-hidden="true" class="location-choice-pin">
-<svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
-</div>
-<div class="location-choice-caption">
-<span>Cerimónia Civil</span>
-<strong>Palácio dos Casamentos</strong>
-</div>
-</div>
-<div class="location-choice-body">
-<p>Cerimónia civil no Palácio dos Casamentos. Recomendamos chegada com antecedência.</p>
-<a class="btn btn-outline" href="https://www.google.com/maps/search/?api=1&amp;query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique" id="locationMapCivil" rel="noopener noreferrer" target="_blank">Abrir mapa do Civil</a>
-</div>
-</article>
-<article class="location-choice-card">
 <div class="location-choice-preview copo-preview">
 <div class="location-choice-overlay"></div>
 <div class="location-choice-top-accent"></div>
@@ -751,12 +733,12 @@
 <svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg>
 </div>
 <div class="location-choice-caption">
-<span>Copo de Água</span>
+<span>Cerimónia Civil e Copo de Água</span>
 <strong>Thendane Eventos</strong>
 </div>
 </div>
 <div class="location-choice-body">
-<p>Rota directa para o local do Copo de Água e celebração.</p>
+<p>Rota directa para o salão de eventos Thendane Eventos.</p>
 <a class="btn btn-primary" href="https://www.google.com/maps/search/?api=1&amp;query=Thendane%20Eventos" id="locationMapCopo" rel="noopener noreferrer" target="_blank">Abrir mapa do Thendane Eventos</a>
 </div>
 </article>
@@ -1054,11 +1036,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Constantes
       const HOST_WHATSAPP_NUMBER = ''; // sem contacto definido
-      const ADDRESS_RELIGIOSA = 'Palácio dos Casamentos, Maputo';
-      const ADDRESS_CIVIL = 'Palácio dos Casamentos, Maputo';
+      const ADDRESS_RELIGIOSA = 'Thendane Eventos, Maputo';
+      const ADDRESS_CIVIL = 'Thendane Eventos, Maputo';
       const ADDRESS_COPO_DE_AGUA = 'Thendane Eventos, Maputo';
-      const MAP_FAROL2_URL = 'https://maps.app.goo.gl/rbzP3MeZPr2s3x4i6';
-      const MAP_CIVIL_URL = 'https://www.google.com/maps/search/?api=1&query=Pal%C3%A1cio%20dos%20Casamentos%2C%20Maputo%2C%20Mo%C3%A7ambique'; 
+      const MAP_FAROL2_URL = 'https://www.google.com/maps/search/?api=1&query=Thendane%20Eventos';
+      const MAP_CIVIL_URL = 'https://www.google.com/maps/search/?api=1&query=Thendane%20Eventos'; 
       const EVENT_DATE = "2026-08-29T09:00:00+02:00"; 
       const body = document.body;
       const music = document.getElementById('backgroundMusic');
