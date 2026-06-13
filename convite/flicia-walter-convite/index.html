@@ -56,7 +56,7 @@
     bankAccount: "000100000120794168057",
     mobilePayment: "842600652 — Walter Mafumo",
     giftText: "Queridos amigos e familiares, o nosso maior presente é ter-vos connosco e partilhar este dia tão especial. Contudo, caso desejem presentear-nos com um gesto de carinho, optamos por uma contribuição em dinheiro, que nos ajudará a realizar os primeiros passos na construção do nosso lar.",
-    musicUrl: "https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3",
+    musicUrl: "https://static.wixstatic.com/mp3/172317_849c375497534a99936035c161dd4527.mp3",
   };
 
   const photos = {
@@ -459,7 +459,6 @@
     state.countdownTimer = setInterval(updateCountdown, 1000);
     $("#std-open-login")?.addEventListener("click", () => {
       playChime([392, 523.25, 659.25]);
-      startMusic();
       renderLogin();
     });
   }
@@ -1247,9 +1246,18 @@
     }
   }
 
+  function stopMusic() {
+    const audio = state.audio instanceof HTMLAudioElement ? state.audio : null;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    updateMusicButton();
+  }
+
   function logout() {
     sessionStorage.removeItem(`wedding_guest_${INVITE_SLUG}`);
     state.authGuest = null;
+    stopMusic();
     closeModal();
     renderEntryCover();
   }
