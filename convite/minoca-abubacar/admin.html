@@ -1255,9 +1255,9 @@
         <div class="section-title">
           <div>
             <h1>Painel do Evento</h1>
-            <p>Resumo operacional do convite, confirmações, entrada, mensagens e cápsula.</p>
+            <p>Resumo operacional do convite público: confirmações, convidados e mensagens.</p>
           </div>
-          <div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">08 de agosto de 2026</span></div>
+          <div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">29 de agosto de 2026</span></div>
         </div>
 
         <div id="metricsGrid" class="metrics-grid"></div>
@@ -1306,11 +1306,11 @@
               <div class="panel-body">
                 <div class="compact-info">
                   <div class="info-row"><span>Evento</span><strong id="eventName">Casamento</strong></div>
-                  <div class="info-row"><span>Data</span><strong id="eventDate">08 de agosto de 2026</strong></div>
-                  <div class="info-row"><span>RSVP até</span><strong id="rsvpDate">20 de junho de 2026</strong></div>
-                  <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">09:00 · Paróquia São Gabriel Arcanjo</strong></div>
-                  <div class="info-row"><span>Recepção</span><strong id="receptionInfo">13:00 · Hotel Polana</strong></div>
-                  <div class="info-row"><span>Apoio</span><strong id="supportInfo">Clemente / Nelson</strong></div>
+                  <div class="info-row"><span>Data</span><strong id="eventDate">29 de agosto de 2026</strong></div>
+                  <div class="info-row"><span>RSVP até</span><strong id="rsvpDate">Sem prazo definido</strong></div>
+                  <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">09:00 · Thendane Eventos</strong></div>
+                  <div class="info-row"><span>Recepção</span><strong id="receptionInfo">13:00 · Thendane Eventos</strong></div>
+                  <div class="info-row"><span>Apoio</span><strong id="supportInfo">Apoio no dia do evento</strong></div>
                 </div>
               </div>
             </section>
@@ -1320,7 +1320,7 @@
       </section>
 
       <section id="guestsPanel" class="page-panel">
-        <div class="section-title"><div><h1>Convidados</h1><p>Lista geral com mesa, acompanhantes, token e estado de entrada.</p></div><span id="guestBadge" class="event-chip">0 registos</span></div>
+        <div class="section-title"><div><h1>Convidados</h1><p>Registos criados automaticamente a partir das confirmações públicas do convite.</p></div><span id="guestBadge" class="event-chip">0 registos</span></div>
         <section class="panel-card admin-form-card">
           <div class="panel-head"><h2><i data-feather="user-plus"></i> Adicionar convidado</h2><span class="status-badge blue">Novo registo</span></div>
           <div class="panel-body">
@@ -1334,10 +1334,10 @@
               <div class="admin-field"><label for="newGuestNotes">Notas</label><textarea id="newGuestNotes" name="notes" rows="1" placeholder="Observações internas"></textarea></div>
               <div class="admin-form-actions"><button id="addGuestBtn" class="btn small" type="submit"><i data-feather="plus"></i> Adicionar</button></div>
             </form>
-            <p class="action-note">O sistema cria automaticamente o token do convidado e deixa o estado como “Não aberto”.</p>
+            <p class="action-note">Neste convite público, os nomes também entram automaticamente quando o convidado confirma presença.</p>
           </div>
         </section>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Basconvidados</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="guestSearch" class="search-input" type="search" placeholder="Pesquisar por nome, mesa ou token"></div><div class="toolbar-right"><button class="btn secondary small" data-export="guests" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>#</th><th>Convidado</th><th>Categoria</th><th>Mesa</th><th>Pessoas</th><th>Token</th><th>Estado</th></tr></thead><tbody id="guestRows"></tbody></table></div><div id="guestMobile" class="mobile-list"></div></div></section>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="guestSearch" class="search-input" type="search" placeholder="Pesquisar por nome ou telefone"></div><div class="toolbar-right"><button class="btn secondary small" data-export="guests" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>#</th><th>Convidado</th><th>Pessoas</th><th>Estado</th></tr></thead><tbody id="guestRows"></tbody></table></div><div id="guestMobile" class="mobile-list"></div></div></section>
       </section>
 
       <section id="rsvpsPanel" class="page-panel">
@@ -1345,7 +1345,7 @@
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="check-circle"></i> Confirmações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="rsvpSearch" class="search-input" type="search" placeholder="Pesquisar confirmação"></div><div class="toolbar-right"><button class="btn secondary small" data-export="rsvps" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Telefone</th><th>Resposta</th><th>Mensagem</th><th>Acção</th></tr></thead><tbody id="rsvpRows"></tbody></table></div><div id="rsvpMobile" class="mobile-list"></div></div></section>
       </section>
 
-      <section id="giftsPanel" class="page-panel">
+      <section id="giftsPanel" class="page-panel" hidden>
         <div class="section-title"><div><h1>Contribuições</h1><p>Registos de contribuição monetária e comprovativos.</p></div><span id="giftBadge" class="event-chip">0 registos</span></div>
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="gift"></i> Contribuições monetárias</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="giftSearch" class="search-input" type="search" placeholder="Pesquisar contribuição"></div><div class="toolbar-right"><button class="btn secondary small" data-export="gifts" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Convidado</th><th>Canal</th><th>Comprovativo / detalhes</th></tr></thead><tbody id="giftRows"></tbody></table></div><div id="giftMobile" class="mobile-list"></div></div></section>
       </section>
@@ -1355,12 +1355,12 @@
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="message-circle"></i> Felicitações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="messageSearch" class="search-input" type="search" placeholder="Pesquisar mensagem"><select id="messageVisibilityFilter" class="filter-select" aria-label="Filtrar mensagens"><option value="all">Todas</option><option value="visible">Visíveis</option><option value="hidden">Ocultas</option></select></div><div class="toolbar-right"><button class="btn secondary small" data-export="messages" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="messageRows"></tbody></table></div><div id="messageMobile" class="mobile-list"></div></div></section>
       </section>
 
-      <section id="checkinsPanel" class="page-panel">
+      <section id="checkinsPanel" class="page-panel" hidden>
         <div class="section-title"><div><h1>Check-in</h1><p>Entradas confirmadas no salão através do QR Code.</p></div><span id="checkinBadge" class="event-chip">0 entradas</span></div>
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="log-in"></i> Entradas no salão</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="checkinSearch" class="search-input" type="search" placeholder="Pesquisar check-in"></div><div class="toolbar-right"><button class="btn secondary small" data-export="checkins" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Mesa</th><th>Operador</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="checkinRows"></tbody></table></div><div id="checkinMobile" class="mobile-list"></div></div></section>
       </section>
 
-      <section id="capsulePanel" class="page-panel">
+      <section id="capsulePanel" class="page-panel" hidden>
         <div class="section-title"><div><h1>Cápsula</h1><p>Fotografias partilhadas pelos convidados para recordação do dia.</p></div><span id="capsuleBadge" class="event-chip">0 fotos</span></div>
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="image"></i> Galeria da cápsula</h2><button class="btn secondary small" data-export="photos" type="button"><i data-feather="download"></i> CSV</button></div><div class="panel-body"><div id="capsuleGrid" class="capsule-grid"></div></div></section>
       </section>
@@ -1390,7 +1390,38 @@
 
       const EVENT = window.LIRANDZO_EVENT || {};
       const configured = !!(window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured());
-      const panels = [
+      const DEFAULT_FEATURES = {
+        dashboard: true,
+        guests: true,
+        addGuests: true,
+        rsvp: true,
+        messages: true,
+        guestbook: true,
+        publicInvite: true,
+        guestLogin: false,
+        guestCategories: false,
+        guestTables: false,
+        guestTokens: false,
+        gifts: false,
+        giftRecords: false,
+        contributions: false,
+        checkin: false,
+        checkins: false,
+        capsule: false
+      };
+      const FEATURES = { ...DEFAULT_FEATURES, ...(EVENT.features || {}), ...(window.LIRANDZO_ADMIN_FEATURES || {}) };
+      const featureEnabled = (key) => FEATURES[key] === true || FEATURES[key] === 'true' || FEATURES[key] === 1 || FEATURES[key] === '1';
+      const panelEnabled = (id) => {
+        if (id === 'dashboard') return true;
+        if (id === 'guests') return featureEnabled('guests');
+        if (id === 'rsvps') return featureEnabled('rsvp') || featureEnabled('rsvps');
+        if (id === 'gifts') return featureEnabled('contributions') || featureEnabled('giftRecords') || featureEnabled('giftsAdmin');
+        if (id === 'messages') return featureEnabled('messages') || featureEnabled('guestbook');
+        if (id === 'checkins') return featureEnabled('checkin') || featureEnabled('checkins');
+        if (id === 'capsule') return featureEnabled('capsule');
+        return true;
+      };
+      const allPanels = [
         { id: 'dashboard', label: 'Dashboard', icon: 'layout' },
         { id: 'guests', label: 'Convidados', icon: 'users' },
         { id: 'rsvps', label: 'RSVP', icon: 'check-circle' },
@@ -1399,6 +1430,7 @@
         { id: 'checkins', label: 'Check-in', icon: 'log-in' },
         { id: 'capsule', label: 'Cápsula', icon: 'image' }
       ];
+      const panels = allPanels.filter(p => panelEnabled(p.id));
       const DATA = { stats: {}, guests: [], rsvps: [], gifts: [], messages: [], checkins: [], photos: [] };
       const charts = {};
 
@@ -1525,6 +1557,7 @@
         initTheme();
         feather.replace();
         buildNavigation();
+        applyFeatureVisibility();
         fillEventDetails();
         bindEvents();
         bindMediaPreview();
@@ -1553,6 +1586,50 @@
         }
         if (window.feather) feather.replace();
         if (Object.keys(charts).length) renderCharts();
+      }
+
+      function applyFeatureVisibility() {
+        document.querySelectorAll('.page-panel').forEach(panel => {
+          const id = String(panel.id || '').replace(/Panel$/, '');
+          panel.hidden = !panelEnabled(id);
+          panel.classList.toggle('is-disabled-by-feature', !panelEnabled(id));
+          if (!panelEnabled(id)) panel.classList.remove('active');
+        });
+        const checkinChartBox = $('checkinChart')?.closest('.chart-box');
+        if (checkinChartBox) checkinChartBox.hidden = !panelEnabled('checkins');
+        const dashboardCopy = $('dashboardPanel')?.querySelector('.section-title p');
+        if (dashboardCopy) {
+          const labels = ['confirmações'];
+          if (panelEnabled('messages')) labels.push('mensagens');
+          if (panelEnabled('gifts')) labels.push('contribuições');
+          if (panelEnabled('checkins')) labels.push('entradas');
+          if (panelEnabled('capsule')) labels.push('cápsula');
+          dashboardCopy.textContent = `Resumo operacional do convite: ${labels.join(', ')}.`;
+        }
+        const guestIntro = $('guestsPanel')?.querySelector('.section-title p');
+        if (guestIntro) {
+          guestIntro.textContent = featureEnabled('publicInvite') && !featureEnabled('guestLogin')
+            ? 'Registos criados automaticamente a partir das confirmações públicas do convite.'
+            : 'Lista geral com mesa, acompanhantes, token e estado de entrada.';
+        }
+        const guestActionNote = document.querySelector('.admin-form-card .action-note');
+        if (guestActionNote) {
+          guestActionNote.textContent = featureEnabled('publicInvite') && !featureEnabled('guestLogin')
+            ? 'Neste convite público, os nomes também entram automaticamente quando o convidado confirma presença.'
+            : 'O sistema cria automaticamente o token do convidado e deixa o estado como “Não aberto”.';
+        }
+        const addGuestCard = document.querySelector('.admin-form-card');
+        if (addGuestCard) addGuestCard.hidden = !featureEnabled('addGuests');
+        const fieldVisibility = [
+          ['newGuestCategory', featureEnabled('guestCategories')],
+          ['newGuestTable', featureEnabled('guestTables')],
+          ['newGuestNumber', !featureEnabled('publicInvite') || featureEnabled('guestLogin')]
+        ];
+        fieldVisibility.forEach(([id, visible]) => {
+          const field = $(id)?.closest('.admin-field');
+          if (field) field.hidden = !visible;
+        });
+        if (!$('dashboardPanel')?.classList.contains('active')) showPanel('dashboard');
       }
 
       function bindMediaPreview() {
@@ -1728,9 +1805,9 @@
         $('eventChip').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
         $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Minoca e Abubacar'}`;
         $('eventDate').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
-        $('rsvpDate').textContent = EVENT.rsvpDeadline || '20 de junho de 2026';
-        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '09:00'} · ${EVENT.ceremonyPlace || 'Paróquia São Gabriel Arcanjo'}`;
-        $('receptionInfo').textContent = `${EVENT.receptionTime || '13:00'} · ${EVENT.receptionPlace || 'Hotel Polana'}`;
+        $('rsvpDate').textContent = EVENT.rsvpDeadline || 'Sem prazo definido';
+        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '09:00'} · ${EVENT.ceremonyPlace || 'Thendane Eventos'}`;
+        $('receptionInfo').textContent = `${EVENT.receptionTime || '13:00'} · ${EVENT.receptionPlace || 'Thendane Eventos'}`;
         $('supportInfo').textContent = EVENT.supportContacts || 'Apoio no dia do evento';
       }
 
@@ -1739,8 +1816,13 @@
         syncText.textContent = configured ? 'Online' : 'Modo teste';
         dataSourceBadge.className = 'status-badge ' + (configured ? 'ok' : 'warn');
         dataSourceBadge.textContent = configured ? 'Sistema activo' : 'Modo teste';
+        const activeModules = ['confirmações'];
+        if (panelEnabled('messages')) activeModules.push('mensagens');
+        if (panelEnabled('gifts')) activeModules.push('contribuições');
+        if (panelEnabled('checkins')) activeModules.push('entradas');
+        if (panelEnabled('capsule')) activeModules.push('fotografias');
         backendNote.innerHTML = configured
-          ? 'Painel sincronizado. Os dados são actualizados sempre que houver novas confirmações, contribuições, mensagens ou entradas.'
+          ? `Painel sincronizado. Este admin está adaptado ao convite público e carrega apenas: ${activeModules.join(', ')}.`
           : 'Modo de teste activo. Alguns dados podem estar guardados apenas neste navegador.';
       }
 
@@ -1759,14 +1841,23 @@
       }
 
       function renderSkeletons() {
-        const metricSkeleton = Array.from({ length: 6 }).map(() => '<article class="metric-card"><span class="skeleton-line" style="width:72%"></span><strong class="skeleton-line" style="width:42%;height:28px;margin-top:9px"></strong><small class="skeleton-line" style="width:58%;height:12px;margin-top:8px"></small></article>').join('');
+        const metricCount = 3 + (panelEnabled('messages') ? 1 : 0) + (panelEnabled('gifts') ? 1 : 0) + (panelEnabled('checkins') ? 1 : 0) + (panelEnabled('capsule') ? 1 : 0);
+        const metricSkeleton = Array.from({ length: Math.max(metricCount, 3) }).map(() => '<article class="metric-card"><span class="skeleton-line" style="width:72%"></span><strong class="skeleton-line" style="width:42%;height:28px;margin-top:9px"></strong><small class="skeleton-line" style="width:58%;height:12px;margin-top:8px"></small></article>').join('');
         $('metricsGrid').innerHTML = metricSkeleton;
         $('activityList').innerHTML = Array.from({ length: 5 }).map(() => '<article class="activity-item"><div class="skeleton-card" style="width:34px;min-height:34px"></div><div style="display:grid;gap:7px"><span class="skeleton-line" style="width:72%"></span><span class="skeleton-line" style="width:92%;height:12px"></span></div><span class="skeleton-line" style="width:86px;height:24px;border-radius:999px"></span></article>').join('');
         const tableSkeleton = (cols) => Array.from({ length: 5 }).map(() => '<tr>' + Array.from({ length: cols }).map(() => '<td><span class="skeleton-cell"></span></td>').join('') + '</tr>').join('');
         const mobileSkeleton = Array.from({ length: 4 }).map(() => '<article class="mobile-card"><span class="skeleton-line" style="width:62%"></span><span class="skeleton-line" style="width:88%;height:12px;margin-top:8px"></span></article>').join('');
-        ['guestRows','rsvpRows','giftRows','messageRows','checkinRows'].forEach((id, index) => { const el = $(id); if (el) el.innerHTML = tableSkeleton([7,7,4,5,7][index]); });
-        ['guestMobile','rsvpMobile','giftMobile','messageMobile','checkinMobile'].forEach(id => { const el = $(id); if (el) el.innerHTML = mobileSkeleton; });
-        if ($('capsuleGrid')) $('capsuleGrid').innerHTML = Array.from({ length: 6 }).map(() => '<article class="photo-card"><div class="skeleton-card" style="aspect-ratio:1/1;border-radius:0;min-height:auto"></div><div class="photo-meta"><span class="skeleton-line" style="width:70%"></span><span class="skeleton-line" style="width:48%;height:12px;margin-top:8px"></span></div></article>').join('');
+        const skeletonTargets = [
+          ['guestRows', 5, 'guests'],
+          ['rsvpRows', 7, 'rsvps'],
+          ['giftRows', 4, 'gifts'],
+          ['messageRows', 5, 'messages'],
+          ['checkinRows', 7, 'checkins']
+        ];
+        skeletonTargets.forEach(([id, cols, panel]) => { const el = $(id); if (el && panelEnabled(panel)) el.innerHTML = tableSkeleton(cols); });
+        [['guestMobile','guests'], ['rsvpMobile','rsvps'], ['giftMobile','gifts'], ['messageMobile','messages'], ['checkinMobile','checkins']]
+          .forEach(([id, panel]) => { const el = $(id); if (el && panelEnabled(panel)) el.innerHTML = mobileSkeleton; });
+        if ($('capsuleGrid') && panelEnabled('capsule')) $('capsuleGrid').innerHTML = Array.from({ length: 6 }).map(() => '<article class="photo-card"><div class="skeleton-card" style="aspect-ratio:1/1;border-radius:0;min-height:auto"></div><div class="photo-meta"><span class="skeleton-line" style="width:70%"></span><span class="skeleton-line" style="width:48%;height:12px;margin-top:8px"></span></div></article>').join('');
       }
 
       async function loadAll() {
@@ -1775,15 +1866,18 @@
         app.classList.add('is-loading');
         renderSkeletons();
         try {
-          const adminMessagesPromise = adminPost('get_messages').catch(() => LirandzoAPI.get('list_messages'));
+          const emptyResponse = { status: 'success', data: [] };
+          const adminMessagesPromise = panelEnabled('messages')
+            ? adminPost('get_messages').catch(() => LirandzoAPI.get('list_messages'))
+            : Promise.resolve(emptyResponse);
           const [stats, guests, rsvps, gifts, messages, checkins, photos] = await Promise.all([
             LirandzoAPI.get('stats'),
-            LirandzoAPI.get('list_guests'),
-            LirandzoAPI.get('list_rsvps'),
-            LirandzoAPI.get('list_gift_records'),
+            panelEnabled('guests') ? LirandzoAPI.get('list_guests') : Promise.resolve(emptyResponse),
+            panelEnabled('rsvps') ? LirandzoAPI.get('list_rsvps') : Promise.resolve(emptyResponse),
+            panelEnabled('gifts') ? LirandzoAPI.get('list_gift_records') : Promise.resolve(emptyResponse),
             adminMessagesPromise,
-            LirandzoAPI.get('list_checkins'),
-            LirandzoAPI.get('list_capsule_photos')
+            panelEnabled('checkins') ? LirandzoAPI.get('list_checkins') : Promise.resolve(emptyResponse),
+            panelEnabled('capsule') ? LirandzoAPI.get('list_capsule_photos') : Promise.resolve(emptyResponse)
           ]);
           DATA.stats = stats.data || {};
           DATA.guests = guests.data || [];
@@ -1837,12 +1931,13 @@
         const s = summary();
         const metrics = [
           ['Convidados', s.guestsCount, 'registos'],
-          ['Pessoas', s.totalPeople, 'previstas'],
-          ['RSVP', s.confirmedPeople, `${percent(s.confirmedPeople, s.totalPeople)}% confirmado`],
-          ['Check-in', s.checkedPeople, `${percent(s.checkedPeople, s.totalPeople)}% no salão`],
-          ['Contribuições', s.gifts, 'registos'],
-          ['Cápsula', s.photos, 'fotos']
+          ['Pessoas', s.totalPeople, 'previstas/registadas'],
+          ['RSVP', s.confirmedPeople, `${percent(s.confirmedPeople, s.totalPeople)}% confirmado`]
         ];
+        if (panelEnabled('messages')) metrics.push(['Mensagens', s.messages, 'felicitações']);
+        if (panelEnabled('checkins')) metrics.push(['Check-in', s.checkedPeople, `${percent(s.checkedPeople, s.totalPeople)}% no salão`]);
+        if (panelEnabled('gifts')) metrics.push(['Contribuições', s.gifts, 'registos']);
+        if (panelEnabled('capsule')) metrics.push(['Cápsula', s.photos, 'fotos']);
         $('metricsGrid').innerHTML = metrics.map(item => `<article class="metric-card"><span>${esc(item[0])}</span><strong>${esc(item[1])}</strong><small>${esc(item[2])}</small></article>`).join('');
       }
 
@@ -1874,17 +1969,29 @@
         const s = summary();
         const empty = cssVar('--chart-empty') || '#4c4540';
         makeChart('rsvpChart', ['Confirmados', 'Pendentes'], [s.confirmedPeople, s.pendingPeople], [cssVar('--accent') || '#b08968', empty]);
-        makeChart('checkinChart', ['Entraram', 'Por entrar'], [s.checkedPeople, s.pendingCheckin], [cssVar('--green') || '#18b783', empty]);
-        makeChart('interactionChart', ['RSVP', 'Contrib.', 'Msgs', 'Fotos'], [s.confirmedRows, s.gifts, s.messages, s.photos], [cssVar('--accent-2') || '#d0ad8f', cssVar('--orange') || '#f2a84a', cssVar('--blue') || '#6aa5ff', cssVar('--green') || '#18b783']);
+        if (panelEnabled('checkins')) {
+          makeChart('checkinChart', ['Entraram', 'Por entrar'], [s.checkedPeople, s.pendingCheckin], [cssVar('--green') || '#18b783', empty]);
+        } else if (charts.checkinChart) {
+          charts.checkinChart.destroy();
+          delete charts.checkinChart;
+        }
+        const labels = ['RSVP'];
+        const values = [s.confirmedRows];
+        const colors = [cssVar('--accent-2') || '#d0ad8f'];
+        if (panelEnabled('messages')) { labels.push('Msgs'); values.push(s.messages); colors.push(cssVar('--blue') || '#6aa5ff'); }
+        if (panelEnabled('gifts')) { labels.push('Contrib.'); values.push(s.gifts); colors.push(cssVar('--orange') || '#f2a84a'); }
+        if (panelEnabled('checkins')) { labels.push('Entradas'); values.push(s.checkedRows); colors.push(cssVar('--green') || '#18b783'); }
+        if (panelEnabled('capsule')) { labels.push('Fotos'); values.push(s.photos); colors.push(cssVar('--green') || '#18b783'); }
+        makeChart('interactionChart', labels, values, colors);
       }
 
       function renderActivity() {
         const items = [
-          ...DATA.rsvps.map(x => ({ ...x, type: 'RSVP', icon: 'check-circle', detail: `${peopleFromRsvp(x) || '-'} pessoa(s) confirmada(s)` })),
-          ...DATA.gifts.map(x => ({ ...x, type: 'Contribuição', icon: 'gift', detail: giftDetail(x) })),
-          ...DATA.messages.map(x => ({ ...x, type: 'Mensagem', icon: 'message-circle', detail: text(x.message).slice(0, 90) })),
-          ...DATA.checkins.map(x => ({ ...x, type: 'Check-in', icon: 'log-in', detail: `${num(x.guests || x.maxGuests) || 1} pessoa(s) · ${x.mesa || 'Mesa a definir'}` })),
-          ...DATA.photos.map(x => ({ ...x, type: 'Cápsula', icon: 'image', detail: x.filename || 'Foto enviada' }))
+          ...(panelEnabled('rsvps') ? DATA.rsvps.map(x => ({ ...x, type: 'RSVP', icon: 'check-circle', detail: `${peopleFromRsvp(x) || '-'} pessoa(s) confirmada(s)` })) : []),
+          ...(panelEnabled('gifts') ? DATA.gifts.map(x => ({ ...x, type: 'Contribuição', icon: 'gift', detail: giftDetail(x) })) : []),
+          ...(panelEnabled('messages') ? DATA.messages.map(x => ({ ...x, type: 'Mensagem', icon: 'message-circle', detail: text(x.message).slice(0, 90) })) : []),
+          ...(panelEnabled('checkins') ? DATA.checkins.map(x => ({ ...x, type: 'Check-in', icon: 'log-in', detail: `${num(x.guests || x.maxGuests) || 1} pessoa(s) · ${x.mesa || 'Mesa a definir'}` })) : []),
+          ...(panelEnabled('capsule') ? DATA.photos.map(x => ({ ...x, type: 'Cápsula', icon: 'image', detail: x.filename || 'Foto enviada' })) : [])
         ].sort((a, b) => new Date(b.timestamp || b.createdAt) - new Date(a.timestamp || a.createdAt));
         const maxItems = window.matchMedia('(max-width: 760px)').matches ? 5 : 9;
         const visibleItems = items.slice(0, maxItems);
@@ -1898,12 +2005,12 @@
       }
 
       function renderLists() {
-        renderGuests();
-        renderRsvps();
-        renderGifts();
-        renderMessages();
-        renderCheckins();
-        renderCapsule();
+        if (panelEnabled('guests')) renderGuests();
+        if (panelEnabled('rsvps')) renderRsvps();
+        if (panelEnabled('gifts')) renderGifts();
+        if (panelEnabled('messages')) renderMessages();
+        if (panelEnabled('checkins')) renderCheckins();
+        if (panelEnabled('capsule')) renderCapsule();
         feather.replace();
       }
 
@@ -1916,20 +2023,39 @@
         return !q ? list : list.filter(item => contains(item, q));
       }
 
+      function guestStatusMarkup(g) {
+        if (panelEnabled('checkins')) {
+          return guestChecked(g.token) ? '<span class="status-badge ok">Entrou</span>' : '<span class="status-badge warn">Pendente</span>';
+        }
+        const raw = text(g.status || g.guestStatus || 'Registado');
+        const lower = raw.toLowerCase();
+        const klass = lower.includes('confirm') ? 'ok' : (lower.includes('public') || lower.includes('aberto') ? 'blue' : 'warn');
+        return `<span class="status-badge ${klass}">${esc(raw || 'Registado')}</span>`;
+      }
+
       function renderGuests() {
         const list = filtered(DATA.guests, 'guestSearch');
         $('guestBadge').textContent = `${list.length} registos`;
-        $('guestRows').innerHTML = list.length ? list.map(g => `
-          <tr>
-            <td>${esc(g.number || '')}</td>
-            <td><strong>${esc(nameOf(g))}</strong></td>
-            <td>${esc(String(g.category).toLowerCase() === 'couple' ? 'Casal' : 'Individual')}</td>
-            <td>${esc(g.mesa || 'A definir')}</td>
-            <td>${esc(g.maxGuests || g.guests || 1)}</td>
-            <td><small>${esc(g.token || '')}</small></td>
-            <td>${guestChecked(g.token) ? '<span class="status-badge ok">Entrou</span>' : '<span class="status-badge warn">Pendente</span>'}</td>
-          </tr>`).join('') : '<tr><td colspan="7" class="empty">Sem convidados para mostrar.</td></tr>';
-        $('guestMobile').innerHTML = mobileCards(list, g => `${esc(String(g.category).toLowerCase() === 'couple' ? 'Casal' : 'Individual')} · ${esc(g.maxGuests || 1)} pessoa(s) · Mesa: ${esc(g.mesa || 'A definir')}`, g => guestChecked(g.token) ? '<span class="status-badge ok">Entrou</span>' : '<span class="status-badge warn">Pendente</span>');
+        const columns = [
+          { label: '#', enabled: true, cell: g => esc(g.number || '') },
+          { label: 'Convidado', enabled: true, cell: g => `<strong>${esc(nameOf(g))}</strong>` },
+          { label: 'Categoria', enabled: featureEnabled('guestCategories'), cell: g => esc(String(g.category || '').toLowerCase() === 'couple' ? 'Casal' : (g.category || 'Individual')) },
+          { label: 'Mesa', enabled: featureEnabled('guestTables'), cell: g => esc(g.mesa || 'A definir') },
+          { label: 'Pessoas', enabled: true, cell: g => esc(g.maxGuests || g.guests || 1) },
+          { label: 'Token', enabled: featureEnabled('guestTokens'), cell: g => `<small>${esc(g.token || '')}</small>` },
+          { label: 'Estado', enabled: true, cell: g => guestStatusMarkup(g) }
+        ].filter(col => col.enabled);
+        const tableHead = $('guestRows')?.closest('table')?.querySelector('thead tr');
+        if (tableHead) tableHead.innerHTML = columns.map(col => `<th>${esc(col.label)}</th>`).join('');
+        $('guestRows').innerHTML = list.length
+          ? list.map(g => `<tr>${columns.map(col => `<td>${col.cell(g)}</td>`).join('')}</tr>`).join('')
+          : `<tr><td colspan="${columns.length}" class="empty">Sem convidados para mostrar.</td></tr>`;
+        $('guestMobile').innerHTML = list.length ? list.map(g => {
+          const parts = [`${esc(g.maxGuests || g.guests || 1)} pessoa(s)`];
+          if (featureEnabled('guestCategories') && g.category) parts.unshift(esc(String(g.category).toLowerCase() === 'couple' ? 'Casal' : g.category));
+          if (featureEnabled('guestTables')) parts.push(`Mesa: ${esc(g.mesa || 'A definir')}`);
+          return `<article class="mobile-card"><strong>${esc(nameOf(g))}</strong><span>${parts.join(' · ')}</span>${guestStatusMarkup(g)}</article>`;
+        }).join('') : '<div class="empty">Sem dados para mostrar.</div>';
       }
 
       function renderRsvps() {
@@ -2068,7 +2194,7 @@
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `rosalina-monteiro-${type}.csv`;
+        a.download = `${inviteSlug() || 'minoca-abubacar'}-${type}.csv`;
         a.click();
         setTimeout(() => URL.revokeObjectURL(a.href), 1000);
       }
