@@ -2,7 +2,7 @@
 window.LIRANDZO_EVENT = {
   "slug": "minoca-abubacar",
   "coupleNames": "Minoca & Abubacar",
-  "displayNames": "Minoca e Abubacar",
+  "displayNames": "Nura e Abubacar",
   "bride": "Minoca Isabel Muianga",
   "groom": "Abubacar Amisse Amade",
   "monogram": "MA",
@@ -19,12 +19,12 @@ window.LIRANDZO_EVENT = {
   "brideParents": "Família Muianga",
   "groomParents": "Família Amade",
   "ceremonyTitle": "Cerimónia Civil",
-  "ceremonyPlace": "Thendane Eventos",
-  "ceremonyTime": "09:00",
+  "ceremonyPlace": "Thayana Eventos",
+  "ceremonyTime": "13:00",
   "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Thendane%20Eventos",
   "receptionTitle": "Copo de Água",
-  "receptionPlace": "Thendane Eventos",
-  "receptionTime": "13:00",
+  "receptionPlace": "Thayana Eventos",
+  "receptionTime": "15:00",
   "receptionMap": "https://www.google.com/maps/search/?api=1&query=Thendane%20Eventos",
   "additionalTitle": "",
   "additionalPlace": "",
@@ -45,13 +45,13 @@ window.LIRANDZO_EVENT = {
   "program": [
     {
       "title": "Cerimónia Civil",
-      "place": "Thendane Eventos",
-      "time": "09:00"
+      "place": "Thayana Eventos",
+      "time": "13:00"
     },
     {
       "title": "Copo de Água",
-      "place": "Thendane Eventos",
-      "time": "13:00"
+      "place": "Thayana Eventos",
+      "time": "15:00"
     }
   ],
   "story": {},
