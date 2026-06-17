@@ -19,7 +19,7 @@ https://lirandzo.com/convite/minoca-abubacar/
 
 Dados integrados:
 - Noivos: Minoca Isabel Muianga & Abubacar Amisse Amade
-- Data: 29 de agosto de 2026
+- Data: 28 de agosto de 2026
 - Slug: minoca-abubacar
 - Convidados: 118 entradas / 200 pessoas autorizadas
 - Lista de presentes: 24 itens

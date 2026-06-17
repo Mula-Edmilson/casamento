@@ -1238,7 +1238,7 @@
         <button id="menuBtn" class="btn secondary icon-only menu-trigger" type="button" aria-label="Abrir menu"><i data-feather="menu"></i></button>
         <div class="topbar-title">
           <strong id="topbarTitle">Dashboard</strong>
-          <span id="topbarSubtitle">Nura & Abubacar · 29/08/2026</span>
+          <span id="topbarSubtitle">Nura & Abubacar · 28/08/2026</span>
         </div>
       </div>
       <div class="topbar-actions">
@@ -1257,7 +1257,7 @@
             <h1>Painel do Evento</h1>
             <p>Resumo operacional do convite público: confirmações, convidados e mensagens.</p>
           </div>
-          <div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">29 de agosto de 2026</span></div>
+          <div class="event-chip"><i data-feather="calendar"></i><span id="eventChip">28 de agosto de 2026</span></div>
         </div>
 
         <div id="metricsGrid" class="metrics-grid"></div>
@@ -1306,7 +1306,7 @@
               <div class="panel-body">
                 <div class="compact-info">
                   <div class="info-row"><span>Evento</span><strong id="eventName">Casamento</strong></div>
-                  <div class="info-row"><span>Data</span><strong id="eventDate">29 de agosto de 2026</strong></div>
+                  <div class="info-row"><span>Data</span><strong id="eventDate">28 de agosto de 2026</strong></div>
                   <div class="info-row"><span>RSVP até</span><strong id="rsvpDate">Sem prazo definido</strong></div>
                   <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">13:00 · THAYANA EVENTOS</strong></div>
                   <div class="info-row"><span>Recepção</span><strong id="receptionInfo">15:00 · THAYANA EVENTOS</strong></div>
@@ -1801,7 +1801,7 @@
       }
 
       function fillEventDetails() {
-        $('topbarSubtitle').textContent = `${EVENT.displayNames || EVENT.coupleNames || 'Minoca & Abubacar'} · ${EVENT.eventDateLong || '29 de agosto de 2026'}`;
+        $('topbarSubtitle').textContent = `${EVENT.displayNames || EVENT.coupleNames || 'Minoca & Abubacar'} · ${EVENT.eventDateLong || '28 de agosto de 2026'}`;
         $('eventChip').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
         $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Minoca e Abubacar'}`;
         $('eventDate').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
@@ -2024,11 +2024,14 @@
       }
 
       function guestStatusMarkup(g) {
-        if (panelEnabled('checkins')) {
-          return guestChecked(g.token) ? '<span class="status-badge ok">Entrou</span>' : '<span class="status-badge warn">Pendente</span>';
-        }
         const raw = text(g.status || g.guestStatus || 'Registado');
         const lower = raw.toLowerCase();
+        if (panelEnabled('checkins')) {
+          if (guestChecked(g.token)) return '<span class="status-badge ok">Entrou</span>';
+          if (lower.includes('confirm')) return `<span class="status-badge ok">${esc(raw)}</span>`;
+          if (lower.includes('public') || lower.includes('aberto')) return `<span class="status-badge blue">${esc(raw)}</span>`;
+          return `<span class="status-badge warn">${esc(raw || 'Pendente')}</span>`;
+        }
         const klass = lower.includes('confirm') ? 'ok' : (lower.includes('public') || lower.includes('aberto') ? 'blue' : 'warn');
         return `<span class="status-badge ${klass}">${esc(raw || 'Registado')}</span>`;
       }

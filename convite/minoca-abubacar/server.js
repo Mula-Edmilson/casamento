@@ -357,6 +357,29 @@ const Rsvp = mongoose.model('Rsvp', RsvpSchema);
 const Message = mongoose.model('Message', MessageSchema);
 const GiftItem = mongoose.model('GiftItem', GiftItemSchema);
 const Contribution = mongoose.model('Contribution', ContributionSchema);
+
+async function ensureGiftIndexes() {
+  try {
+    const collection = mongoose.connection.collection('giftitems');
+    const indexes = await collection.indexes();
+
+    for (const index of indexes) {
+      const keys = index.key || {};
+      const isSingleNameIndex = index.name !== '_id_' && Object.keys(keys).length === 1 && keys.name === 1;
+      if (isSingleNameIndex) {
+        await collection.dropIndex(index.name);
+        console.log(`Índice antigo removido em giftitems: ${index.name}`);
+      }
+    }
+
+    await collection.createIndex(
+      { inviteId: 1, name: 1 },
+      { unique: true, name: 'inviteId_1_name_1' }
+    );
+  } catch (err) {
+    console.error('Falha ao validar índices de giftitems:', err.message);
+  }
+}
 const CheckIn = mongoose.model('CheckIn', CheckInSchema);
 const CapsulePhoto = mongoose.model('CapsulePhoto', CapsulePhotoSchema);
 const Activity = mongoose.model('Activity', ActivitySchema);
@@ -478,8 +501,22 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
 
 const DEFAULT_GIFTS = ['Geleira', 'Fogão', 'Congelador', 'TV', 'Batedeira', 'Mesa', 'Cadeira', 'Panela', 'Ar Condicionado', 'Micro-ondas', 'Ferro a vapor', 'Mesa de centro', 'Vaso', 'Pratos', 'Colcha', 'Cobertor', 'Colchão', 'Forno eléctrico', 'Jogo de facas', 'Máquina de lavar', 'Tapete', 'Saladeira', 'Panela de pressão', 'Porta-temperos', 'Copos', 'Fritadeira eléctrica', 'Bandeja', 'Torradeira', 'Frigideira eléctrica'];
 async function seedDefaultGifts(invite) {
+  if (!invite || !invite._id) return;
+
   for (const name of DEFAULT_GIFTS) {
-    await GiftItem.findOneAndUpdate({ inviteId: invite._id, name }, { $setOnInsert: { inviteId: invite._id, slug: invite.slug, name, category: 'Geral', reserved: false } }, { upsert: true });
+    try {
+      await GiftItem.updateOne(
+        { inviteId: invite._id, name },
+        { $setOnInsert: { inviteId: invite._id, slug: invite.slug, name, category: 'Geral', reserved: false } },
+        { upsert: true }
+      );
+    } catch (err) {
+      if (err && err.code === 11000) {
+        console.warn(`Presente duplicado ignorado em ${invite.slug}: ${name}`);
+        continue;
+      }
+      throw err;
+    }
   }
 }
 
@@ -541,7 +578,7 @@ app.post('/manager/invites', requireManager, async (req, res) => {
   let github = null;
   if (parseBool(body.copyToGithub)) {
     try { github = await copyPackageTemplateToClient({ invite }); invite.githubPath = github.path; invite.githubLastCommitSha = github.commitSha; await invite.save(); await logActivity({ invite, type: 'github', title: 'Pasta criada no GitHub', detail: github.path, meta: github }); }
-    catch (err) { await logActivity({ invite, type: 'warning', title: 'Convite criado sem cópia GitHub', detail: err.message }); return res.status(201).json({ status: 'warning', message: `Convite criado na basdados, mas a cópia GitHub falhou: ${err.message}`, data: cleanInviteDoc(invite), github: null }); }
+    catch (err) { await logActivity({ invite, type: 'warning', title: 'Convite criado sem cópia GitHub', detail: err.message }); return res.status(201).json({ status: 'warning', message: `Convite criado na base de dados, mas a cópia GitHub falhou: ${err.message}`, data: cleanInviteDoc(invite), github: null }); }
   }
   await logActivity({ invite, type: 'invite', title: 'Convite criado', detail: `${invite.coupleNames} · ${packageLabel(packageKey)}` });
   res.status(201).json({ status: 'success', message: `Convite criado com sucesso: ${publicUrl}`, data: cleanInviteDoc(invite), github });
@@ -1241,6 +1278,79 @@ async function handleLogin(req, res, invite) {
   const data = cleanGuestForPublic(guest);
   res.json({ status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
 }
+function getPublicRsvpAutoCreateSlugs() {
+  return new Set(
+    String(process.env.PUBLIC_RSVP_AUTO_CREATE_SLUGS || '')
+      .split(',')
+      .map(value => slugify(value))
+      .filter(Boolean)
+  );
+}
+function canAutoCreateGuestForRsvp(invite) {
+  const slug = slugify(invite?.slug || '');
+  return Boolean(slug && getPublicRsvpAutoCreateSlugs().has(slug));
+}
+function parseRsvpPeopleCount(data = {}) {
+  const explicitTotal = Number.parseInt(
+    data.guests ?? data.totalGuests ?? data.maxGuests ?? data.pessoas ?? data.people ?? data.qtd ?? '',
+    10
+  );
+
+  if (Number.isFinite(explicitTotal) && explicitTotal > 0) {
+    return Math.max(1, explicitTotal);
+  }
+
+  const companions = Number.parseInt(
+    data.companions ?? data.acompanhantes ?? data.acompanhante ?? '',
+    10
+  );
+
+  if (Number.isFinite(companions) && companions >= 0) {
+    return 1 + companions;
+  }
+
+  return 1;
+}
+async function createPublicRsvpGuest(invite, data = {}) {
+  const name = String(data.nome || data.name || '').trim();
+  if (!name) {
+    const err = new Error('Nome do convidado é obrigatório.');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const normalizedName = normalizeText(name);
+  const totalGuests = parseRsvpPeopleCount(data);
+  const companions = Math.max(0, totalGuests - 1);
+
+  let token = generateGuestPublicToken();
+  while (await Guest.exists({ inviteId: invite._id, inviteToken: token })) token = generateGuestPublicToken();
+
+  try {
+    return await Guest.create({
+      inviteId: invite._id,
+      slug: invite.slug,
+      name,
+      normalizedName,
+      status: 'Convite Aberto',
+      deviceToken: '',
+      table: String(data.table || data.mesa || '').trim(),
+      companions,
+      maxGuests: totalGuests,
+      phone: String(data.phone || data.telefone || '').trim(),
+      notes: 'Criado automaticamente por RSVP público',
+      inviteToken: token,
+      number: 0,
+      category: 'RSVP público'
+    });
+  } catch (err) {
+    if (err && err.code === 11000) {
+      const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
+      if (existing) return existing;
+    }
+    throw err;
+  }
+}
 async function handleRsvpChoice(req, res, invite) {
   const choice = String(req.body?.choice || '').toLowerCase();
   if (choice === 'confirmed' || choice === 'sim' || choice.includes('confirm')) return handleRsvp(req, res, invite);
@@ -1250,75 +1360,44 @@ async function handleRsvpChoice(req, res, invite) {
 }
 async function handleRsvp(req, res, invite) {
   const { nome, phone = '', message = '', token = '' } = req.body || {};
-  const cleanNome = String(nome || '').trim();
-  if (!cleanNome) return res.status(400).json({ status: 'error', message: 'Digite o nome para confirmar a presença.' });
+  let guest = await findGuestByIdentity(invite, { nome, token });
 
-  const requestedGuestsRaw = Number(req.body?.guests || req.body?.pessoas || 1);
-  const totalGuests = Math.min(5, Math.max(1, Number.isFinite(requestedGuestsRaw) ? Math.floor(requestedGuestsRaw) : 1));
-
-  let guest = await findGuestByIdentity(invite, { nome: cleanNome, token });
-
-  // Novo cenário público: se o nome ainda não existir na lista, criamos o convidado automaticamente.
   if (!guest) {
-    const normalizedName = normalizeText(cleanNome);
+    if (!canAutoCreateGuestForRsvp(invite)) {
+      return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
+    }
+
     try {
-      guest = await Guest.create({
-        inviteId: invite._id,
-        slug: invite.slug,
-        name: cleanNome,
-        normalizedName,
-        status: 'Convite público',
-        table: '',
-        companions: Math.max(totalGuests - 1, 0),
-        phone: String(phone || '').trim(),
-        inviteToken: generateGuestPublicToken(),
-        maxGuests: totalGuests
-      });
-      await logActivity({ invite, type: 'guests', title: 'Convidado público criado pelo RSVP', detail: cleanNome });
+      guest = await createPublicRsvpGuest(invite, req.body || {});
     } catch (err) {
-      if (err && err.code === 11000) {
-        guest = await Guest.findOne({ inviteId: invite._id, normalizedName });
-      } else {
-        throw err;
-      }
+      return res.status(err.statusCode || 500).json({ status: 'error', message: err.message });
     }
   }
 
-  if (!guest) return res.status(500).json({ status: 'error', message: 'Não foi possível criar o registo do convidado.' });
-
   const already = await Rsvp.findOne({ inviteId: invite._id, guestId: guest._id });
   if (already) return res.status(409).json({ status: 'error', code: 'RSVP_ALREADY_CONFIRMED', message: 'Esta presença já foi confirmada anteriormente.' });
-
-  if (!guest.inviteToken) guest.inviteToken = generateGuestPublicToken();
-  guest.maxGuests = totalGuests;
-  guest.companions = Math.max(totalGuests - 1, 0);
-  guest.status = `Confirmado (${totalGuests})`;
-  guest.phone = String(phone || '').trim() || guest.phone;
-
-  await Rsvp.create({ inviteId: invite._id, slug: invite.slug, guestId: guest._id, nome: guest.name || cleanNome, guests: totalGuests, phone, message, mesa: guest.table || '' });
-  await guest.save();
-  await logActivity({ invite, type: 'rsvp', title: 'Presença confirmada', detail: `${guest.name || cleanNome} · ${totalGuests} pessoa(s)` });
-  res.json({ status: 'success', message: 'Confirmação recebida!', guests: totalGuests, data: cleanGuestForPublic(guest) });
+  const totalGuests = Number(guest.maxGuests) || (1 + (Number(guest.companions) || 0));
+  await Rsvp.create({ inviteId: invite._id, slug: invite.slug, guestId: guest._id, nome: guest.name, guests: totalGuests, phone, message, mesa: guest.table || '' });
+  guest.status = `Confirmado (${totalGuests})`; guest.phone = phone || guest.phone; await guest.save();
+  await logActivity({ invite, type: 'rsvp', title: 'Presença confirmada', detail: `${guest.name} · ${totalGuests} pessoa(s)` });
+  res.json({ status: 'success', message: 'Confirmação recebida!', guests: totalGuests });
 }
 async function handlePostMessage(req, res, invite) {
   const { nome, message } = req.body || {};
-  const cleanNome = String(nome || '').trim();
-  const cleanMessage = String(message || '').trim();
-  if (!cleanNome || !cleanMessage) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
-  const msg = await Message.create({ inviteId: invite._id, slug: invite.slug, nome: cleanNome, message: cleanMessage, timestamp: new Date() });
-  await logActivity({ invite, type: 'message', title: 'Nova mensagem', detail: cleanNome });
+  if (!nome || !message) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
+  const msg = await Message.create({ inviteId: invite._id, slug: invite.slug, nome, message, timestamp: new Date() });
+  await logActivity({ invite, type: 'message', title: 'Nova mensagem', detail: nome });
   res.json({ status: 'success', data: msg });
 }
 async function handleSaveGifts(req, res, invite) {
   const { nome, selectedGifts } = req.body || {};
-  const cleanNome = String(nome || '').trim();
-  if (!cleanNome || !Array.isArray(selectedGifts)) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
+  if (!nome || !Array.isArray(selectedGifts)) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
   const results = { success: [], failed: [] };
   for (const giftName of selectedGifts) {
-    const updated = await GiftItem.findOneAndUpdate({ inviteId: invite._id, name: giftName, reserved: false }, { reserved: true, reservedBy: cleanNome, reservedAt: new Date() }, { new: true });
+    const updated = await GiftItem.findOneAndUpdate({ inviteId: invite._id, name: giftName, reserved: false }, { reserved: true, reservedBy: nome, reservedAt: new Date() }, { new: true });
     if (updated) results.success.push(giftName); else results.failed.push({ gift: giftName, reason: 'Já reservado ou inexistente.' });
   }
-  await logActivity({ invite, type: 'gift', title: 'Reserva de presente', detail: `${cleanNome} · ${results.success.join(', ')}` });
+  await logActivity({ invite, type: 'gift', title: 'Reserva de presente', detail: `${nome} · ${results.success.join(', ')}` });
   if (results.success.length) return res.json({ status: 'success', data: results, message: 'Presentes reservados com sucesso.' });
   res.status(409).json({ status: 'error', data: results, message: 'Nenhum presente pôde ser reservado.' });
 }
@@ -1401,6 +1480,7 @@ async function start() {
   if (!process.env.MONGODB_URI) throw new Error('MONGODB_URI não configurado.');
   await mongoose.connect(process.env.MONGODB_URI);
   console.log('MongoDB conectado.');
+  await ensureGiftIndexes();
   app.listen(PORT, () => console.log(`Lirandzo AdminManager API a correr na porta ${PORT}`));
 }
 start().catch(err => { console.error('Falha ao iniciar servidor:', err); process.exit(1); });

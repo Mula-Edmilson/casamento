@@ -1,0 +1,20 @@
+ALTERAÇÕES — RSVP PÚBLICO CONTROLADO POR VARIÁVEL DE AMBIENTE
+
+Objectivo:
+Permitir que apenas os convites listados no Render aceitem confirmações de nomes que ainda não existem no banco de dados.
+
+Configuração obrigatória no Render para Minoca & Abubacar:
+PUBLIC_RSVP_AUTO_CREATE_SLUGS=minoca-abubacar
+
+Sem essa variável, nenhum convite cria convidados automaticamente no RSVP.
+
+Para adicionar mais convites públicos no futuro, use slugs separados por vírgula:
+PUBLIC_RSVP_AUTO_CREATE_SLUGS=minoca-abubacar,novo-convite,outro-convite
+
+Segurança:
+- Não existe slug público hardcoded no server.js.
+- Convites fora da variável continuam a exigir nome pré-cadastrado no banco de dados.
+- O admin continua a mostrar correctamente Confirmado (X) na Base de convidados.
+
+Alteração adicional neste pacote:
+- Data do casamento definida para 28 de Agosto de 2026.

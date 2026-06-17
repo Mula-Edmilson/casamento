@@ -1,6 +1,6 @@
 Convite Minoca & Abubacar
 Slug: minoca-abubacar
-Data: 29 de Agosto de 2026
+Data: 28 de Agosto de 2026
 Cerimónia Civil: 09h00 — Thendane Eventos
 Copo de Água: 13h00 — Thendane Eventos
 
