@@ -1278,6 +1278,79 @@ async function handleLogin(req, res, invite) {
   const data = cleanGuestForPublic(guest);
   res.json({ status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
 }
+function getPublicRsvpAutoCreateSlugs() {
+  return new Set(
+    String(process.env.PUBLIC_RSVP_AUTO_CREATE_SLUGS || '')
+      .split(',')
+      .map(value => slugify(value))
+      .filter(Boolean)
+  );
+}
+function canAutoCreateGuestForRsvp(invite) {
+  const slug = slugify(invite?.slug || '');
+  return Boolean(slug && getPublicRsvpAutoCreateSlugs().has(slug));
+}
+function parseRsvpPeopleCount(data = {}) {
+  const explicitTotal = Number.parseInt(
+    data.guests ?? data.totalGuests ?? data.maxGuests ?? data.pessoas ?? data.people ?? data.qtd ?? '',
+    10
+  );
+
+  if (Number.isFinite(explicitTotal) && explicitTotal > 0) {
+    return Math.max(1, explicitTotal);
+  }
+
+  const companions = Number.parseInt(
+    data.companions ?? data.acompanhantes ?? data.acompanhante ?? '',
+    10
+  );
+
+  if (Number.isFinite(companions) && companions >= 0) {
+    return 1 + companions;
+  }
+
+  return 1;
+}
+async function createPublicRsvpGuest(invite, data = {}) {
+  const name = String(data.nome || data.name || '').trim();
+  if (!name) {
+    const err = new Error('Nome do convidado é obrigatório.');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const normalizedName = normalizeText(name);
+  const totalGuests = parseRsvpPeopleCount(data);
+  const companions = Math.max(0, totalGuests - 1);
+
+  let token = generateGuestPublicToken();
+  while (await Guest.exists({ inviteId: invite._id, inviteToken: token })) token = generateGuestPublicToken();
+
+  try {
+    return await Guest.create({
+      inviteId: invite._id,
+      slug: invite.slug,
+      name,
+      normalizedName,
+      status: 'Convite Aberto',
+      deviceToken: '',
+      table: String(data.table || data.mesa || '').trim(),
+      companions,
+      maxGuests: totalGuests,
+      phone: String(data.phone || data.telefone || '').trim(),
+      notes: 'Criado automaticamente por RSVP público',
+      inviteToken: token,
+      number: 0,
+      category: 'RSVP público'
+    });
+  } catch (err) {
+    if (err && err.code === 11000) {
+      const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
+      if (existing) return existing;
+    }
+    throw err;
+  }
+}
 async function handleRsvpChoice(req, res, invite) {
   const choice = String(req.body?.choice || '').toLowerCase();
   if (choice === 'confirmed' || choice === 'sim' || choice.includes('confirm')) return handleRsvp(req, res, invite);
@@ -1287,8 +1360,20 @@ async function handleRsvpChoice(req, res, invite) {
 }
 async function handleRsvp(req, res, invite) {
   const { nome, phone = '', message = '', token = '' } = req.body || {};
-  const guest = await findGuestByIdentity(invite, { nome, token });
-  if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
+  let guest = await findGuestByIdentity(invite, { nome, token });
+
+  if (!guest) {
+    if (!canAutoCreateGuestForRsvp(invite)) {
+      return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
+    }
+
+    try {
+      guest = await createPublicRsvpGuest(invite, req.body || {});
+    } catch (err) {
+      return res.status(err.statusCode || 500).json({ status: 'error', message: err.message });
+    }
+  }
+
   const already = await Rsvp.findOne({ inviteId: invite._id, guestId: guest._id });
   if (already) return res.status(409).json({ status: 'error', code: 'RSVP_ALREADY_CONFIRMED', message: 'Esta presença já foi confirmada anteriormente.' });
   const totalGuests = Number(guest.maxGuests) || (1 + (Number(guest.companions) || 0));
