@@ -11,7 +11,7 @@ window.LIRANDZO_EVENT = {
   colors: "Azul e branco",
   dateISO: "2026-09-26T11:00:00+02:00",
   eventDateLong: "26 de setembro de 2026",
-  rsvpDeadline: "31 de julho de 2026",
+  rsvpDeadline: "15 de julho de 2026",
   timezone: "Africa/Maputo",
   verse: "Grandes coisas fez o Senhor por nós, e por isso estamos alegres.",
   verseReference: "Salmos 126:3 ARC",

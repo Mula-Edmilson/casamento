@@ -1,4 +1,11 @@
+/*
+  Importador MongoDB — Flícia & Walter
+  Executar apenas quando quiseres carregar os dados deste convite no MongoDB.
 
+  Exemplo Windows CMD:
+  set MONGODB_URI=mongodb+srv://UTILIZADOR:SENHA@cluster.mongodb.net/meu-casamento?retryWrites=true&w=majority
+  node import-flicia-walter-to-mongodb.js
+*/
 
 require('dotenv').config();
 const mongoose = require('mongoose');
