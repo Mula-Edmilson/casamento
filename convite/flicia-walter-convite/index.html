@@ -55,8 +55,8 @@
     bankHolder: "Flícia Alberto Chambal",
     bankAccount: "000100000120794168057",
     mobilePayment: "842600652 — Walter Mafumo",
-    giftText: "Queridos amigos e familiares, o nosso maior presente é ter-vos connosco e partilhar este dia tão especial. Contudo, caso desejem presentear-nos com um gesto de carinho, optamos por uma contribuição em dinheiro, que nos ajudará a realizar os primeiros passos na construção do nosso lar.",
-    musicUrl: "https://static.wixstatic.com/mp3/172317_849c375497534a99936035c161dd4527.mp3",
+    giftText: "Queridos amigos e familiares, o nosso maior presente é partilhar este dia tão especial convosco. Caso desejem presentear-nos com um gesto de carinho, preferimos que o façam através de valores monetários que nos ajudarão a dar os primeiros passos na formação do nosso lar.",
+    musicUrl: "https://static.wixstatic.com/mp3/172317_b76ecb67cddf4a9ba87a2da74a86afb1.mp3",
   };
 
   const photos = {
@@ -630,7 +630,7 @@
       </section>
 
       <section class="date-editorial" id="data">
-        ${heading("save the date", wedding.dateDisplay, `${wedding.time} no ${wedding.venue}`)}
+        ${heading("save the date", wedding.dateDisplay, `${wedding.time} na ${wedding.venue}`)}
       </section>
 
       ${vowSection()}
@@ -701,11 +701,10 @@
   function detailsIndex() {
     const rows = [
       ["programa", "01", "Programa", "A sequência do dia, para chegar a cada momento com serenidade"],
-      ["dress", "02", "Dress code", "Azul, branco e elegância romântica"],
-      ["presentes", "03", "Presentes", "Dados para contribuição e envio de comprovativo"],
-      ["apoio", "04", "Apoio", "Contactos discretos para qualquer orientação no dia"],
-      ["capsula", "05", "Cápsula do tempo", "Partilhe uma fotografia para os noivos"],
-      ["mapa", "06", "Mapa", "Locais da cerimónia e recepção"],
+      ["presentes", "02", "Presentes", "Dados para contribuição e envio de comprovativo"],
+      ["apoio", "03", "Apoio", "Contactos discretos para qualquer orientação no dia"],
+      ["capsula", "04", "Cápsula do tempo", "Partilhe uma fotografia para os noivos"],
+      ["mapa", "05", "Mapa", "Locais da cerimónia e recepção"],
     ];
     return `<section class="details-index" id="detalhes">
       ${heading("detalhes", "Tudo o que precisa", "O essencial para acompanhar a celebração com tranquilidade, elegância e precisão.")}
@@ -920,9 +919,6 @@
       return `<div class="modal-copy"><p class="modal-eyebrow">programa</p><h2>O percurso da celebração.</h2><p>Para que acompanhe cada momento com calma, deixamos abaixo a sequência oficial do dia.</p><div class="modal-timeline">${program.map(([time, label]) => `<div><time>${time}</time><span>${label}</span></div>`).join("")}</div></div>`;
     }
 
-    if (type === "dress") {
-      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">dress code</p><h2>Elegância em azul e branco.</h2><p>Escolha um visual cuidado, romântico e harmonioso com a paleta da celebração.</p><div class="palette large">${palette.map((color) => `<span style="background-color:${color}"></span>`).join("")}</div></div><img src="${photos.close}" alt="Inspiração visual do convite" /></div>`;
-    }
 
     if (type === "apoio") {
       return `<div class="modal-copy"><p class="modal-eyebrow">apoio no dia</p><h2>Estamos ao seu dispor.</h2><p>${escapeHtml(wedding.supportContacts)}</p><p>Para qualquer orientação no dia, estes contactos estarão disponíveis para o receber e acompanhar com discrição.</p></div>`;
