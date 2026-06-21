@@ -1,6 +1,163 @@
-Nome;Mesa;Acompanhantes;Telefone;Notas
-Flícia Alberto Chambal;Mesa dos Noivos;1;;Token: fw-2026-001-flicia-alberto-chambal | Categoria: VIP | Nº: 1
-Walter Mafumo;Mesa dos Noivos;1;842600652;Token: fw-2026-002-walter-mafumo | Categoria: VIP | Nº: 2
-Júrcia Chambal;A definir;1;842319460;Token: fw-2026-003-jurcia-chambal | Categoria: Família | Nº: 3
-Milton Mafumo;A definir;1;845762980;Token: fw-2026-004-milton-mafumo | Categoria: Família | Nº: 4
-Convidado;A definir;1;;Token: fw-2026-005-convidado | Categoria: Individual | Nº: 5
+Esperança Mafumo;Mesa 1;0;;Token: flicia-walter-001-esperanca-mafumo | Categoria: Mesa 1 | Nº: 1
+Helena Marindze;Mesa 1;0;;Token: flicia-walter-002-helena-marindze | Categoria: Mesa 1 | Nº: 2
+Cesar Cunguara & Esposa;Mesa 1;1;;Token: flicia-walter-003-cesar-cunguara-e-esposa | Categoria: Mesa 1 | Nº: 3
+Angélica Baloi;Mesa 1;0;;Token: flicia-walter-004-angelica-baloi | Categoria: Mesa 1 | Nº: 4
+Boaventura Chongo & Esposa;Mesa 1;1;;Token: flicia-walter-005-boaventura-chongo-e-esposa | Categoria: Mesa 1 | Nº: 5
+Generosa Ngwenha;Mesa 1;0;;Token: flicia-walter-006-generosa-ngwenha | Categoria: Mesa 1 | Nº: 6
+Argentina Nhambi;Mesa 1;0;;Token: flicia-walter-007-argentina-nhambi | Categoria: Mesa 1 | Nº: 7
+Rosalia Uqueio;Mesa 1;0;;Token: flicia-walter-008-rosalia-uqueio | Categoria: Mesa 1 | Nº: 8
+Jorge Cossa;Mesa 2;0;;Token: flicia-walter-009-jorge-cossa | Categoria: Mesa 2 | Nº: 9
+Paulo Neves & Esposa;Mesa 2;1;;Token: flicia-walter-010-paulo-neves-e-esposa | Categoria: Mesa 2 | Nº: 10
+Firda Timba;Mesa 2;0;;Token: flicia-walter-011-firda-timba | Categoria: Mesa 2 | Nº: 11
+Jerry Mondlane & Esposa;Mesa 2;1;;Token: flicia-walter-012-jerry-mondlane-e-esposa | Categoria: Mesa 2 | Nº: 12
+Ester Matusse;Mesa 2;0;;Token: flicia-walter-013-ester-matusse | Categoria: Mesa 2 | Nº: 13
+Esperança Sacassa;Mesa 2;0;;Token: flicia-walter-014-esperanca-sacassa | Categoria: Mesa 2 | Nº: 14
+Covidados dos Padrinhos;Mesa 2;1;;Token: flicia-walter-015-covidados-dos-padrinhos | Categoria: Mesa 2 | Nº: 15
+Lina Sambo;Mesa 3;0;;Token: flicia-walter-016-lina-sambo | Categoria: Mesa 3 | Nº: 16
+Júlio Cubai & Esposa;Mesa 3;1;;Token: flicia-walter-017-julio-cubai-e-esposa | Categoria: Mesa 3 | Nº: 17
+Milagrosa;Mesa 3;0;;Token: flicia-walter-018-milagrosa | Categoria: Mesa 3 | Nº: 18
+Farias & Esposa;Mesa 3;1;;Token: flicia-walter-019-farias-e-esposa | Categoria: Mesa 3 | Nº: 19
+Eudito Cossa & Esposa;Mesa 3;1;;Token: flicia-walter-020-eudito-cossa-e-esposa | Categoria: Mesa 3 | Nº: 20
+Adelina Cossa;Mesa 3;0;;Token: flicia-walter-021-adelina-cossa | Categoria: Mesa 3 | Nº: 21
+Vasta Cossa;Mesa 3;0;;Token: flicia-walter-022-vasta-cossa | Categoria: Mesa 3 | Nº: 22
+Sergio Cossa & Esposa;Mesa 4;1;;Token: flicia-walter-023-sergio-cossa-e-esposa | Categoria: Mesa 4 | Nº: 23
+Nelson Nhachengo & Esposa;Mesa 4;1;;Token: flicia-walter-024-nelson-nhachengo-e-esposa | Categoria: Mesa 4 | Nº: 24
+Arcenio Chitive & Esposa;Mesa 4;1;;Token: flicia-walter-025-arcenio-chitive-e-esposa | Categoria: Mesa 4 | Nº: 25
+Rosario Ngwenha & Esposa;Mesa 4;1;;Token: flicia-walter-026-rosario-ngwenha-e-esposa | Categoria: Mesa 4 | Nº: 26
+Silênia Cossa;Mesa 4;0;;Token: flicia-walter-027-silenia-cossa | Categoria: Mesa 4 | Nº: 27
+Arcénia Cossa;Mesa 4;0;;Token: flicia-walter-028-arcenia-cossa | Categoria: Mesa 4 | Nº: 28
+Nora Dimande;Mesa 5;0;;Token: flicia-walter-029-nora-dimande | Categoria: Mesa 5 | Nº: 29
+Fiel ruco & Esposa;Mesa 5;1;;Token: flicia-walter-030-fiel-ruco-e-esposa | Categoria: Mesa 5 | Nº: 30
+Melca Dimene;Mesa 5;0;;Token: flicia-walter-031-melca-dimene | Categoria: Mesa 5 | Nº: 31
+Julia Tembe;Mesa 5;0;;Token: flicia-walter-032-julia-tembe | Categoria: Mesa 5 | Nº: 32
+Sónia Gueba;Mesa 5;0;;Token: flicia-walter-033-sonia-gueba | Categoria: Mesa 5 | Nº: 33
+Pastor Ntseco & Esposa;Mesa 5;1;;Token: flicia-walter-034-pastor-ntseco-e-esposa | Categoria: Mesa 5 | Nº: 34
+Cacilda & Esposo;Mesa 5;1;;Token: flicia-walter-035-cacilda-e-esposo | Categoria: Mesa 5 | Nº: 35
+Ribeiro Cubai & Esposa;Mesa 6;1;;Token: flicia-walter-036-ribeiro-cubai-e-esposa | Categoria: Mesa 6 | Nº: 36
+Marcos Mugabe & Esposa;Mesa 6;1;;Token: flicia-walter-037-marcos-mugabe-e-esposa | Categoria: Mesa 6 | Nº: 37
+Ermelinda & Esposo;Mesa 6;1;;Token: flicia-walter-038-ermelinda-e-esposo | Categoria: Mesa 6 | Nº: 38
+Benilde Cubai;Mesa 6;0;;Token: flicia-walter-039-benilde-cubai | Categoria: Mesa 6 | Nº: 39
+Jorge Sive & Esposa;Mesa 6;1;;Token: flicia-walter-040-jorge-sive-e-esposa | Categoria: Mesa 6 | Nº: 40
+Mauro Mugabe;Mesa 6;0;;Token: flicia-walter-041-mauro-mugabe | Categoria: Mesa 6 | Nº: 41
+Idalina & Esposo;Mesa 7;1;;Token: flicia-walter-042-idalina-e-esposo | Categoria: Mesa 7 | Nº: 42
+Paulino & Esposa;Mesa 7;1;;Token: flicia-walter-043-paulino-e-esposa | Categoria: Mesa 7 | Nº: 43
+Gervâsio & Esposa;Mesa 7;1;;Token: flicia-walter-044-gervasio-e-esposa | Categoria: Mesa 7 | Nº: 44
+Chitará & Esposa;Mesa 7;1;;Token: flicia-walter-045-chitara-e-esposa | Categoria: Mesa 7 | Nº: 45
+Boaventura Cherindza & Esposa;Mesa 7;1;;Token: flicia-walter-046-boaventura-cherindza-e-esposa | Categoria: Mesa 7 | Nº: 46
+Jorge Cherinda & Esposa;Mesa 8;1;;Token: flicia-walter-047-jorge-cherinda-e-esposa | Categoria: Mesa 8 | Nº: 47
+Leonel Cuinica & Esposa;Mesa 8;1;;Token: flicia-walter-048-leonel-cuinica-e-esposa | Categoria: Mesa 8 | Nº: 48
+Bernardo Cherinda & Esposa;Mesa 8;1;;Token: flicia-walter-049-bernardo-cherinda-e-esposa | Categoria: Mesa 8 | Nº: 49
+Pedro Macie & Esposa;Mesa 8;1;;Token: flicia-walter-050-pedro-macie-e-esposa | Categoria: Mesa 8 | Nº: 50
+Abel Cherindza & esposa;Mesa 8;1;;Token: flicia-walter-051-abel-cherindza-e-esposa | Categoria: Mesa 8 | Nº: 51
+Rodrigues cossa & Esposa;Mesa 9;1;;Token: flicia-walter-052-rodrigues-cossa-e-esposa | Categoria: Mesa 9 | Nº: 52
+Foste Mucavele & Esposa;Mesa 9;1;;Token: flicia-walter-053-foste-mucavele-e-esposa | Categoria: Mesa 9 | Nº: 53
+Dokota & Esposa;Mesa 9;1;;Token: flicia-walter-054-dokota-e-esposa | Categoria: Mesa 9 | Nº: 54
+Delfim Chichava & Esposa;Mesa 9;1;;Token: flicia-walter-055-delfim-chichava-e-esposa | Categoria: Mesa 9 | Nº: 55
+Eduardo & Esposa;Mesa 9;1;;Token: flicia-walter-056-eduardo-e-esposa | Categoria: Mesa 9 | Nº: 56
+Aike & Esposa;Mesa 10;1;;Token: flicia-walter-057-aike-e-esposa | Categoria: Mesa 10 | Nº: 57
+Higino & Esposa;Mesa 10;1;;Token: flicia-walter-058-higino-e-esposa | Categoria: Mesa 10 | Nº: 58
+Ernesto & Esposa;Mesa 10;1;;Token: flicia-walter-059-ernesto-e-esposa | Categoria: Mesa 10 | Nº: 59
+Simao & Esposa;Mesa 10;1;;Token: flicia-walter-060-simao-e-esposa | Categoria: Mesa 10 | Nº: 60
+Adelfio & Esposa;Mesa 10;1;;Token: flicia-walter-061-adelfio-e-esposa | Categoria: Mesa 10 | Nº: 61
+Adilson & Esposa;Mesa 11;1;;Token: flicia-walter-062-adilson-e-esposa | Categoria: Mesa 11 | Nº: 62
+Karen Zita;Mesa 11;0;;Token: flicia-walter-063-karen-zita | Categoria: Mesa 11 | Nº: 63
+Edelson & Esposa;Mesa 11;1;;Token: flicia-walter-064-edelson-e-esposa | Categoria: Mesa 11 | Nº: 64
+Haller & Esposa;Mesa 11;1;;Token: flicia-walter-065-haller-e-esposa | Categoria: Mesa 11 | Nº: 65
+Mavis Cherindza;Mesa 11;0;;Token: flicia-walter-066-mavis-cherindza | Categoria: Mesa 11 | Nº: 66
+Maurício Manhiça;Mesa 11;0;;Token: flicia-walter-067-mauricio-manhica | Categoria: Mesa 11 | Nº: 67
+Ebel Manhiça;Mesa 11;0;;Token: flicia-walter-068-ebel-manhica | Categoria: Mesa 11 | Nº: 68
+Alberto Chambal & Esposa;Mesa 12;1;;Token: flicia-walter-069-alberto-chambal-e-esposa | Categoria: Mesa 12 | Nº: 69
+Domingos Chambal & Esposa;Mesa 12;1;;Token: flicia-walter-070-domingos-chambal-e-esposa | Categoria: Mesa 12 | Nº: 70
+Salvador Mahanjane & Esposa;Mesa 12;1;;Token: flicia-walter-071-salvador-mahanjane-e-esposa | Categoria: Mesa 12 | Nº: 71
+Ilda Cossa & Carlos Nguenha;Mesa 12;1;;Token: flicia-walter-072-ilda-cossa-e-carlos-nguenha | Categoria: Mesa 12 | Nº: 72
+Estevão Mafumo & Esposa;Mesa 12;1;;Token: flicia-walter-073-estevao-mafumo-e-esposa | Categoria: Mesa 12 | Nº: 73
+Sansão Mahanjane & Esposa (avós);Mesa 13;1;;Token: flicia-walter-074-sansao-mahanjane-e-esposa-avos | Categoria: Mesa 13 | Nº: 74
+Benjamim Mahanjane & Esposa;Mesa 13;1;;Token: flicia-walter-075-benjamim-mahanjane-e-esposa | Categoria: Mesa 13 | Nº: 75
+Carlos Lichucha & Esposa;Mesa 13;1;;Token: flicia-walter-076-carlos-lichucha-e-esposa | Categoria: Mesa 13 | Nº: 76
+Ricardo Vilanculos & Esposa;Mesa 13;1;;Token: flicia-walter-077-ricardo-vilanculos-e-esposa | Categoria: Mesa 13 | Nº: 77
+Pastora Domingas;Mesa 13;0;;Token: flicia-walter-078-pastora-domingas | Categoria: Mesa 13 | Nº: 78
+Pastora Cacilda;Mesa 13;0;;Token: flicia-walter-079-pastora-cacilda | Categoria: Mesa 13 | Nº: 79
+Madalena Mahanjane;Mesa 14;0;;Token: flicia-walter-080-madalena-mahanjane | Categoria: Mesa 14 | Nº: 80
+Alfredo Mahanjane & Esposa;Mesa 14;1;;Token: flicia-walter-081-alfredo-mahanjane-e-esposa | Categoria: Mesa 14 | Nº: 81
+Silvério Sitoe & Esposa;Mesa 14;1;;Token: flicia-walter-082-silverio-sitoe-e-esposa | Categoria: Mesa 14 | Nº: 82
+Estevão Chaguala & Esposa;Mesa 14;1;;Token: flicia-walter-083-estevao-chaguala-e-esposa | Categoria: Mesa 14 | Nº: 83
+Filimone Massingue & Esposa;Mesa 14;1;;Token: flicia-walter-084-filimone-massingue-e-esposa | Categoria: Mesa 14 | Nº: 84
+Lurdes Machava;Mesa 14;0;;Token: flicia-walter-085-lurdes-machava | Categoria: Mesa 14 | Nº: 85
+Daniel Dimas & Esposa;Mesa 15;1;;Token: flicia-walter-086-daniel-dimas-e-esposa | Categoria: Mesa 15 | Nº: 86
+Matsule & Esposa;Mesa 15;1;;Token: flicia-walter-087-matsule-e-esposa | Categoria: Mesa 15 | Nº: 87
+Crisógno Massingue & Esposa;Mesa 15;1;;Token: flicia-walter-088-crisogno-massingue-e-esposa | Categoria: Mesa 15 | Nº: 88
+Arlete Sitoe;Mesa 15;0;;Token: flicia-walter-089-arlete-sitoe | Categoria: Mesa 15 | Nº: 89
+Hortência Tivane;Mesa 15;0;;Token: flicia-walter-090-hortencia-tivane | Categoria: Mesa 15 | Nº: 90
+Bonifácio Mahanjane & Esposa;Mesa 15;1;;Token: flicia-walter-091-bonifacio-mahanjane-e-esposa | Categoria: Mesa 15 | Nº: 91
+Francisco Nhachengo & Esposa;Mesa 16;1;;Token: flicia-walter-092-francisco-nhachengo-e-esposa | Categoria: Mesa 16 | Nº: 92
+Luís Chichava & Esposa;Mesa 16;1;;Token: flicia-walter-093-luis-chichava-e-esposa | Categoria: Mesa 16 | Nº: 93
+Maria Chituvane;Mesa 16;0;;Token: flicia-walter-094-maria-chituvane | Categoria: Mesa 16 | Nº: 94
+Énia Nhachengo;Mesa 16;0;;Token: flicia-walter-095-enia-nhachengo | Categoria: Mesa 16 | Nº: 95
+Márcia Nhachengo;Mesa 16;0;;Token: flicia-walter-096-marcia-nhachengo | Categoria: Mesa 16 | Nº: 96
+Alima Nhantumbo;Mesa 16;0;;Token: flicia-walter-097-alima-nhantumbo | Categoria: Mesa 16 | Nº: 97
+Delfina Nhantumbo & Esposo;Mesa 16;1;;Token: flicia-walter-098-delfina-nhantumbo-e-esposo | Categoria: Mesa 16 | Nº: 98
+Clemência Sitoe & Esposo;Mesa 17;1;;Token: flicia-walter-099-clemencia-sitoe-e-esposo | Categoria: Mesa 17 | Nº: 99
+Sansão Mahanjane & Esposa (tios);Mesa 17;1;;Token: flicia-walter-100-sansao-mahanjane-e-esposa-tios | Categoria: Mesa 17 | Nº: 100
+Deolinda Guerra;Mesa 17;0;;Token: flicia-walter-101-deolinda-guerra | Categoria: Mesa 17 | Nº: 101
+Melos Mandlate & Esposa;Mesa 17;1;;Token: flicia-walter-102-melos-mandlate-e-esposa | Categoria: Mesa 17 | Nº: 102
+Edson Mahanjane;Mesa 17;0;;Token: flicia-walter-103-edson-mahanjane | Categoria: Mesa 17 | Nº: 103
+Amelia Chambal;Mesa 17;0;;Token: flicia-walter-104-amelia-chambal | Categoria: Mesa 17 | Nº: 104
+Eliset Tivane;Mesa 17;0;;Token: flicia-walter-105-eliset-tivane | Categoria: Mesa 17 | Nº: 105
+Stella Mahanjane & Esposo;Mesa 18;1;;Token: flicia-walter-106-stella-mahanjane-e-esposo | Categoria: Mesa 18 | Nº: 106
+Felicidade Mahanjane & Esposo;Mesa 18;1;;Token: flicia-walter-107-felicidade-mahanjane-e-esposo | Categoria: Mesa 18 | Nº: 107
+Telma Muthombene & Esposo;Mesa 18;1;;Token: flicia-walter-108-telma-muthombene-e-esposo | Categoria: Mesa 18 | Nº: 108
+Benedito Magaia & Esposa;Mesa 18;1;;Token: flicia-walter-109-benedito-magaia-e-esposa | Categoria: Mesa 18 | Nº: 109
+Cidália Novela;Mesa 18;0;;Token: flicia-walter-110-cidalia-novela | Categoria: Mesa 18 | Nº: 110
+Lola Muthombene;Mesa 18;0;;Token: flicia-walter-111-lola-muthombene | Categoria: Mesa 18 | Nº: 111
+Amarildo Lichucha & Esposa;Mesa 19;1;;Token: flicia-walter-112-amarildo-lichucha-e-esposa | Categoria: Mesa 19 | Nº: 112
+Jose Zungueze & Esposa;Mesa 19;1;;Token: flicia-walter-113-jose-zungueze-e-esposa | Categoria: Mesa 19 | Nº: 113
+Melves Zimila & Esposa;Mesa 19;1;;Token: flicia-walter-114-melves-zimila-e-esposa | Categoria: Mesa 19 | Nº: 114
+Ligia Vilanculos & Esposo;Mesa 19;1;;Token: flicia-walter-115-ligia-vilanculos-e-esposo | Categoria: Mesa 19 | Nº: 115
+Farida da Costa & Esposo;Mesa 19;1;;Token: flicia-walter-116-farida-da-costa-e-esposo | Categoria: Mesa 19 | Nº: 116
+Angela Vilanculos;Mesa 20;0;;Token: flicia-walter-117-angela-vilanculos | Categoria: Mesa 20 | Nº: 117
+Renia Sithole;Mesa 20;0;;Token: flicia-walter-118-renia-sithole | Categoria: Mesa 20 | Nº: 118
+Silvia Vim;Mesa 20;0;;Token: flicia-walter-119-silvia-vim | Categoria: Mesa 20 | Nº: 119
+Claudia Lehener;Mesa 20;0;;Token: flicia-walter-120-claudia-lehener | Categoria: Mesa 20 | Nº: 120
+Euclides Chilundo;Mesa 20;0;;Token: flicia-walter-121-euclides-chilundo | Categoria: Mesa 20 | Nº: 121
+Dercio Eugenio & Esposa;Mesa 20;1;;Token: flicia-walter-122-dercio-eugenio-e-esposa | Categoria: Mesa 20 | Nº: 122
+Wenndy Manhica;Mesa 20;0;;Token: flicia-walter-123-wenndy-manhica | Categoria: Mesa 20 | Nº: 123
+Amanda Matabele;Mesa 20;0;;Token: flicia-walter-124-amanda-matabele | Categoria: Mesa 20 | Nº: 124
+Kanicili;Mesa 20;0;;Token: flicia-walter-125-kanicili | Categoria: Mesa 20 | Nº: 125
+Fanuel Chamango & Esposa;Mesa 21;1;;Token: flicia-walter-126-fanuel-chamango-e-esposa | Categoria: Mesa 21 | Nº: 126
+Leia Chambal;Mesa 21;0;;Token: flicia-walter-127-leia-chambal | Categoria: Mesa 21 | Nº: 127
+Cesarina Mabota;Mesa 21;0;;Token: flicia-walter-128-cesarina-mabota | Categoria: Mesa 21 | Nº: 128
+Eulalia Manguele;Mesa 21;0;;Token: flicia-walter-129-eulalia-manguele | Categoria: Mesa 21 | Nº: 129
+Aissa Costa;Mesa 21;0;;Token: flicia-walter-130-aissa-costa | Categoria: Mesa 21 | Nº: 130
+Manuel Chambal & Esposa;Mesa 21;1;;Token: flicia-walter-131-manuel-chambal-e-esposa | Categoria: Mesa 21 | Nº: 131
+Jose Muchanga;Mesa 21;0;;Token: flicia-walter-132-jose-muchanga | Categoria: Mesa 21 | Nº: 132
+Arsenio Muchanga;Mesa 21;0;;Token: flicia-walter-133-arsenio-muchanga | Categoria: Mesa 21 | Nº: 133
+Michelle Codeiro;Mesa 22;0;;Token: flicia-walter-134-michelle-codeiro | Categoria: Mesa 22 | Nº: 134
+Shanaica Mabota;Mesa 22;0;;Token: flicia-walter-135-shanaica-mabota | Categoria: Mesa 22 | Nº: 135
+Tisse Amurane;Mesa 22;0;;Token: flicia-walter-136-tisse-amurane | Categoria: Mesa 22 | Nº: 136
+Cintya Ruco;Mesa 22;0;;Token: flicia-walter-137-cintya-ruco | Categoria: Mesa 22 | Nº: 137
+Naika;Mesa 22;0;;Token: flicia-walter-138-naika | Categoria: Mesa 22 | Nº: 138
+Laurenciana;Mesa 22;0;;Token: flicia-walter-139-laurenciana | Categoria: Mesa 22 | Nº: 139
+Filo Chambal;Mesa 22;0;;Token: flicia-walter-140-filo-chambal | Categoria: Mesa 22 | Nº: 140
+Francisca Chacha;Mesa 22;0;;Token: flicia-walter-141-francisca-chacha | Categoria: Mesa 22 | Nº: 141
+Laufen Matlhula;Mesa 22;0;;Token: flicia-walter-142-laufen-matlhula | Categoria: Mesa 22 | Nº: 142
+Edilson Chunguane;Mesa 22;0;;Token: flicia-walter-143-edilson-chunguane | Categoria: Mesa 22 | Nº: 143
+Leonardo Vilanculo;Sem mesa;0;;Token: flicia-walter-144-leonardo-vilanculo | Categoria: Por definir | Nº: 144
+Cláudio Sibinde;Sem mesa;0;;Token: flicia-walter-145-claudio-sibinde | Categoria: Por definir | Nº: 145
+Rabeca Cambula;Sem mesa;0;;Token: flicia-walter-146-rabeca-cambula | Categoria: Por definir | Nº: 146
+Piedoso Matsinhe;Sem mesa;0;;Token: flicia-walter-147-piedoso-matsinhe | Categoria: Por definir | Nº: 147
+Nifo;Sem mesa;0;;Token: flicia-walter-148-nifo | Categoria: Por definir | Nº: 148
+Dieter Amurane;Sem mesa;0;;Token: flicia-walter-149-dieter-amurane | Categoria: Por definir | Nº: 149
+Anabela & Esposo;Sem mesa;1;;Token: flicia-walter-150-anabela-e-esposo | Categoria: Por definir | Nº: 150
+Déucio & Esposa;Sem mesa;1;;Token: flicia-walter-151-deucio-e-esposa | Categoria: Por definir | Nº: 151
+Hit;Sem mesa;0;;Token: flicia-walter-152-hit | Categoria: Por definir | Nº: 152
+Yuran Chiziane;Sem mesa;0;;Token: flicia-walter-153-yuran-chiziane | Categoria: Por definir | Nº: 153
+Lemmy Tibúrcio;Sem mesa;0;;Token: flicia-walter-154-lemmy-tiburcio | Categoria: Por definir | Nº: 154
+LEM & Esposa;Sem mesa;1;;Token: flicia-walter-155-lem-e-esposa | Categoria: Por definir | Nº: 155
+Angybel & Esposo;Sem mesa;1;;Token: flicia-walter-156-angybel-e-esposo | Categoria: Por definir | Nº: 156
+Emilton & Esposa;Sem mesa;1;;Token: flicia-walter-157-emilton-e-esposa | Categoria: Por definir | Nº: 157
+Zacarias Chongo;Sem mesa;0;;Token: flicia-walter-158-zacarias-chongo | Categoria: Por definir | Nº: 158
+Maura Macamo;Sem mesa;0;;Token: flicia-walter-159-maura-macamo | Categoria: Por definir | Nº: 159
+Daniel Langa;Sem mesa;0;;Token: flicia-walter-160-daniel-langa | Categoria: Por definir | Nº: 160
+Jessie Macamo;Sem mesa;0;;Token: flicia-walter-161-jessie-macamo | Categoria: Por definir | Nº: 161
+Raquelina Bembele & Esposo;Sem mesa;1;;Token: flicia-walter-162-raquelina-bembele-e-esposo | Categoria: Por definir | Nº: 162
+Valéria Chongo;Sem mesa;0;;Token: flicia-walter-163-valeria-chongo | Categoria: Por definir | Nº: 163
