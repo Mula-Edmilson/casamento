@@ -1,4 +1,0 @@
-# Lista inicial — Amélia & Edilson
-Amélia Carlos Macuacua;Mesa dos Noivos;1;857265105;Token: ae-2026-001-amelia-carlos-macuacua | Categoria: VIP | Nº: 1
-Edilson Arnaldo Jaime Simbine;Mesa dos Noivos;1;;Token: ae-2026-002-edilson-arnaldo-jaime-simbine | Categoria: VIP | Nº: 2
-Convidado;A definir;1;;Token: ae-2026-003-convidado | Categoria: Individual | Nº: 3
