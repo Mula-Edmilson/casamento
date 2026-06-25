@@ -36,14 +36,14 @@
     dateISO: "2026-08-29T14:00:00+02:00",
     time: "14:00",
     timezone: "Africa/Maputo",
-    venue: "Local a confirmar",
-    address: "Maputo, Moçambique",
-    ceremonyPlace: "Local a confirmar",
+    venue: "Paróquia Santos Anjos da Guarda da Matola-Rio",
+    address: "Matola-Rio, Maputo, Moçambique",
+    ceremonyPlace: "Paróquia Santos Anjos da Guarda da Matola-Rio",
     ceremonyTime: "14:00",
-    ceremonyMap: "https://www.google.com/maps/search/?api=1&query=Maputo%20Mo%C3%A7ambique",
-    receptionPlace: "Local a confirmar",
+    ceremonyMap: "https://maps.google.com?q=2CQ8+F66%20Par%C3%B3quia%20Santos%20Anjos%20da%20Matola-rio&ftid=0x1ee686279feb59bf:0xc8f9786440e8de58&entry=gps&shh=CAE&lucs=,94297699,94231188,94280568,47071704,94218641,94282134,100813464,94286869&g_st=iw",
+    receptionPlace: "Paróquia Santos Anjos da Guarda da Matola-Rio",
     receptionTime: "15:00",
-    receptionMap: "https://www.google.com/maps/search/?api=1&query=Maputo%20Mo%C3%A7ambique",
+    receptionMap: "https://maps.google.com?q=2CQ8+F66%20Par%C3%B3quia%20Santos%20Anjos%20da%20Matola-rio&ftid=0x1ee686279feb59bf:0xc8f9786440e8de58&entry=gps&shh=CAE&lucs=,94297699,94231188,94280568,47071704,94218641,94282134,100813464,94286869&g_st=iw",
     rsvpDeadline: "A confirmar",
     phone: "258822450107",
     supportContacts: "822450107 / 876692419",
@@ -56,8 +56,8 @@
     bankAccount: "1244585079",
     mobilePayment: "M-Pesa 857265105 — Amélia Macuacua",
     giftText: "Queridos familiares e amigos, a vossa presença é o nosso maior presente. Caso desejem presentear-nos com um gesto de carinho, podem fazê-lo através das opções de contribuição abaixo.",
-    musicUrl: "",
-    musicTitle: "Best Part — Daniel Caesar",
+    musicUrl: "./assets/media/best-part-daniel-caesar-her.mp3",
+    musicTitle: "Best Part — Daniel Caesar ft. H.E.R.",
     brideMessage: "Edilson, diante de Deus e das nossas famílias, escolho caminhar contigo com amor, respeito e fé. Que o nosso lar seja sempre construído com paciência, cumplicidade e bênçãos.",
     groomMessage: "Amélia, és uma resposta bonita às minhas orações. Recebo este novo caminho contigo com gratidão e compromisso, certo de que Deus continuará a guiar a nossa história.",
   };
@@ -78,10 +78,31 @@
   ];
 
   const program = [
-    ["14:00", "Cerimónia Civil — Local a confirmar"],
+    ["14:00", "Cerimónia Civil — Paróquia Santos Anjos da Guarda da Matola-Rio"],
     ["De seguida", "Sessão de votos"],
-    ["15:00", "Copo d'Água — Local a confirmar"],
+    ["15:00", "Copo d'Água — Paróquia Santos Anjos da Guarda da Matola-Rio"],
   ];
+
+  const giftItems = [
+    "Microondas",
+    "Taças de cristal",
+    "Jogo de banho Maria",
+    "Máquina de café",
+    "Máquina de sumo",
+    "Jogo de chávenas",
+    "Tigelas organizadoras de geleira",
+    "Ferro de engomar",
+    "Jogo de talheres",
+    "Tábuas de madeira",
+    "Edredon casal",
+    "Organizador de gavetas",
+    "Tapete para sala ( cinza)",
+    "Batedeira",
+    "Airfryer",
+    "Máquina de lavar",
+    "Panelas anti aderentes",
+    "Fogão  a gás e forno elétrico"
+];
 
   const palette = ["#ffffff", "#f5f3ef", "#111111", "#b7a37a"];
 
@@ -273,6 +294,211 @@
     if (!response.ok || data.status === "error") throw new Error(data.message || data.error || `Erro ${response.status}`);
     if (!contentType.includes("application/json")) throw new Error("O servidor não respondeu ao envio do comprovativo. Confirme se o Render/API está activo.");
     return data;
+  }
+
+
+
+  function parseMaybeJson(value) {
+    if (!value) return {};
+    if (typeof value === "object") return value;
+    try { return JSON.parse(String(value)); } catch { return {}; }
+  }
+
+  function normalizeGiftKey(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  function giftRecordsStorageKey() {
+    return `lirandzo_gift_registry_${INVITE_SLUG}`;
+  }
+
+  function localGiftRecords() {
+    try {
+      const list = JSON.parse(localStorage.getItem(giftRecordsStorageKey()) || "[]");
+      return Array.isArray(list) ? list : [];
+    } catch { return []; }
+  }
+
+  function saveLocalGiftRecord(record) {
+    const list = localGiftRecords();
+    const giftKey = normalizeGiftKey(record.selectedGift || record.gift || "");
+    const exists = list.some(item => normalizeGiftKey(item.selectedGift || item.gift || "") === giftKey);
+    if (!exists) {
+      list.push(record);
+      localStorage.setItem(giftRecordsStorageKey(), JSON.stringify(list));
+    }
+  }
+
+  function giftNameFromRecord(record) {
+    const details = parseMaybeJson(record?.details);
+    const rawValues = [
+      record?.selectedGift,
+      record?.giftChoice,
+      record?.gift,
+      record?.selectedGifts,
+      record?.gifts,
+      details.selectedGift,
+      details.giftChoice,
+      details.gift,
+      details.selectedGifts,
+      details.gifts,
+      record?.filename,
+      record?.comprovativoFile_filename,
+      details.filename,
+      details.comprovativoFile_filename,
+      record?.canal
+    ];
+    const source = rawValues.flatMap(value => Array.isArray(value) ? value : [value]).filter(Boolean).join(" ");
+    const direct = String(source || "").match(/Presente\s+escolhido\s*:?\s*([^\n|]+)/i);
+    const candidates = [direct?.[1] || "", source];
+    for (const item of giftItems) {
+      const key = normalizeGiftKey(item);
+      if (!key) continue;
+      if (candidates.some(value => normalizeGiftKey(value).includes(key))) return item;
+    }
+    return "";
+  }
+
+  function guestIdentityFromRecord(record) {
+    const details = parseMaybeJson(record?.details);
+    return {
+      name: String(record?.nome || record?.name || record?.guestName || details.nome || details.name || details.guestName || "Convidado").trim(),
+      token: String(record?.token || details.token || "").trim(),
+    };
+  }
+
+  function currentGuestMatches(record) {
+    const guest = guestIdentityFromRecord(record);
+    const token = guestToken();
+    const name = String(state.authGuest?.name || "").trim().toLowerCase();
+    return Boolean((token && guest.token && token === guest.token) || (name && guest.name.toLowerCase() === name));
+  }
+
+  function chosenGiftMap(records) {
+    const map = new Map();
+    (records || []).forEach(record => {
+      const gift = giftNameFromRecord(record);
+      if (!gift) return;
+      const key = normalizeGiftKey(gift);
+      if (!map.has(key)) map.set(key, { gift, record, guest: guestIdentityFromRecord(record), mine: currentGuestMatches(record) });
+    });
+    return map;
+  }
+
+  async function fetchGiftRecords() {
+    let serverRecords = [];
+    try {
+      if (window.LirandzoAPI && typeof window.LirandzoAPI.get === "function") {
+        const result = await window.LirandzoAPI.get("list_gift_records");
+        serverRecords = Array.isArray(result?.data) ? result.data : [];
+      }
+    } catch {
+      serverRecords = [];
+    }
+    return [...serverRecords, ...localGiftRecords()];
+  }
+
+  function makeGiftChoiceFile(giftName) {
+    const guestName = state.authGuest?.name || "Convidado";
+    const body = `%PDF-1.4\n% Lirandzo gift choice\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj\n3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n4 0 obj<</Length 190>>stream\nBT /F1 16 Tf 60 760 Td (Presente escolhido: ${String(giftName).replace(/[()\\]/g, "")}) Tj 0 -28 Td (Convidado: ${String(guestName).replace(/[()\\]/g, "")}) Tj 0 -28 Td (Convite: ${INVITE_SLUG}) Tj ET\nendstream\nendobj\n5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\nxref\n0 6\n0000000000 65535 f \ntrailer<</Root 1 0 R/Size 6>>\nstartxref\n540\n%%EOF`;
+    const safeName = normalizeGiftKey(giftName) || "presente";
+    return new File([body], `presente-escolhido-${safeName}.pdf`, { type: "application/pdf" });
+  }
+
+  async function reserveGiftChoice(giftName) {
+    const guestName = state.authGuest?.name || "Convidado";
+    const token = guestToken();
+    const record = {
+      slug: INVITE_SLUG,
+      nome: guestName,
+      name: guestName,
+      token,
+      canal: "Presente escolhido",
+      selectedGift: giftName,
+      selectedGifts: [giftName],
+      gifts: [giftName],
+      timestamp: new Date().toISOString(),
+      details: JSON.stringify({ selectedGift: giftName, selectedGifts: [giftName], giftChoice: giftName, token, nome: guestName })
+    };
+
+    const formData = new FormData();
+    formData.set("slug", INVITE_SLUG);
+    formData.set("name", guestName);
+    formData.set("nome", guestName);
+    formData.set("token", token);
+    formData.set("canal", "Presente escolhido");
+    formData.set("selectedGift", giftName);
+    formData.set("giftChoice", giftName);
+    formData.set("selectedGifts", giftName);
+    formData.set("gifts", giftName);
+    formData.set("details", record.details);
+    formData.set("comprovativoFile", makeGiftChoiceFile(giftName));
+
+    try {
+      await uploadGiftProof(formData);
+      saveLocalGiftRecord(record);
+      return { status: "success", message: "Presente escolhido com sucesso." };
+    } catch (error) {
+      saveLocalGiftRecord(record);
+      return { status: "local", message: "Presente marcado neste dispositivo. Quando o servidor estiver disponível, confirme no admin se o registo sincronizou." };
+    }
+  }
+
+  function renderGiftRegistryStatus(shell, message, isError = false) {
+    const status = shell?.querySelector("#gift-registry-status");
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle("is-error", !!isError);
+    status.classList.remove("is-hidden");
+  }
+
+  async function refreshGiftRegistry(shell) {
+    const grid = shell?.querySelector("#gift-choice-grid");
+    if (!grid) return;
+    renderGiftRegistryStatus(shell, "A verificar presentes disponíveis...");
+    const records = await fetchGiftRecords();
+    const chosen = chosenGiftMap(records);
+    const mine = Array.from(chosen.values()).find(item => item.mine);
+    grid.innerHTML = giftItems.map(item => {
+      const key = normalizeGiftKey(item);
+      const taken = chosen.get(key);
+      const isMine = Boolean(taken && taken.mine);
+      const isLocked = Boolean(taken && !isMine) || Boolean(mine && !isMine);
+      const label = isMine ? "Escolhido por si" : taken ? "Já escolhido" : mine ? "Indisponível" : "Disponível";
+      const by = taken && !isMine ? `<em>por ${escapeHtml(taken.guest.name || "Convidado")}</em>` : "";
+      return `<button type="button" class="gift-choice-btn ${taken ? "is-taken" : ""} ${isMine ? "is-mine" : ""}" data-gift-choice="${escapeHtml(item)}" ${isLocked || isMine ? "disabled" : ""}><span>${escapeHtml(item)}</span><small>${label}</small>${by}</button>`;
+    }).join("");
+    if (mine) renderGiftRegistryStatus(shell, `Você já escolheu: ${mine.gift}.`);
+    else renderGiftRegistryStatus(shell, "Escolha apenas 1 presente. Depois de escolhido, ele fica indisponível para outros convidados.");
+  }
+
+  function initializeGiftRegistryModal(shell) {
+    const grid = shell?.querySelector("#gift-choice-grid");
+    if (!grid) return;
+    refreshGiftRegistry(shell);
+    grid.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-gift-choice]");
+      if (!button || button.disabled) return;
+      const giftName = button.dataset.giftChoice;
+      const confirmed = window.confirm(`Confirmar escolha do presente: ${giftName}?`);
+      if (!confirmed) return;
+      button.disabled = true;
+      renderGiftRegistryStatus(shell, "A marcar o presente escolhido...");
+      const latestRecords = await fetchGiftRecords();
+      if (chosenGiftMap(latestRecords).has(normalizeGiftKey(giftName))) {
+        renderGiftRegistryStatus(shell, "Este presente acabou de ser escolhido por outro convidado. Escolha outro item.", true);
+        await refreshGiftRegistry(shell);
+        return;
+      }
+      const result = await reserveGiftChoice(giftName);
+      renderGiftRegistryStatus(shell, result.message || "Presente escolhido com sucesso.", result.status !== "success");
+      await refreshGiftRegistry(shell);
+    });
   }
 
   function fileToDataUrl(file) {
@@ -855,6 +1081,7 @@
       button.addEventListener("click", () => openModal(button.dataset.modal));
     });
     shell.querySelector("#gift-proof-form")?.addEventListener("submit", handleGiftProofSubmit);
+    initializeGiftRegistryModal(shell);
     shell.querySelector("#capsule-photo-form")?.addEventListener("submit", handleCapsulePhotoSubmit);
     bindCursorTargets();
     initRevealAnimations(shell);
@@ -922,7 +1149,7 @@
     }
 
     if (type === "musica") {
-      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">música</p><h2>Ambiente sonoro escolhido pelos noivos.</h2><p>Música escolhida: Best Part — Daniel Caesar. Para activar o áudio, adicione um ficheiro/link MP3 directo.</p><button class="btn-primary" type="button" data-action="music">Tocar / pausar música</button></div><img src="${photos.portrait}" alt="Amélia e Edilson" /></div>`;
+      return `<div class="modal-copy split-modal"><div><p class="modal-eyebrow">música</p><h2>Ambiente sonoro escolhido pelos noivos.</h2><p>Música escolhida: Best Part — Daniel Caesar ft. H.E.R.</p><button class="btn-primary" type="button" data-action="music">Tocar / pausar música</button></div><img src="${photos.portrait}" alt="Amélia e Edilson" /></div>`;
     }
 
     if (type === "capsula") {
@@ -958,6 +1185,14 @@
         <p class="modal-eyebrow">presentes</p>
         <h2>A vossa presença é o maior presente.</h2>
         <p>${escapeHtml(wedding.giftText)}</p>
+        <div class="gift-items-card gift-registry-card">
+          <div class="gift-registry-head">
+            <h3>Lista de presentes</h3>
+            <p>Cada presente só pode ser escolhido por uma pessoa. Assim que for marcado, fica indisponível para os restantes convidados.</p>
+          </div>
+          <p class="gift-registry-status" id="gift-registry-status">A carregar disponibilidade...</p>
+          <div class="gift-items-grid gift-choice-grid" id="gift-choice-grid">${giftItems.map(item => `<button type="button" class="gift-choice-btn" data-gift-choice="${escapeHtml(item)}"><span>${escapeHtml(item)}</span><small>Disponível</small></button>`).join("")}</div>
+        </div>
         <ul class="guest-info-list gift-list">
           <li class="bank-line"><span>banco</span><strong><img class="bank-logo" src="./assets/payment/bim.jpg" alt="BIM" />${escapeHtml(wedding.bankName)}</strong></li>
           <li><span>titular</span><strong>${escapeHtml(wedding.bankHolder)}</strong></li>
@@ -981,7 +1216,7 @@
       </div>`;
     }
 
-    return `<div class="modal-copy map-modal"><p class="modal-eyebrow">localização</p><h2>Permita-nos guiá-lo até à celebração.</h2><p><strong>Cerimónia civil:</strong> ${wedding.ceremonyPlace} · ${wedding.ceremonyTime}</p><p><strong>Copo d'Água:</strong> ${wedding.receptionPlace} · ${wedding.receptionTime}</p><figure class="map-image-card"><img src="./assets/media/mapa.jpg" alt="Mapa de localização do evento" /><figcaption>Referência visual provisória — local a confirmar.</figcaption></figure><a class="text-link" href="${wedding.ceremonyMap}" target="_blank" rel="noreferrer">Abrir referência no Google Maps</a><a class="text-link" href="${wedding.receptionMap}" target="_blank" rel="noreferrer">Abrir referência no Google Maps</a></div>`;
+    return `<div class="modal-copy map-modal"><p class="modal-eyebrow">localização</p><h2>Permita-nos guiá-lo até à celebração.</h2><p><strong>Cerimónia civil:</strong> ${wedding.ceremonyPlace} · ${wedding.ceremonyTime}</p><p><strong>Copo d'Água:</strong> ${wedding.receptionPlace} · ${wedding.receptionTime}</p><figure class="map-image-card"><img src="./assets/media/mapa.jpg" alt="Paróquia Santos Anjos da Guarda da Matola-Rio" /><figcaption>Referência do salão: Paróquia Santos Anjos da Guarda da Matola-Rio.</figcaption></figure><a class="text-link" href="${wedding.ceremonyMap}" target="_blank" rel="noreferrer">Abrir no Google Maps</a></div>`;
   }
 
   async function confirmPresenceFromGuest() {

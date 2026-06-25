@@ -186,6 +186,7 @@
         fd.append('nome', data.nome || data.name || 'Convidado');
         fd.append('token', data.token || '');
         fd.append('canal', data.canal || '');
+        ['selectedGift','giftChoice','selectedGifts','gifts','details'].forEach(function(key){ if (data[key]) fd.append(key, Array.isArray(data[key]) ? data[key].join(', ') : data[key]); });
         const mime = data.comprovativoFile_type || data.mimeType || 'image/jpeg';
         const filename = data.comprovativoFile_filename || data.filename || 'comprovativo.jpg';
         fd.append('comprovativoFile', base64ToBlob(data.comprovativoFile, mime), filename);

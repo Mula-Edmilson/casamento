@@ -1342,8 +1342,8 @@
       </section>
 
       <section id="giftsPanel" class="page-panel">
-        <div class="section-title"><div><h1>Contribuições</h1><p>Registos de contribuição monetária e comprovativos.</p></div><span id="giftBadge" class="event-chip">0 registos</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="gift"></i> Contribuições monetárias</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="giftSearch" class="search-input" type="search" placeholder="Pesquisar contribuição"></div><div class="toolbar-right"><button class="btn secondary small" data-export="gifts" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Convidado</th><th>Canal</th><th>Comprovativo / detalhes</th></tr></thead><tbody id="giftRows"></tbody></table></div><div id="giftMobile" class="mobile-list"></div></div></section>
+        <div class="section-title"><div><h1>Presentes e Contribuições</h1><p>Presentes escolhidos pelos convidados, contribuições monetárias e comprovativos.</p></div><span id="giftBadge" class="event-chip">0 registos</span></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="gift"></i> Presentes escolhidos e contribuições</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="giftSearch" class="search-input" type="search" placeholder="Pesquisar presente, convidado ou contribuição"></div><div class="toolbar-right"><button class="btn secondary small" data-export="gifts" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Convidado</th><th>Tipo</th><th>Presente / comprovativo / detalhes</th></tr></thead><tbody id="giftRows"></tbody></table></div><div id="giftMobile" class="mobile-list"></div></div></section>
       </section>
 
       <section id="messagesPanel" class="page-panel">
@@ -1950,8 +1950,34 @@
         return { fileName, imgUrl: thumb, openUrl, download, fileId };
       }
 
+      function normalizeGiftKey(value) {
+        return String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      }
+
+      const officialGiftItems = (EVENT.giftItems || [
+        'Microondas', 'Taças de cristal', 'Jogo de banho Maria', 'Máquina de café', 'Máquina de sumo', 'Jogo de chávenas',
+        'Tigelas organizadoras de geleira', 'Ferro de engomar', 'Jogo de talheres', 'Tábuas de madeira', 'Edredon casal',
+        'Organizador de gavetas', 'Tapete para sala ( cinza)', 'Batedeira', 'Airfryer', 'Máquina de lavar', 'Panelas anti aderentes',
+        'Fogão  a gás e forno elétrico'
+      ]);
+
+      function giftChoiceOf(g) {
+        const d = parseGiftDetails(g);
+        const values = [g.selectedGift, g.giftChoice, g.gift, g.selectedGifts, g.gifts, d.selectedGift, d.giftChoice, d.gift, d.selectedGifts, d.gifts, g.filename, g.comprovativoFile_filename, d.filename, d.comprovativoFile_filename, g.canal];
+        const source = values.flatMap(v => Array.isArray(v) ? v : [v]).filter(Boolean).join(' ');
+        const direct = String(source || '').match(/Presente\s+escolhido\s*:?\s*([^\n|]+)/i);
+        const candidates = [direct && direct[1] || '', source];
+        for (const item of officialGiftItems) {
+          const key = normalizeGiftKey(item);
+          if (key && candidates.some(value => normalizeGiftKey(value).includes(key))) return item;
+        }
+        return '';
+      }
+
       function giftDetail(g) {
         const d = parseGiftDetails(g);
+        const chosen = giftChoiceOf(g);
+        if (chosen) return `Presente escolhido: ${chosen}`;
         let value = g.selectedGifts || g.gifts || d.selectedGifts || d.gifts || g.filename || d.comprovativoFile_filename || g.canal || '';
         if (Array.isArray(value)) value = value.join(', ');
         if (typeof value === 'object' && value !== null) value = JSON.stringify(value);
@@ -1961,13 +1987,16 @@
       function giftPreviewMarkup(g) {
         const media = giftMedia(g);
         const detail = giftDetail(g);
-        const fileLabel = media.fileName || detail;
+        const chosen = giftChoiceOf(g);
+        const fileLabel = chosen || media.fileName || detail;
         const imgUrl = media.imgUrl;
         const openUrl = media.openUrl || media.download || imgUrl;
-        const preview = imgUrl
-          ? `<button type="button" class="contribution-preview" data-preview-src="${esc(imgUrl)}" data-preview-open="${esc(openUrl)}" data-preview-title="${esc(fileLabel)}"><img class="contribution-thumb" src="${esc(imgUrl)}" alt="Comprovativo de ${esc(nameOf(g))}" loading="lazy" onerror="this.closest('.contribution-preview').classList.add('image-error')"></button>`
-          : `<div class="contribution-placeholder"><i data-feather="image"></i></div>`;
-        const link = openUrl
+        const preview = chosen
+          ? `<div class="contribution-placeholder gift-choice-placeholder"><i data-feather="gift"></i></div>`
+          : imgUrl
+            ? `<button type="button" class="contribution-preview" data-preview-src="${esc(imgUrl)}" data-preview-open="${esc(openUrl)}" data-preview-title="${esc(fileLabel)}"><img class="contribution-thumb" src="${esc(imgUrl)}" alt="Comprovativo de ${esc(nameOf(g))}" loading="lazy" onerror="this.closest('.contribution-preview').classList.add('image-error')"></button>`
+            : `<div class="contribution-placeholder"><i data-feather="image"></i></div>`;
+        const link = openUrl && !chosen
           ? `<a class="contribution-link" href="${esc(openUrl)}" target="_blank" rel="noopener"><i data-feather="external-link"></i> Abrir ficheiro</a>`
           : '';
         return `<div class="contribution-cell">${preview}<div class="contribution-info"><strong>${esc(fileLabel)}</strong><small>${esc(detail)}</small>${link}</div></div>`;
@@ -1975,9 +2004,18 @@
 
       function renderGifts() {
         const list = filtered(DATA.gifts, 'giftSearch');
-        $('giftBadge').textContent = `${list.length} registos`;
-        $('giftRows').innerHTML = list.length ? list.map(g => `<tr><td>${esc(dateFmt(g.timestamp))}</td><td><strong>${esc(nameOf(g))}</strong></td><td>${esc(g.canal || 'Contribuição')}</td><td>${giftPreviewMarkup(g)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">Ainda não há contribuições.</td></tr>';
-        $('giftMobile').innerHTML = list.length ? list.map(g => `<article class="mobile-card"><strong>${esc(nameOf(g))}</strong><span>${esc(g.canal || 'Contribuição')} · ${esc(dateFmt(g.timestamp))}</span><div class="contribution-mobile">${giftPreviewMarkup(g)}</div><span class="status-badge">Registado</span></article>`).join('') : '<div class="empty">Sem dados para mostrar.</div>';
+        const giftChoices = list.filter(g => giftChoiceOf(g)).length;
+        $('giftBadge').textContent = `${list.length} registos · ${giftChoices} presentes`;
+        $('giftRows').innerHTML = list.length ? list.map(g => {
+          const chosen = giftChoiceOf(g);
+          const channel = chosen ? 'Presente escolhido' : (g.canal || 'Contribuição');
+          return `<tr><td>${esc(dateFmt(g.timestamp || g.createdAt))}</td><td><strong>${esc(nameOf(g))}</strong></td><td>${esc(channel)}</td><td>${giftPreviewMarkup(g)}</td></tr>`;
+        }).join('') : '<tr><td colspan="4" class="empty">Ainda não há presentes escolhidos ou contribuições.</td></tr>';
+        $('giftMobile').innerHTML = list.length ? list.map(g => {
+          const chosen = giftChoiceOf(g);
+          const channel = chosen ? 'Presente escolhido' : (g.canal || 'Contribuição');
+          return `<article class="mobile-card"><strong>${esc(nameOf(g))}</strong><span>${esc(channel)} · ${esc(dateFmt(g.timestamp || g.createdAt))}</span><div class="contribution-mobile">${giftPreviewMarkup(g)}</div><span class="status-badge">Registado</span></article>`;
+        }).join('') : '<div class="empty">Sem dados para mostrar.</div>';
         feather.replace();
       }
 

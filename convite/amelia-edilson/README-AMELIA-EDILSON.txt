@@ -15,9 +15,9 @@ Dados aplicados:
 - Pais do noivo: Jaime Simbine e Unilde Elisa Mathe
 - Presentes: BIM 1244585079 (Edilson Simbine), M-Pesa 857265105 (Amélia Macuacua)
 
-Pendente de confirmação:
-- Local/endereço oficial do evento. O convite está com “Local a confirmar”.
-- Link MP3 directo ou ficheiro de áudio para “Best Part — Daniel Caesar”. O campo já está preparado em index.html/convite.html como musicUrl.
+Dados já confirmados:
+- Local/endereço oficial: Paróquia Santos Anjos da Guarda da Matola-Rio.
+- Música aplicada: Best Part — Daniel Caesar ft. H.E.R.
 
 Arquivos principais:
 - index.html: entrada principal do convite.
@@ -27,3 +27,13 @@ Arquivos principais:
 - client-config.js: slug e API.
 - mongodb-seed-data.json: seed inicial para MongoDB/AdminManager.
 - guests-import-adminmanager.txt: lista inicial de convidados.
+
+
+Actualização:
+- Música adicionada: Best Part — Daniel Caesar ft. H.E.R.
+- Local do salão actualizado: Paróquia Santos Anjos da Guarda da Matola-Rio.
+- Lista de presentes adicionada ao modal Presentes.
+
+Actualização funcional:
+- Lista de presentes agora funciona como escolha única: cada item só pode ser marcado por um convidado.
+- As escolhas aparecem no admin em Presentes e Contribuições.

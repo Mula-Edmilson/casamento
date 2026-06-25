@@ -2509,3 +2509,73 @@ body, .experience { background: #f5f3ef !important; color: #111111; }
 .pass-nocheckin-block strong { font-family: Georgia, "Times New Roman", serif; font-size: 1.05rem; font-weight: 400; letter-spacing: 0.05em; }
 .pass-nocheckin-block small { font-size: 0.72rem; line-height: 1.6; color: rgba(17,17,17,.72); }
 @media (max-width: 720px) { .std-cover-card { width: min(100%, 31rem) !important; margin-bottom: 1rem !important; } .pass-main-noqr { grid-template-columns: 1fr !important; } }
+
+
+/* ─── Lista de presentes — Amélia & Edilson ─── */
+.gift-items-card { margin: 1.35rem 0; padding: 1rem; border: 1px solid rgba(17,17,17,.12); background: rgba(17,17,17,.035); }
+.gift-items-card h3 { margin: 0 0 .85rem; font-family: Georgia, "Times New Roman", serif; font-size: 1.35rem; font-weight: 400; color: #111; }
+.gift-items-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem .7rem; }
+.gift-items-grid span { display: flex; align-items: center; gap: .45rem; min-height: 2.35rem; padding: .52rem .65rem; background: #fff; border: 1px solid rgba(17,17,17,.08); font-size: .78rem; line-height: 1.35; color: rgba(17,17,17,.82); }
+.gift-items-grid span::before { content: ""; width: .36rem; height: .36rem; border-radius: 999px; background: #111; flex: 0 0 auto; opacity: .75; }
+@media (max-width: 640px) { .gift-items-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .gift-choice-grid { max-height: min(20rem, 46vh); } }
+
+
+/* ─── Gift registry: escolha única por convidado ─── */
+.gift-registry-card { display: grid; gap: .9rem; }
+.gift-registry-head { display: grid; gap: .35rem; }
+.gift-registry-head p { margin: 0; font-size: .82rem; line-height: 1.55; color: rgba(17,17,17,.68); }
+.gift-registry-status { margin: 0; padding: .65rem .75rem; background: rgba(17,17,17,.045); border-left: 2px solid #111; font-size: .78rem; line-height: 1.45; color: rgba(17,17,17,.78); }
+.gift-registry-status.is-error { border-left-color: #8b1e1e; color: #8b1e1e; background: rgba(139,30,30,.06); }
+.gift-choice-grid { align-items: stretch; max-height: min(24rem, 52vh); overflow-y: auto; padding-right: .25rem; }
+.gift-choice-grid::-webkit-scrollbar { width: 8px; }
+.gift-choice-grid::-webkit-scrollbar-thumb { background: rgba(17,17,17,.22); border-radius: 999px; }
+.gift-choice-grid::-webkit-scrollbar-track { background: rgba(17,17,17,.05); border-radius: 999px; }
+.gift-choice-btn { display: grid !important; align-content: center; gap: .24rem; min-height: 3.1rem; width: 100%; padding: .65rem .72rem !important; border: 1px solid rgba(17,17,17,.12); background: #fff; color: #111; text-align: left; transition: transform .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease; }
+.gift-choice-btn::before { display: none !important; }
+.gift-choice-btn span { font-size: .82rem; line-height: 1.25; color: #111; }
+.gift-choice-btn small { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(17,17,17,.5); }
+.gift-choice-btn em { font-style: normal; font-size: .68rem; color: rgba(17,17,17,.56); }
+.gift-choice-btn:not(:disabled):hover { transform: translateY(-2px); border-color: rgba(17,17,17,.45); background: #f8f7f4; }
+.gift-choice-btn.is-taken { background: rgba(17,17,17,.045); opacity: .68; }
+.gift-choice-btn.is-mine { opacity: 1; background: #111; color: #fff; border-color: #111; }
+.gift-choice-btn.is-mine span, .gift-choice-btn.is-mine small { color: #fff; }
+.gift-choice-placeholder { background: #111 !important; color: #fff !important; }
+.map-link-button, .map-modal .text-link { display: inline-flex; align-items: center; width: fit-content; margin-top: .8rem; }
+
+
+/* ─── Ajuste fino da lista de presentes: texto mais solto e bem enquadrado ─── */
+.gift-choice-btn {
+  grid-template-columns: 1fr;
+  gap: .38rem;
+  min-height: auto;
+  padding: .82rem .95rem !important;
+}
+.gift-choice-btn span {
+  display: block !important;
+  min-height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  font-size: .92rem !important;
+  line-height: 1.45 !important;
+  letter-spacing: 0 !important;
+  word-break: break-word;
+}
+.gift-choice-btn span::before {
+  display: none !important;
+}
+.gift-choice-btn small {
+  display: block;
+  margin-top: .02rem;
+  font-size: .64rem;
+  line-height: 1.25;
+}
+.gift-choice-grid {
+  gap: .7rem .8rem;
+}
+@media (max-width: 640px) {
+  .gift-choice-btn { padding: .78rem .85rem !important; }
+  .gift-choice-btn span { font-size: .88rem !important; line-height: 1.4 !important; }
+}
