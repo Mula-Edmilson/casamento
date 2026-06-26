@@ -295,7 +295,51 @@
 
       <section class="section" id="newInvitePanel">
         <div class="section-title"><div><h1>Novo cliente</h1><p>Cria um convite novo a partir de um pacote existente no GitHub.</p></div></div>
-        <form class="panel-card" id="newInviteForm"><div class="panel-head"><h2><i data-feather="plus-circle"></i> Dados do convite</h2></div><div class="panel-body form-grid"><div class="field"><label>Nome do cliente / referência interna</label><input name="clientName" placeholder="Maria João" required></div><div class="field"><label>Nomes do casal</label><input name="coupleNames" placeholder="Maria & João" required></div><div class="field"><label>Noiva</label><input name="bride" placeholder="Maria"></div><div class="field"><label>Noivo</label><input name="groom" placeholder="João"></div><div class="field"><label>Pacote</label><select name="packageKey" required><option value="perola">Pérola</option><option value="esmeralda">Esmeralda</option><option value="rubi">Rubi</option></select></div><div class="field"><label>Slug / pasta</label><input name="slug" placeholder="maria-joao"><p class="hint">Será usado em /convite/<b>slug</b>/</p></div><div class="field"><label>Data do evento</label><input name="eventDateISO" type="datetime-local"></div><div class="field"><label>Prazo RSVP</label><input name="rsvpDeadline" placeholder="20 de Junho de 2026"></div><div class="field span-2"><label>Opções de criação</label><div style="display:flex;gap:9px;flex-wrap:wrap"><label class="badge"><input type="checkbox" name="createAsPublished"> Criar como publicado</label><label class="badge"><input type="checkbox" name="copyToGithub" checked> Copiar template para GitHub</label></div></div><div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="reset">Limpar</button><button class="btn primary" type="submit"><i data-feather="plus-circle"></i> Criar convite</button></div><div id="createResult" class="feedback hidden span-2"></div></div></form>
+        <form class="panel-card" id="newInviteForm">
+          <div class="panel-head"><h2><i data-feather="plus-circle"></i> Dados completos do convite</h2><span class="badge blue">Sem edição manual</span></div>
+          <div class="panel-body form-grid">
+            <div class="field"><label>Nome do cliente / referência interna</label><input name="clientName" placeholder="Maria João" required></div>
+            <div class="field"><label>Nomes do casal</label><input name="coupleNames" placeholder="Maria & João" required></div>
+            <div class="field"><label>Noiva</label><input name="bride" placeholder="Maria"></div>
+            <div class="field"><label>Noivo</label><input name="groom" placeholder="João"></div>
+            <div class="field"><label>Pacote visual</label><select name="packageKey" required><option value="perola">Pérola</option><option value="esmeralda" selected>Esmeralda</option><option value="rubi">Rubi</option></select></div>
+            <div class="field"><label>Slug / pasta</label><input name="slug" placeholder="maria-joao"><p class="hint">Será usado em /convite/<b>slug</b>/</p></div>
+            <div class="field"><label>Data e hora principal</label><input name="eventDateISO" type="datetime-local"></div>
+            <div class="field"><label>Data por extenso</label><input name="eventDateLabel" placeholder="Sábado, 20 de Junho de 2026"></div>
+            <div class="field"><label>Prazo RSVP</label><input name="rsvpDeadline" placeholder="20 de Junho de 2026"></div>
+            <div class="field"><label>Modo RSVP</label><select name="rsvpMode"><option value="guest-list">Lista fechada por nome</option><option value="public">Público / auto-criar convidados</option></select></div>
+
+            <div class="field"><label>Hora igreja / religiosa</label><input name="religiousTime" placeholder="10h00"></div>
+            <div class="field"><label>Local igreja / religiosa</label><input name="religiousVenue" placeholder="Igreja..."></div>
+            <div class="field span-2"><label>Link mapa igreja / religiosa</label><input name="religiousMapUrl" placeholder="https://maps.app.goo.gl/..."></div>
+            <div class="field"><label>Hora cerimónia civil</label><input name="civilTime" placeholder="14h00"></div>
+            <div class="field"><label>Local cerimónia civil</label><input name="civilVenue" placeholder="Conservatória / salão..."></div>
+            <div class="field span-2"><label>Link mapa cerimónia civil</label><input name="civilMapUrl" placeholder="https://maps.app.goo.gl/..."></div>
+            <div class="field"><label>Hora copo de água</label><input name="receptionTime" placeholder="15h00"></div>
+            <div class="field"><label>Local copo de água</label><input name="receptionVenue" placeholder="Salão..."></div>
+            <div class="field span-2"><label>Link mapa copo de água</label><input name="receptionMapUrl" placeholder="https://maps.app.goo.gl/..."></div>
+
+            <div class="field"><label>Telefone / WhatsApp</label><input name="contactPhone" placeholder="+258 ..."></div>
+            <div class="field"><label>Música do convite</label><input name="musicUrl" placeholder="https://...mp3"></div>
+            <div class="field span-2"><label>Nota do popup RSVP</label><input name="popupNote" value="Confirme a sua presença e adicione o evento ao seu lembrete."></div>
+            <div class="field span-2"><label>Texto principal do convite</label><textarea name="invitationNote" placeholder="Temos a honra de convidá-lo para celebrar connosco este momento especial."></textarea></div>
+            <div class="field span-2"><label>Contas / pagamentos</label><textarea name="paymentAccounts" placeholder="M-Pesa | Nome Titular | 84xxxxxxx
+BCI | Nome Titular | 000000000000"></textarea><p class="hint">Uma conta por linha, formato: Método | Titular | Número.</p></div>
+
+            <div class="field span-2"><label>Secções activas</label><div style="display:flex;gap:9px;flex-wrap:wrap">
+              <label class="badge"><input type="checkbox" name="section_schedule" checked> Agenda</label>
+              <label class="badge"><input type="checkbox" name="section_map" checked> Mapa</label>
+              <label class="badge"><input type="checkbox" name="section_rsvp" checked> RSVP</label>
+              <label class="badge"><input type="checkbox" name="section_messages" checked> Mensagens</label>
+              <label class="badge"><input type="checkbox" name="section_gifts" checked> Presentes</label>
+              <label class="badge"><input type="checkbox" name="section_contributions" checked> Contribuições</label>
+              <label class="badge"><input type="checkbox" name="section_capsule" checked> Cápsula</label>
+            </div></div>
+            <div class="field span-2"><label>Opções de criação</label><div style="display:flex;gap:9px;flex-wrap:wrap"><label class="badge"><input type="checkbox" name="createAsPublished"> Criar como publicado</label><label class="badge"><input type="checkbox" name="copyToGithub" checked> Copiar template para GitHub</label></div></div>
+            <div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="reset">Limpar</button><button class="btn primary" type="submit"><i data-feather="plus-circle"></i> Criar convite completo</button></div>
+            <div id="createResult" class="feedback hidden span-2"></div>
+          </div>
+        </form>
       </section>
 
       <section class="section" id="managePanel">
@@ -380,6 +424,7 @@
     function renderArchivedInvites(){ const rows = archivedInvites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho"><i data-feather="rotate-ccw"></i> Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente"><i data-feather="trash-2"></i> Eliminar</button></div></td></tr>`).join(''); $('archivedTbody').innerHTML = rows || '<tr><td colspan="6">Nenhum convite arquivado.</td></tr>'; $('archivedMobile').innerHTML = archivedInvites.length ? archivedInvites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes">Ver</button><button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho">Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente">Eliminar</button></div></article>`).join('') : '<div class="feedback">Nenhum convite arquivado.</div>'; iconRefresh(); }
 
     function badgeStatus(s){ if(s==='published') return '<span class="badge ok">Publicado</span>'; if(s==='draft') return '<span class="badge warn">Rascunho</span>'; if(s==='archived') return '<span class="badge red">Arquivado</span>'; return `<span class="badge">${esc(s)}</span>`; }
+    function badgeSync(s){ if(s==='synced') return '<span class="badge ok">GitHub OK</span>'; if(s==='failed') return '<span class="badge red">GitHub falhou</span>'; if(s==='pending') return '<span class="badge warn">Pendente</span>'; if(s==='skipped') return '<span class="badge">Sem cópia</span>'; return '<span class="badge">Não sincronizado</span>'; }
     function pkgLabel(p){ return p==='perola'?'Pérola':p==='esmeralda'?'Esmeralda':'Rubi'; }
     function inviteStatusActions(inv){
       if (inv.status === 'draft') return `<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','published')" title="Publicar convite"><i data-feather="check-circle"></i> Publicar</button>`;
@@ -387,14 +432,20 @@
       return '';
     }
     function renderInvites(){
-      const rows = invites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td>${badgeStatus(inv.status)}</td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button>${inviteStatusActions(inv)}<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><i data-feather="git-branch"></i></button><button class="btn small" onclick="copyUrl('${esc(inv.publicUrl||'')}')" title="Copiar URL pública"><i data-feather="copy"></i></button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i></button></div></td></tr>`).join('');
+      const rows = invites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td>${badgeStatus(inv.status)}<br>${badgeSync(inv.syncStatus)}</td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button>${inviteStatusActions(inv)}<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><i data-feather="git-branch"></i></button><button class="btn small" onclick="copyUrl('${esc(inv.publicUrl||'')}')" title="Copiar URL pública"><i data-feather="copy"></i></button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i></button></div></td></tr>`).join('');
       $('invitesTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convite encontrado.</td></tr>';
-      $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes">Ver</button>${inviteStatusActions(inv)}<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub">GitHub</button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite">Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
+      $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)} ${badgeSync(inv.syncStatus)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes">Ver</button>${inviteStatusActions(inv)}<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub">GitHub</button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite">Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
       iconRefresh();
     }
     function renderGuestSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('guestInviteSelect').innerHTML = html; }
     function renderManageSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('manageInviteSelect').innerHTML = html; if(invites.length && !selectedInviteDetails) loadManageDetails(); }
-    async function loadGithubStatus(){ try { const out = await api('/manager/github/status'); const d=out.data||{}; $('githubStatus').innerHTML = d.configured ? `<b>GitHub configurado correctamente.</b><br><br>Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>Branch: <b>${esc(d.branch)}</b><br>Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br>Templates:<br>Pérola: <b>${esc(d.templates?.perola||'-')}</b><br>Esmeralda: <b>${esc(d.templates?.esmeralda||'-')}</b><br>Rubi: <b>${esc(d.templates?.rubi||'-')}</b>` : `<b>GitHub ainda não está configurado.</b><br><br>Configure no Render: <b>GITHUB_TOKEN</b>, <b>GITHUB_OWNER</b>, <b>GITHUB_REPO</b>, <b>GITHUB_BRANCH</b> e os caminhos dos templates.`; } catch(e){ $('githubStatus').textContent = e.message; } }
+    async function loadGithubStatus(){
+      try {
+        const out = await api('/manager/github/status'); const d=out.data||{};
+        const checks = (d.checks||[]).map(c=>`<div class="info-row"><span>${c.ok?'OK':'Falha'}</span><strong>${esc(c.label)} — ${esc(c.message)}</strong></div>`).join('');
+        $('githubStatus').innerHTML = `<b>${d.configured?'GitHub acessível':'GitHub com pendências'}</b><br><br>Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>Branch: <b>${esc(d.branch)}</b><br>Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br><div class="info-list">${checks || '<div class="info-row"><span>Info</span><strong>Sem diagnóstico disponível.</strong></div>'}</div>`;
+      } catch(e){ $('githubStatus').textContent = e.message; }
+    }
     async function loadManageDetails(){ const id=$('manageInviteSelect').value; if(!id) return; const out=await api(`/manager/invites/${id}`); selectedInviteDetails=out.data; const d=out.data; $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small>registos</small></article>`; iconRefresh(); }
     async function managerAction(path, method, confirmText, successMsg){ if(confirmText && !confirm(confirmText)) return; hideMsg($('manageResult')); try { const out=await api(path,{method,body:JSON.stringify({})}); showMsg($('manageResult'), out.message || successMsg || 'Operação concluída.'); await Promise.allSettled([loadManageDetails(),loadSummary(),loadInvites()]); } catch(e){ showMsg($('manageResult'), e.message, true); } }
     function selectedManageId(){ return $('manageInviteSelect').value; }
@@ -483,7 +534,25 @@
       $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); token=''; loginView(); }); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto)));
       $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
       $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
-      $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); showMsg($('createResult'), out.message || `Convite criado: ${out.data.publicUrl}`); e.currentTarget.reset(); await loadAll(); }catch(err){ showMsg($('createResult'),err.message,true); } });
+      $('newInviteForm').addEventListener('submit', async e=>{
+        e.preventDefault();
+        const fd=new FormData(e.currentTarget);
+        const payload=Object.fromEntries(fd.entries());
+        payload.copyToGithub=fd.get('copyToGithub')==='on';
+        payload.createAsPublished=fd.get('createAsPublished')==='on';
+        payload.sections={
+          schedule:fd.get('section_schedule')==='on', map:fd.get('section_map')==='on', rsvp:fd.get('section_rsvp')==='on',
+          messages:fd.get('section_messages')==='on', gifts:fd.get('section_gifts')==='on', contributions:fd.get('section_contributions')==='on', capsule:fd.get('section_capsule')==='on'
+        };
+        hideMsg($('createResult'));
+        try{
+          const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)});
+          const sync = out.data?.syncStatus ? `<br>GitHub: <b>${esc(out.data.syncStatus)}</b>${out.data.syncError ? `<br><small>${esc(out.data.syncError)}</small>` : ''}` : '';
+          showMsg($('createResult'), (out.message || `Convite criado: ${out.data.publicUrl}`) + sync);
+          e.currentTarget.reset();
+          await loadAll();
+        }catch(err){ showMsg($('createResult'),err.message,true); }
+      });
       $('manageInviteSelect').addEventListener('change',loadManageDetails); $('loadManageBtn').addEventListener('click',loadManageDetails);
       $('resetAccessBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/guests/reset-access`,'POST','Resetar o acesso de todos os convidados deste convite?','Acessos reiniciados.'));
       $('resetGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/reset-reservations`,'POST','Remover todas as reservas de presentes deste convite?','Reservas reiniciadas.'));

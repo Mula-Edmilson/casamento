@@ -1,3 +1,11 @@
-Template oficial Lirandzo: perola
-Este directório é usado pelo AdminManager para gerar novos convites.
-Não colocar dados reais fixos neste template.
+TEMPLATE LIRANDZO PRODUÇÃO
+
+Este template é limpo e preparado para ser copiado automaticamente pelo Admin Manager.
+Não contém dados demo, scripts de seed, package.json, server.js nem ficheiros de convidados reais.
+
+Ficheiros gerados automaticamente pelo backend durante a criação do convite:
+- client-config.js
+- event-data.js
+- invite-data.json
+
+Campos do evento vêm de window.LIRANDZO_EVENT_DATA, gerado a partir do Admin Manager.

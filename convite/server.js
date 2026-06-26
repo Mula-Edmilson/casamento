@@ -239,6 +239,9 @@ const InviteSchema = new mongoose.Schema({
   publicUrl: { type: String, default: '' },
   githubPath: { type: String, default: '' },
   githubLastCommitSha: { type: String, default: '' },
+  syncStatus: { type: String, enum: ['unsynced', 'pending', 'synced', 'failed', 'skipped'], default: 'unsynced', index: true },
+  syncError: { type: String, default: '' },
+  githubSyncedAt: { type: Date },
   publishedAt: { type: Date },
   config: { type: mongoose.Schema.Types.Mixed, default: {} }
 }, { timestamps: true });
@@ -392,6 +395,7 @@ function cleanInviteDoc(doc) {
     bride: o.bride, groom: o.groom, packageKey: o.packageKey, packageLabel: packageLabel(o.packageKey),
     status: o.status, eventDateISO: o.eventDateISO, rsvpDeadline: o.rsvpDeadline,
     publicUrl: o.publicUrl, githubPath: o.githubPath, githubLastCommitSha: o.githubLastCommitSha,
+    syncStatus: o.syncStatus || 'unsynced', syncError: o.syncError || '', githubSyncedAt: o.githubSyncedAt || null,
     createdAt: o.createdAt, updatedAt: o.updatedAt, publishedAt: o.publishedAt, config: o.config || {}
   };
 }
@@ -419,6 +423,115 @@ function defaultPublicUrl(slug) {
   const base = stripTrailingSlash(process.env.PUBLIC_SITE_URL || 'https://lirandzo.com');
   return `${base}/${getInvitesBasePath()}/${slug}/`;
 }
+
+function compactObject(obj = {}) {
+  return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined && value !== null && String(value).trim?.() !== ''));
+}
+function splitList(value) {
+  return String(value || '').split(/\r?\n|,/).map(v => v.trim()).filter(Boolean);
+}
+function normalizePaymentAccounts(raw) {
+  if (Array.isArray(raw)) return raw.filter(Boolean);
+  const lines = splitList(raw);
+  return lines.map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length >= 3) return { method: parts[0], holder: parts[1], number: parts.slice(2).join(' | ') };
+    return { method: 'Conta', holder: '', number: line };
+  });
+}
+function normalizeSections(body = {}) {
+  const defaults = {
+    schedule: true, map: true, rsvp: true, messages: true, gifts: true,
+    contributions: true, capsule: true, dressCode: false, gallery: false, parents: false
+  };
+  const incoming = body.sections && typeof body.sections === 'object' ? body.sections : {};
+  for (const key of Object.keys(defaults)) {
+    if (Object.prototype.hasOwnProperty.call(body, `section_${key}`)) defaults[key] = parseBool(body[`section_${key}`]);
+    if (Object.prototype.hasOwnProperty.call(incoming, key)) defaults[key] = parseBool(incoming[key]);
+  }
+  return defaults;
+}
+function buildInviteConfig(body = {}, base = {}) {
+  const current = base && typeof base === 'object' ? base : {};
+  const theme = {
+    style: String(body.themeStyle || current.theme?.style || body.packageKey || 'esmeralda').trim(),
+    accent: String(body.themeAccent || current.theme?.accent || '').trim(),
+    coverImage: String(body.coverImage || current.theme?.coverImage || '').trim(),
+    heroImage: String(body.heroImage || current.theme?.heroImage || '').trim(),
+    musicUrl: String(body.musicUrl || current.theme?.musicUrl || '').trim()
+  };
+  const event = compactObject({
+    title: body.eventTitle || current.event?.title || body.coupleNames || '',
+    dateLabel: body.eventDateLabel || current.event?.dateLabel || '',
+    dateISO: body.eventDateISO || current.event?.dateISO || '',
+    rsvpDeadline: body.rsvpDeadline || current.event?.rsvpDeadline || '',
+    timezone: body.timezone || current.event?.timezone || 'Africa/Maputo',
+    religiousTime: body.religiousTime || current.event?.religiousTime || '',
+    religiousVenue: body.religiousVenue || current.event?.religiousVenue || '',
+    religiousMapUrl: body.religiousMapUrl || current.event?.religiousMapUrl || '',
+    civilTime: body.civilTime || current.event?.civilTime || '',
+    civilVenue: body.civilVenue || current.event?.civilVenue || '',
+    civilMapUrl: body.civilMapUrl || current.event?.civilMapUrl || '',
+    receptionTime: body.receptionTime || current.event?.receptionTime || '',
+    receptionVenue: body.receptionVenue || current.event?.receptionVenue || '',
+    receptionMapUrl: body.receptionMapUrl || current.event?.receptionMapUrl || '',
+    generalMapUrl: body.generalMapUrl || current.event?.generalMapUrl || body.receptionMapUrl || body.civilMapUrl || body.religiousMapUrl || '',
+    dressCode: body.dressCode || current.event?.dressCode || '',
+    popupNote: body.popupNote || current.event?.popupNote || 'Confirme a sua presença e adicione o evento ao seu lembrete.',
+    invitationNote: body.invitationNote || current.event?.invitationNote || '',
+    contactPhone: body.contactPhone || current.event?.contactPhone || '',
+    whatsapp: body.whatsapp || current.event?.whatsapp || ''
+  });
+  const rsvp = {
+    mode: String(body.rsvpMode || current.rsvp?.mode || 'guest-list'),
+    maxPublicGuests: Math.max(1, Number.parseInt(body.maxPublicGuests || current.rsvp?.maxPublicGuests || 5, 10) || 5),
+    askPhone: body.askPhone === undefined ? (current.rsvp?.askPhone ?? true) : parseBool(body.askPhone),
+    askMessage: body.askMessage === undefined ? (current.rsvp?.askMessage ?? true) : parseBool(body.askMessage)
+  };
+  const payments = normalizePaymentAccounts(body.paymentAccounts ?? current.payments ?? '');
+  const parents = compactObject({
+    brideParents: body.brideParents || current.parents?.brideParents || '',
+    groomParents: body.groomParents || current.parents?.groomParents || ''
+  });
+  return { theme, event, rsvp, sections: normalizeSections({ ...current, ...body, sections: body.sections || current.sections }), payments, parents };
+}
+function buildEventPayload(invite) {
+  const cfg = buildInviteConfig(invite.config || {}, invite.config || {});
+  return {
+    slug: invite.slug,
+    clientName: invite.clientName,
+    coupleNames: invite.coupleNames,
+    bride: invite.bride || '',
+    groom: invite.groom || '',
+    packageKey: invite.packageKey,
+    packageLabel: packageLabel(invite.packageKey),
+    publicUrl: invite.publicUrl || defaultPublicUrl(invite.slug),
+    apiBaseUrl: PUBLIC_API_BASE_URL,
+    apiUrl: `${PUBLIC_API_BASE_URL}/api`,
+    eventDateISO: invite.eventDateISO || cfg.event.dateISO || '',
+    rsvpDeadline: invite.rsvpDeadline || cfg.event.rsvpDeadline || '',
+    ...cfg
+  };
+}
+function eventDataJs(invite) {
+  const payload = buildEventPayload(invite);
+  return `window.LIRANDZO_EVENT_DATA = ${JSON.stringify(payload, null, 2)};\n`;
+}
+function inviteDataJson(invite) {
+  return JSON.stringify({ ...buildEventPayload(invite), createdAt: nowIso() }, null, 2);
+}
+function shouldSkipTemplateFile(relativePath = '') {
+  const rel = String(relativePath || '').replace(/\\/g, '/');
+  const base = rel.split('/').pop() || '';
+  if (!rel || rel === 'TEMPLATE-LIRANDZO.txt') return true;
+  if (/^(client-config|event-data|invite-data)\.js(on)?$/i.test(base)) return true;
+  if (/^(server|package|package-lock)\.json$/i.test(base) || /^server\.js$/i.test(base)) return true;
+  if (/^(mongodb-seed-data|guests-import-adminmanager)\.txt$/i.test(base)) return true;
+  if (/^import-.*\.js$/i.test(base) || /^README/i.test(base) || /New Documento/i.test(base) || /Lirandzo API/i.test(base)) return true;
+  const forbiddenDirs = ['edma-abel','minoca-abubacar','flicia-walter-convite','rosalina-monteiro','calate-helder','maria-joao','maria-joao-v2','anicia-nelson','nelia-edmilson','patricia-guilherme','rafaela-amade'];
+  return forbiddenDirs.some(dir => rel === dir || rel.startsWith(`${dir}/`));
+}
+
 
 function githubReady() { return Boolean(process.env.GITHUB_TOKEN && process.env.GITHUB_OWNER && process.env.GITHUB_REPO && process.env.GITHUB_BRANCH); }
 async function gh(path, options = {}) {
@@ -448,7 +561,9 @@ function applyTemplateReplacements(content, ctx, filePath = '') {
   for (const [k, v] of Object.entries(replacements)) out = out.split(k).join(String(v || ''));
 
   if (/\.html$/i.test(filePath) && !out.includes('client-config.js')) {
-    out = out.replace(/<\/head>/i, '  <script src="./client-config.js"></script>\n</head>');
+    out = out.replace(/<\/head>/i, '  <script src="./client-config.js"></script>\n  <script src="./event-data.js"></script>\n</head>');
+  } else if (/\.html$/i.test(filePath) && !out.includes('event-data.js')) {
+    out = out.replace(/<\/head>/i, '  <script src="./event-data.js"></script>\n</head>');
   }
   out = out.replace(/const\s+API_URL\s*=\s*[`'\"][^`'\"]*[`'\"]\s*;/g, `const API_URL = "${ctx.apiBaseUrl}/api";`);
   out = out.replace(/const\s+DEMO_MODE\s*=\s*true\s*;/g, 'const DEMO_MODE = false;');
@@ -472,12 +587,16 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
   const baseTreeSha = baseCommit.tree.sha;
   const fullTree = await gh(`/git/trees/${baseTreeSha}?recursive=1`);
   const all = fullTree.tree || [];
-  const files = all.filter(item => item.type === 'blob' && item.path.startsWith(`${templatePath}/`));
-  if (!files.length) throw new Error(`Nenhum ficheiro encontrado no template: ${templatePath}`);
+  const files = all.filter(item => {
+    if (item.type !== 'blob' || !item.path.startsWith(`${templatePath}/`)) return false;
+    const relative = item.path.slice(templatePath.length + 1);
+    return !shouldSkipTemplateFile(relative);
+  });
+  if (!files.length) throw new Error(`Nenhum ficheiro válido encontrado no template: ${templatePath}. Verifique se o template tem index.html/convite.html/style.css e se não contém apenas ficheiros ignorados.`);
   const targetAlreadyExists = all.some(item => item.path.startsWith(`${targetPath}/`));
   if (targetAlreadyExists && !allowOverwrite) throw new Error(`A pasta ${targetPath} já existe no GitHub. Para evitar sobrescrever, use outro slug.`);
 
-  const ctx = { slug: invite.slug, apiBaseUrl: PUBLIC_API_BASE_URL, coupleNames: invite.coupleNames, clientName: invite.clientName, bride: invite.bride, groom: invite.groom, packageKey: invite.packageKey, publicUrl: invite.publicUrl };
+  const ctx = { slug: invite.slug, apiBaseUrl: PUBLIC_API_BASE_URL, coupleNames: invite.coupleNames, clientName: invite.clientName, bride: invite.bride, groom: invite.groom, packageKey: invite.packageKey, publicUrl: invite.publicUrl, event: buildEventPayload(invite) };
   const treeItems = [];
   for (const file of files) {
     const relative = file.path.slice(templatePath.length + 1);
@@ -492,7 +611,8 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
     }
   }
   treeItems.push({ path: `${targetPath}/client-config.js`, mode: '100644', type: 'blob', content: `window.LIRANDZO_INVITE_SLUG = ${JSON.stringify(invite.slug)};\nwindow.LIRANDZO_API_BASE_URL = ${JSON.stringify(PUBLIC_API_BASE_URL)};\nwindow.LIRANDZO_API_URL = window.LIRANDZO_API_BASE_URL.replace(/\\/+$/, '') + '/api';\n` });
-  treeItems.push({ path: `${targetPath}/invite-data.json`, mode: '100644', type: 'blob', content: JSON.stringify({ slug: invite.slug, coupleNames: invite.coupleNames, clientName: invite.clientName, packageKey: invite.packageKey, publicUrl: invite.publicUrl, createdAt: nowIso() }, null, 2) });
+  treeItems.push({ path: `${targetPath}/event-data.js`, mode: '100644', type: 'blob', content: eventDataJs(invite) });
+  treeItems.push({ path: `${targetPath}/invite-data.json`, mode: '100644', type: 'blob', content: inviteDataJson(invite) });
   const newTree = await gh('/git/trees', { method: 'POST', body: JSON.stringify({ base_tree: baseTreeSha, tree: treeItems }) });
   const newCommit = await gh('/git/commits', { method: 'POST', body: JSON.stringify({ message: `Criar convite ${invite.slug} (${packageLabel(invite.packageKey)})`, tree: newTree.sha, parents: [baseCommitSha] }) });
   await gh(`/git/refs/heads/${encodeURIComponent(branch)}`, { method: 'PATCH', body: JSON.stringify({ sha: newCommit.sha }) });
@@ -520,16 +640,14 @@ async function seedDefaultGifts(invite) {
   }
 }
 
-app.get('/health', async (req, res) => res.json({ status: 'ok', service: 'lirandzo-adminmanager', mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not_connected', githubConfigured: githubReady() }));
+app.get('/health', async (req, res) => res.json({ status: 'ok', service: 'lirandzo-adminmanager', mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not_connected', githubConfigured: githubReady(), managerSecretConfigured: Boolean(process.env.MANAGER_SECRET && String(process.env.MANAGER_SECRET).length >= 16) }));
 
 app.post('/manager/login', (req, res) => {
   const { password } = req.body || {};
   if (!process.env.MANAGER_PASSWORD) return res.status(500).json({ status: 'error', message: 'MANAGER_PASSWORD não configurado no Render.' });
   if (String(password || '') !== String(process.env.MANAGER_PASSWORD)) return res.status(401).json({ status: 'error', message: 'Senha incorrecta.' });
-  if (!process.env.MANAGER_SECRET) {
-    // Compatibilidade: permite o admin.html validar a senha mesmo em deployments antigos sem MANAGER_SECRET.
-    // As acções sensíveis continuam protegidas pela própria senha em /admin-api.
-    return res.json({ status: 'success', token: '', message: 'Sessão validada por senha.' });
+  if (!process.env.MANAGER_SECRET || String(process.env.MANAGER_SECRET).length < 16) {
+    return res.status(500).json({ status: 'error', message: 'MANAGER_SECRET não configurado ou demasiado curto no Render. Configure uma chave com pelo menos 16 caracteres.' });
   }
   const token = signToken({ role: 'manager', iat: Date.now(), exp: Date.now() + 1000 * 60 * 60 * 12 });
   res.json({ status: 'success', token });
@@ -541,7 +659,54 @@ app.get('/manager/summary', requireManager, async (req, res) => {
   ]);
   res.json({ status: 'success', data: { totalInvites, published, draft, guests, rsvps, messages, contributions, activities } });
 });
-app.get('/manager/github/status', requireManager, (req, res) => res.json({ status: 'success', data: { configured: githubReady(), owner: process.env.GITHUB_OWNER || '', repo: process.env.GITHUB_REPO || '', branch: process.env.GITHUB_BRANCH || '', invitesBasePath: getInvitesBasePath(), templates: { perola: getTemplatePath('perola'), esmeralda: getTemplatePath('esmeralda'), rubi: getTemplatePath('rubi') } } }));
+app.get('/manager/github/status', requireManager, asyncRoute(async (req, res) => {
+  const data = {
+    configured: githubReady(),
+    owner: process.env.GITHUB_OWNER || '',
+    repo: process.env.GITHUB_REPO || '',
+    branch: process.env.GITHUB_BRANCH || '',
+    invitesBasePath: getInvitesBasePath(),
+    templates: { perola: getTemplatePath('perola'), esmeralda: getTemplatePath('esmeralda'), rubi: getTemplatePath('rubi') },
+    checks: []
+  };
+
+  if (!githubReady()) {
+    data.checks.push({ key: 'env', ok: false, label: 'Variáveis GitHub', message: 'Configure GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO e GITHUB_BRANCH no Render.' });
+    return res.json({ status: 'success', data });
+  }
+
+  try {
+    const repo = await gh('');
+    data.checks.push({ key: 'repo', ok: true, label: 'Repositório', message: `${repo.full_name || `${data.owner}/${data.repo}`} acessível.` });
+  } catch (err) {
+    data.checks.push({ key: 'repo', ok: false, label: 'Repositório', message: err.message });
+  }
+
+  try {
+    const ref = await gh(`/git/ref/heads/${encodeURIComponent(data.branch)}`);
+    data.branchSha = ref.object?.sha || '';
+    data.checks.push({ key: 'branch', ok: true, label: 'Branch', message: `${data.branch} encontrado.` });
+    const commit = await gh(`/git/commits/${ref.object.sha}`);
+    const tree = await gh(`/git/trees/${commit.tree.sha}?recursive=1`);
+    const all = tree.tree || [];
+    for (const [key, path] of Object.entries(data.templates)) {
+      const rawFiles = all.filter(item => item.type === 'blob' && item.path.startsWith(`${path}/`));
+      const validFiles = rawFiles.filter(item => !shouldSkipTemplateFile(item.path.slice(path.length + 1)));
+      const dirtyFiles = rawFiles.length - validFiles.length;
+      data.checks.push({
+        key: `template_${key}`,
+        ok: validFiles.length > 0,
+        label: `Template ${packageLabel(key)}`,
+        message: validFiles.length ? `${validFiles.length} ficheiro(s) válido(s). ${dirtyFiles ? `${dirtyFiles} ignorado(s) por limpeza.` : 'Limpo.'}` : `Nenhum ficheiro válido em ${path}.`
+      });
+    }
+  } catch (err) {
+    data.checks.push({ key: 'tree', ok: false, label: 'Árvore do repositório', message: err.message });
+  }
+
+  data.configured = githubReady() && data.checks.some(c => c.key === 'repo' && c.ok) && data.checks.some(c => c.key === 'branch' && c.ok);
+  res.json({ status: 'success', data });
+}));
 
 app.get('/manager/invites', requireManager, async (req, res) => {
   const { q = '', status = 'all', packageKey = 'all' } = req.query;
@@ -570,15 +735,44 @@ app.post('/manager/invites', requireManager, async (req, res) => {
   if (exists) return res.status(409).json({ status: 'error', message: `Já existe um convite com o slug ${slug}.` });
   const githubPath = `${getInvitesBasePath()}/${slug}`;
   const publicUrl = body.publicUrl || defaultPublicUrl(slug);
+  const config = buildInviteConfig({ ...body, packageKey }, body.config && typeof body.config === 'object' ? body.config : {});
+  const shouldCopy = parseBool(body.copyToGithub);
   let invite = await Invite.create({
-    slug, clientName: String(body.clientName || body.coupleNames || slug).trim(), coupleNames: String(body.coupleNames || body.clientName || slug).trim(), bride: String(body.bride || '').trim(), groom: String(body.groom || '').trim(), packageKey,
-    status: parseBool(body.createAsPublished) ? 'published' : 'draft', eventDateISO: String(body.eventDateISO || '').trim(), rsvpDeadline: String(body.rsvpDeadline || '').trim(), publicUrl, githubPath, publishedAt: parseBool(body.createAsPublished) ? new Date() : undefined, config: body.config && typeof body.config === 'object' ? body.config : {}
+    slug,
+    clientName: String(body.clientName || body.coupleNames || slug).trim(),
+    coupleNames: String(body.coupleNames || body.clientName || slug).trim(),
+    bride: String(body.bride || '').trim(),
+    groom: String(body.groom || '').trim(),
+    packageKey,
+    status: parseBool(body.createAsPublished) ? 'published' : 'draft',
+    eventDateISO: String(body.eventDateISO || '').trim(),
+    rsvpDeadline: String(body.rsvpDeadline || '').trim(),
+    publicUrl,
+    githubPath,
+    syncStatus: shouldCopy ? 'pending' : 'skipped',
+    syncError: '',
+    publishedAt: parseBool(body.createAsPublished) ? new Date() : undefined,
+    config
   });
   await seedDefaultGifts(invite);
   let github = null;
-  if (parseBool(body.copyToGithub)) {
-    try { github = await copyPackageTemplateToClient({ invite }); invite.githubPath = github.path; invite.githubLastCommitSha = github.commitSha; await invite.save(); await logActivity({ invite, type: 'github', title: 'Pasta criada no GitHub', detail: github.path, meta: github }); }
-    catch (err) { await logActivity({ invite, type: 'warning', title: 'Convite criado sem cópia GitHub', detail: err.message }); return res.status(201).json({ status: 'warning', message: `Convite criado na base de dados, mas a cópia GitHub falhou: ${err.message}`, data: cleanInviteDoc(invite), github: null }); }
+  if (shouldCopy) {
+    try {
+      github = await copyPackageTemplateToClient({ invite });
+      invite.githubPath = github.path;
+      invite.githubLastCommitSha = github.commitSha;
+      invite.syncStatus = 'synced';
+      invite.syncError = '';
+      invite.githubSyncedAt = new Date();
+      await invite.save();
+      await logActivity({ invite, type: 'github', title: 'Pasta criada no GitHub', detail: github.path, meta: github });
+    } catch (err) {
+      invite.syncStatus = 'failed';
+      invite.syncError = err.message || 'Falha desconhecida no GitHub.';
+      await invite.save();
+      await logActivity({ invite, type: 'warning', title: 'Convite criado sem cópia GitHub', detail: invite.syncError });
+      return res.status(201).json({ status: 'warning', message: `Convite criado no MongoDB, mas a cópia GitHub falhou: ${invite.syncError}`, data: cleanInviteDoc(invite), github: null });
+    }
   }
   await logActivity({ invite, type: 'invite', title: 'Convite criado', detail: `${invite.coupleNames} · ${packageLabel(packageKey)}` });
   res.status(201).json({ status: 'success', message: `Convite criado com sucesso: ${publicUrl}`, data: cleanInviteDoc(invite), github });
@@ -596,6 +790,7 @@ app.patch('/manager/invites/:id', requireManager, async (req, res) => {
   const allowed = ['clientName', 'coupleNames', 'bride', 'groom', 'status', 'eventDateISO', 'rsvpDeadline', 'publicUrl', 'config'];
   const update = {};
   for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body, key)) update[key] = req.body[key];
+  if (Object.prototype.hasOwnProperty.call(update, 'config')) update.config = buildInviteConfig(update.config || {}, update.config || {});
   if (update.status === 'published') update.publishedAt = new Date();
   const invite = await Invite.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true });
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
@@ -623,6 +818,9 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
 
     invite.githubPath = github.path;
     invite.githubLastCommitSha = github.commitSha;
+    invite.syncStatus = 'synced';
+    invite.syncError = '';
+    invite.githubSyncedAt = new Date();
     await invite.save();
 
     await logActivity({
@@ -641,6 +839,10 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
     });
   } catch (err) {
     console.error('[github-sync] Falhou:', err);
+
+    invite.syncStatus = 'failed';
+    invite.syncError = err.message || 'Erro ao criar a pasta no GitHub.';
+    await invite.save();
 
     await logActivity({
       invite,
@@ -899,7 +1101,7 @@ app.get('/api', async (req, res) => {
     if (action === 'list_checkins') return listCheckins(req, res, invite);
     if (action === 'list_capsule_photos') return listCapsulePhotos(req, res, invite);
     if (action === 'list_gifts' || action === 'gifts' || action === 'get_gift_items') return listGifts(req, res, invite);
-    if (action === 'get_guest' || action === 'get_guest_details') return getGuestDetails(req, res, invite);
+    if (action === 'get_guest' || action === 'get_guest_details' || action === 'get_guest_by_token') return getGuestDetails(req, res, invite);
     if (action === 'get_rsvp_status') return getRsvpStatus(req, res, invite);
     return sendJson(req, res, { status: 'error', message: 'Ação GET não reconhecida.' }, 400);
   } catch (err) { sendJson(req, res, { status: 'error', message: err.message }, 500); }
@@ -1288,7 +1490,8 @@ function getPublicRsvpAutoCreateSlugs() {
 }
 function canAutoCreateGuestForRsvp(invite) {
   const slug = slugify(invite?.slug || '');
-  return Boolean(slug && getPublicRsvpAutoCreateSlugs().has(slug));
+  const mode = String(invite?.config?.rsvp?.mode || '').toLowerCase();
+  return Boolean((mode === 'public' || mode === 'open') || (slug && getPublicRsvpAutoCreateSlugs().has(slug)));
 }
 function parseRsvpPeopleCount(data = {}) {
   const explicitTotal = Number.parseInt(
