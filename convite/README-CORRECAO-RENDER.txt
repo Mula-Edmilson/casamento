@@ -72,3 +72,23 @@ COMO CRIAR UM CONVITE SEM EDITAR MANUALMENTE
 
 NOTA IMPORTANTE
 Esta versão removeu ficheiros de deploy/demo/importação que não devem ficar públicos no GitHub. A lista completa está em /LIRANDZO-PRODUCTION-CLEANUP.txt.
+
+ACTUALIZAÇÃO CMS SEM HTML
+-------------------------
+Esta versão inclui cinco modelos reais seleccionáveis no Admin Manager:
+- rubi-rosalina
+- esmeralda-edma
+- perola-calate
+- perola-flicia
+- perola-publico
+
+Para uploads de fotos pelo Admin Manager, o backend foi ajustado para 35mb por padrão.
+Se necessário, configure no Render:
+JSON_LIMIT=50mb
+
+Variáveis opcionais de template:
+TEMPLATE_RUBI_ROSALINA_PATH=convite/templates/rubi-rosalina
+TEMPLATE_ESMERALDA_EDMA_PATH=convite/templates/esmeralda-edma
+TEMPLATE_PEROLA_CALATE_PATH=convite/templates/perola-calate
+TEMPLATE_PEROLA_FLICIA_PATH=convite/templates/perola-flicia
+TEMPLATE_PEROLA_PUBLICO_PATH=convite/templates/perola-publico

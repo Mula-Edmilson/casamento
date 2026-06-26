@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC_API_BASE_URL = stripTrailingSlash(process.env.PUBLIC_API_BASE_URL || `http://localhost:${PORT}`);
 
 app.set('trust proxy', 1);
-app.use(express.json({ limit: process.env.JSON_LIMIT || '12mb' }));
-app.use(express.urlencoded({ extended: true, limit: process.env.JSON_LIMIT || '12mb' }));
+app.use(express.json({ limit: process.env.JSON_LIMIT || '35mb' }));
+app.use(express.urlencoded({ extended: true, limit: process.env.JSON_LIMIT || '35mb' }));
 
 const allowedOrigins = Array.from(new Set([
   ...(process.env.ALLOWED_ORIGINS || '').split(','),
@@ -186,6 +186,23 @@ function nowIso() { return new Date().toISOString(); }
 function parseBool(v) { return v === true || v === 'true' || v === '1' || v === 'on'; }
 function packageLabel(key) { return key === 'perola' ? 'Pérola' : key === 'esmeralda' ? 'Esmeralda' : key === 'rubi' ? 'Rubi' : key; }
 
+const TEMPLATE_MODELS = {
+  'rubi-rosalina': { packageKey: 'rubi', label: 'Rubi — modelo Rosalina & Monteiro', pathEnv: 'TEMPLATE_RUBI_ROSALINA_PATH', defaultPath: 'convite/templates/rubi-rosalina' },
+  'esmeralda-edma': { packageKey: 'esmeralda', label: 'Esmeralda — modelo Edma & Abel', pathEnv: 'TEMPLATE_ESMERALDA_EDMA_PATH', defaultPath: 'convite/templates/esmeralda-edma' },
+  'perola-calate': { packageKey: 'perola', label: 'Pérola — modelo Calate & Helder', pathEnv: 'TEMPLATE_PEROLA_CALATE_PATH', defaultPath: 'convite/templates/perola-calate' },
+  'perola-flicia': { packageKey: 'perola', label: 'Pérola — novo modelo Flícia & Walter', pathEnv: 'TEMPLATE_PEROLA_FLICIA_PATH', defaultPath: 'convite/templates/perola-flicia' },
+  'perola-publico': { packageKey: 'perola', label: 'Pérola — RSVP público Minoca & Abubacar', pathEnv: 'TEMPLATE_PEROLA_PUBLICO_PATH', defaultPath: 'convite/templates/perola-publico' }
+};
+const DEFAULT_TEMPLATE_BY_PACKAGE = { perola: 'perola-flicia', esmeralda: 'esmeralda-edma', rubi: 'rubi-rosalina' };
+function normalizeTemplateKey(value, packageKey = '') {
+  const clean = slugify(value || '');
+  if (TEMPLATE_MODELS[clean]) return clean;
+  const pkg = slugify(packageKey || value || '');
+  return DEFAULT_TEMPLATE_BY_PACKAGE[pkg] || 'perola-flicia';
+}
+function getTemplateModel(value, packageKey = '') { return TEMPLATE_MODELS[normalizeTemplateKey(value, packageKey)]; }
+function templateLabel(key) { const model = TEMPLATE_MODELS[normalizeTemplateKey(key)]; return model ? model.label : key; }
+
 function signToken(payload) {
   const secret = process.env.MANAGER_SECRET;
   if (!secret || secret.length < 16) throw new Error('MANAGER_SECRET precisa de pelo menos 16 caracteres.');
@@ -233,6 +250,7 @@ const InviteSchema = new mongoose.Schema({
   bride: { type: String, default: '' },
   groom: { type: String, default: '' },
   packageKey: { type: String, enum: ['perola', 'esmeralda', 'rubi'], required: true, index: true },
+  templateKey: { type: String, default: '', index: true },
   status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft', index: true },
   eventDateISO: { type: String, default: '' },
   rsvpDeadline: { type: String, default: '' },
@@ -392,7 +410,7 @@ function cleanInviteDoc(doc) {
   const o = doc.toObject ? doc.toObject() : doc;
   return {
     id: String(o._id), slug: o.slug, clientName: o.clientName, coupleNames: o.coupleNames,
-    bride: o.bride, groom: o.groom, packageKey: o.packageKey, packageLabel: packageLabel(o.packageKey),
+    bride: o.bride, groom: o.groom, packageKey: o.packageKey, packageLabel: packageLabel(o.packageKey), templateKey: o.templateKey || DEFAULT_TEMPLATE_BY_PACKAGE[o.packageKey] || '', templateLabel: templateLabel(o.templateKey || o.packageKey),
     status: o.status, eventDateISO: o.eventDateISO, rsvpDeadline: o.rsvpDeadline,
     publicUrl: o.publicUrl, githubPath: o.githubPath, githubLastCommitSha: o.githubLastCommitSha,
     syncStatus: o.syncStatus || 'unsynced', syncError: o.syncError || '', githubSyncedAt: o.githubSyncedAt || null,
@@ -442,7 +460,7 @@ function normalizePaymentAccounts(raw) {
 function normalizeSections(body = {}) {
   const defaults = {
     schedule: true, map: true, rsvp: true, messages: true, gifts: true,
-    contributions: true, capsule: true, dressCode: false, gallery: false, parents: false
+    contributions: true, capsule: true, dressCode: false, gallery: false, parents: false, story: false, menu: false, bridalParty: false
   };
   const incoming = body.sections && typeof body.sections === 'object' ? body.sections : {};
   for (const key of Object.keys(defaults)) {
@@ -451,13 +469,46 @@ function normalizeSections(body = {}) {
   }
   return defaults;
 }
+function parseJsonMaybe(value, fallback) {
+  if (Array.isArray(value) || (value && typeof value === 'object')) return value;
+  const raw = String(value || '').trim();
+  if (!raw) return fallback;
+  try { return JSON.parse(raw); } catch { return fallback; }
+}
+function normalizeMediaList(raw) {
+  if (Array.isArray(raw)) return raw.map(item => typeof item === 'string' ? { src: item, alt: '' } : item).filter(item => item && (item.src || item.url));
+  const parsed = parseJsonMaybe(raw, null);
+  if (Array.isArray(parsed)) return normalizeMediaList(parsed);
+  return splitList(raw).map((line, index) => {
+    const parts = String(line).split('|').map(p => p.trim());
+    return { src: parts[0] || '', alt: parts[1] || `Foto ${index + 1}`, caption: parts[2] || '' };
+  }).filter(item => item.src);
+}
+function normalizePeopleList(raw) {
+  const parsed = parseJsonMaybe(raw, null);
+  if (Array.isArray(parsed)) return parsed.filter(Boolean);
+  return splitList(raw).map(line => {
+    const parts = String(line).split('|').map(p => p.trim());
+    return { name: parts[0] || '', role: parts[1] || '', image: parts[2] || '' };
+  }).filter(item => item.name || item.image);
+}
+function normalizeScheduleItems(body = {}, current = {}) {
+  const parsed = parseJsonMaybe(body.scheduleItems, null);
+  if (Array.isArray(parsed)) return parsed;
+  const items = [];
+  if (body.religiousTime || body.religiousVenue || current.event?.religiousTime || current.event?.religiousVenue) items.push({ title: 'Cerimónia religiosa', time: body.religiousTime || current.event?.religiousTime || '', venue: body.religiousVenue || current.event?.religiousVenue || '', mapUrl: body.religiousMapUrl || current.event?.religiousMapUrl || '' });
+  if (body.civilTime || body.civilVenue || current.event?.civilTime || current.event?.civilVenue) items.push({ title: 'Cerimónia civil', time: body.civilTime || current.event?.civilTime || '', venue: body.civilVenue || current.event?.civilVenue || '', mapUrl: body.civilMapUrl || current.event?.civilMapUrl || '' });
+  if (body.receptionTime || body.receptionVenue || current.event?.receptionTime || current.event?.receptionVenue) items.push({ title: 'Copo de água', time: body.receptionTime || current.event?.receptionTime || '', venue: body.receptionVenue || current.event?.receptionVenue || '', mapUrl: body.receptionMapUrl || current.event?.receptionMapUrl || '' });
+  return items;
+}
 function buildInviteConfig(body = {}, base = {}) {
   const current = base && typeof base === 'object' ? base : {};
   const theme = {
-    style: String(body.themeStyle || current.theme?.style || body.packageKey || 'esmeralda').trim(),
+    style: String(body.themeStyle || current.theme?.style || body.templateKey || body.packageKey || 'perola-flicia').trim(),
     accent: String(body.themeAccent || current.theme?.accent || '').trim(),
     coverImage: String(body.coverImage || current.theme?.coverImage || '').trim(),
     heroImage: String(body.heroImage || current.theme?.heroImage || '').trim(),
+    logoImage: String(body.logoImage || current.theme?.logoImage || '').trim(),
     musicUrl: String(body.musicUrl || current.theme?.musicUrl || '').trim()
   };
   const event = compactObject({
@@ -480,7 +531,8 @@ function buildInviteConfig(body = {}, base = {}) {
     popupNote: body.popupNote || current.event?.popupNote || 'Confirme a sua presença e adicione o evento ao seu lembrete.',
     invitationNote: body.invitationNote || current.event?.invitationNote || '',
     contactPhone: body.contactPhone || current.event?.contactPhone || '',
-    whatsapp: body.whatsapp || current.event?.whatsapp || ''
+    whatsapp: body.whatsapp || current.event?.whatsapp || '',
+    scheduleItems: normalizeScheduleItems(body, current)
   });
   const rsvp = {
     mode: String(body.rsvpMode || current.rsvp?.mode || 'guest-list'),
@@ -488,12 +540,39 @@ function buildInviteConfig(body = {}, base = {}) {
     askPhone: body.askPhone === undefined ? (current.rsvp?.askPhone ?? true) : parseBool(body.askPhone),
     askMessage: body.askMessage === undefined ? (current.rsvp?.askMessage ?? true) : parseBool(body.askMessage)
   };
-  const payments = normalizePaymentAccounts(body.paymentAccounts ?? current.payments ?? '');
+  const story = compactObject({
+    title: body.storyTitle || current.story?.title || 'A nossa história',
+    text: body.storyText || current.story?.text || '',
+    image: body.storyImage || current.story?.image || ''
+  });
+  const gallery = {
+    title: body.galleryTitle || current.gallery?.title || 'Galeria',
+    items: normalizeMediaList(body.galleryItems ?? body.galleryUrls ?? current.gallery?.items ?? '')
+  };
+  const dressCode = compactObject({
+    title: body.dressCodeTitle || current.dressCode?.title || 'Dress code',
+    note: body.dressCodeNote || current.dressCode?.note || body.dressCode || '',
+    image: body.dressCodeImage || current.dressCode?.image || '',
+    palette: splitList(body.dressCodePalette || current.dressCode?.palette || '').slice(0, 10)
+  });
+  const menu = compactObject({ title: body.menuTitle || current.menu?.title || 'Menu', note: body.menuNote || current.menu?.note || '', image: body.menuImage || current.menu?.image || '' });
   const parents = compactObject({
     brideParents: body.brideParents || current.parents?.brideParents || '',
-    groomParents: body.groomParents || current.parents?.groomParents || ''
+    groomParents: body.groomParents || current.parents?.groomParents || '',
+    image: body.parentsImage || current.parents?.image || ''
   });
-  return { theme, event, rsvp, sections: normalizeSections({ ...current, ...body, sections: body.sections || current.sections }), payments, parents };
+  const bridalParty = { title: body.bridalPartyTitle || current.bridalParty?.title || 'Padrinhos e madrinhas', people: normalizePeopleList(body.bridalPartyPeople || current.bridalParty?.people || '') };
+  const payments = normalizePaymentAccounts(body.paymentAccounts ?? current.payments ?? '');
+  const gifts = compactObject({ title: body.giftsTitle || current.gifts?.title || 'Lista de presentes', note: body.giftsNote || current.gifts?.note || '' });
+  const messages = compactObject({ title: body.messagesTitle || current.messages?.title || 'Mural de mensagens', note: body.messagesNote || current.messages?.note || '' });
+  const sections = normalizeSections({ ...current, ...body, sections: body.sections || current.sections });
+  sections.story = Object.prototype.hasOwnProperty.call(body, 'section_story') ? parseBool(body.section_story) : (current.sections?.story ?? Boolean(story.text));
+  sections.gallery = Object.prototype.hasOwnProperty.call(body, 'section_gallery') ? parseBool(body.section_gallery) : (current.sections?.gallery ?? gallery.items.length > 0);
+  sections.dressCode = Object.prototype.hasOwnProperty.call(body, 'section_dressCode') ? parseBool(body.section_dressCode) : (current.sections?.dressCode ?? Boolean(dressCode.note || dressCode.image));
+  sections.menu = Object.prototype.hasOwnProperty.call(body, 'section_menu') ? parseBool(body.section_menu) : (current.sections?.menu ?? Boolean(menu.note || menu.image));
+  sections.parents = Object.prototype.hasOwnProperty.call(body, 'section_parents') ? parseBool(body.section_parents) : (current.sections?.parents ?? Boolean(parents.brideParents || parents.groomParents || parents.image));
+  sections.bridalParty = Object.prototype.hasOwnProperty.call(body, 'section_bridalParty') ? parseBool(body.section_bridalParty) : (current.sections?.bridalParty ?? bridalParty.people.length > 0);
+  return { theme, event, rsvp, sections, payments, parents, story, gallery, dressCode, menu, bridalParty, gifts, messages };
 }
 function buildEventPayload(invite) {
   const cfg = buildInviteConfig(invite.config || {}, invite.config || {});
@@ -505,6 +584,8 @@ function buildEventPayload(invite) {
     groom: invite.groom || '',
     packageKey: invite.packageKey,
     packageLabel: packageLabel(invite.packageKey),
+    templateKey: invite.templateKey || DEFAULT_TEMPLATE_BY_PACKAGE[invite.packageKey] || '',
+    templateLabel: templateLabel(invite.templateKey || invite.packageKey),
     publicUrl: invite.publicUrl || defaultPublicUrl(invite.slug),
     apiBaseUrl: PUBLIC_API_BASE_URL,
     apiUrl: `${PUBLIC_API_BASE_URL}/api`,
@@ -532,6 +613,46 @@ function shouldSkipTemplateFile(relativePath = '') {
   return forbiddenDirs.some(dir => rel === dir || rel.startsWith(`${dir}/`));
 }
 
+
+function safeAssetFilename(name = 'media.bin') {
+  const clean = String(name || 'media.bin').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  return clean || 'media.bin';
+}
+function normalizeMediaUploads(raw) {
+  const items = Array.isArray(raw) ? raw : [];
+  return items.map((item, index) => {
+    const dataUrl = String(item?.dataUrl || item?.content || '');
+    const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+    const base64 = match ? match[2] : String(item?.base64 || '');
+    if (!base64) return null;
+    const mimeType = String(item?.mimeType || (match ? match[1] : 'application/octet-stream'));
+    const field = slugify(item?.field || 'media') || 'media';
+    const filename = safeAssetFilename(item?.filename || `${field}-${index + 1}`);
+    return { field, filename, mimeType, base64, alt: String(item?.alt || ''), caption: String(item?.caption || '') };
+  }).filter(Boolean);
+}
+function clonePlain(value) { return JSON.parse(JSON.stringify(value || {})); }
+function assignMediaPath(config, upload, publicPath) {
+  const cfg = config;
+  cfg.theme = cfg.theme || {};
+  cfg.gallery = cfg.gallery || { title: 'Galeria', items: [] };
+  cfg.dressCode = cfg.dressCode || {};
+  cfg.story = cfg.story || {};
+  cfg.menu = cfg.menu || {};
+  cfg.parents = cfg.parents || {};
+  const field = upload.field;
+  if (field === 'coverimage' || field === 'cover') cfg.theme.coverImage = publicPath;
+  else if (field === 'heroimage' || field === 'hero') cfg.theme.heroImage = publicPath;
+  else if (field === 'storyimage' || field === 'story') cfg.story.image = publicPath;
+  else if (field === 'dresscodeimage' || field === 'dresscode') cfg.dressCode.image = publicPath;
+  else if (field === 'menuimage' || field === 'menu') cfg.menu.image = publicPath;
+  else if (field === 'parentsimage' || field === 'parents') cfg.parents.image = publicPath;
+  else if (field === 'logoimage' || field === 'logo') cfg.theme.logoImage = publicPath;
+  else {
+    cfg.gallery.items = Array.isArray(cfg.gallery.items) ? cfg.gallery.items : [];
+    cfg.gallery.items.push({ src: publicPath, alt: upload.alt || upload.filename, caption: upload.caption || '' });
+  }
+}
 
 function githubReady() { return Boolean(process.env.GITHUB_TOKEN && process.env.GITHUB_OWNER && process.env.GITHUB_REPO && process.env.GITHUB_BRANCH); }
 async function gh(path, options = {}) {
@@ -577,8 +698,20 @@ function applyTemplateReplacements(content, ctx, filePath = '') {
   }
   return out;
 }
-async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
-  const templatePath = getTemplatePath(invite.packageKey);
+async function copyPackageTemplateToClient({ invite, allowOverwrite = false, mediaUploads = [] }) {
+  const uploads = normalizeMediaUploads(mediaUploads);
+  if (uploads.length) {
+    const updatedConfig = clonePlain(invite.config || {});
+    uploads.forEach((upload, index) => {
+      const ext = upload.filename.includes('.') ? '' : (upload.mimeType.includes('png') ? '.png' : upload.mimeType.includes('webp') ? '.webp' : upload.mimeType.includes('gif') ? '.gif' : '.jpg');
+      const rel = `assets/media/${upload.field}-${String(index + 1).padStart(2, '0')}-${safeAssetFilename(upload.filename)}${ext}`;
+      upload.relativePath = rel;
+      upload.publicPath = `./${rel}`;
+      assignMediaPath(updatedConfig, upload, upload.publicPath);
+    });
+    invite.config = updatedConfig;
+  }
+  const templatePath = getTemplatePath(invite.templateKey || invite.packageKey, invite.packageKey);
   const targetPath = `${getInvitesBasePath()}/${invite.slug}`;
   const branch = process.env.GITHUB_BRANCH;
   const ref = await gh(`/git/ref/heads/${encodeURIComponent(branch)}`);
@@ -609,6 +742,10 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
     } else {
       treeItems.push({ path: newPath, mode: '100644', type: 'blob', sha: file.sha });
     }
+  }
+  for (const upload of uploads) {
+    const blob = await gh('/git/blobs', { method: 'POST', body: JSON.stringify({ content: upload.base64, encoding: 'base64' }) });
+    treeItems.push({ path: `${targetPath}/${upload.relativePath}`, mode: '100644', type: 'blob', sha: blob.sha });
   }
   treeItems.push({ path: `${targetPath}/client-config.js`, mode: '100644', type: 'blob', content: `window.LIRANDZO_INVITE_SLUG = ${JSON.stringify(invite.slug)};\nwindow.LIRANDZO_API_BASE_URL = ${JSON.stringify(PUBLIC_API_BASE_URL)};\nwindow.LIRANDZO_API_URL = window.LIRANDZO_API_BASE_URL.replace(/\\/+$/, '') + '/api';\n` });
   treeItems.push({ path: `${targetPath}/event-data.js`, mode: '100644', type: 'blob', content: eventDataJs(invite) });
@@ -666,7 +803,7 @@ app.get('/manager/github/status', requireManager, asyncRoute(async (req, res) =>
     repo: process.env.GITHUB_REPO || '',
     branch: process.env.GITHUB_BRANCH || '',
     invitesBasePath: getInvitesBasePath(),
-    templates: { perola: getTemplatePath('perola'), esmeralda: getTemplatePath('esmeralda'), rubi: getTemplatePath('rubi') },
+    templates: Object.fromEntries(Object.entries(TEMPLATE_MODELS).map(([key, model]) => [key, getTemplatePath(key, model.packageKey)])),
     checks: []
   };
 
@@ -696,7 +833,7 @@ app.get('/manager/github/status', requireManager, asyncRoute(async (req, res) =>
       data.checks.push({
         key: `template_${key}`,
         ok: validFiles.length > 0,
-        label: `Template ${packageLabel(key)}`,
+        label: `Template ${templateLabel(key)}`,
         message: validFiles.length ? `${validFiles.length} ficheiro(s) válido(s). ${dirtyFiles ? `${dirtyFiles} ignorado(s) por limpeza.` : 'Limpo.'}` : `Nenhum ficheiro válido em ${path}.`
       });
     }
@@ -727,15 +864,18 @@ app.get('/manager/invites', requireManager, async (req, res) => {
 
 app.post('/manager/invites', requireManager, async (req, res) => {
   const body = req.body || {};
-  const packageKey = String(body.packageKey || '').toLowerCase();
-  if (!['perola', 'esmeralda', 'rubi'].includes(packageKey)) return res.status(400).json({ status: 'error', message: 'Pacote inválido. Use perola, esmeralda ou rubi.' });
+  const templateKey = normalizeTemplateKey(body.templateKey || body.packageKey, body.packageKey);
+  const model = getTemplateModel(templateKey);
+  const packageKey = model.packageKey;
+  if (templateKey === 'perola-publico' && !body.rsvpMode) body.rsvpMode = 'public';
+  if (!['perola', 'esmeralda', 'rubi'].includes(packageKey)) return res.status(400).json({ status: 'error', message: 'Pacote inválido. Use um dos modelos configurados no Admin Manager.' });
   const slug = slugify(body.slug || body.coupleNames || body.clientName);
   if (!slug || slug.length < 3) return res.status(400).json({ status: 'error', message: 'Slug inválido.' });
   const exists = await Invite.findOne({ slug });
   if (exists) return res.status(409).json({ status: 'error', message: `Já existe um convite com o slug ${slug}.` });
   const githubPath = `${getInvitesBasePath()}/${slug}`;
   const publicUrl = body.publicUrl || defaultPublicUrl(slug);
-  const config = buildInviteConfig({ ...body, packageKey }, body.config && typeof body.config === 'object' ? body.config : {});
+  const config = buildInviteConfig({ ...body, packageKey, templateKey }, body.config && typeof body.config === 'object' ? body.config : {});
   const shouldCopy = parseBool(body.copyToGithub);
   let invite = await Invite.create({
     slug,
@@ -744,6 +884,7 @@ app.post('/manager/invites', requireManager, async (req, res) => {
     bride: String(body.bride || '').trim(),
     groom: String(body.groom || '').trim(),
     packageKey,
+    templateKey,
     status: parseBool(body.createAsPublished) ? 'published' : 'draft',
     eventDateISO: String(body.eventDateISO || '').trim(),
     rsvpDeadline: String(body.rsvpDeadline || '').trim(),
@@ -758,7 +899,7 @@ app.post('/manager/invites', requireManager, async (req, res) => {
   let github = null;
   if (shouldCopy) {
     try {
-      github = await copyPackageTemplateToClient({ invite });
+      github = await copyPackageTemplateToClient({ invite, mediaUploads: body.mediaUploads || [] });
       invite.githubPath = github.path;
       invite.githubLastCommitSha = github.commitSha;
       invite.syncStatus = 'synced';
@@ -774,7 +915,7 @@ app.post('/manager/invites', requireManager, async (req, res) => {
       return res.status(201).json({ status: 'warning', message: `Convite criado no MongoDB, mas a cópia GitHub falhou: ${invite.syncError}`, data: cleanInviteDoc(invite), github: null });
     }
   }
-  await logActivity({ invite, type: 'invite', title: 'Convite criado', detail: `${invite.coupleNames} · ${packageLabel(packageKey)}` });
+  await logActivity({ invite, type: 'invite', title: 'Convite criado', detail: `${invite.coupleNames} · ${templateLabel(templateKey)}` });
   res.status(201).json({ status: 'success', message: `Convite criado com sucesso: ${publicUrl}`, data: cleanInviteDoc(invite), github });
 });
 
@@ -787,7 +928,7 @@ app.get('/manager/invites/:id', requireManager, async (req, res) => {
   res.json({ status: 'success', data: { invite: cleanInviteDoc(invite), guests, rsvps, messages, gifts, contributions } });
 });
 app.patch('/manager/invites/:id', requireManager, async (req, res) => {
-  const allowed = ['clientName', 'coupleNames', 'bride', 'groom', 'status', 'eventDateISO', 'rsvpDeadline', 'publicUrl', 'config'];
+  const allowed = ['clientName', 'coupleNames', 'bride', 'groom', 'status', 'eventDateISO', 'rsvpDeadline', 'publicUrl', 'packageKey', 'templateKey', 'config'];
   const update = {};
   for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body, key)) update[key] = req.body[key];
   if (Object.prototype.hasOwnProperty.call(update, 'config')) update.config = buildInviteConfig(update.config || {}, update.config || {});
@@ -814,7 +955,7 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
   }
 
   try {
-    const github = await copyPackageTemplateToClient({ invite, allowOverwrite: false });
+    const github = await copyPackageTemplateToClient({ invite, allowOverwrite: parseBool(req.body?.allowOverwrite), mediaUploads: req.body?.mediaUploads || [] });
 
     invite.githubPath = github.path;
     invite.githubLastCommitSha = github.commitSha;

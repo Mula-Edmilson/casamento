@@ -294,15 +294,21 @@
       </section>
 
       <section class="section" id="newInvitePanel">
-        <div class="section-title"><div><h1>Novo cliente</h1><p>Cria um convite novo a partir de um pacote existente no GitHub.</p></div></div>
-        <form class="panel-card" id="newInviteForm">
+        <div class="section-title"><div><h1>Novo cliente</h1><p>Cria um convite completo a partir de um dos 5 modelos reais: Rubi Rosalina, Esmeralda Edma, Pérola Calate, Pérola novo/FW e Pérola público/Minoca.</p></div></div>
+        <form class="panel-card" id="newInviteForm" enctype="multipart/form-data">
           <div class="panel-head"><h2><i data-feather="plus-circle"></i> Dados completos do convite</h2><span class="badge blue">Sem edição manual</span></div>
           <div class="panel-body form-grid">
             <div class="field"><label>Nome do cliente / referência interna</label><input name="clientName" placeholder="Maria João" required></div>
             <div class="field"><label>Nomes do casal</label><input name="coupleNames" placeholder="Maria & João" required></div>
             <div class="field"><label>Noiva</label><input name="bride" placeholder="Maria"></div>
             <div class="field"><label>Noivo</label><input name="groom" placeholder="João"></div>
-            <div class="field"><label>Pacote visual</label><select name="packageKey" required><option value="perola">Pérola</option><option value="esmeralda" selected>Esmeralda</option><option value="rubi">Rubi</option></select></div>
+            <div class="field"><label>Modelo visual real</label><select name="templateKey" id="templateKeySelect" required>
+              <option value="rubi-rosalina">Rubi — Rosalina & Monteiro</option>
+              <option value="esmeralda-edma" selected>Esmeralda — Edma & Abel</option>
+              <option value="perola-calate">Pérola — Calate & Helder</option>
+              <option value="perola-flicia">Pérola — novo modelo Flícia & Walter</option>
+              <option value="perola-publico">Pérola — RSVP público Minoca & Abubacar</option>
+            </select><p class="hint">O pacote é definido automaticamente pelo modelo escolhido.</p></div>
             <div class="field"><label>Slug / pasta</label><input name="slug" placeholder="maria-joao"><p class="hint">Será usado em /convite/<b>slug</b>/</p></div>
             <div class="field"><label>Data e hora principal</label><input name="eventDateISO" type="datetime-local"></div>
             <div class="field"><label>Data por extenso</label><input name="eventDateLabel" placeholder="Sábado, 20 de Junho de 2026"></div>
@@ -321,8 +327,24 @@
 
             <div class="field"><label>Telefone / WhatsApp</label><input name="contactPhone" placeholder="+258 ..."></div>
             <div class="field"><label>Música do convite</label><input name="musicUrl" placeholder="https://...mp3"></div>
+            <div class="field"><label>Foto da capa / Save the Date</label><input type="file" data-media-field="coverImage" accept="image/*"></div>
+            <div class="field"><label>Foto hero / principal</label><input type="file" data-media-field="heroImage" accept="image/*"></div>
+            <div class="field"><label>Foto da história</label><input type="file" data-media-field="storyImage" accept="image/*"></div>
+            <div class="field"><label>Imagem dress code</label><input type="file" data-media-field="dressCodeImage" accept="image/*"></div>
+            <div class="field"><label>Imagem menu</label><input type="file" data-media-field="menuImage" accept="image/*"></div>
+            <div class="field"><label>Imagem pais/família</label><input type="file" data-media-field="parentsImage" accept="image/*"></div>
+            <div class="field span-2"><label>Fotos da galeria</label><input type="file" data-media-field="gallery" accept="image/*" multiple><p class="hint">Estas imagens serão gravadas na pasta do convite no GitHub em assets/media/.</p></div>
             <div class="field span-2"><label>Nota do popup RSVP</label><input name="popupNote" value="Confirme a sua presença e adicione o evento ao seu lembrete."></div>
             <div class="field span-2"><label>Texto principal do convite</label><textarea name="invitationNote" placeholder="Temos a honra de convidá-lo para celebrar connosco este momento especial."></textarea></div>
+            <div class="field"><label>Título da história</label><input name="storyTitle" placeholder="A nossa história"></div>
+            <div class="field"><label>Título da galeria</label><input name="galleryTitle" placeholder="Momentos especiais"></div>
+            <div class="field span-2"><label>História do casal</label><textarea name="storyText" placeholder="Escreva aqui a história do casal, pedido, percurso ou mensagem romântica."></textarea></div>
+            <div class="field"><label>Dress code — título</label><input name="dressCodeTitle" placeholder="Dress code"></div>
+            <div class="field"><label>Paleta dress code</label><input name="dressCodePalette" placeholder="#c9a66b, #fff5e4, #0f2d23"></div>
+            <div class="field span-2"><label>Nota do dress code</label><textarea name="dressCodeNote" placeholder="Tons sugeridos, cores a evitar, inspiração visual, etc."></textarea></div>
+            <div class="field span-2"><label>Fotos por URL, uma por linha</label><textarea name="galleryUrls" placeholder="https://.../foto1.jpg | Legenda opcional&#10;https://.../foto2.jpg | Legenda opcional"></textarea><p class="hint">Útil quando as fotos já estão online. Também pode carregar ficheiros abaixo.</p></div>
+            <div class="field span-2"><label>Menu / nota gastronómica</label><textarea name="menuNote" placeholder="Resumo do menu, buffet, bebidas ou nota especial."></textarea></div>
+            <div class="field span-2"><label>Padrinhos / madrinhas</label><textarea name="bridalPartyPeople" placeholder="Nome | Papel | URL da foto&#10;Exemplo: Sara Mula | Madrinha | https://..."></textarea></div>
             <div class="field span-2"><label>Contas / pagamentos</label><textarea name="paymentAccounts" placeholder="M-Pesa | Nome Titular | 84xxxxxxx
 BCI | Nome Titular | 000000000000"></textarea><p class="hint">Uma conta por linha, formato: Método | Titular | Número.</p></div>
 
@@ -334,6 +356,12 @@ BCI | Nome Titular | 000000000000"></textarea><p class="hint">Uma conta por linh
               <label class="badge"><input type="checkbox" name="section_gifts" checked> Presentes</label>
               <label class="badge"><input type="checkbox" name="section_contributions" checked> Contribuições</label>
               <label class="badge"><input type="checkbox" name="section_capsule" checked> Cápsula</label>
+              <label class="badge"><input type="checkbox" name="section_story" checked> História</label>
+              <label class="badge"><input type="checkbox" name="section_gallery" checked> Galeria</label>
+              <label class="badge"><input type="checkbox" name="section_dressCode"> Dress code</label>
+              <label class="badge"><input type="checkbox" name="section_menu"> Menu</label>
+              <label class="badge"><input type="checkbox" name="section_parents"> Pais</label>
+              <label class="badge"><input type="checkbox" name="section_bridalParty"> Padrinhos</label>
             </div></div>
             <div class="field span-2"><label>Opções de criação</label><div style="display:flex;gap:9px;flex-wrap:wrap"><label class="badge"><input type="checkbox" name="createAsPublished"> Criar como publicado</label><label class="badge"><input type="checkbox" name="copyToGithub" checked> Copiar template para GitHub</label></div></div>
             <div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="reset">Limpar</button><button class="btn primary" type="submit"><i data-feather="plus-circle"></i> Criar convite completo</button></div>
@@ -528,24 +556,62 @@ BCI | Nome Titular | 000000000000"></textarea><p class="hint">Uma conta por linh
     window.syncGithub = async function(id){ if(!confirm('Criar/sincronizar a pasta deste convite no GitHub?')) return; try { const out=await api(`/manager/invites/${id}/github-sync`,{method:'POST',body:JSON.stringify({})}); alert(out.message || 'GitHub sincronizado com sucesso.'); await loadAll(); } catch(e){ alert('Erro GitHub: '+e.message); } };
     window.selectManageInvite = function(id){ showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); };
 
+    function templatePackageKey(templateKey){
+      if(String(templateKey||'').startsWith('rubi-')) return 'rubi';
+      if(String(templateKey||'').startsWith('esmeralda-')) return 'esmeralda';
+      return 'perola';
+    }
+    function fileToUpload(file, field, index=0){
+      return new Promise((resolve,reject)=>{
+        const reader=new FileReader();
+        reader.onload=()=>resolve({ field, filename:file.name || `${field}-${index+1}`, mimeType:file.type || 'application/octet-stream', size:file.size || 0, dataUrl:reader.result });
+        reader.onerror=()=>reject(new Error(`Não foi possível ler o ficheiro ${file.name}`));
+        reader.readAsDataURL(file);
+      });
+    }
+    async function collectMediaUploads(form){
+      const inputs=Array.from(form.querySelectorAll('input[type="file"][data-media-field]'));
+      const uploads=[];
+      let total=0;
+      for(const input of inputs){
+        const field=input.dataset.mediaField;
+        const files=Array.from(input.files || []);
+        for(let i=0;i<files.length;i++){
+          total += files[i].size || 0;
+          uploads.push(await fileToUpload(files[i], field, i));
+        }
+      }
+      if(total > 28 * 1024 * 1024) throw new Error('As imagens seleccionadas são demasiado pesadas. Reduza/comprima as fotos ou envie menos imagens por criação.');
+      return uploads;
+    }
     function bindEvents(){
       $('loginForm').addEventListener('submit', async e=>{ e.preventDefault(); hideMsg($('loginError')); API_BASE=(window.LIRANDZO_MANAGER_API_BASE || API_BASE || '').trim().replace(/\/+$/,''); setLoginLoading(true); try{ const out=await api('/manager/login',{method:'POST',body:JSON.stringify({password:$('passwordInput').value})}); token=out.token; sessionStorage.setItem('lirandzo_manager_token',token); appView(); }catch(err){ showMsg($('loginError'),err.message,true); } finally { setLoginLoading(false); } });
       $('menuBtn').addEventListener('click',()=>{ $('sidebar').classList.add('open'); $('overlay').classList.add('active'); }); $('overlay').addEventListener('click',()=>{ $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); });
       $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); token=''; loginView(); }); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto)));
       $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
+      $('templateKeySelect')?.addEventListener('change', e=>{ const rsvp=e.currentTarget.form?.querySelector('[name=\"rsvpMode\"]'); if(rsvp && e.currentTarget.value==='perola-publico') rsvp.value='public'; });
       $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
       $('newInviteForm').addEventListener('submit', async e=>{
         e.preventDefault();
         const fd=new FormData(e.currentTarget);
-        const payload=Object.fromEntries(fd.entries());
+        const payload={};
+        for(const [key,value] of fd.entries()){
+          if(value instanceof File) continue;
+          payload[key]=value;
+        }
+        payload.templateKey = payload.templateKey || 'perola-flicia';
+        payload.packageKey = templatePackageKey(payload.templateKey);
         payload.copyToGithub=fd.get('copyToGithub')==='on';
         payload.createAsPublished=fd.get('createAsPublished')==='on';
         payload.sections={
           schedule:fd.get('section_schedule')==='on', map:fd.get('section_map')==='on', rsvp:fd.get('section_rsvp')==='on',
-          messages:fd.get('section_messages')==='on', gifts:fd.get('section_gifts')==='on', contributions:fd.get('section_contributions')==='on', capsule:fd.get('section_capsule')==='on'
+          messages:fd.get('section_messages')==='on', gifts:fd.get('section_gifts')==='on', contributions:fd.get('section_contributions')==='on', capsule:fd.get('section_capsule')==='on',
+          story:fd.get('section_story')==='on', gallery:fd.get('section_gallery')==='on', dressCode:fd.get('section_dressCode')==='on',
+          menu:fd.get('section_menu')==='on', parents:fd.get('section_parents')==='on', bridalParty:fd.get('section_bridalParty')==='on'
         };
         hideMsg($('createResult'));
         try{
+          payload.mediaUploads = await collectMediaUploads(e.currentTarget);
           const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)});
           const sync = out.data?.syncStatus ? `<br>GitHub: <b>${esc(out.data.syncStatus)}</b>${out.data.syncError ? `<br><small>${esc(out.data.syncError)}</small>` : ''}` : '';
           showMsg($('createResult'), (out.message || `Convite criado: ${out.data.publicUrl}`) + sync);

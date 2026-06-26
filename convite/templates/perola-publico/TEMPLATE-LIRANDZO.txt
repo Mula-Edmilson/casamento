@@ -1,3 +1,3 @@
-Modelo CMS: Pérola — novo modelo Flícia & Walter
+Modelo CMS: Pérola — RSVP público Minoca & Abubacar
 Base de pacote: perola
 Não colocar dados reais aqui. Toda a personalização deve vir do Admin Manager/event-data.js.

@@ -3,24 +3,140 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>__COUPLE_NAMES__ · Convite</title>
-  <meta name="description" content="Convite digital de __COUPLE_NAMES__">
+  <title>__COUPLE_NAMES__ · Lirandzo</title>
+  <meta name="theme-color" content="#111111">
+  <link rel="stylesheet" href="./style.css">
   <script src="./client-config.js"></script>
   <script src="./event-data.js"></script>
-  <link rel="stylesheet" href="./style.css">
 </head>
-<body data-page="cover">
-  <main class="cover-shell">
-    <section class="cover-card glass">
-      <p class="eyebrow">Convite de casamento</p>
-      <h1 data-field="coupleNames">__COUPLE_NAMES__</h1>
-      <p class="cover-date" data-field="dateLabel">Data a confirmar</p>
-      <div class="ornament"></div>
-      <p class="cover-note" data-field="invitationNote">Temos a honra de convidá-lo para celebrar connosco este momento especial.</p>
-      <div id="countdown" class="countdown" aria-label="Contagem regressiva"></div>
-      <a class="btn primary" href="./convite.html">Abrir convite</a>
+<body data-template="esmeralda-edma">
+  <div class="cover-page" id="coverPage">
+    <div class="cover-media" id="coverMedia"></div>
+    <div class="cover-overlay"></div>
+    <section class="cover-card reveal">
+      <p class="eyebrow">Save the Date</p>
+      <h1 id="coverCouple">__COUPLE_NAMES__</h1>
+      <p id="coverDate" class="cover-date"></p>
+      <div class="countdown" id="countdown"><span><b>--</b><small>Dias</small></span><span><b>--</b><small>Horas</small></span><span><b>--</b><small>Min</small></span><span><b>--</b><small>Seg</small></span></div>
+      <button class="btn primary" id="openInviteBtn" type="button">Abrir convite</button>
     </section>
+  </div>
+
+  <audio id="inviteAudio" preload="auto"></audio>
+
+  <main class="invite-shell hidden" id="invitePage">
+    <nav class="top-nav">
+      <strong id="navCouple">__COUPLE_NAMES__</strong>
+      <div><button class="nav-btn" data-scroll="scheduleSection">Agenda</button><button class="nav-btn" data-scroll="rsvpSection">RSVP</button><button class="nav-btn" data-scroll="gallerySection">Galeria</button></div>
+    </nav>
+
+    <header class="hero-section section-pad">
+      <div class="hero-copy reveal">
+        <p class="eyebrow" id="packageLabel"></p>
+        <h1 id="heroCouple">__COUPLE_NAMES__</h1>
+        <p id="heroNote" class="lead"></p>
+        <div class="hero-actions"><button class="btn primary" data-open-rsvp type="button">Confirmar presença</button><button class="btn ghost" id="calendarBtn" type="button">Adicionar ao lembrete</button></div>
+      </div>
+      <figure class="hero-photo reveal" id="heroPhoto"><div class="photo-placeholder">Lirandzo</div></figure>
+    </header>
+
+    <section class="section-pad story-section" id="storySection">
+      <p class="eyebrow">História</p>
+      <h2 id="storyTitle">A nossa história</h2>
+      <div class="story-grid"><p id="storyText"></p><figure id="storyImage" class="story-image"></figure></div>
+    </section>
+
+    <section class="section-pad schedule-section" id="scheduleSection">
+      <p class="eyebrow">Programa</p>
+      <h2>Agenda do dia</h2>
+      <div id="scheduleList" class="schedule-list"></div>
+    </section>
+
+    <section class="section-pad parents-section" id="parentsSection">
+      <p class="eyebrow">Família</p>
+      <h2>Com a bênção dos nossos pais</h2>
+      <div class="parents-card"><div><strong>Pais da noiva</strong><p id="brideParents"></p></div><div><strong>Pais do noivo</strong><p id="groomParents"></p></div></div>
+    </section>
+
+    <section class="section-pad gallery-section" id="gallerySection">
+      <p class="eyebrow">Momentos</p>
+      <h2 id="galleryTitle">Galeria</h2>
+      <div id="galleryGrid" class="gallery-grid"></div>
+    </section>
+
+    <section class="section-pad dress-section" id="dressCodeSection">
+      <div><p class="eyebrow">Dress code</p><h2 id="dressTitle">Dress code</h2><p id="dressNote" class="lead small"></p><div id="paletteList" class="palette-list"></div></div>
+      <figure id="dressImage" class="dress-image"></figure>
+    </section>
+
+    <section class="section-pad menu-section" id="menuSection">
+      <p class="eyebrow">Menu</p>
+      <h2 id="menuTitle">Menu</h2>
+      <p id="menuNote" class="lead small"></p>
+      <figure id="menuImage" class="menu-image"></figure>
+    </section>
+
+    <section class="section-pad party-section" id="bridalPartySection">
+      <p class="eyebrow">Padrinhos</p>
+      <h2 id="bridalPartyTitle">Padrinhos e madrinhas</h2>
+      <div id="bridalPartyGrid" class="party-grid"></div>
+    </section>
+
+    <section class="section-pad map-section" id="mapSection">
+      <p class="eyebrow">Localização</p>
+      <h2>Como chegar</h2>
+      <p id="mapVenue" class="lead small"></p>
+      <a class="btn ghost" id="mapLink" target="_blank" rel="noopener">Abrir mapa</a>
+    </section>
+
+    <section class="section-pad rsvp-section" id="rsvpSection">
+      <p class="eyebrow">Confirmação</p>
+      <h2>Confirme a sua presença</h2>
+      <p id="rsvpNote" class="lead small"></p>
+      <button class="btn primary" data-open-rsvp type="button">Confirmar agora</button>
+    </section>
+
+    <section class="section-pad gifts-section" id="giftsSection">
+      <p class="eyebrow">Presentes</p>
+      <h2 id="giftsTitle">Lista de presentes</h2>
+      <p id="giftsNote" class="lead small"></p>
+      <div id="giftList" class="gift-list"></div>
+    </section>
+
+    <section class="section-pad contribution-section" id="contributionsSection">
+      <p class="eyebrow">Contribuição</p>
+      <h2>Contribuições monetárias</h2>
+      <div id="paymentList" class="payment-list"></div>
+    </section>
+
+    <section class="section-pad messages-section" id="messagesSection">
+      <p class="eyebrow">Mensagens</p>
+      <h2 id="messagesTitle">Mural de mensagens</h2>
+      <form id="messageForm" class="inline-form"><input name="nome" placeholder="O seu nome" required><input name="message" placeholder="Escreva uma mensagem" required><button class="btn" type="submit">Enviar</button></form>
+      <div id="messageList" class="message-list"></div>
+    </section>
+
+    <footer class="footer-section"><p id="footerCouple">__COUPLE_NAMES__</p><small>Convite digital criado por Lirandzo</small></footer>
   </main>
-  <script src="./lirandzo-api.js"></script>
+
+  <div class="modal" id="rsvpModal" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" id="closeRsvp" type="button">×</button>
+      <p class="eyebrow">RSVP</p>
+      <h2>Confirmar presença</h2>
+      <p id="popupNote" class="lead small"></p>
+      <form id="rsvpForm" class="form-stack">
+        <input name="nome" placeholder="Nome completo" required>
+        <input name="phone" placeholder="Telefone / WhatsApp">
+        <input name="guests" type="number" min="1" max="20" value="1" placeholder="Número de pessoas">
+        <textarea name="message" placeholder="Mensagem opcional"></textarea>
+        <button class="btn primary" type="submit">Confirmar</button>
+        <button class="btn ghost" id="calendarBtnModal" type="button">Adicionar ao lembrete</button>
+      </form>
+      <div id="rsvpFeedback" class="feedback hidden"></div>
+    </div>
+  </div>
+
+  <script src="./cms-template.js"></script>
 </body>
 </html>
