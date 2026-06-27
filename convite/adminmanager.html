@@ -294,7 +294,7 @@
       </section>
 
       <section class="section" id="newInvitePanel">
-        <div class="section-title"><div><h1>Novo cliente</h1><p>Cria um convite completo a partir de um dos 5 modelos reais: Rubi Rosalina, Esmeralda Edma, Pérola Calate, Pérola novo/FW e Pérola público/Minoca.</p></div></div>
+        <div class="section-title"><div><h1>Novo cliente</h1><p>Cria um convite completo a partir de um dos 6 modelos reais: Rubi Rosalina, Esmeralda Edma, Pérola Calate, Pérola novo/FW, Pérola público/Minoca e Pérola Amélia/Edilson.</p></div></div>
         <form class="panel-card" id="newInviteForm" enctype="multipart/form-data">
           <div class="panel-head"><h2><i data-feather="plus-circle"></i> Dados completos do convite</h2><span class="badge blue">Sem edição manual</span></div>
           <div class="panel-body form-grid">
@@ -308,6 +308,7 @@
               <option value="perola-calate">Pérola — Calate & Helder</option>
               <option value="perola-flicia">Pérola — novo modelo Flícia & Walter</option>
               <option value="perola-publico">Pérola — RSVP público Minoca & Abubacar</option>
+              <option value="perola-amelia">Pérola — Amélia & Edilson</option>
             </select><p class="hint">O pacote é definido automaticamente pelo modelo escolhido.</p></div>
             <div class="field"><label>Slug / pasta</label><input name="slug" placeholder="maria-joao"><p class="hint">Será usado em /convite/<b>slug</b>/</p></div>
             <div class="field"><label>Data e hora principal</label><input name="eventDateISO" type="datetime-local"></div>
@@ -326,7 +327,8 @@
             <div class="field span-2"><label>Link mapa copo de água</label><input name="receptionMapUrl" placeholder="https://maps.app.goo.gl/..."></div>
 
             <div class="field"><label>Telefone / WhatsApp</label><input name="contactPhone" placeholder="+258 ..."></div>
-            <div class="field"><label>Música do convite</label><input name="musicUrl" placeholder="https://...mp3"></div>
+            <div class="field"><label>Música do convite — URL</label><input name="musicUrl" placeholder="https://...mp3"></div>
+            <div class="field"><label>Música do convite — ficheiro MP3</label><input type="file" data-media-field="music" accept="audio/*"><p class="hint">Opcional: carrega MP3 para assets/media/ e evita depender de link externo.</p></div>
             <div class="field"><label>Foto da capa / Save the Date</label><input type="file" data-media-field="coverImage" accept="image/*"></div>
             <div class="field"><label>Foto hero / principal</label><input type="file" data-media-field="heroImage" accept="image/*"></div>
             <div class="field"><label>Foto da história</label><input type="file" data-media-field="storyImage" accept="image/*"></div>
@@ -338,7 +340,12 @@
             <div class="field span-2"><label>Texto principal do convite</label><textarea name="invitationNote" placeholder="Temos a honra de convidá-lo para celebrar connosco este momento especial."></textarea></div>
             <div class="field"><label>Título da história</label><input name="storyTitle" placeholder="A nossa história"></div>
             <div class="field"><label>Título da galeria</label><input name="galleryTitle" placeholder="Momentos especiais"></div>
+            <div class="field"><label>Versículo / frase especial</label><input name="verse" placeholder="Para que todos vejam..."></div>
+            <div class="field"><label>Referência da frase</label><input name="verseReference" placeholder="Isaías 41:20"></div>
             <div class="field span-2"><label>História do casal</label><textarea name="storyText" placeholder="Escreva aqui a história do casal, pedido, percurso ou mensagem romântica."></textarea></div>
+            <div class="field span-2"><label>Capítulos da história</label><textarea name="storyChapters" placeholder="O Encontro | Texto do primeiro capítulo
+A Amizade | Texto do segundo capítulo
+A Promessa | Texto do capítulo final"></textarea><p class="hint">Útil para modelos com timeline, como Amélia & Edilson.</p></div>
             <div class="field"><label>Dress code — título</label><input name="dressCodeTitle" placeholder="Dress code"></div>
             <div class="field"><label>Paleta dress code</label><input name="dressCodePalette" placeholder="#c9a66b, #fff5e4, #0f2d23"></div>
             <div class="field span-2"><label>Nota do dress code</label><textarea name="dressCodeNote" placeholder="Tons sugeridos, cores a evitar, inspiração visual, etc."></textarea></div>
@@ -347,6 +354,7 @@
             <div class="field span-2"><label>Padrinhos / madrinhas</label><textarea name="bridalPartyPeople" placeholder="Nome | Papel | URL da foto&#10;Exemplo: Sara Mula | Madrinha | https://..."></textarea></div>
             <div class="field span-2"><label>Contas / pagamentos</label><textarea name="paymentAccounts" placeholder="M-Pesa | Nome Titular | 84xxxxxxx
 BCI | Nome Titular | 000000000000"></textarea><p class="hint">Uma conta por linha, formato: Método | Titular | Número.</p></div>
+            <div class="field span-2"><label>Lista de presentes personalizada</label><textarea name="giftOptions" placeholder="Microondas | Lista de presentes&#10;Airfryer | Lista de presentes&#10;Jogo de talheres | Lista de presentes"></textarea><p class="hint">Opcional. Se vazio, o sistema usa os presentes padrão do Admin Manager.</p></div>
 
             <div class="field span-2"><label>Secções activas</label><div style="display:flex;gap:9px;flex-wrap:wrap">
               <label class="badge"><input type="checkbox" name="section_schedule" checked> Agenda</label>
@@ -581,7 +589,7 @@ BCI | Nome Titular | 000000000000"></textarea><p class="hint">Uma conta por linh
           uploads.push(await fileToUpload(files[i], field, i));
         }
       }
-      if(total > 28 * 1024 * 1024) throw new Error('As imagens seleccionadas são demasiado pesadas. Reduza/comprima as fotos ou envie menos imagens por criação.');
+      if(total > 28 * 1024 * 1024) throw new Error('Os ficheiros seleccionados são demasiado pesados. Reduza/comprima as fotos ou o MP3, ou envie menos ficheiros por criação.');
       return uploads;
     }
     function bindEvents(){

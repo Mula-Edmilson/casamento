@@ -191,7 +191,8 @@ const TEMPLATE_MODELS = {
   'esmeralda-edma': { packageKey: 'esmeralda', label: 'Esmeralda — modelo Edma & Abel', pathEnv: 'TEMPLATE_ESMERALDA_EDMA_PATH', defaultPath: 'convite/templates/esmeralda-edma' },
   'perola-calate': { packageKey: 'perola', label: 'Pérola — modelo Calate & Helder', pathEnv: 'TEMPLATE_PEROLA_CALATE_PATH', defaultPath: 'convite/templates/perola-calate' },
   'perola-flicia': { packageKey: 'perola', label: 'Pérola — novo modelo Flícia & Walter', pathEnv: 'TEMPLATE_PEROLA_FLICIA_PATH', defaultPath: 'convite/templates/perola-flicia' },
-  'perola-publico': { packageKey: 'perola', label: 'Pérola — RSVP público Minoca & Abubacar', pathEnv: 'TEMPLATE_PEROLA_PUBLICO_PATH', defaultPath: 'convite/templates/perola-publico' }
+  'perola-publico': { packageKey: 'perola', label: 'Pérola — RSVP público Minoca & Abubacar', pathEnv: 'TEMPLATE_PEROLA_PUBLICO_PATH', defaultPath: 'convite/templates/perola-publico' },
+  'perola-amelia': { packageKey: 'perola', label: 'Pérola — modelo Amélia & Edilson', pathEnv: 'TEMPLATE_PEROLA_AMELIA_PATH', defaultPath: 'convite/templates/perola-amelia' }
 };
 const DEFAULT_TEMPLATE_BY_PACKAGE = { perola: 'perola-flicia', esmeralda: 'esmeralda-edma', rubi: 'rubi-rosalina' };
 function normalizeTemplateKey(value, packageKey = '') {
@@ -427,15 +428,25 @@ async function logActivity({ invite, type, title, detail = '', meta = {} }) {
   catch (err) { console.error('Falha ao gravar actividade:', err.message); }
 }
 function getInvitesBasePath() { return (process.env.INVITES_BASE_PATH || 'convite').replace(/^\/+|\/+$/g, ''); }
-function getTemplatePath(packageKey) {
-  const key = String(packageKey || '').toLowerCase();
+function getTemplatePath(templateOrPackageKey, fallbackPackageKey = '') {
+  const raw = String(templateOrPackageKey || '').trim();
+  const clean = slugify(raw);
+  if (TEMPLATE_MODELS[clean]) {
+    const model = TEMPLATE_MODELS[clean];
+    return (process.env[model.pathEnv] || model.defaultPath).replace(/^\/+|\/+$/g, '');
+  }
+  const fallback = fallbackPackageKey ? normalizeTemplateKey(fallbackPackageKey, fallbackPackageKey) : '';
+  if (fallback && TEMPLATE_MODELS[fallback]) {
+    const model = TEMPLATE_MODELS[fallback];
+    return (process.env[model.pathEnv] || model.defaultPath).replace(/^\/+|\/+$/g, '');
+  }
   const map = {
     perola: process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola',
     'pérola': process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola',
     esmeralda: process.env.TEMPLATE_ESMERALDA_PATH || 'convite/templates/esmeralda',
     rubi: process.env.TEMPLATE_RUBI_PATH || 'convite/templates/rubi'
   };
-  return (map[key] || '').replace(/^\/+|\/+$/g, '');
+  return (map[clean] || '').replace(/^\/+|\/+$/g, '');
 }
 function defaultPublicUrl(slug) {
   const base = stripTrailingSlash(process.env.PUBLIC_SITE_URL || 'https://lirandzo.com');
@@ -492,6 +503,23 @@ function normalizePeopleList(raw) {
     return { name: parts[0] || '', role: parts[1] || '', image: parts[2] || '' };
   }).filter(item => item.name || item.image);
 }
+function normalizeStoryChapters(raw) {
+  const parsed = parseJsonMaybe(raw, null);
+  if (Array.isArray(parsed)) return parsed.filter(Boolean).map((item, index) => ({ title: item.title || item.name || `Capítulo ${index + 1}`, text: item.text || item.note || item.description || '' })).filter(item => item.title || item.text);
+  return splitList(raw).map((line, index) => {
+    const parts = String(line).split('|').map(p => p.trim());
+    return { title: parts[0] || `Capítulo ${index + 1}`, text: parts.slice(1).join(' | ') || '' };
+  }).filter(item => item.title || item.text);
+}
+function normalizeGiftOptions(raw) {
+  const parsed = parseJsonMaybe(raw, null);
+  if (Array.isArray(parsed)) return parsed.map(item => typeof item === 'string' ? { name: item, category: 'Lista de presentes' } : item).filter(item => item && (item.name || item.label));
+  return splitList(raw).map(line => {
+    const parts = String(line).split('|').map(p => p.trim());
+    return { name: parts[0] || '', category: parts[1] || 'Lista de presentes' };
+  }).filter(item => item.name);
+}
+
 function normalizeScheduleItems(body = {}, current = {}) {
   const parsed = parseJsonMaybe(body.scheduleItems, null);
   if (Array.isArray(parsed)) return parsed;
@@ -530,6 +558,8 @@ function buildInviteConfig(body = {}, base = {}) {
     dressCode: body.dressCode || current.event?.dressCode || '',
     popupNote: body.popupNote || current.event?.popupNote || 'Confirme a sua presença e adicione o evento ao seu lembrete.',
     invitationNote: body.invitationNote || current.event?.invitationNote || '',
+    verse: body.verse || current.event?.verse || '',
+    verseReference: body.verseReference || current.event?.verseReference || '',
     contactPhone: body.contactPhone || current.event?.contactPhone || '',
     whatsapp: body.whatsapp || current.event?.whatsapp || '',
     scheduleItems: normalizeScheduleItems(body, current)
@@ -543,7 +573,8 @@ function buildInviteConfig(body = {}, base = {}) {
   const story = compactObject({
     title: body.storyTitle || current.story?.title || 'A nossa história',
     text: body.storyText || current.story?.text || '',
-    image: body.storyImage || current.story?.image || ''
+    image: body.storyImage || current.story?.image || '',
+    chapters: normalizeStoryChapters(body.storyChapters ?? current.story?.chapters ?? '')
   });
   const gallery = {
     title: body.galleryTitle || current.gallery?.title || 'Galeria',
@@ -563,7 +594,7 @@ function buildInviteConfig(body = {}, base = {}) {
   });
   const bridalParty = { title: body.bridalPartyTitle || current.bridalParty?.title || 'Padrinhos e madrinhas', people: normalizePeopleList(body.bridalPartyPeople || current.bridalParty?.people || '') };
   const payments = normalizePaymentAccounts(body.paymentAccounts ?? current.payments ?? '');
-  const gifts = compactObject({ title: body.giftsTitle || current.gifts?.title || 'Lista de presentes', note: body.giftsNote || current.gifts?.note || '' });
+  const gifts = compactObject({ title: body.giftsTitle || current.gifts?.title || 'Lista de presentes', note: body.giftsNote || current.gifts?.note || '', options: normalizeGiftOptions(body.giftOptions ?? current.gifts?.options ?? '') });
   const messages = compactObject({ title: body.messagesTitle || current.messages?.title || 'Mural de mensagens', note: body.messagesNote || current.messages?.note || '' });
   const sections = normalizeSections({ ...current, ...body, sections: body.sections || current.sections });
   sections.story = Object.prototype.hasOwnProperty.call(body, 'section_story') ? parseBool(body.section_story) : (current.sections?.story ?? Boolean(story.text));
@@ -596,7 +627,47 @@ function buildEventPayload(invite) {
 }
 function eventDataJs(invite) {
   const payload = buildEventPayload(invite);
-  return `window.LIRANDZO_EVENT_DATA = ${JSON.stringify(payload, null, 2)};\n`;
+  const legacy = {
+    slug: payload.slug,
+    coupleNames: payload.coupleNames,
+    displayNames: String(payload.coupleNames || '').replace(/\s*&\s*/g, ' e '),
+    bride: payload.bride,
+    groom: payload.groom,
+    monogram: String((payload.bride || '').trim().charAt(0) + (payload.groom || '').trim().charAt(0)).toUpperCase(),
+    eventType: 'Casamento',
+    language: 'Português',
+    visualStyle: payload.templateLabel || '',
+    colors: payload.theme?.accent || '',
+    dateISO: payload.eventDateISO || payload.event?.dateISO || '',
+    eventDateLong: payload.event?.dateLabel || '',
+    rsvpDeadline: payload.rsvpDeadline || payload.event?.rsvpDeadline || '',
+    timezone: payload.event?.timezone || 'Africa/Maputo',
+    verse: payload.event?.verse || '',
+    verseReference: payload.event?.verseReference || '',
+    brideParents: payload.parents?.brideParents || '',
+    groomParents: payload.parents?.groomParents || '',
+    ceremonyTitle: payload.event?.scheduleItems?.[0]?.title || 'Igreja',
+    ceremonyPlace: payload.event?.religiousVenue || payload.event?.scheduleItems?.[0]?.venue || '',
+    ceremonyTime: payload.event?.religiousTime || payload.event?.scheduleItems?.[0]?.time || '',
+    ceremonyMap: payload.event?.religiousMapUrl || payload.event?.scheduleItems?.[0]?.mapUrl || '',
+    additionalTitle: payload.event?.scheduleItems?.[1]?.title || 'Cerimónia Civil',
+    additionalPlace: payload.event?.civilVenue || payload.event?.scheduleItems?.[1]?.venue || '',
+    additionalTime: payload.event?.civilTime || payload.event?.scheduleItems?.[1]?.time || '',
+    additionalMap: payload.event?.civilMapUrl || payload.event?.scheduleItems?.[1]?.mapUrl || '',
+    receptionTitle: payload.event?.scheduleItems?.[2]?.title || 'Copo de Água',
+    receptionPlace: payload.event?.receptionVenue || payload.event?.scheduleItems?.[2]?.venue || '',
+    receptionTime: payload.event?.receptionTime || payload.event?.receptionTime || payload.event?.scheduleItems?.[2]?.time || '',
+    receptionMap: payload.event?.receptionMapUrl || payload.event?.scheduleItems?.[2]?.mapUrl || '',
+    supportContacts: payload.event?.contactPhone || '',
+    supportWhatsapp: payload.event?.whatsapp || '',
+    bankAccounts: (payload.payments || []).filter(x => /bim|bci|banco|bank|standard|moza/i.test(String(x.type || x.bank || ''))).map(x => ({ bank: x.type || x.bank || 'Banco', holder: x.holder || '', account: x.number || x.account || '' })),
+    mobilePayments: (payload.payments || []).filter(x => /m-pesa|mpesa|e-mola|emola|mkesh|mobile/i.test(String(x.type || x.bank || ''))).map(x => ({ type: x.type || 'Pagamento móvel', holder: x.holder || '', number: x.number || x.account || '' })),
+    program: payload.event?.scheduleItems || [],
+    guestListVersion: 'Gerido pelo Admin Manager',
+    guestListUpdatedAt: new Date().toISOString().slice(0, 10)
+  };
+  const giftOptions = payload.gifts?.options || [];
+  return `window.LIRANDZO_EVENT_DATA = ${JSON.stringify(payload, null, 2)};\nwindow.LIRANDZO_EVENT = ${JSON.stringify(legacy, null, 2)};\nwindow.LIRANDZO_GUESTS = window.LIRANDZO_GUESTS || [];\nwindow.LIRANDZO_GIFT_OPTIONS = ${JSON.stringify(giftOptions, null, 2)};\n`;
 }
 function inviteDataJson(invite) {
   return JSON.stringify({ ...buildEventPayload(invite), createdAt: nowIso() }, null, 2);
@@ -607,7 +678,7 @@ function shouldSkipTemplateFile(relativePath = '') {
   if (!rel || rel === 'TEMPLATE-LIRANDZO.txt') return true;
   if (/^(client-config|event-data|invite-data)\.js(on)?$/i.test(base)) return true;
   if (/^(server|package|package-lock)\.json$/i.test(base) || /^server\.js$/i.test(base)) return true;
-  if (/^(mongodb-seed-data|guests-import-adminmanager)\.txt$/i.test(base)) return true;
+  if (/^(mongodb-seed-data|guests-import-adminmanager)\.(txt|json)$/i.test(base)) return true;
   if (/^import-.*\.js$/i.test(base) || /^README/i.test(base) || /New Documento/i.test(base) || /Lirandzo API/i.test(base)) return true;
   const forbiddenDirs = ['edma-abel','minoca-abubacar','flicia-walter-convite','rosalina-monteiro','calate-helder','maria-joao','maria-joao-v2','anicia-nelson','nelia-edmilson','patricia-guilherme','rafaela-amade'];
   return forbiddenDirs.some(dir => rel === dir || rel.startsWith(`${dir}/`));
@@ -648,6 +719,7 @@ function assignMediaPath(config, upload, publicPath) {
   else if (field === 'menuimage' || field === 'menu') cfg.menu.image = publicPath;
   else if (field === 'parentsimage' || field === 'parents') cfg.parents.image = publicPath;
   else if (field === 'logoimage' || field === 'logo') cfg.theme.logoImage = publicPath;
+  else if (field === 'music' || field === 'musicurl' || field === 'audio') cfg.theme.musicUrl = publicPath;
   else {
     cfg.gallery.items = Array.isArray(cfg.gallery.items) ? cfg.gallery.items : [];
     cfg.gallery.items.push({ src: publicPath, alt: upload.alt || upload.filename, caption: upload.caption || '' });
