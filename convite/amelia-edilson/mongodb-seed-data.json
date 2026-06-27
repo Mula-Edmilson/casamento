@@ -1,0 +1,147 @@
+{
+  "event": {
+    "slug": "amelia-edilson-convite",
+    "coupleNames": "Amélia & Edilson",
+    "displayNames": "Amélia e Edilson",
+    "bride": "Amélia Carlos Macuacua",
+    "groom": "Edilson Arnaldo Jaime Simbine",
+    "monogram": "AE",
+    "eventType": "Casamento",
+    "language": "Português",
+    "visualStyle": "Elegante e romântico",
+    "colors": "Tons branco e preto",
+    "dateISO": "2026-08-29T10:00:00+02:00",
+    "eventDateLong": "29 de agosto de 2026",
+    "rsvpDeadline": "",
+    "timezone": "Africa/Maputo",
+    "verse": "Para que todos vejam, e saibam, e considerem, e juntamente entendam que a mão do Senhor fez isso.",
+    "verseReference": "Isaías 41:20",
+    "brideParents": "Elisa Laene Makhaza Macuacua e Carlos Jenorimo Macuacua",
+    "groomParents": "Jaime Simbine e Unilde Elisa Mathe",
+    "ceremonyTitle": "Igreja",
+    "ceremonyPlace": "Paróquia Santos Anjos da Guarda da Matola-Rio",
+    "ceremonyTime": "10:00",
+    "ceremonyMap": "https://maps.google.com?q=2CQ8+F66%20Par%C3%B3quia%20Santos%20Anjos%20da%20Matola-rio&ftid=0x1ee686279feb59bf:0xc8f9786440e8de58&entry=gps&shh=CAE&lucs=,94297699,94231188,94280568,47071704,94218641,94282134,100813464,94286869&g_st=iw",
+    "additionalTitle": "Cerimónia Civil",
+    "additionalPlace": "Salão Completo Palhota",
+    "additionalTime": "14:00",
+    "additionalMap": "https://maps.app.goo.gl/dFyFwhqAdhbc1T5F6?g_st=iw",
+    "receptionTitle": "Copo de Água",
+    "receptionPlace": "Salão Completo Palhota",
+    "receptionTime": "15:00",
+    "receptionMap": "https://maps.app.goo.gl/dFyFwhqAdhbc1T5F6?g_st=iw",
+    "supportContacts": "+258 82 245 0107 / +258 87 669 2419",
+    "supportWhatsapp": "+258822450107",
+    "estimatedGuests": 0,
+    "guestRows": 0,
+    "giftSectionType": "Lista de presentes",
+    "bankAccounts": [
+      {
+        "bank": "Millennium BIM",
+        "holder": "Edilson Simbine",
+        "account": "1244585079"
+      }
+    ],
+    "mobilePayments": [
+      {
+        "type": "M-Pesa",
+        "holder": "Amélia Macuacua",
+        "number": "857265105"
+      }
+    ],
+    "program": [
+      {
+        "title": "Igreja",
+        "place": "Paróquia Santos Anjos da Guarda da Matola-Rio",
+        "time": "10:00"
+      },
+      {
+        "title": "Cerimónia Civil",
+        "place": "Salão Completo Palhota",
+        "time": "14:00"
+      },
+      {
+        "title": "Copo de Água",
+        "place": "Salão Completo Palhota",
+        "time": "15:00"
+      }
+    ],
+    "guestListVersion": "Aguardando lista oficial de convidados",
+    "guestListUpdatedAt": "2026-06-26"
+  },
+  "guests": [],
+  "giftOptions": [
+    {
+      "name": "Microondas",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Taças de cristal",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Jogo de banho Maria",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Máquina de café",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Máquina de sumo",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Jogo de chávenas",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Tigelas organizadoras de geleira",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Ferro de engomar",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Jogo de talheres",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Tábuas de madeira",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Edredon casal",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Organizador de gavetas",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Tapete para sala (cinza)",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Batedeira",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Airfryer",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Máquina de lavar",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Panelas anti aderentes",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Fogão a gás e forno elétrico",
+      "category": "Lista de presentes"
+    }
+  ]
+}

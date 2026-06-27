@@ -540,7 +540,6 @@
 
   <script src="client-config.js"></script>
   <script src="event-data.js"></script>
-  <script src="cms-template.js"></script>
   <script src="lirandzo-api.js"></script>
 
   <script>
@@ -877,12 +876,12 @@ startxref
       }
 
       // Constantes
-      const HOST_WHATSAPP_NUMBER = (window.LIRANDZO_EVENT_DATA?.event?.whatsapp || window.LIRANDZO_EVENT_DATA?.event?.contactPhone || '+258822450107');
-      const ADDRESS_RELIGIOSA = (window.LIRANDZO_EVENT_DATA?.event?.religiousVenue || 'Paróquia Santos Anjos da Guarda da Matola-Rio');
-      const CHURCH_MAP_URL = (window.LIRANDZO_EVENT_DATA?.event?.religiousMapUrl || 'https://maps.google.com?q=Par%C3%B3quia%20Santos%20Anjos%20da%20Matola-rio');
-      const ADDRESS_CIVIL_COPO_DE_AGUA = (window.LIRANDZO_EVENT_DATA?.event?.receptionVenue || window.LIRANDZO_EVENT_DATA?.event?.civilVenue || 'Salão Completo Palhota'); 
-      const SALON_MAP_URL = (window.LIRANDZO_EVENT_DATA?.event?.receptionMapUrl || window.LIRANDZO_EVENT_DATA?.event?.civilMapUrl || 'https://maps.app.goo.gl/dFyFwhqAdhbc1T5F6?g_st=iw');
-      const EVENT_DATE = (window.LIRANDZO_EVENT_DATA && (window.LIRANDZO_EVENT_DATA.eventDateISO || window.LIRANDZO_EVENT_DATA.event?.dateISO)) || "2026-08-29T10:00:00"; 
+      const HOST_WHATSAPP_NUMBER = '+258822450107';
+      const ADDRESS_RELIGIOSA = 'Paróquia Santos Anjos da Guarda da Matola-Rio';
+      const CHURCH_MAP_URL = 'https://maps.google.com?q=2CQ8+F66%20Par%C3%B3quia%20Santos%20Anjos%20da%20Matola-rio&ftid=0x1ee686279feb59bf:0xc8f9786440e8de58&entry=gps&shh=CAE&lucs=,94297699,94231188,94280568,47071704,94218641,94282134,100813464,94286869&g_st=iw';
+      const ADDRESS_CIVIL_COPO_DE_AGUA = 'Salão Completo Palhota'; 
+      const SALON_MAP_URL = 'https://maps.app.goo.gl/dFyFwhqAdhbc1T5F6?g_st=iw';
+      const EVENT_DATE = "2026-08-29T10:00:00"; 
       const body = document.body;
       const music = document.getElementById('backgroundMusic');
       const musicControl = document.getElementById('musicControl');

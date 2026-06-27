@@ -448,8 +448,6 @@
   
   <!-- Feather Icons -->
   <script src="https://unpkg.com/feather-icons"></script>
-  <script src="./client-config.js"></script>
-  <script src="./event-data.js"></script>
 </head>
 <body>
   <div class="loading-overlay" id="loadingOverlay">
@@ -543,7 +541,7 @@
   </div>
 
   <script>
-    const API_URL = "https://api-casamento-mj.onrender.com/api";
+    const API_URL = 'https://script.google.com/macros/s/AKfycbx-D7Upkh0iGyZ-Zwus_Py0wCbV0jVrHiJzqj8bylhMC130MuG7wZNbqJUCxtob1v3Y/exec';
     const ADMIN_TOKEN = 'SEU_TOKEN_ADMIN_AQUI'; // Token gerado no login do admin
 
     let currentGuest = null;
@@ -611,10 +609,11 @@
     // Função POST
     async function postRequest(data) {
       try {
-        const response = await fetch(API_URL, { method: 'POST',
-          mode: 'cors',
+        const response = await fetch(API_URL, {
+          method: "POST",
+          mode: 'no-cors',
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, slug: window.LIRANDZO_INVITE_SLUG || "amelia-edilson" })
+          body: JSON.stringify(data)
         });
         return { status: "success" };
       } catch (err) {
@@ -633,7 +632,7 @@
       showLoading();
       
       try {
-        const result = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest_by_token&token=${encodeURIComponent(token)}&admin_token=${ADMIN_TOKEN}`);
+        const result = await jsonpRequest(`${API_URL}?action=get_guest_by_token&token=${encodeURIComponent(token)}&admin_token=${ADMIN_TOKEN}`);
         
         hideLoading();
         
@@ -701,7 +700,7 @@
         
         if (result.status === 'success') {
           // Recarregar informações do convidado
-          const updatedGuest = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest_by_token&token=${currentGuest.token}&admin_token=${ADMIN_TOKEN}`);
+          const updatedGuest = await jsonpRequest(`${API_URL}?action=get_guest_by_token&token=${currentGuest.token}&admin_token=${ADMIN_TOKEN}`);
           currentGuest = updatedGuest;
           displayGuestInfo(updatedGuest);
           addToHistory(updatedGuest, true);

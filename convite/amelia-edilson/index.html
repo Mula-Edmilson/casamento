@@ -473,7 +473,6 @@
 
   <script src="client-config.js"></script>
   <script src="event-data.js"></script>
-  <script src="cms-template.js"></script>
   <script src="lirandzo-api.js"></script>
 
   <script>
@@ -481,7 +480,7 @@
     // CONFIGURAÇÕES
     // ============================================
     const API_URL = window.LIRANDZO_API_URL || '';
-    const WEDDING_DATE = new Date((window.LIRANDZO_EVENT_DATA && (window.LIRANDZO_EVENT_DATA.eventDateISO || window.LIRANDZO_EVENT_DATA.event?.dateISO)) || "2026-08-29T10:00:00");
+    const WEDDING_DATE = new Date("2026-08-29T10:00:00");
 
     // ============================================
     // ELEMENTOS DO DOM
