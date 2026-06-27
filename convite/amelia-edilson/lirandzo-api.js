@@ -1,5 +1,5 @@
 // lirandzo-api.js — Cliente oficial Render/MongoDB para convites Lirandzo
-// Convite: Amélia & Edilson | slug: amelia-edilson-convite
+// Convite: Amélia & Edilson | slug: amelia-edilson
 (function () {
   'use strict';
 
@@ -209,217 +209,97 @@
 })();
 
 
-// Compatibilidade com o admin do convite Pérola/Amélia.
-// IMPORTANTE: este painel NÃO deve depender de /manager/login.
-// Ele valida directamente no /admin-api usando o slug do convite e a senha configurada no Render.
+// Compatibilidade com o modelo Pérola antigo: expõe LIRANDZO_API sobre o cliente Render/MongoDB.
 (function () {
-  function apiBase() {
-    return String(window.LIRANDZO_API_BASE_URL || window.LIRANDZO_EVENT_DATA?.apiBaseUrl || '').replace(/\/+$/, '');
-  }
-  function slug() {
-    return String(window.LIRANDZO_INVITE_SLUG || window.LIRANDZO_EVENT_DATA?.slug || '').trim();
-  }
-  function storedPassword() {
-    return sessionStorage.getItem('perola_admin_password') || '';
-  }
+  function apiBase() { return String(window.LIRANDZO_API_BASE_URL || '').replace(/\/+$/, ''); }
+  function slug() { return String(window.LIRANDZO_INVITE_SLUG || '').trim(); }
   async function safeJson(res) {
     const raw = await res.text();
     try { return raw ? JSON.parse(raw) : {}; }
     catch { return { status: 'error', message: raw || 'Resposta inválida do servidor.' }; }
   }
-  function normaliseKey(value) {
-    return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-  }
-  function idOf(item) {
-    return String(item?._id || item?.id || item?.rsvpId || item?.messageId || item?.contributionId || '');
-  }
-  function contributionFileUrl(item) {
-    const existing = item?.file || item?.fileUrl || item?.viewUrl || item?.downloadUrl || item?.previewUrl || item?.thumbnailUrl || '';
-    if (existing) return existing;
-    const id = idOf(item);
-    return id ? apiBase() + '/api/contributions/' + encodeURIComponent(id) + '/file' : '';
-  }
-  function normaliseRsvp(item) {
-    const guests = Number(item?.guests || item?.pessoas || item?.total || item?.maxGuests || 1) || 1;
-    return Object.assign({}, item, {
-      nome: item?.nome || item?.name || item?.guestName || 'Convidado',
-      guests,
-      phone: item?.phone || item?.telefone || '',
-      mesa: item?.mesa || item?.table || '',
-      message: item?.message || item?.mensagem || '',
-      timestamp: item?.timestamp || item?.createdAt || item?.updatedAt || new Date().toISOString()
-    });
-  }
-  function normaliseContribution(item) {
-    return Object.assign({}, item, {
-      nome: item?.nome || item?.name || item?.guestName || 'Convidado',
-      canal: item?.canal || item?.method || item?.paymentMethod || item?.bank || '',
-      file: contributionFileUrl(item),
-      timestamp: item?.timestamp || item?.createdAt || item?.updatedAt || new Date().toISOString()
-    });
-  }
-  function normaliseMessage(item) {
-    return Object.assign({}, item, {
-      nome: item?.nome || item?.name || item?.guestName || 'Convidado',
-      message: item?.message || item?.mensagem || item?.text || '',
-      timestamp: item?.timestamp || item?.createdAt || item?.updatedAt || new Date().toISOString()
-    });
-  }
-  function normaliseGuest(item) {
-    return Object.assign({}, item, {
-      nome: item?.nome || item?.name || item?.guestName || '',
-      name: item?.name || item?.nome || item?.guestName || '',
-      mesa: item?.mesa || item?.table || '',
-      table: item?.table || item?.mesa || '',
-      token: item?.token || item?.inviteToken || item?.id || item?._id || '',
-      maxGuests: Number(item?.maxGuests || item?.guests || 1) || 1
-    });
-  }
-  function giftNameFromContribution(record) {
-    const details = (() => {
-      try { return typeof record?.details === 'string' ? JSON.parse(record.details) : (record?.details || {}); }
-      catch { return {}; }
-    })();
-    const values = [
-      record?.selectedGift,
-      record?.giftChoice,
-      record?.gift,
-      record?.selectedGifts,
-      record?.gifts,
-      details.selectedGift,
-      details.giftChoice,
-      details.gift,
-      details.selectedGifts,
-      details.gifts
-    ].flat().filter(Boolean);
-    return String(values[0] || '').split(',')[0].trim();
-  }
-  function normaliseGiftItem(item) {
-    const name = item?.name || item?.nome || giftNameFromContribution(item) || '';
-    const reservedBy = item?.reserved_by || item?.reservedBy || item?.nome || item?.guestName || '';
-    return Object.assign({}, item, {
-      name,
-      reserved: Boolean(item?.reserved || reservedBy),
-      reserved_by: reservedBy,
-      reservedBy,
-      timestamp: item?.timestamp || item?.reservedAt || item?.createdAt || item?.updatedAt || ''
-    });
-  }
-
-  async function adminPost(action, payload) {
-    const base = apiBase();
-    const inviteSlug = slug();
-    if (!base) throw new Error('API do convite não configurada. Verifique client-config.js.');
-    if (!inviteSlug) throw new Error('Slug do convite não configurado. Verifique client-config.js.');
-
-    const password = storedPassword();
-    const body = Object.assign({}, payload || {}, {
-      action,
-      slug: inviteSlug,
-      password,
-      admin_password: password
-    });
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Invite-Slug': inviteSlug
-    };
-    const token = sessionStorage.getItem('perola_admin_token') || '';
-    if (token) headers.Authorization = 'Bearer ' + token;
-
-    const res = await fetch(base + '/admin-api', {
+  async function managerLogin(password) {
+    const res = await fetch(apiBase() + '/manager/login', {
       method: 'POST',
       mode: 'cors',
-      headers,
-      body: JSON.stringify(body)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
     });
     const data = await safeJson(res);
-    if (!res.ok || data.status === 'error') {
-      const msg = data.message || ('Erro HTTP ' + res.status);
-      const err = new Error(msg);
-      err.status = res.status;
-      err.action = action;
-      throw err;
-    }
+    if (!res.ok || data.status === 'error') throw new Error(data.message || 'Senha incorrecta.');
+    return data.token || '';
+  }
+  async function adminPost(action, payload) {
+    const body = Object.assign({}, payload || {}, {
+      action,
+      slug: slug(),
+      password: sessionStorage.getItem('perola_admin_password') || '',
+      admin_password: sessionStorage.getItem('perola_admin_password') || ''
+    });
+    const headers = { 'Content-Type': 'application/json', 'X-Invite-Slug': slug() };
+    const token = sessionStorage.getItem('perola_admin_token') || '';
+    if (token) headers.Authorization = 'Bearer ' + token;
+    const res = await fetch(apiBase() + '/admin-api', { method: 'POST', mode: 'cors', headers, body: JSON.stringify(body) });
+    const data = await safeJson(res);
+    if (!res.ok || data.status === 'error') throw new Error(data.message || 'Erro no admin.');
     return data;
   }
-  async function adminPostAny(actions, payload) {
-    let lastErr = null;
-    for (const action of actions) {
-      try { return await adminPost(action, payload); }
-      catch (err) {
-        lastErr = err;
-        // 400 costuma indicar "acção não reconhecida" em versões antigas/novas do backend.
-        // 404 também pode indicar endpoint/alias ausente. Nesses casos tentamos o próximo alias.
-        if (![400, 404].includes(Number(err.status))) throw err;
-      }
-    }
-    throw lastErr || new Error('Ação de admin não reconhecida.');
+  function giftNameFromRecord(record) {
+    const details = (() => { try { return typeof record?.details === 'string' ? JSON.parse(record.details) : (record?.details || {}); } catch { return {}; } })();
+    const values = [record?.selectedGift, record?.giftChoice, record?.gift, record?.selectedGifts, record?.gifts, details.selectedGift, details.giftChoice, details.gift, details.selectedGifts, details.gifts].flat().filter(Boolean);
+    return String(values[0] || '').split(',')[0].trim();
   }
-
+  function normaliseRecordToGift(record) {
+    const name = giftNameFromRecord(record) || record.name || '';
+    return {
+      name,
+      reserved: !!name,
+      reserved_by: record.nome || record.name || record.guestName || 'Convidado',
+      reservedBy: record.nome || record.name || record.guestName || 'Convidado',
+      timestamp: record.timestamp || record.createdAt || record.reservedAt || ''
+    };
+  }
   window.LIRANDZO_API = {
     ADMIN_TOKEN: null,
     async authenticateAdmin(password) {
+      // 1) Tenta autenticar como Admin Manager global (MANAGER_PASSWORD + MANAGER_SECRET).
+      // 2) Se falhar, mantém compatibilidade com o admin do convite: valida em /admin-api
+      //    usando a senha do convite/cliente (CLIENT_ADMIN_PASSWORD, INVITE_ADMIN_PASSWORD
+      //    ou variáveis por slug como INVITE_ADMIN_PASSWORD_AMELIA_EDILSON).
       const cleanPassword = String(password || '').trim();
+      let token = '';
       sessionStorage.setItem('perola_admin_password', cleanPassword);
       sessionStorage.removeItem('perola_admin_token');
-      this.ADMIN_TOKEN = null;
-
-      // Validação correcta para admin de convite: /admin-api + slug + senha.
-      // Evita o 401 em /manager/login, que é apenas para o Admin Manager global.
-      await adminPostAny(['get_guests', 'list_guests'], {});
-      return { status: 'success', token: '' };
-    },
-    async getRSVPs() {
-      const result = await adminPostAny(['get_rsvps', 'list_rsvps'], {});
-      return Object.assign({}, result, { data: (result.data || []).map(normaliseRsvp) });
-    },
-    async getComprovativos() {
-      const result = await adminPostAny(['get_comprovativos', 'list_gift_records'], {});
-      return Object.assign({}, result, { data: (result.data || []).map(normaliseContribution) });
-    },
-    async getMessages() {
-      const result = await adminPostAny(['get_messages', 'list_messages', 'messages'], {});
-      return Object.assign({}, result, { data: (result.data || []).map(normaliseMessage) });
-    },
-    async getGuests() {
-      const result = await adminPostAny(['get_guests', 'list_guests'], {});
-      return Object.assign({}, result, { data: (result.data || []).map(normaliseGuest) });
-    },
-    async getGifts() {
-      // Primeiro tenta o inventário real de presentes. Se o backend não tiver inventário,
-      // cai para contribuições e normaliza presentes reservados a partir dos detalhes.
       try {
-        const result = await adminPostAny(['get_gifts', 'list_gifts', 'get_gift_items'], {});
-        return Object.assign({}, result, { data: (result.data || []).map(normaliseGiftItem).filter(item => item.name) });
-      } catch (err) {
-        const contributions = await this.getComprovativos().catch(() => ({ data: [] }));
-        return { status: 'success', data: (contributions.data || []).map(normaliseGiftItem).filter(item => item.name) };
+        token = await managerLogin(cleanPassword);
+        this.ADMIN_TOKEN = token;
+        if (token) sessionStorage.setItem('perola_admin_token', token);
+        return { status: 'success', token };
+      } catch (loginErr) {
+        // Fallback idêntico ao modelo Flícia & Walter: valida a senha no admin-api do convite.
+        await adminPost('get_guests', {});
+        this.ADMIN_TOKEN = null;
+        return { status: 'success', token: '' };
       }
+    },
+    async getRSVPs() { return adminPost('get_rsvps'); },
+    async getComprovativos() { return adminPost('get_comprovativos'); },
+    async getMessages() { return adminPost('get_messages').catch(() => adminPost('list_messages')); },
+    async getGuests() { return adminPost('get_guests'); },
+    async getGifts() {
+      return adminPost('get_gifts');
     },
     async getGiftInventory() {
-      const configured = (window.LIRANDZO_GIFT_OPTIONS || []).map(item => ({
-        name: item.name || item.label || String(item),
-        reserved: false,
-        reserved_by: '',
-        reservedBy: ''
-      })).filter(item => item.name);
-
-      const records = await this.getGifts().catch(() => ({ data: [] }));
-      const taken = new Map((records.data || []).filter(item => item.name).map(item => [normaliseKey(item.name), item]));
-
-      if (configured.length) {
-        return { status: 'success', data: configured.map(item => {
-          const found = taken.get(normaliseKey(item.name));
-          return found ? Object.assign({}, item, { reserved: true, reserved_by: found.reserved_by || found.reservedBy || '', reservedBy: found.reservedBy || found.reserved_by || '' }) : item;
-        }) };
-      }
-      return { status: 'success', data: (records.data || []).map(normaliseGiftItem).filter(item => item.name) };
+      const options = (window.LIRANDZO_GIFT_OPTIONS || []).map(item => ({ name: item.name || item.label || String(item), reserved: false, reserved_by: '' }));
+      const records = await adminPost('get_gifts').catch(() => ({ data: [] }));
+      const taken = new Map((records.data || []).map(normaliseRecordToGift).filter(item => item.name).map(item => [String(item.name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(), item]));
+      return { status: 'success', data: options.map(item => {
+        const key = String(item.name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        const t = taken.get(key);
+        return t ? Object.assign({}, item, { reserved: true, reserved_by: t.reserved_by, reservedBy: t.reservedBy, timestamp: t.timestamp }) : item;
+      }) };
     },
-    async updateGuestTable(token, mesa) {
-      return adminPostAny(['update_guest_table', 'update_guest', 'edit_guest'], { token, mesa, table: mesa });
-    },
-    async getStats() {
-      return adminPostAny(['stats', 'get_stats'], {});
-    }
+    async updateGuestTable(token, mesa) { return adminPost('update_guest_table', { token, mesa }); },
+    async getStats() { return adminPost('stats'); }
   };
 })();
