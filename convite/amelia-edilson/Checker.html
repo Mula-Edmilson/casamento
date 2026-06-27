@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checker · Validação de Convidados</title>
+  
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/T3tNdXL6/lirandzo.png">
+  
+  <!-- Estilos -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #2B2623;
+      --accent: #B08968;
+      --accent-gradient: linear-gradient(135deg, #B08968, #9A6F50);
+      --text-dark: #F5EFEA;
+      --text-light: #C8C0B9;
+      --text-muted: #A69B94;
+      --card: #352F2C;
+      --border-color: #4D4641;
+      --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --warning: #F59E0B;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.15);
+      --info: #3B82F6;
+      --info-bg: rgba(59, 130, 246, 0.15);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-light);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 24px;
+      margin-bottom: 16px;
+      border: 2px solid var(--accent);
+    }
+
+    .title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      color: var(--text-dark);
+    }
+
+    .title span {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .scanner-section {
+      background: var(--card);
+      border-radius: 32px;
+      padding: 30px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 30px;
+    }
+
+    .scanner-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .scanner-header svg {
+      width: 28px;
+      height: 28px;
+      color: var(--accent);
+    }
+
+    .scanner-header h3 {
+      font-size: 1.5rem;
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--text-dark);
+    }
+
+    #qr-reader {
+      width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .manual-input {
+      margin-top: 20px;
+    }
+
+    .manual-input label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 16px 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      background: var(--bg);
+      color: var(--text-dark);
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(176, 137, 104, 0.1);
+    }
+
+    .btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 120px;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(176, 137, 104, 0.3);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border-color);
+      color: var(--text-light);
+    }
+
+    .btn-outline:hover {
+      background: var(--border-color);
+    }
+
+    .result-card {
+      background: var(--card);
+      border-radius: 32px;
+      padding: 30px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .result-card.success {
+      border-left: 6px solid var(--success);
+    }
+
+    .result-card.warning {
+      border-left: 6px solid var(--warning);
+    }
+
+    .result-card.error {
+      border-left: 6px solid var(--danger);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .result-header svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .result-header.success svg {
+      color: var(--success);
+    }
+
+    .result-header.warning svg {
+      color: var(--warning);
+    }
+
+    .result-header.error svg {
+      color: var(--danger);
+    }
+
+    .result-header h4 {
+      font-size: 1.5rem;
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--text-dark);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .info-item {
+      background: var(--section-bg);
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .info-value.small {
+      font-size: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge.success {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .badge.warning {
+      background: var(--warning-bg);
+      color: var(--warning);
+    }
+
+    .badge.danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .badge.info {
+      background: var(--info-bg);
+      color: var(--info);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .action-buttons .btn {
+      flex: 1;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .loading-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .loading-card {
+      background: var(--card);
+      border-radius: 32px;
+      padding: 40px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--border-color);
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    .history-section {
+      margin-top: 40px;
+    }
+
+    .history-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      margin-bottom: 20px;
+    }
+
+    .history-list {
+      background: var(--card);
+      border-radius: 24px;
+      border: 1px solid var(--border-color);
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .history-status {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .history-status.success {
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    .history-status.warning {
+      background: var(--warning);
+      box-shadow: 0 0 10px var(--warning);
+    }
+
+    .history-status.danger {
+      background: var(--danger);
+      box-shadow: 0 0 10px var(--danger);
+    }
+
+    .history-name {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .history-time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+  
+  <!-- QR Code Scanner Library -->
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+  
+  <!-- Feather Icons -->
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script src="./client-config.js"></script>
+  <script src="./event-data.js"></script>
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-card">
+      <div class="loading-spinner"></div>
+      <h3 style="color: var(--text-dark); margin-bottom: 8px;">Processando</h3>
+      <p style="color: var(--text-muted);">Aguarde um momento...</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <img src="https://i.postimg.cc/T3tNdXL6/lirandzo.png" alt="Logo" class="logo">
+      <h1 class="title"><span>Checker</span> · Validação</h1>
+      <p class="subtitle">Leia o QR Code do convidado para realizar check-in</p>
+    </div>
+
+    <div class="scanner-section">
+      <div class="scanner-header">
+        <i data-feather="camera"></i>
+        <h3>Scanner QR Code</h3>
+      </div>
+      
+      <div id="qr-reader"></div>
+      
+      <div class="manual-input">
+        <label>Ou insira o token manualmente:</label>
+        <div class="input-group">
+          <input type="text" id="manualToken" placeholder="Cole o token do convidado aqui...">
+          <button class="btn btn-primary" id="validateTokenBtn">
+            <i data-feather="search"></i>
+            Validar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-card" id="resultCard" style="display: none;">
+      <div class="result-header" id="resultHeader">
+        <i data-feather="user-check"></i>
+        <h4>Resultado da Validação</h4>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Convidado</div>
+          <div class="info-value" id="guestName">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Mesa</div>
+          <div class="info-value" id="guestTable">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Máx. Convidados</div>
+          <div class="info-value" id="guestMax">-</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Status</div>
+          <div class="info-value small" id="guestStatus">-</div>
+        </div>
+      </div>
+
+      <div id="checkinInfo" style="display: none; margin-bottom: 24px;">
+        <div style="background: var(--info-bg); border-radius: 16px; padding: 20px; text-align: center;">
+          <i data-feather="clock" style="color: var(--info); width: 32px; height: 32px; margin-bottom: 8px;"></i>
+          <p style="color: var(--text-dark); margin-bottom: 4px;">Check-in realizado em:</p>
+          <p style="color: var(--info); font-weight: 600; font-size: 1.1rem;" id="checkinTime"></p>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="checkinBtn" onclick="performCheckin()">
+          <i data-feather="check-circle"></i>
+          Realizar Check-in
+        </button>
+        <button class="btn btn-outline" id="resetBtn" onclick="resetResult()">
+          <i data-feather="x"></i>
+          Limpar
+        </button>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <h3 class="history-title">Últimas Validações</h3>
+      <div class="history-list" id="historyList">
+        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+          Nenhuma validação recente
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://api-casamento-mj.onrender.com/api";
+    const ADMIN_TOKEN = 'SEU_TOKEN_ADMIN_AQUI'; // Token gerado no login do admin
+
+    let currentGuest = null;
+    let validationHistory = JSON.parse(localStorage.getItem('validationHistory') || '[]');
+
+    // Inicializar Feather Icons
+    feather.replace();
+
+    // Inicializar Scanner
+    const html5QrCode = new Html5Qrcode("qr-reader");
+    
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+      // Parar scanner
+      html5QrCode.stop();
+      
+      // Processar o token (pode ser URL ou token puro)
+      let token = decodedText;
+      const urlParams = new URLSearchParams(new URL(token, window.location.origin).search);
+      if (urlParams.has('t')) {
+        token = urlParams.get('t');
+      }
+      
+      validateToken(token);
+    };
+
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+      .catch(err => console.error("Erro ao iniciar scanner:", err));
+
+    // Funções de Loading
+    function showLoading() {
+      document.getElementById('loadingOverlay').classList.add('active');
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.remove('active');
+    }
+
+    // Função JSONP
+    async function jsonpRequest(url) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+        
+        window[callbackName] = function(data) {
+          delete window[callbackName];
+          document.body.removeChild(script);
+          resolve(data);
+        };
+
+        const script = document.createElement('script');
+        const separator = url.includes('?') ? '&' : '?';
+        script.src = url + separator + 'callback=' + callbackName;
+        
+        script.onerror = function(error) {
+          delete window[callbackName];
+          document.body.removeChild(script);
+          reject(new Error('JSONP request failed'));
+        };
+        
+        document.body.appendChild(script);
+      });
+    }
+
+    // Função POST
+    async function postRequest(data) {
+      try {
+        const response = await fetch(API_URL, { method: 'POST',
+          mode: 'cors',
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data, slug: window.LIRANDZO_INVITE_SLUG || "amelia-edilson" })
+        });
+        return { status: "success" };
+      } catch (err) {
+        console.error("Erro na requisição POST:", err);
+        throw err;
+      }
+    }
+
+    // Validar token
+    async function validateToken(token) {
+      if (!token) {
+        alert('Token inválido');
+        return;
+      }
+
+      showLoading();
+      
+      try {
+        const result = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest_by_token&token=${encodeURIComponent(token)}&admin_token=${ADMIN_TOKEN}`);
+        
+        hideLoading();
+        
+        if (result.status === 'success') {
+          currentGuest = result;
+          displayGuestInfo(result);
+          addToHistory(result);
+        } else {
+          showError('Convidado não encontrado');
+        }
+      } catch (error) {
+        hideLoading();
+        showError('Erro ao validar token');
+        console.error(error);
+      }
+    }
+
+    // Exibir informações do convidado
+    function displayGuestInfo(guest) {
+      const resultCard = document.getElementById('resultCard');
+      const resultHeader = document.getElementById('resultHeader');
+      const checkinInfo = document.getElementById('checkinInfo');
+      
+      document.getElementById('guestName').textContent = guest.nome || '-';
+      document.getElementById('guestTable').textContent = guest.mesa || 'A definir';
+      document.getElementById('guestMax').textContent = guest.maxGuests || '1';
+      
+      const statusEl = document.getElementById('guestStatus');
+      if (guest.checked_in) {
+        statusEl.innerHTML = '<span class="badge success">✔ Check-in Realizado</span>';
+        resultCard.className = 'result-card success';
+        resultHeader.className = 'result-header success';
+        checkinInfo.style.display = 'block';
+        document.getElementById('checkinTime').textContent = new Date(guest.checked_in_at).toLocaleString('pt-PT');
+        document.getElementById('checkinBtn').disabled = true;
+      } else {
+        statusEl.innerHTML = '<span class="badge warning">⏳ Aguardando Check-in</span>';
+        resultCard.className = 'result-card warning';
+        resultHeader.className = 'result-header warning';
+        checkinInfo.style.display = 'none';
+        document.getElementById('checkinBtn').disabled = false;
+      }
+      
+      resultCard.style.display = 'block';
+      feather.replace();
+    }
+
+    // Realizar check-in
+    async function performCheckin() {
+      if (!currentGuest || !currentGuest.token) {
+        alert('Nenhum convidado selecionado');
+        return;
+      }
+
+      showLoading();
+      
+      try {
+        const result = await postRequest({
+          action: 'checkin_guest',
+          admin_token: ADMIN_TOKEN,
+          token: currentGuest.token
+        });
+
+        hideLoading();
+        
+        if (result.status === 'success') {
+          // Recarregar informações do convidado
+          const updatedGuest = await jsonpRequest(`${API_URL}?slug=${window.LIRANDZO_INVITE_SLUG}&action=get_guest_by_token&token=${currentGuest.token}&admin_token=${ADMIN_TOKEN}`);
+          currentGuest = updatedGuest;
+          displayGuestInfo(updatedGuest);
+          addToHistory(updatedGuest, true);
+          
+          // Efeito visual de sucesso
+          const btn = document.getElementById('checkinBtn');
+          btn.innerHTML = '<i data-feather="check"></i> Check-in Realizado';
+          feather.replace();
+          
+          setTimeout(() => {
+            btn.innerHTML = '<i data-feather="check-circle"></i> Realizar Check-in';
+            feather.replace();
+          }, 2000);
+        } else {
+          alert('Erro ao realizar check-in');
+        }
+      } catch (error) {
+        hideLoading();
+        alert('Erro ao realizar check-in');
+        console.error(error);
+      }
+    }
+
+    // Adicionar ao histórico
+    function addToHistory(guest, isCheckin = false) {
+      const historyItem = {
+        nome: guest.nome,
+        token: guest.token,
+        status: guest.checked_in ? 'checkin' : 'validado',
+        timestamp: new Date().toISOString()
+      };
+      
+      validationHistory.unshift(historyItem);
+      if (validationHistory.length > 10) validationHistory.pop();
+      
+      localStorage.setItem('validationHistory', JSON.stringify(validationHistory));
+      renderHistory();
+    }
+
+    // Renderizar histórico
+    function renderHistory() {
+      const historyList = document.getElementById('historyList');
+      
+      if (validationHistory.length === 0) {
+        historyList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Nenhuma validação recente</div>';
+        return;
+      }
+      
+      historyList.innerHTML = validationHistory.map(item => `
+        <div class="history-item">
+          <div class="history-info">
+            <div class="history-status ${item.status === 'checkin' ? 'success' : 'warning'}"></div>
+            <span class="history-name">${escapeHtml(item.nome)}</span>
+          </div>
+          <span class="history-time">${new Date(item.timestamp).toLocaleTimeString('pt-PT')}</span>
+        </div>
+      `).join('');
+    }
+
+    // Mostrar erro
+    function showError(message) {
+      const resultCard = document.getElementById('resultCard');
+      const resultHeader = document.getElementById('resultHeader');
+      
+      document.getElementById('guestName').textContent = '-';
+      document.getElementById('guestTable').textContent = '-';
+      document.getElementById('guestMax').textContent = '-';
+      document.getElementById('guestStatus').innerHTML = `<span class="badge danger">✘ ${message}</span>`;
+      
+      resultCard.className = 'result-card error';
+      resultHeader.className = 'result-header error';
+      resultCard.style.display = 'block';
+      document.getElementById('checkinBtn').disabled = true;
+      
+      feather.replace();
+    }
+
+    // Resetar resultado
+    function resetResult() {
+      document.getElementById('resultCard').style.display = 'none';
+      document.getElementById('manualToken').value = '';
+      currentGuest = null;
+      
+      // Reiniciar scanner
+      html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+        .catch(err => console.error("Erro ao reiniciar scanner:", err));
+    }
+
+    // Evento do botão de validação manual
+    document.getElementById('validateTokenBtn').addEventListener('click', () => {
+      const token = document.getElementById('manualToken').value.trim();
+      if (token) {
+        validateToken(token);
+      }
+    });
+
+    // Evento de Enter no input manual
+    document.getElementById('manualToken').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const token = e.target.value.trim();
+        if (token) {
+          validateToken(token);
+        }
+      }
+    });
+
+    // Escape HTML
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Renderizar histórico inicial
+    renderHistory();
+
+    // Atualizar ícones periodicamente
+    setInterval(() => {
+      feather.replace();
+    }, 1000);
+  </script>
+</body>
+</html>
