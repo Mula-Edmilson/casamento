@@ -187,12 +187,12 @@ function parseBool(v) { return v === true || v === 'true' || v === '1' || v === 
 function packageLabel(key) { return key === 'perola' ? 'Pérola' : key === 'esmeralda' ? 'Esmeralda' : key === 'rubi' ? 'Rubi' : key; }
 
 const TEMPLATE_MODELS = {
-  'rubi-rosalina': { packageKey: 'rubi', label: 'Rubi — modelo Rosalina & Monteiro', pathEnv: 'TEMPLATE_RUBI_ROSALINA_PATH', defaultPath: 'convite/templates/rubi-rosalina' },
-  'esmeralda-edma': { packageKey: 'esmeralda', label: 'Esmeralda — modelo Edma & Abel', pathEnv: 'TEMPLATE_ESMERALDA_EDMA_PATH', defaultPath: 'convite/templates/esmeralda-edma' },
-  'perola-calate': { packageKey: 'perola', label: 'Pérola — modelo Calate & Helder', pathEnv: 'TEMPLATE_PEROLA_CALATE_PATH', defaultPath: 'convite/templates/perola-calate' },
-  'perola-flicia': { packageKey: 'perola', label: 'Pérola — novo modelo Flícia & Walter', pathEnv: 'TEMPLATE_PEROLA_FLICIA_PATH', defaultPath: 'convite/templates/perola-flicia' },
-  'perola-publico': { packageKey: 'perola', label: 'Pérola — RSVP público Minoca & Abubacar', pathEnv: 'TEMPLATE_PEROLA_PUBLICO_PATH', defaultPath: 'convite/templates/perola-publico' },
-  'perola-amelia': { packageKey: 'perola', label: 'Pérola — modelo Amélia & Edilson', pathEnv: 'TEMPLATE_PEROLA_AMELIA_PATH', defaultPath: 'convite/templates/perola-amelia' }
+  'rubi-rosalina': { packageKey: 'rubi', label: 'Rubi — Rosalina & Monteiro', sourceSlug: 'rosalina-monteiro', description: 'Rubi premium baseado no convite real publicado Rosalina & Monteiro.', pathEnv: 'TEMPLATE_RUBI_ROSALINA_PATH', defaultPath: 'convite/templates/rubi-rosalina' },
+  'esmeralda-edma': { packageKey: 'esmeralda', label: 'Esmeralda — Edma & Abel', sourceSlug: 'edma-abel', description: 'Esmeralda rustic chic baseado no convite real publicado Edma & Abel.', pathEnv: 'TEMPLATE_ESMERALDA_EDMA_PATH', defaultPath: 'convite/templates/esmeralda-edma' },
+  'perola-calate': { packageKey: 'perola', label: 'Pérola — Calate & Helder', sourceSlug: 'calate-helder', description: 'Pérola clássico baseado no convite real publicado Calate & Helder.', pathEnv: 'TEMPLATE_PEROLA_CALATE_PATH', defaultPath: 'convite/templates/perola-calate' },
+  'perola-flicia': { packageKey: 'perola', label: 'Pérola — Flícia & Walter', sourceSlug: 'flicia-walter-convite', description: 'Pérola novo modelo baseado no convite real publicado Flícia & Walter.', pathEnv: 'TEMPLATE_PEROLA_FLICIA_PATH', defaultPath: 'convite/templates/perola-flicia' },
+  'perola-publico': { packageKey: 'perola', label: 'Pérola público — Minoca & Abubacar', sourceSlug: 'minoca-abubacar', description: 'Pérola com RSVP público baseado no convite real publicado Minoca & Abubacar.', pathEnv: 'TEMPLATE_PEROLA_PUBLICO_PATH', defaultPath: 'convite/templates/perola-publico' },
+  'perola-amelia': { packageKey: 'perola', label: 'Pérola — Amélia & Edilson', sourceSlug: 'amelia-edilson', description: 'Pérola preto/branco elegante baseado no convite real publicado Amélia & Edilson.', pathEnv: 'TEMPLATE_PEROLA_AMELIA_PATH', defaultPath: 'convite/templates/perola-amelia' }
 };
 const DEFAULT_TEMPLATE_BY_PACKAGE = { perola: 'perola-flicia', esmeralda: 'esmeralda-edma', rubi: 'rubi-rosalina' };
 function normalizeTemplateKey(value, packageKey = '') {
@@ -441,10 +441,10 @@ function getTemplatePath(templateOrPackageKey, fallbackPackageKey = '') {
     return (process.env[model.pathEnv] || model.defaultPath).replace(/^\/+|\/+$/g, '');
   }
   const map = {
-    perola: process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola',
-    'pérola': process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola',
-    esmeralda: process.env.TEMPLATE_ESMERALDA_PATH || 'convite/templates/esmeralda',
-    rubi: process.env.TEMPLATE_RUBI_PATH || 'convite/templates/rubi'
+    perola: process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola-flicia',
+    'pérola': process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola-flicia',
+    esmeralda: process.env.TEMPLATE_ESMERALDA_PATH || 'convite/templates/esmeralda-edma',
+    rubi: process.env.TEMPLATE_RUBI_PATH || 'convite/templates/rubi-rosalina'
   };
   return (map[clean] || '').replace(/^\/+|\/+$/g, '');
 }
@@ -529,6 +529,18 @@ function normalizeScheduleItems(body = {}, current = {}) {
   if (body.receptionTime || body.receptionVenue || current.event?.receptionTime || current.event?.receptionVenue) items.push({ title: 'Copo de água', time: body.receptionTime || current.event?.receptionTime || '', venue: body.receptionVenue || current.event?.receptionVenue || '', mapUrl: body.receptionMapUrl || current.event?.receptionMapUrl || '' });
   return items;
 }
+
+function normalizeLayout(body = {}, current = {}) {
+  const defaultOrder = ['hero','parents','story','schedule','map','gallery','dressCode','gifts','contributions','messages','capsule','checkin','rsvp'];
+  let order = body.sectionOrder ?? current.layout?.sectionOrder ?? defaultOrder;
+  if (typeof order === 'string') order = order.split(/\r?\n|,/).map(v => v.trim()).filter(Boolean);
+  if (!Array.isArray(order)) order = defaultOrder;
+  return {
+    builderVersion: body.builderVersion || current.layout?.builderVersion || 'safe-controlled-blocks-v1',
+    sectionOrder: order.filter(Boolean)
+  };
+}
+
 function buildInviteConfig(body = {}, base = {}) {
   const current = base && typeof base === 'object' ? base : {};
   const theme = {
@@ -603,7 +615,7 @@ function buildInviteConfig(body = {}, base = {}) {
   sections.menu = Object.prototype.hasOwnProperty.call(body, 'section_menu') ? parseBool(body.section_menu) : (current.sections?.menu ?? Boolean(menu.note || menu.image));
   sections.parents = Object.prototype.hasOwnProperty.call(body, 'section_parents') ? parseBool(body.section_parents) : (current.sections?.parents ?? Boolean(parents.brideParents || parents.groomParents || parents.image));
   sections.bridalParty = Object.prototype.hasOwnProperty.call(body, 'section_bridalParty') ? parseBool(body.section_bridalParty) : (current.sections?.bridalParty ?? bridalParty.people.length > 0);
-  return { theme, event, rsvp, sections, payments, parents, story, gallery, dressCode, menu, bridalParty, gifts, messages };
+  return { theme, event, rsvp, sections, layout: normalizeLayout(body, current), payments, parents, story, gallery, dressCode, menu, bridalParty, gifts, messages };
 }
 function buildEventPayload(invite) {
   const cfg = buildInviteConfig(invite.config || {}, invite.config || {});
@@ -758,6 +770,10 @@ function applyTemplateReplacements(content, ctx, filePath = '') {
   } else if (/\.html$/i.test(filePath) && !out.includes('event-data.js')) {
     out = out.replace(/<\/head>/i, '  <script src="./event-data.js"></script>\n</head>');
   }
+  if (/\.html$/i.test(filePath) && !out.includes('cms-template.js')) {
+    if (/<\/body>/i.test(out)) out = out.replace(/<\/body>/i, '  <script src="./cms-template.js"></script>\n</body>');
+    else out += '\n<script src="./cms-template.js"></script>\n';
+  }
   out = out.replace(/const\s+API_URL\s*=\s*[`'\"][^`'\"]*[`'\"]\s*;/g, `const API_URL = "${ctx.apiBaseUrl}/api";`);
   out = out.replace(/const\s+DEMO_MODE\s*=\s*true\s*;/g, 'const DEMO_MODE = false;');
   out = out.replace(/BASE_URL\s*:\s*[`'\"][^`'\"]*[`'\"]/g, `BASE_URL: "${ctx.apiBaseUrl}/api"`);
@@ -868,6 +884,24 @@ app.get('/manager/summary', requireManager, async (req, res) => {
   ]);
   res.json({ status: 'success', data: { totalInvites, published, draft, guests, rsvps, messages, contributions, activities } });
 });
+
+app.get('/manager/templates', requireManager, async (req, res) => {
+  const templates = Object.entries(TEMPLATE_MODELS).map(([templateKey, model]) => ({
+    templateKey,
+    label: model.label,
+    packageKey: model.packageKey,
+    path: getTemplatePath(templateKey, model.packageKey),
+    sourceSlug: model.sourceSlug || '',
+    description: model.description || '',
+    admin: 'advanced',
+    builderMode: 'controlled-blocks',
+    mediaFields: ['coverImage','heroImage','storyImage','gallery','dressCodeImage','menuImage','parentsImage','logoImage','music'],
+    sections: ['schedule','map','rsvp','messages','gifts','contributions','capsule','dressCode','gallery','parents','story','menu','bridalParty'],
+    rsvpDefault: templateKey === 'perola-publico' ? 'public' : 'guest-list'
+  }));
+  res.json({ status: 'success', data: { version: 'safe-controlled-blocks-v1', templates } });
+});
+
 app.get('/manager/github/status', requireManager, asyncRoute(async (req, res) => {
   const data = {
     configured: githubReady(),
