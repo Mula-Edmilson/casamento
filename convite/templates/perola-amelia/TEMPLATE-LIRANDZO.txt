@@ -1,0 +1,5 @@
+Template visual Pérola — Amélia & Edilson
+
+Criado a partir do convite real amelia-edilson-convite.
+Este template é controlado pelo Admin Manager via client-config.js + event-data.js + cms-template.js.
+Não colocar dados reais permanentes neste template, excepto assets neutros/de referência do modelo.
