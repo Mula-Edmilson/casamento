@@ -262,11 +262,25 @@
   window.LIRANDZO_API = {
     ADMIN_TOKEN: null,
     async authenticateAdmin(password) {
-      const token = await managerLogin(password);
-      this.ADMIN_TOKEN = token;
-      sessionStorage.setItem('perola_admin_token', token);
-      sessionStorage.setItem('perola_admin_password', password);
-      return { status: 'success', token };
+      // 1) Tenta autenticar como Admin Manager global (MANAGER_PASSWORD + MANAGER_SECRET).
+      // 2) Se falhar, mantém compatibilidade com o admin do convite: valida em /admin-api
+      //    usando a senha do convite/cliente (CLIENT_ADMIN_PASSWORD, INVITE_ADMIN_PASSWORD
+      //    ou variáveis por slug como INVITE_ADMIN_PASSWORD_AMELIA_EDILSON).
+      const cleanPassword = String(password || '').trim();
+      let token = '';
+      sessionStorage.setItem('perola_admin_password', cleanPassword);
+      sessionStorage.removeItem('perola_admin_token');
+      try {
+        token = await managerLogin(cleanPassword);
+        this.ADMIN_TOKEN = token;
+        if (token) sessionStorage.setItem('perola_admin_token', token);
+        return { status: 'success', token };
+      } catch (loginErr) {
+        // Fallback idêntico ao modelo Flícia & Walter: valida a senha no admin-api do convite.
+        await adminPost('get_guests', {});
+        this.ADMIN_TOKEN = null;
+        return { status: 'success', token: '' };
+      }
     },
     async getRSVPs() { return adminPost('list_rsvps'); },
     async getComprovativos() { return adminPost('list_gift_records'); },
