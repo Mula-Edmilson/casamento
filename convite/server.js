@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 3000;
 const PUBLIC_API_BASE_URL = stripTrailingSlash(process.env.PUBLIC_API_BASE_URL || `http://localhost:${PORT}`);
 
 app.set('trust proxy', 1);
-app.use(express.json({ limit: process.env.JSON_LIMIT || '35mb' }));
-app.use(express.urlencoded({ extended: true, limit: process.env.JSON_LIMIT || '35mb' }));
+app.use(express.json({ limit: process.env.JSON_LIMIT || '12mb' }));
+app.use(express.urlencoded({ extended: true, limit: process.env.JSON_LIMIT || '12mb' }));
 
 const allowedOrigins = Array.from(new Set([
   ...(process.env.ALLOWED_ORIGINS || '').split(','),
@@ -186,24 +186,6 @@ function nowIso() { return new Date().toISOString(); }
 function parseBool(v) { return v === true || v === 'true' || v === '1' || v === 'on'; }
 function packageLabel(key) { return key === 'perola' ? 'Pérola' : key === 'esmeralda' ? 'Esmeralda' : key === 'rubi' ? 'Rubi' : key; }
 
-const TEMPLATE_MODELS = {
-  'rubi-rosalina': { packageKey: 'rubi', label: 'Rubi — Rosalina & Monteiro', sourceSlug: 'rosalina-monteiro', description: 'Rubi premium baseado no convite real publicado Rosalina & Monteiro.', pathEnv: 'TEMPLATE_RUBI_ROSALINA_PATH', defaultPath: 'convite/templates/rubi-rosalina' },
-  'esmeralda-edma': { packageKey: 'esmeralda', label: 'Esmeralda — Edma & Abel', sourceSlug: 'edma-abel', description: 'Esmeralda rustic chic baseado no convite real publicado Edma & Abel.', pathEnv: 'TEMPLATE_ESMERALDA_EDMA_PATH', defaultPath: 'convite/templates/esmeralda-edma' },
-  'perola-calate': { packageKey: 'perola', label: 'Pérola — Calate & Helder', sourceSlug: 'calate-helder', description: 'Pérola clássico baseado no convite real publicado Calate & Helder.', pathEnv: 'TEMPLATE_PEROLA_CALATE_PATH', defaultPath: 'convite/templates/perola-calate' },
-  'perola-flicia': { packageKey: 'perola', label: 'Pérola — Flícia & Walter', sourceSlug: 'flicia-walter-convite', description: 'Pérola novo modelo baseado no convite real publicado Flícia & Walter.', pathEnv: 'TEMPLATE_PEROLA_FLICIA_PATH', defaultPath: 'convite/templates/perola-flicia' },
-  'perola-publico': { packageKey: 'perola', label: 'Pérola público — Minoca & Abubacar', sourceSlug: 'minoca-abubacar', description: 'Pérola com RSVP público baseado no convite real publicado Minoca & Abubacar.', pathEnv: 'TEMPLATE_PEROLA_PUBLICO_PATH', defaultPath: 'convite/templates/perola-publico' },
-  'perola-amelia': { packageKey: 'perola', label: 'Pérola — Amélia & Edilson', sourceSlug: 'amelia-edilson', description: 'Pérola preto/branco elegante baseado no convite real publicado Amélia & Edilson.', pathEnv: 'TEMPLATE_PEROLA_AMELIA_PATH', defaultPath: 'convite/templates/perola-amelia' }
-};
-const DEFAULT_TEMPLATE_BY_PACKAGE = { perola: 'perola-flicia', esmeralda: 'esmeralda-edma', rubi: 'rubi-rosalina' };
-function normalizeTemplateKey(value, packageKey = '') {
-  const clean = slugify(value || '');
-  if (TEMPLATE_MODELS[clean]) return clean;
-  const pkg = slugify(packageKey || value || '');
-  return DEFAULT_TEMPLATE_BY_PACKAGE[pkg] || 'perola-flicia';
-}
-function getTemplateModel(value, packageKey = '') { return TEMPLATE_MODELS[normalizeTemplateKey(value, packageKey)]; }
-function templateLabel(key) { const model = TEMPLATE_MODELS[normalizeTemplateKey(key)]; return model ? model.label : key; }
-
 function signToken(payload) {
   const secret = process.env.MANAGER_SECRET;
   if (!secret || secret.length < 16) throw new Error('MANAGER_SECRET precisa de pelo menos 16 caracteres.');
@@ -251,16 +233,12 @@ const InviteSchema = new mongoose.Schema({
   bride: { type: String, default: '' },
   groom: { type: String, default: '' },
   packageKey: { type: String, enum: ['perola', 'esmeralda', 'rubi'], required: true, index: true },
-  templateKey: { type: String, default: '', index: true },
   status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft', index: true },
   eventDateISO: { type: String, default: '' },
   rsvpDeadline: { type: String, default: '' },
   publicUrl: { type: String, default: '' },
   githubPath: { type: String, default: '' },
   githubLastCommitSha: { type: String, default: '' },
-  syncStatus: { type: String, enum: ['unsynced', 'pending', 'synced', 'failed', 'skipped'], default: 'unsynced', index: true },
-  syncError: { type: String, default: '' },
-  githubSyncedAt: { type: Date },
   publishedAt: { type: Date },
   config: { type: mongoose.Schema.Types.Mixed, default: {} }
 }, { timestamps: true });
@@ -411,10 +389,9 @@ function cleanInviteDoc(doc) {
   const o = doc.toObject ? doc.toObject() : doc;
   return {
     id: String(o._id), slug: o.slug, clientName: o.clientName, coupleNames: o.coupleNames,
-    bride: o.bride, groom: o.groom, packageKey: o.packageKey, packageLabel: packageLabel(o.packageKey), templateKey: o.templateKey || DEFAULT_TEMPLATE_BY_PACKAGE[o.packageKey] || '', templateLabel: templateLabel(o.templateKey || o.packageKey),
+    bride: o.bride, groom: o.groom, packageKey: o.packageKey, packageLabel: packageLabel(o.packageKey),
     status: o.status, eventDateISO: o.eventDateISO, rsvpDeadline: o.rsvpDeadline,
     publicUrl: o.publicUrl, githubPath: o.githubPath, githubLastCommitSha: o.githubLastCommitSha,
-    syncStatus: o.syncStatus || 'unsynced', syncError: o.syncError || '', githubSyncedAt: o.githubSyncedAt || null,
     createdAt: o.createdAt, updatedAt: o.updatedAt, publishedAt: o.publishedAt, config: o.config || {}
   };
 }
@@ -428,314 +405,19 @@ async function logActivity({ invite, type, title, detail = '', meta = {} }) {
   catch (err) { console.error('Falha ao gravar actividade:', err.message); }
 }
 function getInvitesBasePath() { return (process.env.INVITES_BASE_PATH || 'convite').replace(/^\/+|\/+$/g, ''); }
-function getTemplatePath(templateOrPackageKey, fallbackPackageKey = '') {
-  const raw = String(templateOrPackageKey || '').trim();
-  const clean = slugify(raw);
-  if (TEMPLATE_MODELS[clean]) {
-    const model = TEMPLATE_MODELS[clean];
-    return (process.env[model.pathEnv] || model.defaultPath).replace(/^\/+|\/+$/g, '');
-  }
-  const fallback = fallbackPackageKey ? normalizeTemplateKey(fallbackPackageKey, fallbackPackageKey) : '';
-  if (fallback && TEMPLATE_MODELS[fallback]) {
-    const model = TEMPLATE_MODELS[fallback];
-    return (process.env[model.pathEnv] || model.defaultPath).replace(/^\/+|\/+$/g, '');
-  }
+function getTemplatePath(packageKey) {
+  const key = String(packageKey || '').toLowerCase();
   const map = {
-    perola: process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola-flicia',
-    'pérola': process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola-flicia',
-    esmeralda: process.env.TEMPLATE_ESMERALDA_PATH || 'convite/templates/esmeralda-edma',
-    rubi: process.env.TEMPLATE_RUBI_PATH || 'convite/templates/rubi-rosalina'
+    perola: process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola',
+    'pérola': process.env.TEMPLATE_PEROLA_PATH || 'convite/templates/perola',
+    esmeralda: process.env.TEMPLATE_ESMERALDA_PATH || 'convite/templates/esmeralda',
+    rubi: process.env.TEMPLATE_RUBI_PATH || 'convite/templates/rubi'
   };
-  return (map[clean] || '').replace(/^\/+|\/+$/g, '');
+  return (map[key] || '').replace(/^\/+|\/+$/g, '');
 }
 function defaultPublicUrl(slug) {
   const base = stripTrailingSlash(process.env.PUBLIC_SITE_URL || 'https://lirandzo.com');
   return `${base}/${getInvitesBasePath()}/${slug}/`;
-}
-
-function compactObject(obj = {}) {
-  return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined && value !== null && String(value).trim?.() !== ''));
-}
-function splitList(value) {
-  return String(value || '').split(/\r?\n|,/).map(v => v.trim()).filter(Boolean);
-}
-function normalizePaymentAccounts(raw) {
-  if (Array.isArray(raw)) return raw.filter(Boolean);
-  const lines = splitList(raw);
-  return lines.map(line => {
-    const parts = line.split('|').map(p => p.trim());
-    if (parts.length >= 3) return { method: parts[0], holder: parts[1], number: parts.slice(2).join(' | ') };
-    return { method: 'Conta', holder: '', number: line };
-  });
-}
-function normalizeSections(body = {}) {
-  const defaults = {
-    schedule: true, map: true, rsvp: true, messages: true, gifts: true,
-    contributions: true, capsule: true, dressCode: false, gallery: false, parents: false, story: false, menu: false, bridalParty: false
-  };
-  const incoming = body.sections && typeof body.sections === 'object' ? body.sections : {};
-  for (const key of Object.keys(defaults)) {
-    if (Object.prototype.hasOwnProperty.call(body, `section_${key}`)) defaults[key] = parseBool(body[`section_${key}`]);
-    if (Object.prototype.hasOwnProperty.call(incoming, key)) defaults[key] = parseBool(incoming[key]);
-  }
-  return defaults;
-}
-function parseJsonMaybe(value, fallback) {
-  if (Array.isArray(value) || (value && typeof value === 'object')) return value;
-  const raw = String(value || '').trim();
-  if (!raw) return fallback;
-  try { return JSON.parse(raw); } catch { return fallback; }
-}
-function normalizeMediaList(raw) {
-  if (Array.isArray(raw)) return raw.map(item => typeof item === 'string' ? { src: item, alt: '' } : item).filter(item => item && (item.src || item.url));
-  const parsed = parseJsonMaybe(raw, null);
-  if (Array.isArray(parsed)) return normalizeMediaList(parsed);
-  return splitList(raw).map((line, index) => {
-    const parts = String(line).split('|').map(p => p.trim());
-    return { src: parts[0] || '', alt: parts[1] || `Foto ${index + 1}`, caption: parts[2] || '' };
-  }).filter(item => item.src);
-}
-function normalizePeopleList(raw) {
-  const parsed = parseJsonMaybe(raw, null);
-  if (Array.isArray(parsed)) return parsed.filter(Boolean);
-  return splitList(raw).map(line => {
-    const parts = String(line).split('|').map(p => p.trim());
-    return { name: parts[0] || '', role: parts[1] || '', image: parts[2] || '' };
-  }).filter(item => item.name || item.image);
-}
-function normalizeStoryChapters(raw) {
-  const parsed = parseJsonMaybe(raw, null);
-  if (Array.isArray(parsed)) return parsed.filter(Boolean).map((item, index) => ({ title: item.title || item.name || `Capítulo ${index + 1}`, text: item.text || item.note || item.description || '' })).filter(item => item.title || item.text);
-  return splitList(raw).map((line, index) => {
-    const parts = String(line).split('|').map(p => p.trim());
-    return { title: parts[0] || `Capítulo ${index + 1}`, text: parts.slice(1).join(' | ') || '' };
-  }).filter(item => item.title || item.text);
-}
-function normalizeGiftOptions(raw) {
-  const parsed = parseJsonMaybe(raw, null);
-  if (Array.isArray(parsed)) return parsed.map(item => typeof item === 'string' ? { name: item, category: 'Lista de presentes' } : item).filter(item => item && (item.name || item.label));
-  return splitList(raw).map(line => {
-    const parts = String(line).split('|').map(p => p.trim());
-    return { name: parts[0] || '', category: parts[1] || 'Lista de presentes' };
-  }).filter(item => item.name);
-}
-
-function normalizeScheduleItems(body = {}, current = {}) {
-  const parsed = parseJsonMaybe(body.scheduleItems, null);
-  if (Array.isArray(parsed)) return parsed;
-  const items = [];
-  if (body.religiousTime || body.religiousVenue || current.event?.religiousTime || current.event?.religiousVenue) items.push({ title: 'Cerimónia religiosa', time: body.religiousTime || current.event?.religiousTime || '', venue: body.religiousVenue || current.event?.religiousVenue || '', mapUrl: body.religiousMapUrl || current.event?.religiousMapUrl || '' });
-  if (body.civilTime || body.civilVenue || current.event?.civilTime || current.event?.civilVenue) items.push({ title: 'Cerimónia civil', time: body.civilTime || current.event?.civilTime || '', venue: body.civilVenue || current.event?.civilVenue || '', mapUrl: body.civilMapUrl || current.event?.civilMapUrl || '' });
-  if (body.receptionTime || body.receptionVenue || current.event?.receptionTime || current.event?.receptionVenue) items.push({ title: 'Copo de água', time: body.receptionTime || current.event?.receptionTime || '', venue: body.receptionVenue || current.event?.receptionVenue || '', mapUrl: body.receptionMapUrl || current.event?.receptionMapUrl || '' });
-  return items;
-}
-
-function normalizeLayout(body = {}, current = {}) {
-  const defaultOrder = ['hero','parents','story','schedule','map','gallery','dressCode','gifts','contributions','messages','capsule','checkin','rsvp'];
-  let order = body.sectionOrder ?? current.layout?.sectionOrder ?? defaultOrder;
-  if (typeof order === 'string') order = order.split(/\r?\n|,/).map(v => v.trim()).filter(Boolean);
-  if (!Array.isArray(order)) order = defaultOrder;
-  return {
-    builderVersion: body.builderVersion || current.layout?.builderVersion || 'safe-controlled-blocks-v1',
-    sectionOrder: order.filter(Boolean)
-  };
-}
-
-function buildInviteConfig(body = {}, base = {}) {
-  const current = base && typeof base === 'object' ? base : {};
-  const theme = {
-    style: String(body.themeStyle || current.theme?.style || body.templateKey || body.packageKey || 'perola-flicia').trim(),
-    accent: String(body.themeAccent || current.theme?.accent || '').trim(),
-    coverImage: String(body.coverImage || current.theme?.coverImage || '').trim(),
-    heroImage: String(body.heroImage || current.theme?.heroImage || '').trim(),
-    logoImage: String(body.logoImage || current.theme?.logoImage || '').trim(),
-    musicUrl: String(body.musicUrl || current.theme?.musicUrl || '').trim()
-  };
-  const event = compactObject({
-    title: body.eventTitle || current.event?.title || body.coupleNames || '',
-    dateLabel: body.eventDateLabel || current.event?.dateLabel || '',
-    dateISO: body.eventDateISO || current.event?.dateISO || '',
-    rsvpDeadline: body.rsvpDeadline || current.event?.rsvpDeadline || '',
-    timezone: body.timezone || current.event?.timezone || 'Africa/Maputo',
-    religiousTime: body.religiousTime || current.event?.religiousTime || '',
-    religiousVenue: body.religiousVenue || current.event?.religiousVenue || '',
-    religiousMapUrl: body.religiousMapUrl || current.event?.religiousMapUrl || '',
-    civilTime: body.civilTime || current.event?.civilTime || '',
-    civilVenue: body.civilVenue || current.event?.civilVenue || '',
-    civilMapUrl: body.civilMapUrl || current.event?.civilMapUrl || '',
-    receptionTime: body.receptionTime || current.event?.receptionTime || '',
-    receptionVenue: body.receptionVenue || current.event?.receptionVenue || '',
-    receptionMapUrl: body.receptionMapUrl || current.event?.receptionMapUrl || '',
-    generalMapUrl: body.generalMapUrl || current.event?.generalMapUrl || body.receptionMapUrl || body.civilMapUrl || body.religiousMapUrl || '',
-    dressCode: body.dressCode || current.event?.dressCode || '',
-    popupNote: body.popupNote || current.event?.popupNote || 'Confirme a sua presença e adicione o evento ao seu lembrete.',
-    invitationNote: body.invitationNote || current.event?.invitationNote || '',
-    verse: body.verse || current.event?.verse || '',
-    verseReference: body.verseReference || current.event?.verseReference || '',
-    contactPhone: body.contactPhone || current.event?.contactPhone || '',
-    whatsapp: body.whatsapp || current.event?.whatsapp || '',
-    scheduleItems: normalizeScheduleItems(body, current)
-  });
-  const rsvp = {
-    mode: String(body.rsvpMode || current.rsvp?.mode || 'guest-list'),
-    maxPublicGuests: Math.max(1, Number.parseInt(body.maxPublicGuests || current.rsvp?.maxPublicGuests || 5, 10) || 5),
-    askPhone: body.askPhone === undefined ? (current.rsvp?.askPhone ?? true) : parseBool(body.askPhone),
-    askMessage: body.askMessage === undefined ? (current.rsvp?.askMessage ?? true) : parseBool(body.askMessage)
-  };
-  const story = compactObject({
-    title: body.storyTitle || current.story?.title || 'A nossa história',
-    text: body.storyText || current.story?.text || '',
-    image: body.storyImage || current.story?.image || '',
-    chapters: normalizeStoryChapters(body.storyChapters ?? current.story?.chapters ?? '')
-  });
-  const gallery = {
-    title: body.galleryTitle || current.gallery?.title || 'Galeria',
-    items: normalizeMediaList(body.galleryItems ?? body.galleryUrls ?? current.gallery?.items ?? '')
-  };
-  const dressCode = compactObject({
-    title: body.dressCodeTitle || current.dressCode?.title || 'Dress code',
-    note: body.dressCodeNote || current.dressCode?.note || body.dressCode || '',
-    image: body.dressCodeImage || current.dressCode?.image || '',
-    palette: splitList(body.dressCodePalette || current.dressCode?.palette || '').slice(0, 10)
-  });
-  const menu = compactObject({ title: body.menuTitle || current.menu?.title || 'Menu', note: body.menuNote || current.menu?.note || '', image: body.menuImage || current.menu?.image || '' });
-  const parents = compactObject({
-    brideParents: body.brideParents || current.parents?.brideParents || '',
-    groomParents: body.groomParents || current.parents?.groomParents || '',
-    image: body.parentsImage || current.parents?.image || ''
-  });
-  const bridalParty = { title: body.bridalPartyTitle || current.bridalParty?.title || 'Padrinhos e madrinhas', people: normalizePeopleList(body.bridalPartyPeople || current.bridalParty?.people || '') };
-  const payments = normalizePaymentAccounts(body.paymentAccounts ?? current.payments ?? '');
-  const gifts = compactObject({ title: body.giftsTitle || current.gifts?.title || 'Lista de presentes', note: body.giftsNote || current.gifts?.note || '', options: normalizeGiftOptions(body.giftOptions ?? current.gifts?.options ?? '') });
-  const messages = compactObject({ title: body.messagesTitle || current.messages?.title || 'Mural de mensagens', note: body.messagesNote || current.messages?.note || '' });
-  const sections = normalizeSections({ ...current, ...body, sections: body.sections || current.sections });
-  sections.story = Object.prototype.hasOwnProperty.call(body, 'section_story') ? parseBool(body.section_story) : (current.sections?.story ?? Boolean(story.text));
-  sections.gallery = Object.prototype.hasOwnProperty.call(body, 'section_gallery') ? parseBool(body.section_gallery) : (current.sections?.gallery ?? gallery.items.length > 0);
-  sections.dressCode = Object.prototype.hasOwnProperty.call(body, 'section_dressCode') ? parseBool(body.section_dressCode) : (current.sections?.dressCode ?? Boolean(dressCode.note || dressCode.image));
-  sections.menu = Object.prototype.hasOwnProperty.call(body, 'section_menu') ? parseBool(body.section_menu) : (current.sections?.menu ?? Boolean(menu.note || menu.image));
-  sections.parents = Object.prototype.hasOwnProperty.call(body, 'section_parents') ? parseBool(body.section_parents) : (current.sections?.parents ?? Boolean(parents.brideParents || parents.groomParents || parents.image));
-  sections.bridalParty = Object.prototype.hasOwnProperty.call(body, 'section_bridalParty') ? parseBool(body.section_bridalParty) : (current.sections?.bridalParty ?? bridalParty.people.length > 0);
-  return { theme, event, rsvp, sections, layout: normalizeLayout(body, current), payments, parents, story, gallery, dressCode, menu, bridalParty, gifts, messages };
-}
-function buildEventPayload(invite) {
-  const cfg = buildInviteConfig(invite.config || {}, invite.config || {});
-  return {
-    slug: invite.slug,
-    clientName: invite.clientName,
-    coupleNames: invite.coupleNames,
-    bride: invite.bride || '',
-    groom: invite.groom || '',
-    packageKey: invite.packageKey,
-    packageLabel: packageLabel(invite.packageKey),
-    templateKey: invite.templateKey || DEFAULT_TEMPLATE_BY_PACKAGE[invite.packageKey] || '',
-    templateLabel: templateLabel(invite.templateKey || invite.packageKey),
-    publicUrl: invite.publicUrl || defaultPublicUrl(invite.slug),
-    apiBaseUrl: PUBLIC_API_BASE_URL,
-    apiUrl: `${PUBLIC_API_BASE_URL}/api`,
-    eventDateISO: invite.eventDateISO || cfg.event.dateISO || '',
-    rsvpDeadline: invite.rsvpDeadline || cfg.event.rsvpDeadline || '',
-    ...cfg
-  };
-}
-function eventDataJs(invite) {
-  const payload = buildEventPayload(invite);
-  const legacy = {
-    slug: payload.slug,
-    coupleNames: payload.coupleNames,
-    displayNames: String(payload.coupleNames || '').replace(/\s*&\s*/g, ' e '),
-    bride: payload.bride,
-    groom: payload.groom,
-    monogram: String((payload.bride || '').trim().charAt(0) + (payload.groom || '').trim().charAt(0)).toUpperCase(),
-    eventType: 'Casamento',
-    language: 'Português',
-    visualStyle: payload.templateLabel || '',
-    colors: payload.theme?.accent || '',
-    dateISO: payload.eventDateISO || payload.event?.dateISO || '',
-    eventDateLong: payload.event?.dateLabel || '',
-    rsvpDeadline: payload.rsvpDeadline || payload.event?.rsvpDeadline || '',
-    timezone: payload.event?.timezone || 'Africa/Maputo',
-    verse: payload.event?.verse || '',
-    verseReference: payload.event?.verseReference || '',
-    brideParents: payload.parents?.brideParents || '',
-    groomParents: payload.parents?.groomParents || '',
-    ceremonyTitle: payload.event?.scheduleItems?.[0]?.title || 'Igreja',
-    ceremonyPlace: payload.event?.religiousVenue || payload.event?.scheduleItems?.[0]?.venue || '',
-    ceremonyTime: payload.event?.religiousTime || payload.event?.scheduleItems?.[0]?.time || '',
-    ceremonyMap: payload.event?.religiousMapUrl || payload.event?.scheduleItems?.[0]?.mapUrl || '',
-    additionalTitle: payload.event?.scheduleItems?.[1]?.title || 'Cerimónia Civil',
-    additionalPlace: payload.event?.civilVenue || payload.event?.scheduleItems?.[1]?.venue || '',
-    additionalTime: payload.event?.civilTime || payload.event?.scheduleItems?.[1]?.time || '',
-    additionalMap: payload.event?.civilMapUrl || payload.event?.scheduleItems?.[1]?.mapUrl || '',
-    receptionTitle: payload.event?.scheduleItems?.[2]?.title || 'Copo de Água',
-    receptionPlace: payload.event?.receptionVenue || payload.event?.scheduleItems?.[2]?.venue || '',
-    receptionTime: payload.event?.receptionTime || payload.event?.receptionTime || payload.event?.scheduleItems?.[2]?.time || '',
-    receptionMap: payload.event?.receptionMapUrl || payload.event?.scheduleItems?.[2]?.mapUrl || '',
-    supportContacts: payload.event?.contactPhone || '',
-    supportWhatsapp: payload.event?.whatsapp || '',
-    bankAccounts: (payload.payments || []).filter(x => /bim|bci|banco|bank|standard|moza/i.test(String(x.type || x.bank || ''))).map(x => ({ bank: x.type || x.bank || 'Banco', holder: x.holder || '', account: x.number || x.account || '' })),
-    mobilePayments: (payload.payments || []).filter(x => /m-pesa|mpesa|e-mola|emola|mkesh|mobile/i.test(String(x.type || x.bank || ''))).map(x => ({ type: x.type || 'Pagamento móvel', holder: x.holder || '', number: x.number || x.account || '' })),
-    program: payload.event?.scheduleItems || [],
-    guestListVersion: 'Gerido pelo Admin Manager',
-    guestListUpdatedAt: new Date().toISOString().slice(0, 10)
-  };
-  const giftOptions = payload.gifts?.options || [];
-  return `window.LIRANDZO_EVENT_DATA = ${JSON.stringify(payload, null, 2)};\nwindow.LIRANDZO_EVENT = ${JSON.stringify(legacy, null, 2)};\nwindow.LIRANDZO_GUESTS = window.LIRANDZO_GUESTS || [];\nwindow.LIRANDZO_GIFT_OPTIONS = ${JSON.stringify(giftOptions, null, 2)};\n`;
-}
-function inviteDataJson(invite) {
-  return JSON.stringify({ ...buildEventPayload(invite), createdAt: nowIso() }, null, 2);
-}
-function shouldSkipTemplateFile(relativePath = '') {
-  const rel = String(relativePath || '').replace(/\\/g, '/');
-  const base = rel.split('/').pop() || '';
-  if (!rel || rel === 'TEMPLATE-LIRANDZO.txt') return true;
-  if (/^(client-config|event-data|invite-data)\.js(on)?$/i.test(base)) return true;
-  if (/^(server|package|package-lock)\.json$/i.test(base) || /^server\.js$/i.test(base)) return true;
-  if (/^(mongodb-seed-data|guests-import-adminmanager)\.(txt|json)$/i.test(base)) return true;
-  if (/^import-.*\.js$/i.test(base) || /^README/i.test(base) || /New Documento/i.test(base) || /Lirandzo API/i.test(base)) return true;
-  const forbiddenDirs = ['edma-abel','minoca-abubacar','flicia-walter-convite','rosalina-monteiro','calate-helder','maria-joao','maria-joao-v2','anicia-nelson','nelia-edmilson','patricia-guilherme','rafaela-amade'];
-  return forbiddenDirs.some(dir => rel === dir || rel.startsWith(`${dir}/`));
-}
-
-
-function safeAssetFilename(name = 'media.bin') {
-  const clean = String(name || 'media.bin').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-  return clean || 'media.bin';
-}
-function normalizeMediaUploads(raw) {
-  const items = Array.isArray(raw) ? raw : [];
-  return items.map((item, index) => {
-    const dataUrl = String(item?.dataUrl || item?.content || '');
-    const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
-    const base64 = match ? match[2] : String(item?.base64 || '');
-    if (!base64) return null;
-    const mimeType = String(item?.mimeType || (match ? match[1] : 'application/octet-stream'));
-    const field = slugify(item?.field || 'media') || 'media';
-    const filename = safeAssetFilename(item?.filename || `${field}-${index + 1}`);
-    return { field, filename, mimeType, base64, alt: String(item?.alt || ''), caption: String(item?.caption || '') };
-  }).filter(Boolean);
-}
-function clonePlain(value) { return JSON.parse(JSON.stringify(value || {})); }
-function assignMediaPath(config, upload, publicPath) {
-  const cfg = config;
-  cfg.theme = cfg.theme || {};
-  cfg.gallery = cfg.gallery || { title: 'Galeria', items: [] };
-  cfg.dressCode = cfg.dressCode || {};
-  cfg.story = cfg.story || {};
-  cfg.menu = cfg.menu || {};
-  cfg.parents = cfg.parents || {};
-  const field = upload.field;
-  if (field === 'coverimage' || field === 'cover') cfg.theme.coverImage = publicPath;
-  else if (field === 'heroimage' || field === 'hero') cfg.theme.heroImage = publicPath;
-  else if (field === 'storyimage' || field === 'story') cfg.story.image = publicPath;
-  else if (field === 'dresscodeimage' || field === 'dresscode') cfg.dressCode.image = publicPath;
-  else if (field === 'menuimage' || field === 'menu') cfg.menu.image = publicPath;
-  else if (field === 'parentsimage' || field === 'parents') cfg.parents.image = publicPath;
-  else if (field === 'logoimage' || field === 'logo') cfg.theme.logoImage = publicPath;
-  else if (field === 'music' || field === 'musicurl' || field === 'audio') cfg.theme.musicUrl = publicPath;
-  else {
-    cfg.gallery.items = Array.isArray(cfg.gallery.items) ? cfg.gallery.items : [];
-    cfg.gallery.items.push({ src: publicPath, alt: upload.alt || upload.filename, caption: upload.caption || '' });
-  }
 }
 
 function githubReady() { return Boolean(process.env.GITHUB_TOKEN && process.env.GITHUB_OWNER && process.env.GITHUB_REPO && process.env.GITHUB_BRANCH); }
@@ -766,13 +448,7 @@ function applyTemplateReplacements(content, ctx, filePath = '') {
   for (const [k, v] of Object.entries(replacements)) out = out.split(k).join(String(v || ''));
 
   if (/\.html$/i.test(filePath) && !out.includes('client-config.js')) {
-    out = out.replace(/<\/head>/i, '  <script src="./client-config.js"></script>\n  <script src="./event-data.js"></script>\n</head>');
-  } else if (/\.html$/i.test(filePath) && !out.includes('event-data.js')) {
-    out = out.replace(/<\/head>/i, '  <script src="./event-data.js"></script>\n</head>');
-  }
-  if (/\.html$/i.test(filePath) && !out.includes('cms-template.js')) {
-    if (/<\/body>/i.test(out)) out = out.replace(/<\/body>/i, '  <script src="./cms-template.js"></script>\n</body>');
-    else out += '\n<script src="./cms-template.js"></script>\n';
+    out = out.replace(/<\/head>/i, '  <script src="./client-config.js"></script>\n</head>');
   }
   out = out.replace(/const\s+API_URL\s*=\s*[`'\"][^`'\"]*[`'\"]\s*;/g, `const API_URL = "${ctx.apiBaseUrl}/api";`);
   out = out.replace(/const\s+DEMO_MODE\s*=\s*true\s*;/g, 'const DEMO_MODE = false;');
@@ -786,20 +462,8 @@ function applyTemplateReplacements(content, ctx, filePath = '') {
   }
   return out;
 }
-async function copyPackageTemplateToClient({ invite, allowOverwrite = false, mediaUploads = [] }) {
-  const uploads = normalizeMediaUploads(mediaUploads);
-  if (uploads.length) {
-    const updatedConfig = clonePlain(invite.config || {});
-    uploads.forEach((upload, index) => {
-      const ext = upload.filename.includes('.') ? '' : (upload.mimeType.includes('png') ? '.png' : upload.mimeType.includes('webp') ? '.webp' : upload.mimeType.includes('gif') ? '.gif' : '.jpg');
-      const rel = `assets/media/${upload.field}-${String(index + 1).padStart(2, '0')}-${safeAssetFilename(upload.filename)}${ext}`;
-      upload.relativePath = rel;
-      upload.publicPath = `./${rel}`;
-      assignMediaPath(updatedConfig, upload, upload.publicPath);
-    });
-    invite.config = updatedConfig;
-  }
-  const templatePath = getTemplatePath(invite.templateKey || invite.packageKey, invite.packageKey);
+async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
+  const templatePath = getTemplatePath(invite.packageKey);
   const targetPath = `${getInvitesBasePath()}/${invite.slug}`;
   const branch = process.env.GITHUB_BRANCH;
   const ref = await gh(`/git/ref/heads/${encodeURIComponent(branch)}`);
@@ -808,16 +472,12 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false, med
   const baseTreeSha = baseCommit.tree.sha;
   const fullTree = await gh(`/git/trees/${baseTreeSha}?recursive=1`);
   const all = fullTree.tree || [];
-  const files = all.filter(item => {
-    if (item.type !== 'blob' || !item.path.startsWith(`${templatePath}/`)) return false;
-    const relative = item.path.slice(templatePath.length + 1);
-    return !shouldSkipTemplateFile(relative);
-  });
-  if (!files.length) throw new Error(`Nenhum ficheiro válido encontrado no template: ${templatePath}. Verifique se o template tem index.html/convite.html/style.css e se não contém apenas ficheiros ignorados.`);
+  const files = all.filter(item => item.type === 'blob' && item.path.startsWith(`${templatePath}/`));
+  if (!files.length) throw new Error(`Nenhum ficheiro encontrado no template: ${templatePath}`);
   const targetAlreadyExists = all.some(item => item.path.startsWith(`${targetPath}/`));
   if (targetAlreadyExists && !allowOverwrite) throw new Error(`A pasta ${targetPath} já existe no GitHub. Para evitar sobrescrever, use outro slug.`);
 
-  const ctx = { slug: invite.slug, apiBaseUrl: PUBLIC_API_BASE_URL, coupleNames: invite.coupleNames, clientName: invite.clientName, bride: invite.bride, groom: invite.groom, packageKey: invite.packageKey, publicUrl: invite.publicUrl, event: buildEventPayload(invite) };
+  const ctx = { slug: invite.slug, apiBaseUrl: PUBLIC_API_BASE_URL, coupleNames: invite.coupleNames, clientName: invite.clientName, bride: invite.bride, groom: invite.groom, packageKey: invite.packageKey, publicUrl: invite.publicUrl };
   const treeItems = [];
   for (const file of files) {
     const relative = file.path.slice(templatePath.length + 1);
@@ -831,13 +491,8 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false, med
       treeItems.push({ path: newPath, mode: '100644', type: 'blob', sha: file.sha });
     }
   }
-  for (const upload of uploads) {
-    const blob = await gh('/git/blobs', { method: 'POST', body: JSON.stringify({ content: upload.base64, encoding: 'base64' }) });
-    treeItems.push({ path: `${targetPath}/${upload.relativePath}`, mode: '100644', type: 'blob', sha: blob.sha });
-  }
   treeItems.push({ path: `${targetPath}/client-config.js`, mode: '100644', type: 'blob', content: `window.LIRANDZO_INVITE_SLUG = ${JSON.stringify(invite.slug)};\nwindow.LIRANDZO_API_BASE_URL = ${JSON.stringify(PUBLIC_API_BASE_URL)};\nwindow.LIRANDZO_API_URL = window.LIRANDZO_API_BASE_URL.replace(/\\/+$/, '') + '/api';\n` });
-  treeItems.push({ path: `${targetPath}/event-data.js`, mode: '100644', type: 'blob', content: eventDataJs(invite) });
-  treeItems.push({ path: `${targetPath}/invite-data.json`, mode: '100644', type: 'blob', content: inviteDataJson(invite) });
+  treeItems.push({ path: `${targetPath}/invite-data.json`, mode: '100644', type: 'blob', content: JSON.stringify({ slug: invite.slug, coupleNames: invite.coupleNames, clientName: invite.clientName, packageKey: invite.packageKey, publicUrl: invite.publicUrl, createdAt: nowIso() }, null, 2) });
   const newTree = await gh('/git/trees', { method: 'POST', body: JSON.stringify({ base_tree: baseTreeSha, tree: treeItems }) });
   const newCommit = await gh('/git/commits', { method: 'POST', body: JSON.stringify({ message: `Criar convite ${invite.slug} (${packageLabel(invite.packageKey)})`, tree: newTree.sha, parents: [baseCommitSha] }) });
   await gh(`/git/refs/heads/${encodeURIComponent(branch)}`, { method: 'PATCH', body: JSON.stringify({ sha: newCommit.sha }) });
@@ -865,14 +520,16 @@ async function seedDefaultGifts(invite) {
   }
 }
 
-app.get('/health', async (req, res) => res.json({ status: 'ok', service: 'lirandzo-adminmanager', mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not_connected', githubConfigured: githubReady(), managerSecretConfigured: Boolean(process.env.MANAGER_SECRET && String(process.env.MANAGER_SECRET).length >= 16) }));
+app.get('/health', async (req, res) => res.json({ status: 'ok', service: 'lirandzo-adminmanager', mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not_connected', githubConfigured: githubReady() }));
 
 app.post('/manager/login', (req, res) => {
   const { password } = req.body || {};
   if (!process.env.MANAGER_PASSWORD) return res.status(500).json({ status: 'error', message: 'MANAGER_PASSWORD não configurado no Render.' });
   if (String(password || '') !== String(process.env.MANAGER_PASSWORD)) return res.status(401).json({ status: 'error', message: 'Senha incorrecta.' });
-  if (!process.env.MANAGER_SECRET || String(process.env.MANAGER_SECRET).length < 16) {
-    return res.status(500).json({ status: 'error', message: 'MANAGER_SECRET não configurado ou demasiado curto no Render. Configure uma chave com pelo menos 16 caracteres.' });
+  if (!process.env.MANAGER_SECRET) {
+    // Compatibilidade: permite o admin.html validar a senha mesmo em deployments antigos sem MANAGER_SECRET.
+    // As acções sensíveis continuam protegidas pela própria senha em /admin-api.
+    return res.json({ status: 'success', token: '', message: 'Sessão validada por senha.' });
   }
   const token = signToken({ role: 'manager', iat: Date.now(), exp: Date.now() + 1000 * 60 * 60 * 12 });
   res.json({ status: 'success', token });
@@ -884,72 +541,7 @@ app.get('/manager/summary', requireManager, async (req, res) => {
   ]);
   res.json({ status: 'success', data: { totalInvites, published, draft, guests, rsvps, messages, contributions, activities } });
 });
-
-app.get('/manager/templates', requireManager, async (req, res) => {
-  const templates = Object.entries(TEMPLATE_MODELS).map(([templateKey, model]) => ({
-    templateKey,
-    label: model.label,
-    packageKey: model.packageKey,
-    path: getTemplatePath(templateKey, model.packageKey),
-    sourceSlug: model.sourceSlug || '',
-    description: model.description || '',
-    admin: 'advanced',
-    builderMode: 'controlled-blocks',
-    mediaFields: ['coverImage','heroImage','storyImage','gallery','dressCodeImage','menuImage','parentsImage','logoImage','music'],
-    sections: ['schedule','map','rsvp','messages','gifts','contributions','capsule','dressCode','gallery','parents','story','menu','bridalParty'],
-    rsvpDefault: templateKey === 'perola-publico' ? 'public' : 'guest-list'
-  }));
-  res.json({ status: 'success', data: { version: 'safe-controlled-blocks-v1', templates } });
-});
-
-app.get('/manager/github/status', requireManager, asyncRoute(async (req, res) => {
-  const data = {
-    configured: githubReady(),
-    owner: process.env.GITHUB_OWNER || '',
-    repo: process.env.GITHUB_REPO || '',
-    branch: process.env.GITHUB_BRANCH || '',
-    invitesBasePath: getInvitesBasePath(),
-    templates: Object.fromEntries(Object.entries(TEMPLATE_MODELS).map(([key, model]) => [key, getTemplatePath(key, model.packageKey)])),
-    checks: []
-  };
-
-  if (!githubReady()) {
-    data.checks.push({ key: 'env', ok: false, label: 'Variáveis GitHub', message: 'Configure GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO e GITHUB_BRANCH no Render.' });
-    return res.json({ status: 'success', data });
-  }
-
-  try {
-    const repo = await gh('');
-    data.checks.push({ key: 'repo', ok: true, label: 'Repositório', message: `${repo.full_name || `${data.owner}/${data.repo}`} acessível.` });
-  } catch (err) {
-    data.checks.push({ key: 'repo', ok: false, label: 'Repositório', message: err.message });
-  }
-
-  try {
-    const ref = await gh(`/git/ref/heads/${encodeURIComponent(data.branch)}`);
-    data.branchSha = ref.object?.sha || '';
-    data.checks.push({ key: 'branch', ok: true, label: 'Branch', message: `${data.branch} encontrado.` });
-    const commit = await gh(`/git/commits/${ref.object.sha}`);
-    const tree = await gh(`/git/trees/${commit.tree.sha}?recursive=1`);
-    const all = tree.tree || [];
-    for (const [key, path] of Object.entries(data.templates)) {
-      const rawFiles = all.filter(item => item.type === 'blob' && item.path.startsWith(`${path}/`));
-      const validFiles = rawFiles.filter(item => !shouldSkipTemplateFile(item.path.slice(path.length + 1)));
-      const dirtyFiles = rawFiles.length - validFiles.length;
-      data.checks.push({
-        key: `template_${key}`,
-        ok: validFiles.length > 0,
-        label: `Template ${templateLabel(key)}`,
-        message: validFiles.length ? `${validFiles.length} ficheiro(s) válido(s). ${dirtyFiles ? `${dirtyFiles} ignorado(s) por limpeza.` : 'Limpo.'}` : `Nenhum ficheiro válido em ${path}.`
-      });
-    }
-  } catch (err) {
-    data.checks.push({ key: 'tree', ok: false, label: 'Árvore do repositório', message: err.message });
-  }
-
-  data.configured = githubReady() && data.checks.some(c => c.key === 'repo' && c.ok) && data.checks.some(c => c.key === 'branch' && c.ok);
-  res.json({ status: 'success', data });
-}));
+app.get('/manager/github/status', requireManager, (req, res) => res.json({ status: 'success', data: { configured: githubReady(), owner: process.env.GITHUB_OWNER || '', repo: process.env.GITHUB_REPO || '', branch: process.env.GITHUB_BRANCH || '', invitesBasePath: getInvitesBasePath(), templates: { perola: getTemplatePath('perola'), esmeralda: getTemplatePath('esmeralda'), rubi: getTemplatePath('rubi') } } }));
 
 app.get('/manager/invites', requireManager, async (req, res) => {
   const { q = '', status = 'all', packageKey = 'all' } = req.query;
@@ -970,58 +562,25 @@ app.get('/manager/invites', requireManager, async (req, res) => {
 
 app.post('/manager/invites', requireManager, async (req, res) => {
   const body = req.body || {};
-  const templateKey = normalizeTemplateKey(body.templateKey || body.packageKey, body.packageKey);
-  const model = getTemplateModel(templateKey);
-  const packageKey = model.packageKey;
-  if (templateKey === 'perola-publico' && !body.rsvpMode) body.rsvpMode = 'public';
-  if (!['perola', 'esmeralda', 'rubi'].includes(packageKey)) return res.status(400).json({ status: 'error', message: 'Pacote inválido. Use um dos modelos configurados no Admin Manager.' });
+  const packageKey = String(body.packageKey || '').toLowerCase();
+  if (!['perola', 'esmeralda', 'rubi'].includes(packageKey)) return res.status(400).json({ status: 'error', message: 'Pacote inválido. Use perola, esmeralda ou rubi.' });
   const slug = slugify(body.slug || body.coupleNames || body.clientName);
   if (!slug || slug.length < 3) return res.status(400).json({ status: 'error', message: 'Slug inválido.' });
   const exists = await Invite.findOne({ slug });
   if (exists) return res.status(409).json({ status: 'error', message: `Já existe um convite com o slug ${slug}.` });
   const githubPath = `${getInvitesBasePath()}/${slug}`;
   const publicUrl = body.publicUrl || defaultPublicUrl(slug);
-  const config = buildInviteConfig({ ...body, packageKey, templateKey }, body.config && typeof body.config === 'object' ? body.config : {});
-  const shouldCopy = parseBool(body.copyToGithub);
   let invite = await Invite.create({
-    slug,
-    clientName: String(body.clientName || body.coupleNames || slug).trim(),
-    coupleNames: String(body.coupleNames || body.clientName || slug).trim(),
-    bride: String(body.bride || '').trim(),
-    groom: String(body.groom || '').trim(),
-    packageKey,
-    templateKey,
-    status: parseBool(body.createAsPublished) ? 'published' : 'draft',
-    eventDateISO: String(body.eventDateISO || '').trim(),
-    rsvpDeadline: String(body.rsvpDeadline || '').trim(),
-    publicUrl,
-    githubPath,
-    syncStatus: shouldCopy ? 'pending' : 'skipped',
-    syncError: '',
-    publishedAt: parseBool(body.createAsPublished) ? new Date() : undefined,
-    config
+    slug, clientName: String(body.clientName || body.coupleNames || slug).trim(), coupleNames: String(body.coupleNames || body.clientName || slug).trim(), bride: String(body.bride || '').trim(), groom: String(body.groom || '').trim(), packageKey,
+    status: parseBool(body.createAsPublished) ? 'published' : 'draft', eventDateISO: String(body.eventDateISO || '').trim(), rsvpDeadline: String(body.rsvpDeadline || '').trim(), publicUrl, githubPath, publishedAt: parseBool(body.createAsPublished) ? new Date() : undefined, config: body.config && typeof body.config === 'object' ? body.config : {}
   });
   await seedDefaultGifts(invite);
   let github = null;
-  if (shouldCopy) {
-    try {
-      github = await copyPackageTemplateToClient({ invite, mediaUploads: body.mediaUploads || [] });
-      invite.githubPath = github.path;
-      invite.githubLastCommitSha = github.commitSha;
-      invite.syncStatus = 'synced';
-      invite.syncError = '';
-      invite.githubSyncedAt = new Date();
-      await invite.save();
-      await logActivity({ invite, type: 'github', title: 'Pasta criada no GitHub', detail: github.path, meta: github });
-    } catch (err) {
-      invite.syncStatus = 'failed';
-      invite.syncError = err.message || 'Falha desconhecida no GitHub.';
-      await invite.save();
-      await logActivity({ invite, type: 'warning', title: 'Convite criado sem cópia GitHub', detail: invite.syncError });
-      return res.status(201).json({ status: 'warning', message: `Convite criado no MongoDB, mas a cópia GitHub falhou: ${invite.syncError}`, data: cleanInviteDoc(invite), github: null });
-    }
+  if (parseBool(body.copyToGithub)) {
+    try { github = await copyPackageTemplateToClient({ invite }); invite.githubPath = github.path; invite.githubLastCommitSha = github.commitSha; await invite.save(); await logActivity({ invite, type: 'github', title: 'Pasta criada no GitHub', detail: github.path, meta: github }); }
+    catch (err) { await logActivity({ invite, type: 'warning', title: 'Convite criado sem cópia GitHub', detail: err.message }); return res.status(201).json({ status: 'warning', message: `Convite criado na base de dados, mas a cópia GitHub falhou: ${err.message}`, data: cleanInviteDoc(invite), github: null }); }
   }
-  await logActivity({ invite, type: 'invite', title: 'Convite criado', detail: `${invite.coupleNames} · ${templateLabel(templateKey)}` });
+  await logActivity({ invite, type: 'invite', title: 'Convite criado', detail: `${invite.coupleNames} · ${packageLabel(packageKey)}` });
   res.status(201).json({ status: 'success', message: `Convite criado com sucesso: ${publicUrl}`, data: cleanInviteDoc(invite), github });
 });
 
@@ -1034,10 +593,9 @@ app.get('/manager/invites/:id', requireManager, async (req, res) => {
   res.json({ status: 'success', data: { invite: cleanInviteDoc(invite), guests, rsvps, messages, gifts, contributions } });
 });
 app.patch('/manager/invites/:id', requireManager, async (req, res) => {
-  const allowed = ['clientName', 'coupleNames', 'bride', 'groom', 'status', 'eventDateISO', 'rsvpDeadline', 'publicUrl', 'packageKey', 'templateKey', 'config'];
+  const allowed = ['clientName', 'coupleNames', 'bride', 'groom', 'status', 'eventDateISO', 'rsvpDeadline', 'publicUrl', 'config'];
   const update = {};
   for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body, key)) update[key] = req.body[key];
-  if (Object.prototype.hasOwnProperty.call(update, 'config')) update.config = buildInviteConfig(update.config || {}, update.config || {});
   if (update.status === 'published') update.publishedAt = new Date();
   const invite = await Invite.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true });
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
@@ -1061,13 +619,10 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
   }
 
   try {
-    const github = await copyPackageTemplateToClient({ invite, allowOverwrite: parseBool(req.body?.allowOverwrite), mediaUploads: req.body?.mediaUploads || [] });
+    const github = await copyPackageTemplateToClient({ invite, allowOverwrite: false });
 
     invite.githubPath = github.path;
     invite.githubLastCommitSha = github.commitSha;
-    invite.syncStatus = 'synced';
-    invite.syncError = '';
-    invite.githubSyncedAt = new Date();
     await invite.save();
 
     await logActivity({
@@ -1086,10 +641,6 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
     });
   } catch (err) {
     console.error('[github-sync] Falhou:', err);
-
-    invite.syncStatus = 'failed';
-    invite.syncError = err.message || 'Erro ao criar a pasta no GitHub.';
-    await invite.save();
 
     await logActivity({
       invite,
@@ -1348,7 +899,7 @@ app.get('/api', async (req, res) => {
     if (action === 'list_checkins') return listCheckins(req, res, invite);
     if (action === 'list_capsule_photos') return listCapsulePhotos(req, res, invite);
     if (action === 'list_gifts' || action === 'gifts' || action === 'get_gift_items') return listGifts(req, res, invite);
-    if (action === 'get_guest' || action === 'get_guest_details' || action === 'get_guest_by_token') return getGuestDetails(req, res, invite);
+    if (action === 'get_guest' || action === 'get_guest_details') return getGuestDetails(req, res, invite);
     if (action === 'get_rsvp_status') return getRsvpStatus(req, res, invite);
     return sendJson(req, res, { status: 'error', message: 'Ação GET não reconhecida.' }, 400);
   } catch (err) { sendJson(req, res, { status: 'error', message: err.message }, 500); }
@@ -1737,8 +1288,7 @@ function getPublicRsvpAutoCreateSlugs() {
 }
 function canAutoCreateGuestForRsvp(invite) {
   const slug = slugify(invite?.slug || '');
-  const mode = String(invite?.config?.rsvp?.mode || '').toLowerCase();
-  return Boolean((mode === 'public' || mode === 'open') || (slug && getPublicRsvpAutoCreateSlugs().has(slug)));
+  return Boolean(slug && getPublicRsvpAutoCreateSlugs().has(slug));
 }
 function parseRsvpPeopleCount(data = {}) {
   const explicitTotal = Number.parseInt(
