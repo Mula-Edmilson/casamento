@@ -251,7 +251,7 @@
     .role-note { font-size:12px; color:var(--muted); line-height:1.5; margin-top:8px; }
     body.role-editor [data-admin-only], body.role-editor #newInvitePanel, body.role-editor [data-bulk-import-only] { display:none !important; }
     body.role-editor #managePanel .action-grid { display:none !important; }
-    body.role-editor #managePanel .section-title p::after { content:'  Perfil editor: operador seguro; pode editar, adicionar convidado manual, reparar nomes e resetar acesso individual, sem apagar/erase/importação em massa/GitHub.'; color:var(--accent); }
+    body.role-editor #managePanel .section-title p::after { content:'  Perfil editor: Limita-se na visualização e edição dos convites.'; color:var(--accent); }
 
 
     /* =========================================================
@@ -1016,7 +1016,7 @@
     <form class="login-card" id="loginForm">
       <div class="brand"><div class="brand-mark">L</div><div><h1>AdminManager</h1><p>Centro de gestão de convites Lirandzo.</p></div></div>
       <div class="field"><label for="passwordInput">Senha de acesso</label><input id="passwordInput" type="password" placeholder="Senha do perfil seleccionado" autocomplete="current-password" required autofocus></div>
-      <div class="field"><label>Tipo de acesso</label><div class="role-switch"><label class="role-option"><input type="radio" name="accessType" value="admin" checked> <span>Admin</span></label><label class="role-option"><input type="radio" name="accessType" value="editor"> <span>Editor</span></label></div><p class="role-note">Admin pode criar, editar, apagar e executar erase. Editor é operador seguro: visualiza, edita dados existentes, adiciona convidados manualmente, repara nomes e reseta acesso individual. Não apaga, não faz erase, não importa listas em massa nem altera GitHub.</p></div>
+      <div class="field"><label>Tipo de acesso</label><div class="role-switch"><label class="role-option"><input type="radio" name="accessType" value="admin" checked> <span>Admin</span></label><label class="role-option"><input type="radio" name="accessType" value="editor"> <span>Editor</span></label></div><p class="role-note">Bem vindo de volta!</p></div>
       <button id="loginSubmitBtn" class="btn primary full" type="submit"><span class="btn-loader" aria-hidden="true"></span><i class="login-icon" data-feather="lock"></i><span class="login-btn-text">Entrar no centro de gestão</span></button>
       <div id="loginError" class="feedback error hidden" role="alert"></div>
     </form>
