@@ -1060,6 +1060,135 @@
     @media (max-width:1120px) { .command-shell { grid-template-columns:1fr; } .command-sidebar { position:static; } .command-mini-actions { grid-template-columns:repeat(4,minmax(0,1fr)); } .command-ops-grid { grid-template-columns:1fr 1fr; } }
     @media (max-width:760px) { .command-shell { gap:9px; } .command-hero { grid-template-columns:1fr; padding:12px; } .command-hero h2 { font-size:19px; } .command-hero-actions { justify-content:stretch; } .command-hero-actions .btn { flex:1; } .command-mini-actions { grid-template-columns:1fr 1fr; } .command-kpi-grid { grid-template-columns:1fr 1fr; gap:7px; } .command-health-grid,.command-data-grid,.command-ops-grid { grid-template-columns:1fr; } .command-tabs { overflow-x:auto; flex-wrap:nowrap; padding-bottom:2px; scrollbar-width:none; } .command-tabs::-webkit-scrollbar { display:none; } .command-tab { flex:0 0 auto; } }
 
+
+    /* =========================================================
+       LIRANDZO ADMIN MANAGER · V6.1 MOBILE COMPACT ACTIONS
+       Ajuste mobile: botões curtos, com ícone + texto, até 3 por linha.
+       ========================================================= */
+    @media (max-width:760px) {
+      .btn {
+        min-height:32px;
+        padding:0 8px;
+        gap:4px;
+        font-size:10px;
+        line-height:1;
+        white-space:nowrap;
+        border-radius:11px;
+      }
+      .btn.small {
+        min-height:30px;
+        padding:0 7px;
+        font-size:9.7px;
+      }
+      .btn .feather {
+        width:12.5px;
+        height:12.5px;
+        flex:0 0 auto;
+      }
+      .btn.icon-only {
+        width:32px;
+        min-width:32px;
+        padding:0;
+      }
+      .toolbar-right,
+      .form-actions-sticky,
+      .command-hero-actions,
+      .command-mini-actions,
+      .command-status-row + .command-hero-actions {
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:6px;
+        width:100%;
+      }
+      .toolbar-right .btn,
+      .form-actions-sticky .btn,
+      .command-hero-actions .btn,
+      .command-mini-actions .btn {
+        width:100%;
+        min-width:0;
+        flex:none !important;
+        justify-content:center;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .mobile-card .table-actions {
+        display:grid !important;
+        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+        gap:6px !important;
+        align-items:center;
+      }
+      .mobile-card .table-actions .btn {
+        width:100%;
+        min-width:0;
+        min-height:30px;
+        padding:0 6px;
+        justify-content:center;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .action-grid {
+        grid-template-columns:1fr;
+      }
+      .action-card .btn,
+      .command-op .btn {
+        width:auto;
+        min-width:min(128px,100%);
+        justify-self:start;
+      }
+      .command-ops-grid .command-op {
+        gap:7px;
+      }
+      .command-ops-grid .command-op .btn {
+        min-height:31px;
+      }
+      .panel-head .btn.small,
+      .section-title .btn,
+      .guest-crud-toolbar .toolbar-right .btn,
+      .toolbar .toolbar-right .btn {
+        min-height:31px;
+      }
+      .mobile-tabs {
+        gap:5px;
+      }
+      .mobile-tab,
+      .tab-btn {
+        min-width:68px;
+        min-height:36px;
+        padding:0 7px;
+        font-size:9.2px;
+        border-radius:12px;
+      }
+      .mobile-tab .feather,
+      .tab-btn .feather {
+        width:12.5px;
+        height:12.5px;
+      }
+    }
+    @media (max-width:430px) {
+      .mobile-card .table-actions,
+      .toolbar-right,
+      .form-actions-sticky,
+      .command-hero-actions,
+      .command-mini-actions {
+        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+      }
+      .btn,
+      .btn.small {
+        font-size:9.3px;
+        padding-left:5px;
+        padding-right:5px;
+      }
+      .mobile-card .table-actions .btn {
+        font-size:9.1px;
+        padding:0 4px;
+      }
+      .mobile-tab,
+      .tab-btn {
+        min-width:64px;
+        font-size:8.8px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1261,7 +1390,7 @@
     async function loadArchivedInvites(){ const el=$('archivedTbody'); if(!el) return; const q=encodeURIComponent($('archivedSearchInput')?.value||''); const out=await api(`/manager/invites?q=${q}&status=archived&packageKey=all`); archivedInvites=out.data||[]; renderArchivedInvites(); }
     function renderArchivedInvites(){
       const desktopActions = inv => `<button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button>` + adminOnlyHtml(`<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho"><i data-feather="rotate-ccw"></i> Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente"><i data-feather="trash-2"></i> Eliminar</button>`);
-      const mobileActions = inv => `<button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes">Ver</button>` + adminOnlyHtml(`<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho">Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente">Eliminar</button>`);
+      const mobileActions = inv => `<button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button>` + adminOnlyHtml(`<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho"><i data-feather="rotate-ccw"></i> Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente"><i data-feather="trash-2"></i> Eliminar</button>`);
       const rows = archivedInvites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl||'')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions">${desktopActions(inv)}</div></td></tr>`).join('');
       $('archivedTbody').innerHTML = rows || '<tr><td colspan="6">Nenhum convite arquivado.</td></tr>';
       $('archivedMobile').innerHTML = archivedInvites.length ? archivedInvites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div class="table-actions">${mobileActions(inv)}</div></article>`).join('') : '<div class="feedback">Nenhum convite arquivado.</div>';
@@ -1281,7 +1410,7 @@
     function renderInvites(){
       const rows = invites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td>${badgeStatus(inv.status)}</td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional"><i data-feather="command"></i> Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><i data-feather="git-branch"></i></button>`)}<button class="btn small" onclick="copyUrl('${esc(inv.publicUrl||'')}')" title="Copiar URL pública"><i data-feather="copy"></i></button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i></button></div></td></tr>`).join('');
       $('invitesTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convite encontrado.</td></tr>';
-      $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes">Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional">Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub">GitHub</button>`)}<button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite">Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
+      $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional"><i data-feather="command"></i> Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><i data-feather="git-branch"></i> GitHub</button>`)}<button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i> Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
       iconRefresh();
     }
     function renderGuestSelect(){
@@ -1520,7 +1649,7 @@
     function renderGuestCrudList(){
       const rows=currentGuests.map(g=>`<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Resetar acesso"><i data-feather="unlock"></i></button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button>`)}</div></td></tr>`).join('');
       $('guestCrudTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convidado encontrado.</td></tr>';
-      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')">Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')">Reset</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')">Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
+      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')"><i data-feather="unlock"></i> Reset</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')"><i data-feather="trash-2"></i> Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
       iconRefresh();
     }
     function badgeStatusFromGuest(status){ const s=String(status||'').toLowerCase(); if(s.includes('confirmado')) return '<span class="badge ok">Confirmado</span>'; if(s.includes('aberto')) return '<span class="badge blue">Aberto</span>'; if(s.includes('pendente') || s.includes('confirmar')) return '<span class="badge warn">Pendente</span>'; return '<span class="badge">Não aberto</span>'; }
