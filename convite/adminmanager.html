@@ -249,9 +249,9 @@
     .role-option { border:1px solid var(--line); border-radius:14px; padding:10px 11px; display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.035); cursor:pointer; color:var(--text); }
     .role-option input { accent-color:var(--accent); }
     .role-note { font-size:12px; color:var(--muted); line-height:1.5; margin-top:8px; }
-    body.role-editor [data-admin-only], body.role-editor #newInvitePanel, body.role-editor #guestForm { display:none !important; }
+    body.role-editor [data-admin-only], body.role-editor #newInvitePanel, body.role-editor [data-bulk-import-only] { display:none !important; }
     body.role-editor #managePanel .action-grid { display:none !important; }
-    body.role-editor #managePanel .section-title p::after { content:' Perfil editor: pode visualizar e editar dados existentes, sem criar, apagar ou executar erase.'; color:var(--accent); }
+    body.role-editor #managePanel .section-title p::after { content:'  Perfil editor: operador seguro; pode editar, adicionar convidado manual, reparar nomes e resetar acesso individual, sem apagar/erase/importação em massa/GitHub.'; color:var(--accent); }
   </style>
 </head>
 <body>
@@ -259,7 +259,7 @@
     <form class="login-card" id="loginForm">
       <div class="brand"><div class="brand-mark">L</div><div><h1>AdminManager</h1><p>Centro de gestão de convites Lirandzo.</p></div></div>
       <div class="field"><label for="passwordInput">Senha de acesso</label><input id="passwordInput" type="password" placeholder="Senha do perfil seleccionado" autocomplete="current-password" required autofocus></div>
-      <div class="field"><label>Tipo de acesso</label><div class="role-switch"><label class="role-option"><input type="radio" name="accessType" value="admin" checked> <span>Admin</span></label><label class="role-option"><input type="radio" name="accessType" value="editor"> <span>Editor</span></label></div><p class="role-note">Admin pode criar, editar, apagar e executar erase. Editor só visualiza e edita dados existentes com permissões limitadas.</p></div>
+      <div class="field"><label>Tipo de acesso</label><div class="role-switch"><label class="role-option"><input type="radio" name="accessType" value="admin" checked> <span>Admin</span></label><label class="role-option"><input type="radio" name="accessType" value="editor"> <span>Editor</span></label></div><p class="role-note">Admin pode criar, editar, apagar e executar erase. Editor é operador seguro: visualiza, edita dados existentes, adiciona convidados manualmente, repara nomes e reseta acesso individual. Não apaga, não faz erase, não importa listas em massa nem altera GitHub.</p></div>
       <button id="loginSubmitBtn" class="btn primary full" type="submit"><span class="btn-loader" aria-hidden="true"></span><i class="login-icon" data-feather="lock"></i><span class="login-btn-text">Entrar no centro de gestão</span></button>
       <div id="loginError" class="feedback error hidden" role="alert"></div>
     </form>
@@ -332,9 +332,9 @@
       </section>
 
       <section class="section" id="guestsPanel">
-        <div class="section-title"><div><h1>Importar convidados</h1><p>Importação uniforme por ficheiro ou escrita manual, ligada ao convite escolhido.</p></div></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><form id="guestForm"><div class="field"><label>Convite</label><select id="guestInviteSelect" required></select></div><div class="grid-two"><label class="dropzone" for="guestFile"><i data-feather="upload-cloud"></i><strong>Importar ficheiro</strong><p>CSV, TXT ou TSV. O conteúdo será colocado no campo para conferência antes de enviar.</p><input id="guestFile" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain"></label><div class="preview-box" id="guestPreview">Formato recomendado:<br><b>Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo</b><br><br>Exemplo:<br>Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel</div></div><div class="field"><label>Lista de convidados</label><textarea id="guestBulkText" placeholder="Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo&#10;Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel"></textarea><p class="hint">Também aceita ficheiros com cabeçalho: nome, mesa, acompanhantes, telefone, notas, categoria, número, token antigo.</p></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="sampleGuestsBtn" title="Inserir exemplo de convidados"><i data-feather="file-text"></i> Inserir exemplo</button><button class="btn" type="button" id="repairGuestsBtn" title="Reparar normalizedName dos convidados deste convite"><i data-feather="tool"></i> Reparar nomes</button><button class="btn primary" type="submit" id="importGuestsBtn" title="Importar ou actualizar convidados"><span class="btn-loader"></span><i data-feather="upload-cloud" class="guest-import-icon"></i> <span class="guest-import-label">Importar / actualizar convidados</span></button></div><div id="guestImportProgress" class="import-progress" aria-live="polite"><div class="import-progress-top"><div class="import-progress-title"><span class="mini-spinner"></span><span id="guestImportStage">A preparar importação...</span></div><span id="guestImportPercent" class="import-progress-percent">0%</span></div><div class="import-progress-track"><div id="guestImportBar" class="import-progress-bar"></div></div><div id="guestImportNote" class="import-progress-note">Estamos a validar o ficheiro e a enviar os convidados para o MongoDB.</div></div><div id="guestResult" class="feedback hidden"></div></form></div></section>
-        <section class="panel-card" id="guestCrudCard"><div class="panel-head"><h2><i data-feather="database"></i> Gestão directa de convidados</h2><button class="btn small primary" id="addGuestBtn" data-admin-only type="button" title="Adicionar convidado"><i data-feather="user-plus"></i> Novo convidado</button></div><div class="panel-body"><div class="guest-crud-toolbar"><div class="toolbar-left"><input id="guestSearchInput" class="search-input" placeholder="Pesquisar nome, mesa, telefone, token ou categoria"></div><div class="toolbar-right"><button class="btn" id="refreshGuestCrudBtn" type="button" title="Actualizar lista"><i data-feather="refresh-cw"></i> Actualizar</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Nº</th><th>Convidado</th><th>Mesa</th><th>Acompanhantes</th><th>Estado</th><th>Categoria</th><th>Acções</th></tr></thead><tbody id="guestCrudTbody"><tr><td colspan="7">Seleccione um convite para carregar os convidados.</td></tr></tbody></table></div><div id="guestCrudMobile" class="mobile-list"></div><div id="guestCrudResult" class="feedback hidden"></div></div></section>
+        <div class="section-title"><div><h1>Convidados</h1><p>Importação em massa para Admin e reparação/gestão directa para Editor.</p></div></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados / reparação</h2></div><div class="panel-body"><form id="guestForm"><div class="field"><label>Convite</label><select id="guestInviteSelect" required></select></div><div class="grid-two" data-bulk-import-only><label class="dropzone" for="guestFile"><i data-feather="upload-cloud"></i><strong>Importar ficheiro</strong><p>CSV, TXT ou TSV. O conteúdo será colocado no campo para conferência antes de enviar.</p><input id="guestFile" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain"></label><div class="preview-box" id="guestPreview">Formato recomendado:<br><b>Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo</b><br><br>Exemplo:<br>Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel</div></div><div class="field" data-bulk-import-only><label>Lista de convidados</label><textarea id="guestBulkText" placeholder="Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo&#10;Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel"></textarea><p class="hint">Também aceita ficheiros com cabeçalho: nome, mesa, acompanhantes, telefone, notas, categoria, número, token antigo.</p></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="sampleGuestsBtn" data-bulk-import-only title="Inserir exemplo de convidados"><i data-feather="file-text"></i> Inserir exemplo</button><button class="btn" type="button" id="repairGuestsBtn" title="Reparar normalizedName dos convidados deste convite"><i data-feather="tool"></i> Reparar nomes</button><button class="btn primary" type="submit" id="importGuestsBtn" data-bulk-import-only title="Importar ou actualizar convidados"><span class="btn-loader"></span><i data-feather="upload-cloud" class="guest-import-icon"></i> <span class="guest-import-label">Importar / actualizar convidados</span></button></div><div id="guestImportProgress" class="import-progress" aria-live="polite"><div class="import-progress-top"><div class="import-progress-title"><span class="mini-spinner"></span><span id="guestImportStage">A preparar importação...</span></div><span id="guestImportPercent" class="import-progress-percent">0%</span></div><div class="import-progress-track"><div id="guestImportBar" class="import-progress-bar"></div></div><div id="guestImportNote" class="import-progress-note">Estamos a validar o ficheiro e a enviar os convidados para o MongoDB.</div></div><div id="guestResult" class="feedback hidden"></div></form></div></section>
+        <section class="panel-card" id="guestCrudCard"><div class="panel-head"><h2><i data-feather="database"></i> Gestão directa de convidados</h2><button class="btn small primary" id="addGuestBtn" type="button" title="Adicionar convidado"><i data-feather="user-plus"></i> Novo convidado</button></div><div class="panel-body"><div class="guest-crud-toolbar"><div class="toolbar-left"><select id="guestCrudInviteSelect" class="search-input" title="Filtrar convidados por convite"><option value="">Seleccione um convite...</option></select><input id="guestSearchInput" class="search-input" placeholder="Pesquisar nome, mesa, telefone, token ou categoria"></div><div class="toolbar-right"><button class="btn" id="refreshGuestCrudBtn" type="button" title="Actualizar lista"><i data-feather="refresh-cw"></i> Actualizar</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Nº</th><th>Convidado</th><th>Mesa</th><th>Acompanhantes</th><th>Estado</th><th>Categoria</th><th>Acções</th></tr></thead><tbody id="guestCrudTbody"><tr><td colspan="7">Seleccione um convite para carregar os convidados.</td></tr></tbody></table></div><div id="guestCrudMobile" class="mobile-list"></div><div id="guestCrudResult" class="feedback hidden"></div></div></section>
       </section>
 
       <section class="section" id="githubPanel">
@@ -396,7 +396,7 @@
       if (id === 'archived') loadArchivedInvites();
     }
     function loginView(){ document.body.classList.remove('role-admin','role-editor'); $('loginScreen').classList.remove('hidden'); $('app').classList.remove('active'); iconRefresh(); }
-    function applyRoleUi(){ document.body.classList.toggle('role-editor', isEditor()); document.body.classList.toggle('role-admin', isAdmin()); $('connectionLabel').textContent = isEditor() ? 'Perfil Editor · edição limitada' : 'Perfil Admin · acesso total'; }
+    function applyRoleUi(){ document.body.classList.toggle('role-editor', isEditor()); document.body.classList.toggle('role-admin', isAdmin()); $('connectionLabel').textContent = isEditor() ? 'Perfil Editor · operador seguro' : 'Perfil Admin · acesso total'; }
     function appView(){ $('loginScreen').classList.add('hidden'); $('app').classList.add('active'); applyRoleUi(); loadAll(); iconRefresh(); }
     async function loadAll(){
       renderSkeletons();
@@ -444,7 +444,16 @@
       $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes">Ver</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub">GitHub</button>`)}<button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite">Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
       iconRefresh();
     }
-    function renderGuestSelect(){ const select=$('guestInviteSelect'); if(!select) return; const current=select.value; const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; select.innerHTML = html; if(current && invites.some(inv=>inv.id===current)) select.value=current; }
+    function renderGuestSelect(){
+      const selects = [$('guestInviteSelect'), $('guestCrudInviteSelect')].filter(Boolean);
+      if(!selects.length) return;
+      const previous = selectedGuestInviteId() || selects.find(s=>s.value)?.value || '';
+      const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>';
+      selects.forEach(select => { select.innerHTML = html; });
+      const valid = previous && invites.some(inv=>inv.id===previous);
+      const next = valid ? previous : (invites[0]?.id || '');
+      selects.forEach(select => { if(next) select.value = next; });
+    }
     function renderManageSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('manageInviteSelect').innerHTML = html; if(invites.length && !selectedInviteDetails) loadManageDetails(); }
     async function loadGithubStatus(){ try { const out = await api('/manager/github/status'); const d=out.data||{}; $('githubStatus').innerHTML = d.configured ? `<b>GitHub configurado correctamente.</b><br><br>Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>Branch: <b>${esc(d.branch)}</b><br>Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br>Templates:<br>Pérola: <b>${esc(d.templates?.perola||'-')}</b><br>Esmeralda: <b>${esc(d.templates?.esmeralda||'-')}</b><br>Rubi: <b>${esc(d.templates?.rubi||'-')}</b>` : `<b>GitHub ainda não está configurado.</b><br><br>Configure no Render: <b>GITHUB_TOKEN</b>, <b>GITHUB_OWNER</b>, <b>GITHUB_REPO</b>, <b>GITHUB_BRANCH</b> e os caminhos dos templates.`; } catch(e){ $('githubStatus').textContent = e.message; } }
     async function loadManageDetails(){ const id=$('manageInviteSelect').value; if(!id) return; const out=await api(`/manager/invites/${id}`); selectedInviteDetails=out.data; const d=out.data; $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small>registos</small></article>`; iconRefresh(); }
@@ -537,7 +546,10 @@
     window.selectManageInvite = function(id){ showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); };
 
 
-    function selectedGuestInviteId(){ return $('guestInviteSelect')?.value || ''; }
+    function selectedGuestInviteId(){ return $('guestCrudInviteSelect')?.value || $('guestInviteSelect')?.value || ''; }
+    function syncGuestInviteSelects(id){
+      ['guestInviteSelect','guestCrudInviteSelect'].forEach(key => { const el=$(key); if(el && id && el.value !== id) el.value = id; });
+    }
     function selectedGuestInvite(){ const id=selectedGuestInviteId(); return invites.find(inv=>inv.id===id) || null; }
     function guestPayloadFromForm(){
       return {
@@ -555,6 +567,7 @@
     }
     async function loadGuestCrudList(){
       const id=selectedGuestInviteId();
+      syncGuestInviteSelects(id);
       const tbody=$('guestCrudTbody');
       if(!tbody) return;
       if(!id){ tbody.innerHTML='<tr><td colspan="7">Seleccione um convite.</td></tr>'; $('guestCrudMobile').innerHTML=''; return; }
@@ -570,9 +583,9 @@
       }
     }
     function renderGuestCrudList(){
-      const rows=currentGuests.map(g=>`<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button>${adminOnlyHtml(`<button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Resetar acesso"><i data-feather="unlock"></i></button><button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button>`)}</div></td></tr>`).join('');
+      const rows=currentGuests.map(g=>`<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Resetar acesso"><i data-feather="unlock"></i></button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button>`)}</div></td></tr>`).join('');
       $('guestCrudTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convidado encontrado.</td></tr>';
-      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')">Editar</button>${adminOnlyHtml(`<button class="btn small" onclick="resetSingleGuestAccess('${g.id}')">Reset</button><button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')">Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
+      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')">Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')">Reset</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')">Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
       iconRefresh();
     }
     function badgeStatusFromGuest(status){ const s=String(status||'').toLowerCase(); if(s.includes('confirmado')) return '<span class="badge ok">Confirmado</span>'; if(s.includes('aberto')) return '<span class="badge blue">Aberto</span>'; if(s.includes('pendente') || s.includes('confirmar')) return '<span class="badge warn">Pendente</span>'; return '<span class="badge">Não aberto</span>'; }
@@ -593,18 +606,17 @@
       $('guestEditNotes').value = g.notes || '';
       $('guestEditInviteToken').value = g.inviteToken || g.token || '';
       $('guestDeleteBtn').style.display = (editingGuestId && isAdmin()) ? '' : 'none';
-      $('guestResetAccessSingleBtn').style.display = (editingGuestId && isAdmin()) ? '' : 'none';
+      $('guestResetAccessSingleBtn').style.display = editingGuestId ? '' : 'none';
       hideMsg($('guestEditResult'));
     }
     window.openGuestEditor = function(id){ const g=currentGuests.find(item=>String(item.id)===String(id)); if(!g) return alert('Convidado não encontrado na lista carregada.'); fillGuestForm(g); openGuestModal(); };
-    function openNewGuest(){ if(!isAdmin()) return showMsg($('guestCrudResult'), 'Perfil Editor não pode criar convidados.', true); const inv=selectedGuestInvite(); if(!inv) return showMsg($('guestCrudResult'), 'Seleccione primeiro um convite.', true); fillGuestForm({ table:'A indicar na entrada', status:'Não aberto' }); openGuestModal(); }
+    function openNewGuest(){ const inv=selectedGuestInvite(); if(!inv) return showMsg($('guestCrudResult'), 'Seleccione primeiro um convite.', true); fillGuestForm({ table:'A indicar na entrada', status:'Não aberto' }); openGuestModal(); }
     async function saveGuestFromModal(e){
       e.preventDefault();
       const inviteId=selectedGuestInviteId();
       if(!inviteId) return showMsg($('guestEditResult'), 'Seleccione primeiro um convite.', true);
       const payload=guestPayloadFromForm();
       if(!payload.name) return showMsg($('guestEditResult'), 'Nome obrigatório.', true);
-      if(!editingGuestId && !isAdmin()) return showMsg($('guestEditResult'), 'Perfil Editor não pode criar convidados.', true);
       try{
         const method=editingGuestId ? 'PATCH' : 'POST';
         const path=editingGuestId ? `/manager/invites/${inviteId}/guests/${editingGuestId}` : `/manager/invites/${inviteId}/guests`;
@@ -658,7 +670,8 @@
       $('archiveBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}`,'DELETE','Arquivar este convite? Ele ficará disponível na página Arquivados.','Convite arquivado.'));
       $('publishInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'published')); $('draftInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'draft')); $('purgeInviteBtn').addEventListener('click',()=>purgeInviteStrict(selectedManageId()));
       
-      $('guestInviteSelect').addEventListener('change',()=>{ hideMsg($('guestCrudResult')); loadGuestCrudList(); });
+      $('guestInviteSelect')?.addEventListener('change', e=>{ syncGuestInviteSelects(e.currentTarget.value); hideMsg($('guestCrudResult')); loadGuestCrudList(); });
+      $('guestCrudInviteSelect')?.addEventListener('change', e=>{ syncGuestInviteSelects(e.currentTarget.value); hideMsg($('guestCrudResult')); loadGuestCrudList(); });
       $('guestSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadGuestCrudList(); });
       $('refreshGuestCrudBtn')?.addEventListener('click', loadGuestCrudList);
       $('addGuestBtn')?.addEventListener('click', openNewGuest);
@@ -671,8 +684,8 @@
       $('guestFile').addEventListener('change', async e=>{ const file=e.target.files?.[0]; if(!file) return; const text=await file.text(); $('guestBulkText').value=text; $('guestPreview').innerHTML=`Ficheiro carregado: <b>${esc(file.name)}</b><br>${text.split(/\r?\n/).filter(Boolean).length} linha(s) detectada(s). Confere o campo abaixo antes de importar.`; });
       $('sampleGuestsBtn').addEventListener('click',()=>{ $('guestBulkText').value='Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo\nPrísca Daniel;A definir;0;;Observação interna;Single;152;rm-2026-152-prisca-daniel\nAna Manuel;Mesa 3;1;+258840000000;Família da noiva;Família;153;'; });
       $('repairGuestsBtn').addEventListener('click', async ()=>{
-        if(!isAdmin()) return showMsg($('guestResult'), 'Perfil Editor não pode executar reparação global.', true);
-        const id = $('guestInviteSelect').value;
+        const id = selectedGuestInviteId();
+        syncGuestInviteSelects(id);
         if (!id) return showMsg($('guestResult'), 'Seleccione primeiro o convite que pretende reparar.', true);
         if (!confirm('Reparar normalizedName dos convidados deste convite?\n\nIsto corrige nomes antigos mal normalizados e ajuda a resolver erro 401 no login.')) return;
         hideMsg($('guestResult'));
@@ -693,9 +706,10 @@
           showMsg($('guestResult'), err.message, true);
         }
       });
-      $('guestForm').addEventListener('submit', async e=>{ if(!isAdmin()) { e.preventDefault(); return showMsg($('guestResult'), 'Perfil Editor não pode importar/criar convidados.', true); }
+      $('guestForm').addEventListener('submit', async e=>{ if(!isAdmin()) { e.preventDefault(); return showMsg($('guestResult'), 'Perfil Editor não pode importar listas em massa. Use o botão Novo convidado para adicionar manualmente.', true); }
         e.preventDefault();
-        const id = $('guestInviteSelect').value;
+        const id = selectedGuestInviteId();
+        syncGuestInviteSelects(id);
         const text = $('guestBulkText').value.trim();
         if (!id) return showMsg($('guestResult'), 'Seleccione primeiro o convite onde pretende importar os convidados.', true);
         if (!text) return showMsg($('guestResult'), 'Adicione um ficheiro ou escreva a lista de convidados antes de importar.', true);
