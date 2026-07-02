@@ -1189,6 +1189,71 @@
       }
     }
 
+  
+
+    /* =========================================================
+       LIRANDZO ADMIN MANAGER · V6.2 INTELLIGENT MOBILE FLOW
+       Navegação mobile, diagnósticos accionáveis e popups centrais.
+       ========================================================= */
+    .back-trigger { display:none; }
+    .section { will-change:opacity, transform; }
+    .section.active { animation:panelSoftIn .24s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes panelSoftIn { from { opacity:0; transform:translateY(8px) scale(.995); } to { opacity:1; transform:none; } }
+    .btn, .nav-item, .mobile-tab, .command-tab, .health-item, .mobile-card, .panel-card { -webkit-tap-highlight-color:transparent; }
+    .btn:focus-visible, .nav-item:focus-visible, .mobile-tab:focus-visible, .command-tab:focus-visible { outline:2px solid var(--accent-2); outline-offset:2px; }
+    .confirm-card { width:min(430px,100%); max-height:88dvh; overflow:auto; border:1px solid var(--line-strong); border-radius:22px; background:linear-gradient(180deg,var(--surface),var(--surface-2)); box-shadow:0 28px 80px rgba(0,0,0,.38); padding:16px; animation:confirmIn .2s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes confirmIn { from { opacity:0; transform:translateY(12px) scale(.97); } to { opacity:1; transform:none; } }
+    .confirm-icon { width:42px; height:42px; border-radius:15px; display:grid; place-items:center; background:var(--accent-soft); color:var(--accent-2); margin-bottom:10px; }
+    .confirm-icon.danger { background:rgba(239,91,91,.13); color:var(--red); }
+    .confirm-icon .feather { width:20px; height:20px; }
+    .confirm-title { color:var(--text); font-size:17px; font-weight:950; letter-spacing:-.04em; line-height:1.15; margin-bottom:6px; }
+    .confirm-message { color:var(--text-2); font-size:12px; line-height:1.5; white-space:pre-line; }
+    .confirm-input-wrap { margin-top:12px; }
+    .confirm-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; }
+    .confirm-actions .btn { width:100%; }
+    .confirm-modal.open { display:flex; align-items:center; justify-content:center; }
+    .toast-stack { position:fixed; right:16px; bottom:calc(16px + var(--safe-bottom)); z-index:2600; display:grid; gap:8px; width:min(360px,calc(100vw - 24px)); pointer-events:none; }
+    .toast-item { pointer-events:auto; border:1px solid var(--line-strong); border-radius:16px; background:linear-gradient(180deg,var(--surface),var(--surface-2)); color:var(--text-2); box-shadow:0 16px 42px rgba(0,0,0,.24); padding:11px 12px; display:grid; grid-template-columns:28px minmax(0,1fr); gap:9px; align-items:start; animation:toastIn .22s ease both; }
+    .toast-item .toast-ico { width:28px; height:28px; border-radius:10px; display:grid; place-items:center; background:rgba(24,183,131,.12); color:var(--green); }
+    .toast-item.error .toast-ico { background:rgba(239,91,91,.13); color:var(--red); }
+    .toast-item strong { color:var(--text); font-size:12px; display:block; }
+    .toast-item span { color:var(--muted); font-size:11px; line-height:1.35; display:block; margin-top:2px; }
+    @keyframes toastIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    .health-item.actionable { cursor:pointer; transition:transform .18s ease,border-color .18s ease,background .18s ease; }
+    .health-item.actionable:hover { transform:translateY(-1px); border-color:var(--accent); background:rgba(185,130,91,.08); }
+    .command-inspector { border:1px solid var(--line); border-radius:16px; background:rgba(15,12,10,.25); margin-top:10px; overflow:hidden; }
+    .command-inspector-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 11px; border-bottom:1px solid var(--line); background:rgba(255,255,255,.025); }
+    .command-inspector-head h3 { color:var(--text); font-size:13px; font-weight:950; letter-spacing:-.03em; display:flex; gap:7px; align-items:center; }
+    .command-inspector-head h3 .feather { width:15px; height:15px; color:var(--red); }
+    .command-inspector-head .btn { min-height:30px; }
+    .bad-name-list { display:grid; gap:7px; padding:10px; max-height:320px; overflow:auto; }
+    .bad-name-row { border:1px solid rgba(236,216,196,.09); border-radius:13px; padding:9px; background:rgba(0,0,0,.10); display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:center; }
+    .bad-name-row strong { color:var(--text); font-size:12.2px; display:block; margin-bottom:3px; }
+    .bad-name-row small { color:var(--muted); font-size:10.4px; line-height:1.45; display:block; overflow-wrap:anywhere; }
+    .bad-name-row mark { background:rgba(239,91,91,.14); color:var(--red); border-radius:7px; padding:1px 5px; }
+    .bad-name-row code { color:var(--accent-2); font-size:10.2px; word-break:break-all; }
+    .navigating-soft .section.active { animation:panelSwipeIn .22s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes panelSwipeIn { from { opacity:0; transform:translateX(10px); } to { opacity:1; transform:none; } }
+    @media (max-width:760px) {
+      .back-trigger { display:inline-flex; }
+      .topbar-left { gap:7px; }
+      .topbar-title strong { max-width:42vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .confirm-modal { padding:12px; align-items:center !important; }
+      .confirm-card { border-radius:20px; padding:14px; }
+      .confirm-actions { grid-template-columns:1fr 1fr; }
+      .toast-stack { left:10px; right:10px; bottom:calc(78px + var(--safe-bottom)); width:auto; }
+      .command-inspector-head { align-items:flex-start; flex-direction:column; }
+      .command-inspector-head .toolbar-right { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); width:100%; gap:6px; }
+      .bad-name-list { max-height:360px; padding:8px; }
+      .bad-name-row { grid-template-columns:1fr; gap:7px; }
+      .bad-name-row .btn { width:min(132px,100%); }
+      .command-tabs { position:sticky; top:calc(var(--topbar) + var(--safe-top)); z-index:70; background:rgba(23,19,17,.90); margin-left:-10px; margin-right:-10px; padding:7px 10px; border-bottom:1px solid var(--line); backdrop-filter:blur(12px); }
+      html[data-theme="light"] .command-tabs { background:rgba(255,253,249,.92); }
+      .command-tab { min-height:30px; padding:0 9px; font-size:9.8px; gap:5px; }
+      .command-hero-actions { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+      .command-hero-actions .btn { min-height:31px; padding:0 6px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1216,6 +1281,7 @@
     <header class="topbar">
       <div class="topbar-left">
         <button id="menuBtn" class="btn icon-only menu-trigger" type="button" aria-label="Abrir menu" title="Abrir menu"><i data-feather="menu"></i></button>
+        <button id="backBtn" class="btn icon-only back-trigger hidden" type="button" aria-label="Voltar" title="Voltar"><i data-feather="arrow-left"></i></button>
         <div class="topbar-title"><strong id="topbarTitle">Dashboard</strong><span id="connectionLabel">Sistema protegido</span></div>
       </div>
       <div class="topbar-actions">
@@ -1315,6 +1381,24 @@
   <div class="modal" id="detailsModal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Detalhes</h3><button class="btn icon-only" id="closeModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body" id="modalBody"></div></div></div>
   <div class="modal" id="guestEditModal"><div class="modal-card narrow"><div class="modal-head"><h3 id="guestEditTitle">Convidado</h3><button class="btn icon-only" id="closeGuestEditModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body"><form id="guestEditForm"><input type="hidden" id="guestEditId"><div class="field"><label>Nome do convidado</label><input id="guestEditName" class="search-input" required placeholder="Nome completo"></div><div class="grid-two"><div class="field"><label>Mesa</label><input id="guestEditTable" class="search-input" placeholder="A indicar na entrada"></div><div class="field"><label>Acompanhantes</label><input id="guestEditCompanions" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Telefone</label><input id="guestEditPhone" class="search-input" placeholder="+258..."></div><div class="field"><label>Número</label><input id="guestEditNumber" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Categoria</label><input id="guestEditCategory" class="search-input" placeholder="Família, amigos, etc."></div><div class="field"><label>Estado</label><select id="guestEditStatus" class="search-input"><option>Não aberto</option><option>Convite Aberto</option><option>Ainda por confirmar</option><option>Confirmado</option></select></div></div><div class="field"><label>Token antigo / referência</label><input id="guestEditLegacyToken" class="search-input" placeholder="Opcional"></div><div class="field"><label>Notas internas</label><textarea id="guestEditNotes" rows="3" placeholder="Observações internas"></textarea></div><div class="field"><label>Token público actual</label><input id="guestEditInviteToken" class="search-input" readonly placeholder="Gerado automaticamente"></div><div id="guestEditResult" class="feedback hidden"></div><div class="form-actions-sticky"><button class="btn" type="button" id="guestResetAccessSingleBtn"><i data-feather="unlock"></i> Reset acesso</button><button class="btn danger" type="button" id="guestDeleteBtn"><i data-feather="trash-2"></i> Eliminar</button><button class="btn primary" type="submit"><i data-feather="save"></i> Guardar</button></div></form></div></div></div>
 
+
+  <div class="modal confirm-modal" id="confirmModal" aria-hidden="true">
+    <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div id="confirmIcon" class="confirm-icon"><i data-feather="alert-circle"></i></div>
+      <h3 id="confirmTitle" class="confirm-title">Confirmar acção</h3>
+      <p id="confirmMessage" class="confirm-message"></p>
+      <div id="confirmInputWrap" class="field confirm-input-wrap hidden">
+        <label id="confirmInputLabel" for="confirmInput">Confirmação</label>
+        <input id="confirmInput" class="search-input" autocomplete="off">
+      </div>
+      <div class="confirm-actions">
+        <button class="btn" id="confirmCancelBtn" type="button"><i data-feather="x"></i> Cancelar</button>
+        <button class="btn primary" id="confirmOkBtn" type="button"><i data-feather="check"></i> Confirmar</button>
+      </div>
+    </div>
+  </div>
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
   <script>
     const panels = [
       { id:'dashboard', label:'Dashboard', icon:'layout' }, { id:'invites', label:'Convites', icon:'folder' }, { id:'command', label:'Ficha', icon:'command' }, { id:'archived', label:'Arquivados', icon:'archive' }, { id:'newInvite', label:'Novo cliente', icon:'plus-circle' }, { id:'manage', label:'Gestão', icon:'settings' }, { id:'guests', label:'Convidados', icon:'users' }, { id:'github', label:'GitHub', icon:'git-branch' }
@@ -1330,6 +1414,9 @@
     let selectedInviteDetails = null;
     let currentGuests = [];
     let editingGuestId = null;
+    let currentPanel = 'dashboard';
+    let panelStack = [];
+    let confirmResolver = null;
     const $ = id => document.getElementById(id);
     const esc = v => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     const fmtDate = value => { if(!value) return '-'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString('pt-PT',{dateStyle:'short',timeStyle:'short'}); };
@@ -1355,15 +1442,40 @@
       document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.panel)));
       iconRefresh();
     }
-    function showPanel(id) {
+    function updateBackButton(){
+      const btn = $('backBtn');
+      if (!btn) return;
+      btn.classList.toggle('hidden', panelStack.length === 0);
+    }
+    function showPanel(id, options = {}) {
+      if (!panels.some(p => p.id === id)) id = 'dashboard';
+      const previous = currentPanel || 'dashboard';
+      if (options.push !== false && previous && previous !== id) {
+        panelStack.push(previous);
+        if (panelStack.length > 12) panelStack.shift();
+      }
+      currentPanel = id;
+      document.body.classList.add('navigating-soft');
       document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active', s.id === `${id}Panel`));
       document.querySelectorAll('[data-panel]').forEach(b=>b.classList.toggle('active', b.dataset.panel === id));
-      const p = panels.find(x=>x.id===id); $('topbarTitle').textContent = p ? p.label : 'AdminManager'; $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); iconRefresh();
+      const p = panels.find(x=>x.id===id);
+      $('topbarTitle').textContent = p ? p.label : 'AdminManager';
+      $('sidebar').classList.remove('open');
+      $('overlay').classList.remove('active');
+      updateBackButton();
+      window.scrollTo({ top: 0, behavior: options.instant ? 'auto' : 'smooth' });
+      setTimeout(()=>document.body.classList.remove('navigating-soft'), 260);
+      iconRefresh();
       if (id === 'manage') renderManageSelect();
       if (id === 'command') { renderCommandSelect(); if (commandSelectedId()) loadCommandCenter(); }
       if (id === 'guests') { renderGuestSelect(); loadGuestCrudList(); }
       if (id === 'archived') loadArchivedInvites();
     }
+    function goBackPanel(){
+      const previous = panelStack.pop() || 'dashboard';
+      showPanel(previous, { push:false });
+    }
+    
     function loginView(){ document.body.classList.remove('role-admin','role-editor'); $('loginScreen').classList.remove('hidden'); $('app').classList.remove('active'); iconRefresh(); }
     function applyRoleUi(){ document.body.classList.toggle('role-editor', isEditor()); document.body.classList.toggle('role-admin', isAdmin()); $('connectionLabel').textContent = isEditor() ? 'Perfil Editor · operador seguro' : 'Perfil Admin · acesso total'; }
     function appView(){ $('loginScreen').classList.add('hidden'); $('app').classList.add('active'); applyRoleUi(); loadAll(); iconRefresh(); }
@@ -1426,7 +1538,7 @@
     function renderManageSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('manageInviteSelect').innerHTML = html; if(invites.length && !selectedInviteDetails) loadManageDetails(); }
     async function loadGithubStatus(){ try { const out = await api('/manager/github/status'); const d=out.data||{}; $('githubStatus').innerHTML = d.configured ? `<b>GitHub configurado correctamente.</b><br><br>Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>Branch: <b>${esc(d.branch)}</b><br>Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br>Templates:<br>Pérola: <b>${esc(d.templates?.perola||'-')}</b><br>Esmeralda: <b>${esc(d.templates?.esmeralda||'-')}</b><br>Rubi: <b>${esc(d.templates?.rubi||'-')}</b>` : `<b>GitHub ainda não está configurado.</b><br><br>Configure no Render: <b>GITHUB_TOKEN</b>, <b>GITHUB_OWNER</b>, <b>GITHUB_REPO</b>, <b>GITHUB_BRANCH</b> e os caminhos dos templates.`; } catch(e){ $('githubStatus').textContent = e.message; } }
     async function loadManageDetails(){ const id=$('manageInviteSelect').value; if(!id) return; const out=await api(`/manager/invites/${id}`); selectedInviteDetails=out.data; const d=out.data; $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small>registos</small></article>`; iconRefresh(); }
-    async function managerAction(path, method, confirmText, successMsg){ if(confirmText && !confirm(confirmText)) return; hideMsg($('manageResult')); try { const out=await api(path,{method,body:JSON.stringify({})}); showMsg($('manageResult'), out.message || successMsg || 'Operação concluída.'); await Promise.allSettled([loadManageDetails(),loadSummary(),loadInvites()]); } catch(e){ showMsg($('manageResult'), e.message, true); } }
+    async function managerAction(path, method, confirmText, successMsg){ if(confirmText && !await appConfirm({ title:'Confirmar operação', message:confirmText, confirmLabel:'Continuar', variant:method==='DELETE'?'danger':'' })) return; hideMsg($('manageResult')); try { const out=await api(path,{method,body:JSON.stringify({})}); const msg = out.message || successMsg || 'Operação concluída.'; showMsg($('manageResult'), msg); appToast(msg); await Promise.allSettled([loadManageDetails(),loadSummary(),loadInvites(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]); } catch(e){ showMsg($('manageResult'), e.message, true); appToast(e.message,'error','Erro'); } }
     function selectedManageId(){ return $('manageInviteSelect').value; }
     function setLoginLoading(active){
       const btn = $('loginSubmitBtn');
@@ -1473,6 +1585,59 @@
       controls.forEach(el => { el.disabled = !!active; });
       iconRefresh();
     }
+    function appToast(message, type = 'success', title = ''){
+      const stack = $('toastStack');
+      if (!stack) return;
+      const item = document.createElement('div');
+      item.className = `toast-item ${type === 'error' ? 'error' : ''}`;
+      item.innerHTML = `<div class="toast-ico"><i data-feather="${type === 'error' ? 'alert-triangle' : 'check-circle'}"></i></div><div><strong>${esc(title || (type === 'error' ? 'Atenção' : 'Concluído'))}</strong><span>${esc(message)}</span></div>`;
+      stack.appendChild(item);
+      iconRefresh();
+      setTimeout(()=>{ item.style.opacity='0'; item.style.transform='translateY(8px)'; setTimeout(()=>item.remove(), 220); }, 3600);
+    }
+    function closeConfirmModal(result){
+      const modal = $('confirmModal');
+      if (modal) modal.classList.remove('open');
+      if (confirmResolver) confirmResolver(result);
+      confirmResolver = null;
+    }
+    function appConfirm({ title='Confirmar acção', message='', confirmLabel='Confirmar', cancelLabel='Cancelar', variant='', requireText='', inputLabel='' } = {}){
+      return new Promise(resolve => {
+        const modal = $('confirmModal');
+        const ok = $('confirmOkBtn');
+        const cancel = $('confirmCancelBtn');
+        const input = $('confirmInput');
+        const wrap = $('confirmInputWrap');
+        const icon = $('confirmIcon');
+        confirmResolver = resolve;
+        $('confirmTitle').textContent = title;
+        $('confirmMessage').textContent = message;
+        ok.innerHTML = `<i data-feather="check"></i> ${esc(confirmLabel)}`;
+        cancel.innerHTML = `<i data-feather="x"></i> ${esc(cancelLabel)}`;
+        ok.className = 'btn primary' + (variant === 'danger' ? ' danger' : '');
+        icon.className = 'confirm-icon' + (variant === 'danger' ? ' danger' : '');
+        icon.innerHTML = `<i data-feather="${variant === 'danger' ? 'alert-triangle' : 'alert-circle'}"></i>`;
+        if (requireText) {
+          wrap.classList.remove('hidden');
+          $('confirmInputLabel').textContent = inputLabel || `Escreva exactamente: ${requireText}`;
+          input.value = '';
+          input.placeholder = requireText;
+          ok.disabled = true;
+          input.oninput = () => { ok.disabled = input.value.trim() !== requireText; };
+          setTimeout(()=>input.focus(), 80);
+        } else {
+          wrap.classList.add('hidden');
+          input.oninput = null;
+          ok.disabled = false;
+        }
+        ok.onclick = () => closeConfirmModal(true);
+        cancel.onclick = () => closeConfirmModal(false);
+        modal.onclick = e => { if (e.target === modal) closeConfirmModal(false); };
+        modal.classList.add('open');
+        iconRefresh();
+      });
+    }
+
     document.addEventListener('click', event => {
       const btn = event.target.closest('.btn');
       if (!btn) return;
@@ -1481,37 +1646,36 @@
       btn.classList.add('pulse-click');
       setTimeout(() => btn.classList.remove('pulse-click'), 260);
     });
-    function requireEliminatePhrase(message){
-      const phrase = prompt(`${message}\n\nPara confirmar, escreva exactamente: ELIMINAR`);
-      return phrase === 'ELIMINAR';
+    async function requireEliminatePhrase(message, phrase = 'ELIMINAR'){
+      return appConfirm({ title:'Confirmação obrigatória', message, confirmLabel:'Confirmar', variant:'danger', requireText:phrase });
     }
     async function setInviteStatus(id, status){
       if(!id) return;
       const label = status === 'published' ? 'publicado' : status === 'draft' ? 'rascunho' : status;
-      if (!confirm(`Alterar o estado deste convite para ${label}?`)) return;
+      if (!await appConfirm({ title:'Alterar estado do convite', message:`Alterar o estado deste convite para ${label}?`, confirmLabel:'Alterar' })) return;
       try {
         const out = await api(`/manager/invites/${id}`, { method:'PATCH', body:JSON.stringify({ status }) });
-        alert(out.message || `Estado alterado para ${label}.`);
-        await Promise.allSettled([loadSummary(), loadInvites(), loadArchivedInvites(), selectedManageId() ? loadManageDetails() : Promise.resolve()]);
-      } catch(e) { alert('Erro ao alterar estado: ' + e.message); }
+        appToast(out.message || `Estado alterado para ${label}.`);
+        await Promise.allSettled([loadSummary(), loadInvites(), loadArchivedInvites(), selectedManageId() ? loadManageDetails() : Promise.resolve(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]);
+      } catch(e) { appToast('Erro ao alterar estado: ' + e.message, 'error', 'Erro'); }
     }
     window.updateInviteStatus = setInviteStatus;
-    window.purgeInviteStrict = function(id){
+    window.purgeInviteStrict = async function(id){
       const inv = [...invites, ...archivedInvites].find(i=>i.id===id);
-      if(!requireEliminatePhrase(`Esta acção vai eliminar definitivamente ${inv?.slug || 'este convite'} e dados relacionados do MongoDB. Não apaga a pasta no GitHub.`)) return;
-      managerAction(`/manager/invites/${id}/purge`,'DELETE',null,'Convite eliminado definitivamente.');
+      if(!await requireEliminatePhrase(`Esta acção vai eliminar definitivamente ${inv?.slug || 'este convite'} e dados relacionados do MongoDB. Não apaga a pasta no GitHub.`)) return;
+      await managerAction(`/manager/invites/${id}/purge`,'DELETE',null,'Convite eliminado definitivamente.');
     };
 
     window.openInvite = async function(id){ const out=await api(`/manager/invites/${id}`); const d=out.data; $('modalTitle').textContent=d.invite.coupleNames; $('modalBody').innerHTML=`<div class="info-list"><div class="info-row"><span>Slug</span><strong>${esc(d.invite.slug)}</strong></div><div class="info-row"><span>URL</span><strong>${esc(d.invite.publicUrl)}</strong></div><div class="info-row"><span>GitHub</span><strong>${esc(d.invite.githubPath || '-')}</strong></div></div><div class="metrics-grid" style="margin-top:12px"><article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>MongoDB</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmados</small></article><article class="metric-card"><span>Mensagens</span><strong>${d.messages.length}</strong><small>mural</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article></div>`; $('detailsModal').classList.add('open'); iconRefresh(); };
-    window.copyUrl = async function(url){ if(!url) return; await navigator.clipboard.writeText(url); alert('URL copiada.'); };
+    window.copyUrl = async function(url){ if(!url) return; await navigator.clipboard.writeText(url); appToast('Copiado para a área de transferência.'); };
     window.syncGithub = async function(id){
-      if(!confirm('Criar/sincronizar a pasta deste convite no GitHub?')) return;
-      const allowOverwrite = confirm('Se a pasta já existir no GitHub, quer actualizar/sobrescrever os ficheiros do template?\n\nOK = actualizar/sobrescrever.\nCancelar = apenas criar se ainda não existir.');
+      if(!await appConfirm({ title:'Sincronizar GitHub', message:'Criar/sincronizar a pasta deste convite no GitHub?', confirmLabel:'Sincronizar' })) return;
+      const allowOverwrite = await appConfirm({ title:'Sobrescrever ficheiros?', message:'Se a pasta já existir no GitHub, quer actualizar/sobrescrever os ficheiros do template?', confirmLabel:'Actualizar', cancelLabel:'Só criar se não existir' });
       try {
         const out=await api(`/manager/invites/${id}/github-sync`,{method:'POST',body:JSON.stringify({ allowOverwrite })});
-        alert(out.message || 'GitHub sincronizado com sucesso.');
+        appToast(out.message || 'GitHub sincronizado com sucesso.');
         await loadAll();
-      } catch(e){ alert('Erro GitHub: '+e.message); } };
+      } catch(e){ appToast('Erro GitHub: '+e.message, 'error', 'Erro'); } };
     window.selectManageInvite = function(id){ showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); };
 
 
@@ -1557,13 +1721,22 @@
       }
     }
     function commandIssueCount(d){ return computeCommandHealth(d).filter(item=>item.level !== 'ok').length; }
+    function getBadNormalizedGuests(d){
+      const guests = Array.isArray(d?.guests) ? d.guests : [];
+      return guests
+        .map(g => {
+          const expected = normalizeManagerText(g.name);
+          const current = String(g.normalizedName || '').trim().toLowerCase();
+          return { guest:g, expected, current, token:String(g.inviteToken || g.token || '').trim() };
+        })
+        .filter(x => x.expected && x.expected !== x.current);
+    }
     function computeCommandHealth(d){
       const inv = d.invite || {};
       const guests = Array.isArray(d.guests) ? d.guests : [];
-      const rsvps = Array.isArray(d.rsvps) ? d.rsvps : [];
       const gifts = Array.isArray(d.gifts) ? d.gifts : [];
       const messages = Array.isArray(d.messages) ? d.messages : [];
-      const badNames = guests.filter(g => normalizeManagerText(g.name) && g.normalizedName && normalizeManagerText(g.name) !== String(g.normalizedName).trim().toLowerCase());
+      const badNames = getBadNormalizedGuests(d);
       const withoutToken = guests.filter(g => !String(g.inviteToken || g.token || '').trim());
       const reservedGifts = gifts.filter(g => g.reserved || g.reservedBy || g.reserved_by);
       const giftsWithoutOwner = reservedGifts.filter(g => !String(g.reservedBy || g.reserved_by || g.guestName || '').trim());
@@ -1571,15 +1744,22 @@
       return [
         { level: inv.publicUrl ? 'ok' : 'warn', icon:'globe', title:'URL pública', text: inv.publicUrl ? 'Convite com URL pública registada.' : 'Este convite ainda não tem URL pública registada.' },
         { level: inv.githubPath ? 'ok' : 'warn', icon:'git-branch', title:'GitHub', text: inv.githubPath ? 'Pasta GitHub ligada ao convite.' : 'Pasta GitHub ausente ou não registada.' },
-        { level: badNames.length ? 'red' : 'ok', icon:'user-check', title:'Normalização de nomes', text: badNames.length ? `${badNames.length} convidado(s) com normalizedName inconsistente.` : 'Nomes normalizados sem inconsistências detectadas.' },
+        { level: badNames.length ? 'red' : 'ok', icon:'user-check', title:'Normalização de nomes', text: badNames.length ? `${badNames.length} convidado(s) com normalizedName inconsistente. Toque para ver e corrigir.` : 'Nomes normalizados sem inconsistências detectadas.', action:'badNames', count:badNames.length },
         { level: withoutToken.length ? 'warn' : 'ok', icon:'key', title:'Tokens de convite', text: withoutToken.length ? `${withoutToken.length} convidado(s) sem token público detectado.` : 'Todos os convidados carregados possuem token.' },
         { level: giftsWithoutOwner.length ? 'warn' : 'ok', icon:'gift', title:'Presentes reservados', text: giftsWithoutOwner.length ? `${giftsWithoutOwner.length} presente(s) reservado(s) sem convidado associado.` : `${reservedGifts.length} presente(s) reservado(s) com dados consistentes.` },
         { level: orphanMessages.length ? 'warn' : 'ok', icon:'message-square', title:'Mensagens', text: orphanMessages.length ? `${orphanMessages.length} mensagem(ns) sem autor identificável.` : 'Mensagens com autor identificável.' }
       ];
     }
-    function renderHealthItems(items){
-      return `<div class="command-health-grid">${items.map(item=>`<article class="health-item ${item.level}"><div class="health-icon"><i data-feather="${item.icon}"></i></div><div><strong>${esc(item.title)}</strong><p>${esc(item.text)}</p></div></article>`).join('')}</div>`;
+    function renderBadNamesInspector(d){
+      const badNames = getBadNormalizedGuests(d);
+      if(!badNames.length) return '';
+      const rows = badNames.map(({guest, expected, current, token}) => `<article class="bad-name-row"><div><strong>${esc(guest.name || 'Sem nome')}</strong><small>Actual: <mark>${esc(current || 'vazio')}</mark></small><small>Correcto: <code>${esc(expected)}</code></small><small>Token: ${esc(token || '-')}</small></div><button class="btn small" onclick="goCommandGuestEditor('${esc(guest.id || guest._id || '')}')"><i data-feather="edit-3"></i> Editar</button></article>`).join('');
+      return `<section class="command-inspector" id="badNamesInspector"><div class="command-inspector-head"><h3><i data-feather="alert-triangle"></i> Convidados com normalização inconsistente <span class="badge red">${badNames.length}</span></h3><div class="toolbar-right"><button class="btn primary" onclick="repairCommandNames()"><i data-feather="tool"></i> Corrigir</button><button class="btn" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button><button class="btn" onclick="copyBadNamesList()"><i data-feather="copy"></i> Copiar</button></div></div><div class="bad-name-list">${rows}</div></section>`;
     }
+    function renderHealthItems(items){
+      return `<div class="command-health-grid">${items.map(item=>`<article class="health-item ${item.level} ${item.action ? 'actionable' : ''}" ${item.action ? `onclick="handleHealthAction('${item.action}')"` : ''}><div class="health-icon"><i data-feather="${item.icon}"></i></div><div><strong>${esc(item.title)}</strong><p>${esc(item.text)}</p></div></article>`).join('')}</div>`;
+    }
+    function handleHealthAction(action){ if(action === 'badNames') { commandActiveTab = 'health'; renderCommandCenter(commandDetails); setTimeout(()=>document.getElementById('badNamesInspector')?.scrollIntoView({behavior:'smooth',block:'start'}), 80); } }
     function renderCommandCenter(d){
       const inv = d.invite || {};
       const guests = d.guests || [];
@@ -1588,17 +1768,18 @@
       const messages = d.messages || [];
       const contributions = d.contributions || [];
       const health = computeCommandHealth(d);
+      const badNamesInspector = renderBadNamesInspector(d);
       const issues = health.filter(x=>x.level !== 'ok').length;
       const hero = `<div class="command-hero"><div><h2>${esc(inv.coupleNames || inv.slug || 'Convite')}</h2><p>${esc(inv.publicUrl || inv.githubPath || inv.slug || '')}</p><div class="command-status-row" style="margin-top:8px">${badgeStatus(inv.status)}<span class="badge blue">${pkgLabel(inv.packageKey)}</span><span class="badge ${issues ? 'warn' : 'ok'}">${issues ? `${issues} alerta(s)` : 'Saúde OK'}</span></div></div><div class="command-hero-actions"><button class="btn" onclick="copyUrl('${esc(inv.slug || '')}')"><i data-feather="copy"></i> Copiar slug</button><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir convite</button><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Gerir convidados</button></div></div>`;
       let body = '';
       if(commandActiveTab === 'overview'){
-        body = `${hero}<div class="command-kpi-grid"><article class="command-kpi"><span>Convidados</span><strong>${guests.length}</strong><small>base carregada</small></article><article class="command-kpi"><span>RSVP</span><strong>${rsvps.length}</strong><small>confirmações</small></article><article class="command-kpi"><span>Presentes</span><strong>${gifts.length}</strong><small>${gifts.filter(g=>g.reserved || g.reservedBy || g.reserved_by).length} reservados</small></article><article class="command-kpi"><span>Mensagens</span><strong>${messages.length}</strong><small>mural</small></article></div>${renderHealthItems(health.slice(0,4))}`;
+        body = `${hero}<div class="command-kpi-grid"><article class="command-kpi"><span>Convidados</span><strong>${guests.length}</strong><small>base carregada</small></article><article class="command-kpi"><span>RSVP</span><strong>${rsvps.length}</strong><small>confirmações</small></article><article class="command-kpi"><span>Presentes</span><strong>${gifts.length}</strong><small>${gifts.filter(g=>g.reserved || g.reservedBy || g.reserved_by).length} reservados</small></article><article class="command-kpi"><span>Mensagens</span><strong>${messages.length}</strong><small>mural</small></article></div>${renderHealthItems(health.slice(0,4))}${badNamesInspector}`;
       } else if(commandActiveTab === 'health'){
-        body = `${hero}${renderHealthItems(health)}`;
+        body = `${hero}${renderHealthItems(health)}${badNamesInspector}`;
       } else if(commandActiveTab === 'data'){
         body = `${hero}<div class="command-data-grid"><div class="command-data-box"><span>ID</span><strong>${esc(inv.id || inv._id || '-')}</strong></div><div class="command-data-box"><span>Slug</span><strong>${esc(inv.slug || '-')}</strong></div><div class="command-data-box"><span>Cliente</span><strong>${esc(inv.clientName || '-')}</strong></div><div class="command-data-box"><span>Casal</span><strong>${esc(inv.coupleNames || '-')}</strong></div><div class="command-data-box"><span>Pacote</span><strong>${pkgLabel(inv.packageKey)}</strong></div><div class="command-data-box"><span>Estado</span><strong>${esc(inv.status || '-')}</strong></div><div class="command-data-box"><span>URL pública</span><strong>${esc(inv.publicUrl || '-')}</strong></div><div class="command-data-box"><span>GitHub</span><strong>${esc(inv.githubPath || '-')}</strong></div><div class="command-data-box"><span>Criado em</span><strong>${fmtDate(inv.createdAt)}</strong></div><div class="command-data-box"><span>Actualizado em</span><strong>${fmtDate(inv.updatedAt)}</strong></div></div>`;
       } else if(commandActiveTab === 'ops'){
-        body = `${hero}<div class="command-ops-grid"><article class="command-op"><strong>Convidados</strong><p>Abre a gestão directa filtrada neste convite.</p><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Abrir convidados</button></article><article class="command-op"><strong>Manutenção</strong><p>Abre reset de acessos, presentes, estado e erase controlado.</p><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i> Abrir gestão</button></article><article class="command-op"><strong>Reparar nomes</strong><p>Corrige normalizedName dos convidados deste convite.</p><button class="btn" onclick="repairCommandNames()"><i data-feather="tool"></i> Reparar</button></article><article class="command-op"><strong>Copiar URL</strong><p>Copia a URL pública para partilhar ou testar.</p><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="copy"></i> Copiar URL</button></article><article class="command-op"><strong>Abrir convite</strong><p>Testa a página pública do convite.</p><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button></article><article class="command-op"><strong>GitHub</strong><p>Abre a área de ligação GitHub para diagnóstico.</p><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i> Ver GitHub</button></article></div>`;
+        body = `${hero}<div class="command-ops-grid"><article class="command-op"><strong>Convidados</strong><p>Abre a gestão directa filtrada neste convite.</p><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Abrir convidados</button></article><article class="command-op"><strong>Manutenção</strong><p>Abre reset de acessos, presentes, estado e erase controlado.</p><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i> Abrir gestão</button></article><article class="command-op"><strong>Reparar nomes</strong><p>Mostra os convidados afectados e corrige normalizedName deste convite.</p><button class="btn" onclick="handleHealthAction('badNames')"><i data-feather="list"></i> Ver lista</button></article><article class="command-op"><strong>Copiar URL</strong><p>Copia a URL pública para partilhar ou testar.</p><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="copy"></i> Copiar URL</button></article><article class="command-op"><strong>Abrir convite</strong><p>Testa a página pública do convite.</p><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button></article><article class="command-op"><strong>GitHub</strong><p>Abre a área de ligação GitHub para diagnóstico.</p><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i> Ver GitHub</button></article></div>`;
       } else {
         const acts = [...rsvps.slice(0,6).map(r=>({title:'Presença confirmada', detail:`${r.nome || r.name || 'Convidado'} · ${fmtDate(r.timestamp || r.createdAt)}`, icon:'check-circle'})), ...messages.slice(0,6).map(m=>({title:'Mensagem recebida', detail:`${m.nome || m.name || 'Convidado'} · ${fmtDate(m.timestamp || m.createdAt)}`, icon:'message-square'})), ...contributions.slice(0,6).map(c=>({title:'Contribuição registada', detail:`${c.nome || c.name || 'Convidado'} · ${fmtDate(c.timestamp || c.createdAt)}`, icon:'credit-card'}))].slice(0,12);
         body = `${hero}<div class="command-activity">${acts.length ? acts.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.icon}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail)}</p></div></article>`).join('') : '<div class="command-empty">Ainda não há actividade detalhada para este convite.</div>'}</div>`;
@@ -1608,7 +1789,24 @@
     }
     function goCommandGuests(){ const id=commandSelectedId(); showPanel('guests'); setTimeout(()=>{ renderGuestSelect(); syncGuestInviteSelects(id); loadGuestCrudList(); }, 0); }
     function goCommandManage(){ const id=commandSelectedId(); showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); }
-    async function repairCommandNames(){ const id=commandSelectedId(); if(!id) return; if(!confirm('Reparar normalizedName dos convidados deste convite?')) return; try{ const out = await api(`/manager/invites/${id}/guests/repair-normalized`, { method:'POST', body:JSON.stringify({}) }); alert(out.message || 'Reparação concluída.'); await loadCommandCenter(); }catch(e){ alert('Erro: '+e.message); } }
+    async function goCommandGuestEditor(guestId){ const id=commandSelectedId(); showPanel('guests'); setTimeout(async()=>{ renderGuestSelect(); syncGuestInviteSelects(id); await loadGuestCrudList(); if(guestId) openGuestEditor(guestId); }, 0); }
+    async function repairCommandNames(){
+      const id=commandSelectedId();
+      if(!id) return;
+      const badCount = getBadNormalizedGuests(commandDetails || {}).length;
+      const msg = badCount ? `Foram detectados ${badCount} convidado(s) com normalizedName inconsistente. A reparação vai recalcular o normalizedName a partir do nome real do convidado.` : 'Não foram detectadas inconsistências, mas pode executar a reparação para garantir que a base está consistente.';
+      if(!await appConfirm({ title:'Reparar normalização de nomes', message:msg, confirmLabel:'Reparar agora' })) return;
+      try{
+        const out = await api(`/manager/invites/${id}/guests/repair-normalized`, { method:'POST', body:JSON.stringify({}) });
+        appToast(out.message || 'Reparação concluída.');
+        await Promise.allSettled([loadCommandCenter(), loadGuestCrudList(), loadSummary(), loadInvites()]);
+      }catch(e){ appToast('Erro: '+e.message, 'error', 'Erro'); }
+    }
+    function copyBadNamesList(){
+      const badNames = getBadNormalizedGuests(commandDetails || {});
+      const text = badNames.map(({guest, expected, current, token}) => `${guest.name || 'Sem nome'} | actual: ${current || 'vazio'} | correcto: ${expected} | token: ${token || '-'}`).join('\n');
+      navigator.clipboard.writeText(text || 'Sem inconsistências').then(()=>appToast('Lista de inconsistências copiada.'));
+    }
 
     function selectedGuestInviteId(){ return $('guestCrudInviteSelect')?.value || $('guestInviteSelect')?.value || ''; }
     function syncGuestInviteSelects(id){
@@ -1673,7 +1871,7 @@
       $('guestResetAccessSingleBtn').style.display = editingGuestId ? '' : 'none';
       hideMsg($('guestEditResult'));
     }
-    window.openGuestEditor = function(id){ const g=currentGuests.find(item=>String(item.id)===String(id)); if(!g) return alert('Convidado não encontrado na lista carregada.'); fillGuestForm(g); openGuestModal(); };
+    window.openGuestEditor = function(id){ const g=currentGuests.find(item=>String(item.id)===String(id)); if(!g) return appToast('Convidado não encontrado na lista carregada.', 'error', 'Atenção'); fillGuestForm(g); openGuestModal(); };
     function openNewGuest(){ const inv=selectedGuestInvite(); if(!inv) return showMsg($('guestCrudResult'), 'Seleccione primeiro um convite.', true); fillGuestForm({ table:'A indicar na entrada', status:'Não aberto' }); openGuestModal(); }
     async function saveGuestFromModal(e){
       e.preventDefault();
@@ -1693,23 +1891,26 @@
     window.resetSingleGuestAccess = async function(id){
       const inviteId=selectedGuestInviteId();
       if(!inviteId || !id) return;
-      if(!confirm('Resetar acesso deste convidado?')) return;
+      if(!await appConfirm({ title:'Resetar acesso', message:'Resetar acesso deste convidado?', confirmLabel:'Resetar' })) return;
       try{ const out=await api(`/manager/invites/${inviteId}/guests/${id}/reset-access`,{method:'POST',body:JSON.stringify({})}); showMsg($('guestCrudResult'), out.message || 'Acesso reiniciado.'); await loadGuestCrudList(); }catch(e){ showMsg($('guestCrudResult'), e.message, true); }
     };
     window.deleteGuestFromManager = async function(id){
       const inviteId=selectedGuestInviteId();
       const g=currentGuests.find(item=>String(item.id)===String(id));
       if(!inviteId || !id || !g) return;
-      const typed=prompt(`Eliminar definitivamente o convidado "${g.name}"?\n\nIsto remove o convidado e os seus RSVP/check-ins associados. Escreva ELIMINAR para confirmar.`);
-      if(String(typed||'').trim().toUpperCase() !== 'ELIMINAR') return;
+      if(!await appConfirm({ title:'Eliminar convidado', message:`Eliminar definitivamente o convidado "${g.name}"?
+
+Isto remove o convidado e os seus RSVP/check-ins associados.`, confirmLabel:'Eliminar', variant:'danger', requireText:'ELIMINAR' })) return;
       try{ const out=await api(`/manager/invites/${inviteId}/guests/${id}`,{method:'DELETE'}); showMsg($('guestCrudResult'), out.message || 'Convidado eliminado.'); await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails()]); }catch(e){ showMsg($('guestCrudResult'), e.message, true); }
     };
     async function eraseInviteData(){
       const id=selectedManageId();
       if(!id) return showMsg($('manageResult'), 'Seleccione primeiro um convite.', true);
       const inv=[...invites,...archivedInvites].find(x=>x.id===id);
-      const typed=prompt(`ERASE DE DADOS DO CONVITE\n\nConvite: ${inv?.coupleNames || id}\nSlug: ${inv?.slug || ''}\n\nEsta acção apaga convidados, RSVP, mensagens, presentes, contribuições, check-ins, cápsula e actividades deste convite, mas mantém o registo do convite.\n\nEscreva APAGAR DADOS para confirmar.`);
-      if(String(typed||'').trim().toUpperCase() !== 'APAGAR DADOS') return;
+      if(!await appConfirm({ title:'Erase de dados do convite', message:`Convite: ${inv?.coupleNames || id}
+Slug: ${inv?.slug || ''}
+
+Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, check-ins, cápsula e actividades deste convite, mas mantém o registo do convite.`, confirmLabel:'Apagar dados', variant:'danger', requireText:'APAGAR DADOS' })) return;
       hideMsg($('manageResult'));
       try{
         const out=await api(`/manager/invites/${id}/data`,{method:'DELETE',body:JSON.stringify({collections:['all']})});
@@ -1721,15 +1922,15 @@
 
     function bindEvents(){
       $('loginForm').addEventListener('submit', async e=>{ e.preventDefault(); hideMsg($('loginError')); API_BASE=(window.LIRANDZO_MANAGER_API_BASE || API_BASE || '').trim().replace(/\/+$/,''); const accessType = document.querySelector('input[name="accessType"]:checked')?.value || 'admin'; setLoginLoading(true); try{ const out=await api('/manager/login',{method:'POST',body:JSON.stringify({password:$('passwordInput').value, accessType})}); token=out.token; managerRole=out.role || accessType; sessionStorage.setItem('lirandzo_manager_token',token); sessionStorage.setItem('lirandzo_manager_role',managerRole); appView(); }catch(err){ showMsg($('loginError'),err.message,true); } finally { setLoginLoading(false); } });
-      $('menuBtn').addEventListener('click',()=>{ $('sidebar').classList.add('open'); $('overlay').classList.add('active'); }); $('overlay').addEventListener('click',()=>{ $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); });
+      $('menuBtn').addEventListener('click',()=>{ $('sidebar').classList.add('open'); $('overlay').classList.add('active'); }); $('backBtn')?.addEventListener('click',goBackPanel); $('overlay').addEventListener('click',()=>{ $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); });
       $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); sessionStorage.removeItem('lirandzo_manager_role'); token=''; managerRole=''; loginView(); }); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); $('commandInviteSelect')?.addEventListener('change',()=>{ renderCommandContext(invites.find(inv=>inv.id===commandSelectedId())); loadCommandCenter(); }); $('commandLoadBtn')?.addEventListener('click',loadCommandCenter); $('commandGuestsBtn')?.addEventListener('click',goCommandGuests); $('commandManageBtn')?.addEventListener('click',goCommandManage); $('commandCopySlugBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); copyUrl(inv?.slug||''); }); $('commandOpenInviteBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); if(inv?.publicUrl) window.open(inv.publicUrl,'_blank'); }); document.querySelectorAll('[data-command-tab]').forEach(btn=>btn.addEventListener('click',()=>setCommandTab(btn.dataset.commandTab))); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto)));
       $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
-      $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('guestEditModal')?.classList.remove('open'); $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
+      $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('guestEditModal')?.classList.remove('open'); $('confirmModal')?.classList.remove('open'); if(confirmResolver){ confirmResolver(false); confirmResolver=null; } $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
       $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); if(!isAdmin()) return showMsg($('createResult'), 'Perfil Editor não pode criar convites.', true); const fd=new FormData(e.currentTarget); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); showMsg($('createResult'), out.message || `Convite criado: ${out.data.publicUrl}`); e.currentTarget.reset(); await loadAll(); }catch(err){ showMsg($('createResult'),err.message,true); } });
       $('manageInviteSelect').addEventListener('change',loadManageDetails); $('loadManageBtn').addEventListener('click',loadManageDetails);
       $('resetAccessBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/guests/reset-access`,'POST','Resetar o acesso de todos os convidados deste convite?','Acessos reiniciados.'));
       $('resetGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/reset-reservations`,'POST','Remover todas as reservas de presentes deste convite?','Reservas reiniciadas.'));
-      $('clearGiftsBtn').addEventListener('click',()=>{ if(!requireEliminatePhrase('Esta acção vai eliminar todos os presentes registados deste convite no MongoDB.')) return; managerAction(`/manager/invites/${selectedManageId()}/gifts`,'DELETE',null,'Presentes eliminados.'); });
+      $('clearGiftsBtn').addEventListener('click',async ()=>{ if(!await requireEliminatePhrase('Esta acção vai eliminar todos os presentes registados deste convite no MongoDB.')) return; await managerAction(`/manager/invites/${selectedManageId()}/gifts`,'DELETE',null,'Presentes eliminados.'); });
       $('seedGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/seed-defaults`,'POST','Restaurar presentes padrão deste convite?','Presentes padrão restaurados.'));
       $('archiveBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}`,'DELETE','Arquivar este convite? Ele ficará disponível na página Arquivados.','Convite arquivado.'));
       $('publishInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'published')); $('draftInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'draft')); $('purgeInviteBtn').addEventListener('click',()=>purgeInviteStrict(selectedManageId()));
@@ -1751,7 +1952,7 @@
         const id = selectedGuestInviteId();
         syncGuestInviteSelects(id);
         if (!id) return showMsg($('guestResult'), 'Seleccione primeiro o convite que pretende reparar.', true);
-        if (!confirm('Reparar normalizedName dos convidados deste convite?\n\nIsto corrige nomes antigos mal normalizados e ajuda a resolver erro 401 no login.')) return;
+        if (!await appConfirm({ title:'Reparar nomes', message:'Reparar normalizedName dos convidados deste convite?\n\nIsto corrige nomes antigos mal normalizados e ajuda a resolver erro 401 no login.', confirmLabel:'Reparar agora' })) return;
         hideMsg($('guestResult'));
         setGuestImportLoading(true, 'A reparar nomes normalizados...', 35);
         try {
