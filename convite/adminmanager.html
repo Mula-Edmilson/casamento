@@ -233,6 +233,17 @@
     @media (max-width:1180px) { .metrics-grid{grid-template-columns:repeat(2,minmax(0,1fr));} .dashboard-grid{grid-template-columns:1fr;} .action-grid{grid-template-columns:1fr 1fr;} }
     @media (max-width:760px) { .main{padding-left:12px;padding-right:12px;} .mobile-tabs{display:flex;margin-left:-12px;margin-right:-12px;padding-left:12px;padding-right:12px;} .sync-pill{display:none;} .section-title{align-items:flex-start;flex-direction:column;gap:8px;} .metrics-grid{grid-template-columns:1fr 1fr;gap:7px;} .metric-card{min-height:69px;padding:9px;border-radius:15px;} .metric-card strong{font-size:26px;} .panel-head{min-height:46px;padding:10px 11px;} .panel-body{padding:10px;} .desktop-table{display:none;} .mobile-list{display:grid;} .toolbar{align-items:stretch;} .toolbar-left,.toolbar-right,.search-input{width:100%;} .toolbar-right .btn{flex:1;} .info-row{grid-template-columns:1fr;gap:3px;} .form-grid{grid-template-columns:1fr;} .span-2{grid-column:auto;} .action-grid{grid-template-columns:1fr;} .topbar-title span{max-width:180px;} }
     @media (max-width:420px) { .topbar{padding-left:10px;padding-right:10px;} .btn.icon-only{width:37px;} .metrics-grid{grid-template-columns:1fr 1fr;} .login-card{padding:23px 19px;border-radius:24px;} }
+
+    .data-danger-box { border:1px solid rgba(239,68,68,.45); background:rgba(239,68,68,.08); border-radius:18px; padding:12px; display:grid; gap:8px; }
+    .data-danger-box strong { color:var(--danger); }
+    .guest-crud-toolbar { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+    .guest-crud-toolbar .toolbar-left { flex:1 1 320px; }
+    .guest-crud-toolbar .toolbar-right { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .guest-name-main { display:grid; gap:2px; }
+    .guest-name-main small { color:var(--muted); font-size:11px; word-break:break-all; }
+    .crud-chip { display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line); border-radius:999px; padding:4px 8px; font-size:11px; color:var(--muted); background:rgba(255,255,255,.04); }
+    .modal-card.narrow { width:min(620px,100%); }
+    .form-actions-sticky { position:sticky; bottom:0; background:linear-gradient(180deg, transparent, var(--surface) 20%); padding-top:14px; display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
   </style>
 </head>
 <body>
@@ -307,13 +318,14 @@
           <article class="action-card"><strong>Restaurar presentes padrão</strong><p>Recria a lista padrão de presentes para este convite.</p><button class="btn" id="seedGiftsBtn" type="button" title="Restaurar presentes padrão"><i data-feather="gift"></i> Restaurar padrão</button></article>
           <article class="action-card"><strong>Estado do convite</strong><p>Altera o estado operacional do convite seleccionado.</p><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" id="publishInviteBtn" type="button" title="Marcar como publicado"><i data-feather="check-circle"></i> Publicar</button><button class="btn" id="draftInviteBtn" type="button" title="Voltar para rascunho"><i data-feather="edit-3"></i> Rascunho</button></div></article>
           <article class="action-card"><strong>Arquivar convite</strong><p>Oculta o convite do painel sem apagar dados do MongoDB.</p><button class="btn" id="archiveBtn" type="button" title="Arquivar convite"><i data-feather="archive"></i> Arquivar</button></article>
-          <article class="action-card"><strong>Eliminar definitivamente</strong><p>Apaga convite e dados relacionados do MongoDB. Não apaga a pasta no GitHub.</p><button class="btn danger" id="purgeInviteBtn" type="button" title="Eliminar definitivamente convite e dados"><i data-feather="x-circle"></i> Eliminar convite</button></article>
+          <article class="action-card"><strong>Erase de dados</strong><p>Apaga dados do convite no MongoDB, mas mantém o registo do convite. Ideal quando o evento já saiu do ar.</p><button class="btn danger" id="eraseInviteDataBtn" type="button" title="Apagar dados mantendo o convite"><i data-feather="database"></i> Erase dados</button></article><article class="action-card"><strong>Eliminar definitivamente</strong><p>Apaga convite e dados relacionados do MongoDB. Não apaga a pasta no GitHub.</p><button class="btn danger" id="purgeInviteBtn" type="button" title="Eliminar definitivamente convite e dados"><i data-feather="x-circle"></i> Eliminar convite</button></article>
         </div><div id="manageResult" class="feedback hidden"></div></div></section>
       </section>
 
       <section class="section" id="guestsPanel">
         <div class="section-title"><div><h1>Importar convidados</h1><p>Importação uniforme por ficheiro ou escrita manual, ligada ao convite escolhido.</p></div></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><form id="guestForm"><div class="field"><label>Convite</label><select id="guestInviteSelect" required></select></div><div class="grid-two"><label class="dropzone" for="guestFile"><i data-feather="upload-cloud"></i><strong>Importar ficheiro</strong><p>CSV, TXT ou TSV. O conteúdo será colocado no campo para conferência antes de enviar.</p><input id="guestFile" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain"></label><div class="preview-box" id="guestPreview">Formato recomendado:<br><b>Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo</b><br><br>Exemplo:<br>Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel</div></div><div class="field"><label>Lista de convidados</label><textarea id="guestBulkText" placeholder="Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo&#10;Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel"></textarea><p class="hint">Também aceita ficheiros com cabeçalho: nome, mesa, acompanhantes, telefone, notas, categoria, número, token antigo.</p></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="sampleGuestsBtn" title="Inserir exemplo de convidados"><i data-feather="file-text"></i> Inserir exemplo</button><button class="btn primary" type="submit" id="importGuestsBtn" title="Importar ou actualizar convidados"><span class="btn-loader"></span><i data-feather="upload-cloud" class="guest-import-icon"></i> <span class="guest-import-label">Importar / actualizar convidados</span></button></div><div id="guestImportProgress" class="import-progress" aria-live="polite"><div class="import-progress-top"><div class="import-progress-title"><span class="mini-spinner"></span><span id="guestImportStage">A preparar importação...</span></div><span id="guestImportPercent" class="import-progress-percent">0%</span></div><div class="import-progress-track"><div id="guestImportBar" class="import-progress-bar"></div></div><div id="guestImportNote" class="import-progress-note">Estamos a validar o ficheiro e a enviar os convidados para o MongoDB.</div></div><div id="guestResult" class="feedback hidden"></div></form></div></section>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados</h2></div><div class="panel-body"><form id="guestForm"><div class="field"><label>Convite</label><select id="guestInviteSelect" required></select></div><div class="grid-two"><label class="dropzone" for="guestFile"><i data-feather="upload-cloud"></i><strong>Importar ficheiro</strong><p>CSV, TXT ou TSV. O conteúdo será colocado no campo para conferência antes de enviar.</p><input id="guestFile" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain"></label><div class="preview-box" id="guestPreview">Formato recomendado:<br><b>Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo</b><br><br>Exemplo:<br>Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel</div></div><div class="field"><label>Lista de convidados</label><textarea id="guestBulkText" placeholder="Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo&#10;Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel"></textarea><p class="hint">Também aceita ficheiros com cabeçalho: nome, mesa, acompanhantes, telefone, notas, categoria, número, token antigo.</p></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="sampleGuestsBtn" title="Inserir exemplo de convidados"><i data-feather="file-text"></i> Inserir exemplo</button><button class="btn" type="button" id="repairGuestsBtn" title="Reparar normalizedName dos convidados deste convite"><i data-feather="tool"></i> Reparar nomes</button><button class="btn primary" type="submit" id="importGuestsBtn" title="Importar ou actualizar convidados"><span class="btn-loader"></span><i data-feather="upload-cloud" class="guest-import-icon"></i> <span class="guest-import-label">Importar / actualizar convidados</span></button></div><div id="guestImportProgress" class="import-progress" aria-live="polite"><div class="import-progress-top"><div class="import-progress-title"><span class="mini-spinner"></span><span id="guestImportStage">A preparar importação...</span></div><span id="guestImportPercent" class="import-progress-percent">0%</span></div><div class="import-progress-track"><div id="guestImportBar" class="import-progress-bar"></div></div><div id="guestImportNote" class="import-progress-note">Estamos a validar o ficheiro e a enviar os convidados para o MongoDB.</div></div><div id="guestResult" class="feedback hidden"></div></form></div></section>
+        <section class="panel-card" id="guestCrudCard"><div class="panel-head"><h2><i data-feather="database"></i> Gestão directa de convidados</h2><button class="btn small primary" id="addGuestBtn" type="button" title="Adicionar convidado"><i data-feather="user-plus"></i> Novo convidado</button></div><div class="panel-body"><div class="guest-crud-toolbar"><div class="toolbar-left"><input id="guestSearchInput" class="search-input" placeholder="Pesquisar nome, mesa, telefone, token ou categoria"></div><div class="toolbar-right"><button class="btn" id="refreshGuestCrudBtn" type="button" title="Actualizar lista"><i data-feather="refresh-cw"></i> Actualizar</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Nº</th><th>Convidado</th><th>Mesa</th><th>Acompanhantes</th><th>Estado</th><th>Categoria</th><th>Acções</th></tr></thead><tbody id="guestCrudTbody"><tr><td colspan="7">Seleccione um convite para carregar os convidados.</td></tr></tbody></table></div><div id="guestCrudMobile" class="mobile-list"></div><div id="guestCrudResult" class="feedback hidden"></div></div></section>
       </section>
 
       <section class="section" id="githubPanel">
@@ -324,6 +336,7 @@
   </div>
 
   <div class="modal" id="detailsModal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Detalhes</h3><button class="btn icon-only" id="closeModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body" id="modalBody"></div></div></div>
+  <div class="modal" id="guestEditModal"><div class="modal-card narrow"><div class="modal-head"><h3 id="guestEditTitle">Convidado</h3><button class="btn icon-only" id="closeGuestEditModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body"><form id="guestEditForm"><input type="hidden" id="guestEditId"><div class="field"><label>Nome do convidado</label><input id="guestEditName" class="search-input" required placeholder="Nome completo"></div><div class="grid-two"><div class="field"><label>Mesa</label><input id="guestEditTable" class="search-input" placeholder="A indicar na entrada"></div><div class="field"><label>Acompanhantes</label><input id="guestEditCompanions" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Telefone</label><input id="guestEditPhone" class="search-input" placeholder="+258..."></div><div class="field"><label>Número</label><input id="guestEditNumber" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Categoria</label><input id="guestEditCategory" class="search-input" placeholder="Família, amigos, etc."></div><div class="field"><label>Estado</label><select id="guestEditStatus" class="search-input"><option>Não aberto</option><option>Convite Aberto</option><option>Ainda por confirmar</option><option>Confirmado</option></select></div></div><div class="field"><label>Token antigo / referência</label><input id="guestEditLegacyToken" class="search-input" placeholder="Opcional"></div><div class="field"><label>Notas internas</label><textarea id="guestEditNotes" rows="3" placeholder="Observações internas"></textarea></div><div class="field"><label>Token público actual</label><input id="guestEditInviteToken" class="search-input" readonly placeholder="Gerado automaticamente"></div><div id="guestEditResult" class="feedback hidden"></div><div class="form-actions-sticky"><button class="btn" type="button" id="guestResetAccessSingleBtn"><i data-feather="unlock"></i> Reset acesso</button><button class="btn danger" type="button" id="guestDeleteBtn"><i data-feather="trash-2"></i> Eliminar</button><button class="btn primary" type="submit"><i data-feather="save"></i> Guardar</button></div></form></div></div></div>
 
   <script>
     const panels = [
@@ -335,6 +348,8 @@
     let invites = [];
     let archivedInvites = [];
     let selectedInviteDetails = null;
+    let currentGuests = [];
+    let editingGuestId = null;
     const $ = id => document.getElementById(id);
     const esc = v => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     const fmtDate = value => { if(!value) return '-'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString('pt-PT',{dateStyle:'short',timeStyle:'short'}); };
@@ -365,17 +380,31 @@
       document.querySelectorAll('[data-panel]').forEach(b=>b.classList.toggle('active', b.dataset.panel === id));
       const p = panels.find(x=>x.id===id); $('topbarTitle').textContent = p ? p.label : 'AdminManager'; $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); iconRefresh();
       if (id === 'manage') renderManageSelect();
-      if (id === 'guests') renderGuestSelect();
+      if (id === 'guests') { renderGuestSelect(); loadGuestCrudList(); }
       if (id === 'archived') loadArchivedInvites();
     }
     function loginView(){ $('loginScreen').classList.remove('hidden'); $('app').classList.remove('active'); iconRefresh(); }
     function appView(){ $('loginScreen').classList.add('hidden'); $('app').classList.add('active'); $('connectionLabel').textContent = 'Sistema protegido'; loadAll(); iconRefresh(); }
-    async function loadAll(){ renderSkeletons(); setLoading(true); try { await Promise.allSettled([loadSummary(), loadInvites(), loadArchivedInvites(), loadGithubStatus()]); $('syncDot').classList.add('ok'); $('syncText').textContent = 'Online'; } finally { setLoading(false); iconRefresh(); } }
+    async function loadAll(){
+      renderSkeletons();
+      setLoading(true);
+      try {
+        const results = await Promise.allSettled([loadSummary(), loadInvites(), loadArchivedInvites(), loadGithubStatus()]);
+        const failures = results.filter(r => r.status === 'rejected');
+        $('syncDot').classList.toggle('ok', failures.length === 0);
+        $('syncText').textContent = failures.length ? 'Parcial' : 'Online';
+        $('connectionLabel').textContent = failures.length ? `${failures.length} módulo(s) com falha` : 'Sistema protegido';
+        if (failures.length) console.warn('[AdminManager] Falhas ao carregar módulos:', failures.map(f => f.reason?.message || f.reason));
+      } finally {
+        setLoading(false);
+        iconRefresh();
+      }
+    }
     async function loadSummary(){ const out = await api('/manager/summary'); const d = out.data || {}; renderMetrics(d); renderActivity((d.activities || []).slice(0,5)); renderSystemInfo(d); }
     function renderMetrics(d){ const items=[['Total de convites',d.totalInvites||0,'activos','folder'],['Publicados',d.published||0,'online','check-circle'],['Convidados',d.guests||0,'geral','users'],['RSVP',d.rsvps||0,'confirmados','heart']]; $('metricsGrid').innerHTML = items.map(([label,value,small,icon])=>`<article class="metric-card"><span>${esc(label)}</span><strong>${esc(value)}</strong><small><i data-feather="${icon}"></i> ${esc(small)}</small></article>`).join(''); }
     function renderActivity(list){ $('activityBadge').textContent = `${list.length} registos`; $('activityList').innerHTML = list.length ? list.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.type==='warning'?'alert-triangle':a.type==='github'?'git-commit':a.type==='gift'?'gift':a.type==='guests'?'users':'activity'}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail||'')} · ${fmtDate(a.timestamp)}</p></div></article>`).join('') : '<div class="feedback">Ainda não há actividade registada.</div>'; }
-    function renderSystemInfo(d){ $('systemInfo').innerHTML = `<div class="info-row"><span>Sistema</span><strong>Online e protegido</strong></div><div class="info-row"><span>Convites</span><strong>${esc(d.totalInvites||0)} activos · ${esc(d.draft||0)} rascunho(s)</strong></div><div class="info-row"><span>Dados</span><strong>${esc(d.messages||0)} mensagens · ${esc(d.contributions||0)} contribuições</strong></div>`; }
-    async function loadInvites(){ const q=encodeURIComponent($('searchInput')?.value||''); const status=encodeURIComponent($('statusFilter')?.value||'all'); const packageKey=encodeURIComponent($('packageFilter')?.value||'all'); const out=await api(`/manager/invites?q=${q}&status=${status}&packageKey=${packageKey}`); invites=out.data||[]; renderInvites(); renderGuestSelect(); renderManageSelect(); }
+    function renderSystemInfo(d){ $('systemInfo').innerHTML = `<div class="info-row"><span>Sistema</span><strong>${$('syncText')?.textContent === 'Parcial' ? 'Online com avisos' : 'Online e protegido'}</strong></div><div class="info-row"><span>Convites</span><strong>${esc(d.totalInvites||0)} activos · ${esc(d.draft||0)} rascunho(s)</strong></div><div class="info-row"><span>Dados activos</span><strong>${esc(d.messages||0)} mensagens · ${esc(d.contributions||0)} contribuições</strong></div>`; }
+    async function loadInvites(){ const q=encodeURIComponent($('searchInput')?.value||''); const status=encodeURIComponent($('statusFilter')?.value||'all'); const packageKey=encodeURIComponent($('packageFilter')?.value||'all'); const out=await api(`/manager/invites?q=${q}&status=${status}&packageKey=${packageKey}`); invites=out.data||[]; renderInvites(); renderGuestSelect(); renderManageSelect(); if (document.getElementById('guestsPanel')?.classList.contains('active')) loadGuestCrudList(); }
     async function loadArchivedInvites(){ const el=$('archivedTbody'); if(!el) return; const q=encodeURIComponent($('archivedSearchInput')?.value||''); const out=await api(`/manager/invites?q=${q}&status=archived&packageKey=all`); archivedInvites=out.data||[]; renderArchivedInvites(); }
     function renderArchivedInvites(){ const rows = archivedInvites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho"><i data-feather="rotate-ccw"></i> Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente"><i data-feather="trash-2"></i> Eliminar</button></div></td></tr>`).join(''); $('archivedTbody').innerHTML = rows || '<tr><td colspan="6">Nenhum convite arquivado.</td></tr>'; $('archivedMobile').innerHTML = archivedInvites.length ? archivedInvites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes">Ver</button><button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho">Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente">Eliminar</button></div></article>`).join('') : '<div class="feedback">Nenhum convite arquivado.</div>'; iconRefresh(); }
 
@@ -392,7 +421,7 @@
       $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes">Ver</button>${inviteStatusActions(inv)}<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub">GitHub</button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite">Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
       iconRefresh();
     }
-    function renderGuestSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('guestInviteSelect').innerHTML = html; }
+    function renderGuestSelect(){ const select=$('guestInviteSelect'); if(!select) return; const current=select.value; const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; select.innerHTML = html; if(current && invites.some(inv=>inv.id===current)) select.value=current; }
     function renderManageSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('manageInviteSelect').innerHTML = html; if(invites.length && !selectedInviteDetails) loadManageDetails(); }
     async function loadGithubStatus(){ try { const out = await api('/manager/github/status'); const d=out.data||{}; $('githubStatus').innerHTML = d.configured ? `<b>GitHub configurado correctamente.</b><br><br>Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>Branch: <b>${esc(d.branch)}</b><br>Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br>Templates:<br>Pérola: <b>${esc(d.templates?.perola||'-')}</b><br>Esmeralda: <b>${esc(d.templates?.esmeralda||'-')}</b><br>Rubi: <b>${esc(d.templates?.rubi||'-')}</b>` : `<b>GitHub ainda não está configurado.</b><br><br>Configure no Render: <b>GITHUB_TOKEN</b>, <b>GITHUB_OWNER</b>, <b>GITHUB_REPO</b>, <b>GITHUB_BRANCH</b> e os caminhos dos templates.`; } catch(e){ $('githubStatus').textContent = e.message; } }
     async function loadManageDetails(){ const id=$('manageInviteSelect').value; if(!id) return; const out=await api(`/manager/invites/${id}`); selectedInviteDetails=out.data; const d=out.data; $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small>registos</small></article>`; iconRefresh(); }
@@ -423,7 +452,7 @@
       const note = $('guestImportNote');
       const btn = $('importGuestsBtn');
       const btnLabel = btn?.querySelector('.guest-import-label');
-      const controls = [$('guestInviteSelect'), $('guestFile'), $('guestBulkText'), $('sampleGuestsBtn')].filter(Boolean);
+      const controls = [$('guestInviteSelect'), $('guestFile'), $('guestBulkText'), $('sampleGuestsBtn'), $('repairGuestsBtn')].filter(Boolean);
       const cleanPercent = Math.max(0, Math.min(100, Number(percent) || 0));
 
       if (progress) {
@@ -474,15 +503,128 @@
 
     window.openInvite = async function(id){ const out=await api(`/manager/invites/${id}`); const d=out.data; $('modalTitle').textContent=d.invite.coupleNames; $('modalBody').innerHTML=`<div class="info-list"><div class="info-row"><span>Slug</span><strong>${esc(d.invite.slug)}</strong></div><div class="info-row"><span>URL</span><strong>${esc(d.invite.publicUrl)}</strong></div><div class="info-row"><span>GitHub</span><strong>${esc(d.invite.githubPath || '-')}</strong></div></div><div class="metrics-grid" style="margin-top:12px"><article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>MongoDB</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmados</small></article><article class="metric-card"><span>Mensagens</span><strong>${d.messages.length}</strong><small>mural</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article></div>`; $('detailsModal').classList.add('open'); iconRefresh(); };
     window.copyUrl = async function(url){ if(!url) return; await navigator.clipboard.writeText(url); alert('URL copiada.'); };
-    window.syncGithub = async function(id){ if(!confirm('Criar/sincronizar a pasta deste convite no GitHub?')) return; try { const out=await api(`/manager/invites/${id}/github-sync`,{method:'POST',body:JSON.stringify({})}); alert(out.message || 'GitHub sincronizado com sucesso.'); await loadAll(); } catch(e){ alert('Erro GitHub: '+e.message); } };
+    window.syncGithub = async function(id){
+      if(!confirm('Criar/sincronizar a pasta deste convite no GitHub?')) return;
+      const allowOverwrite = confirm('Se a pasta já existir no GitHub, quer actualizar/sobrescrever os ficheiros do template?\n\nOK = actualizar/sobrescrever.\nCancelar = apenas criar se ainda não existir.');
+      try {
+        const out=await api(`/manager/invites/${id}/github-sync`,{method:'POST',body:JSON.stringify({ allowOverwrite })});
+        alert(out.message || 'GitHub sincronizado com sucesso.');
+        await loadAll();
+      } catch(e){ alert('Erro GitHub: '+e.message); } };
     window.selectManageInvite = function(id){ showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); };
+
+
+    function selectedGuestInviteId(){ return $('guestInviteSelect')?.value || ''; }
+    function selectedGuestInvite(){ const id=selectedGuestInviteId(); return invites.find(inv=>inv.id===id) || null; }
+    function guestPayloadFromForm(){
+      return {
+        name: $('guestEditName').value.trim(),
+        table: $('guestEditTable').value.trim(),
+        companions: Number($('guestEditCompanions').value || 0),
+        phone: $('guestEditPhone').value.trim(),
+        number: Number($('guestEditNumber').value || 0),
+        category: $('guestEditCategory').value.trim(),
+        status: $('guestEditStatus').value.trim(),
+        legacyToken: $('guestEditLegacyToken').value.trim(),
+        notes: $('guestEditNotes').value.trim(),
+        inviteToken: $('guestEditInviteToken').value.trim()
+      };
+    }
+    async function loadGuestCrudList(){
+      const id=selectedGuestInviteId();
+      const tbody=$('guestCrudTbody');
+      if(!tbody) return;
+      if(!id){ tbody.innerHTML='<tr><td colspan="7">Seleccione um convite.</td></tr>'; $('guestCrudMobile').innerHTML=''; return; }
+      const q=encodeURIComponent($('guestSearchInput')?.value || '');
+      try{
+        tbody.innerHTML='<tr><td colspan="7">A carregar convidados...</td></tr>';
+        const out=await api(`/manager/invites/${id}/guests?q=${q}`);
+        currentGuests=out.data||[];
+        renderGuestCrudList();
+      }catch(e){
+        tbody.innerHTML=`<tr><td colspan="7">${esc(e.message)}</td></tr>`;
+        $('guestCrudMobile').innerHTML=`<div class="feedback error">${esc(e.message)}</div>`;
+      }
+    }
+    function renderGuestCrudList(){
+      const rows=currentGuests.map(g=>`<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Resetar acesso"><i data-feather="unlock"></i></button><button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button></div></td></tr>`).join('');
+      $('guestCrudTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convidado encontrado.</td></tr>';
+      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')">Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')">Reset</button><button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')">Eliminar</button></div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
+      iconRefresh();
+    }
+    function badgeStatusFromGuest(status){ const s=String(status||'').toLowerCase(); if(s.includes('confirmado')) return '<span class="badge ok">Confirmado</span>'; if(s.includes('aberto')) return '<span class="badge blue">Aberto</span>'; if(s.includes('pendente') || s.includes('confirmar')) return '<span class="badge warn">Pendente</span>'; return '<span class="badge">Não aberto</span>'; }
+    function openGuestModal(){ $('guestEditModal').classList.add('open'); iconRefresh(); }
+    function closeGuestModal(){ $('guestEditModal').classList.remove('open'); hideMsg($('guestEditResult')); }
+    function fillGuestForm(g={}){
+      editingGuestId = g.id || '';
+      $('guestEditId').value = editingGuestId;
+      $('guestEditTitle').textContent = editingGuestId ? 'Editar convidado' : 'Novo convidado';
+      $('guestEditName').value = g.name || '';
+      $('guestEditTable').value = g.table || g.mesa || 'A indicar na entrada';
+      $('guestEditCompanions').value = Number(g.companions||0);
+      $('guestEditPhone').value = g.phone || '';
+      $('guestEditNumber').value = Number(g.number||0);
+      $('guestEditCategory').value = g.category || '';
+      $('guestEditStatus').value = g.status || 'Não aberto';
+      $('guestEditLegacyToken').value = g.legacyToken || '';
+      $('guestEditNotes').value = g.notes || '';
+      $('guestEditInviteToken').value = g.inviteToken || g.token || '';
+      $('guestDeleteBtn').style.display = editingGuestId ? '' : 'none';
+      $('guestResetAccessSingleBtn').style.display = editingGuestId ? '' : 'none';
+      hideMsg($('guestEditResult'));
+    }
+    window.openGuestEditor = function(id){ const g=currentGuests.find(item=>String(item.id)===String(id)); if(!g) return alert('Convidado não encontrado na lista carregada.'); fillGuestForm(g); openGuestModal(); };
+    function openNewGuest(){ const inv=selectedGuestInvite(); if(!inv) return showMsg($('guestCrudResult'), 'Seleccione primeiro um convite.', true); fillGuestForm({ table:'A indicar na entrada', status:'Não aberto' }); openGuestModal(); }
+    async function saveGuestFromModal(e){
+      e.preventDefault();
+      const inviteId=selectedGuestInviteId();
+      if(!inviteId) return showMsg($('guestEditResult'), 'Seleccione primeiro um convite.', true);
+      const payload=guestPayloadFromForm();
+      if(!payload.name) return showMsg($('guestEditResult'), 'Nome obrigatório.', true);
+      try{
+        const method=editingGuestId ? 'PATCH' : 'POST';
+        const path=editingGuestId ? `/manager/invites/${inviteId}/guests/${editingGuestId}` : `/manager/invites/${inviteId}/guests`;
+        const out=await api(path,{method,body:JSON.stringify(payload)});
+        showMsg($('guestEditResult'), out.message || 'Guardado com sucesso.');
+        await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails()]);
+        setTimeout(()=>closeGuestModal(), 750);
+      }catch(err){ showMsg($('guestEditResult'), err.message, true); }
+    }
+    window.resetSingleGuestAccess = async function(id){
+      const inviteId=selectedGuestInviteId();
+      if(!inviteId || !id) return;
+      if(!confirm('Resetar acesso deste convidado?')) return;
+      try{ const out=await api(`/manager/invites/${inviteId}/guests/${id}/reset-access`,{method:'POST',body:JSON.stringify({})}); showMsg($('guestCrudResult'), out.message || 'Acesso reiniciado.'); await loadGuestCrudList(); }catch(e){ showMsg($('guestCrudResult'), e.message, true); }
+    };
+    window.deleteGuestFromManager = async function(id){
+      const inviteId=selectedGuestInviteId();
+      const g=currentGuests.find(item=>String(item.id)===String(id));
+      if(!inviteId || !id || !g) return;
+      const typed=prompt(`Eliminar definitivamente o convidado "${g.name}"?\n\nIsto remove o convidado e os seus RSVP/check-ins associados. Escreva ELIMINAR para confirmar.`);
+      if(String(typed||'').trim().toUpperCase() !== 'ELIMINAR') return;
+      try{ const out=await api(`/manager/invites/${inviteId}/guests/${id}`,{method:'DELETE'}); showMsg($('guestCrudResult'), out.message || 'Convidado eliminado.'); await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails()]); }catch(e){ showMsg($('guestCrudResult'), e.message, true); }
+    };
+    async function eraseInviteData(){
+      const id=selectedManageId();
+      if(!id) return showMsg($('manageResult'), 'Seleccione primeiro um convite.', true);
+      const inv=[...invites,...archivedInvites].find(x=>x.id===id);
+      const typed=prompt(`ERASE DE DADOS DO CONVITE\n\nConvite: ${inv?.coupleNames || id}\nSlug: ${inv?.slug || ''}\n\nEsta acção apaga convidados, RSVP, mensagens, presentes, contribuições, check-ins, cápsula e actividades deste convite, mas mantém o registo do convite.\n\nEscreva APAGAR DADOS para confirmar.`);
+      if(String(typed||'').trim().toUpperCase() !== 'APAGAR DADOS') return;
+      hideMsg($('manageResult'));
+      try{
+        const out=await api(`/manager/invites/${id}/data`,{method:'DELETE',body:JSON.stringify({collections:['all']})});
+        const d=out.data?.deleted || {};
+        showMsg($('manageResult'), `${esc(out.message || 'Dados apagados.')}<br>${Object.entries(d).map(([k,v])=>`${esc(k)}: <b>${esc(v)}</b>`).join(' · ')}`);
+        await Promise.allSettled([loadAll(), loadManageDetails(), loadGuestCrudList()]);
+      }catch(e){ showMsg($('manageResult'), e.message, true); }
+    }
 
     function bindEvents(){
       $('loginForm').addEventListener('submit', async e=>{ e.preventDefault(); hideMsg($('loginError')); API_BASE=(window.LIRANDZO_MANAGER_API_BASE || API_BASE || '').trim().replace(/\/+$/,''); setLoginLoading(true); try{ const out=await api('/manager/login',{method:'POST',body:JSON.stringify({password:$('passwordInput').value})}); token=out.token; sessionStorage.setItem('lirandzo_manager_token',token); appView(); }catch(err){ showMsg($('loginError'),err.message,true); } finally { setLoginLoading(false); } });
       $('menuBtn').addEventListener('click',()=>{ $('sidebar').classList.add('open'); $('overlay').classList.add('active'); }); $('overlay').addEventListener('click',()=>{ $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); });
       $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); token=''; loginView(); }); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto)));
       $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
-      $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
+      $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('guestEditModal')?.classList.remove('open'); $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
       $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); const fd=new FormData(e.currentTarget); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); showMsg($('createResult'), out.message || `Convite criado: ${out.data.publicUrl}`); e.currentTarget.reset(); await loadAll(); }catch(err){ showMsg($('createResult'),err.message,true); } });
       $('manageInviteSelect').addEventListener('change',loadManageDetails); $('loadManageBtn').addEventListener('click',loadManageDetails);
       $('resetAccessBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/guests/reset-access`,'POST','Resetar o acesso de todos os convidados deste convite?','Acessos reiniciados.'));
@@ -491,8 +633,41 @@
       $('seedGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/seed-defaults`,'POST','Restaurar presentes padrão deste convite?','Presentes padrão restaurados.'));
       $('archiveBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}`,'DELETE','Arquivar este convite? Ele ficará disponível na página Arquivados.','Convite arquivado.'));
       $('publishInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'published')); $('draftInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'draft')); $('purgeInviteBtn').addEventListener('click',()=>purgeInviteStrict(selectedManageId()));
+      
+      $('guestInviteSelect').addEventListener('change',()=>{ hideMsg($('guestCrudResult')); loadGuestCrudList(); });
+      $('guestSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadGuestCrudList(); });
+      $('refreshGuestCrudBtn')?.addEventListener('click', loadGuestCrudList);
+      $('addGuestBtn')?.addEventListener('click', openNewGuest);
+      $('closeGuestEditModal')?.addEventListener('click', closeGuestModal);
+      $('guestEditModal')?.addEventListener('click', e=>{ if(e.target===$('guestEditModal')) closeGuestModal(); });
+      $('guestEditForm')?.addEventListener('submit', saveGuestFromModal);
+      $('guestDeleteBtn')?.addEventListener('click',()=> editingGuestId && deleteGuestFromManager(editingGuestId));
+      $('guestResetAccessSingleBtn')?.addEventListener('click',()=> editingGuestId && resetSingleGuestAccess(editingGuestId));
+      $('eraseInviteDataBtn')?.addEventListener('click', eraseInviteData);
       $('guestFile').addEventListener('change', async e=>{ const file=e.target.files?.[0]; if(!file) return; const text=await file.text(); $('guestBulkText').value=text; $('guestPreview').innerHTML=`Ficheiro carregado: <b>${esc(file.name)}</b><br>${text.split(/\r?\n/).filter(Boolean).length} linha(s) detectada(s). Confere o campo abaixo antes de importar.`; });
-      $('sampleGuestsBtn').addEventListener('click',()=>{ $('guestBulkText').value='Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo\nPrísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel\nAna Manuel;Mesa 3;1;+258840000000;Família da noiva;Família;153;'; });
+      $('sampleGuestsBtn').addEventListener('click',()=>{ $('guestBulkText').value='Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo\nPrísca Daniel;A definir;0;;Observação interna;Single;152;rm-2026-152-prisca-daniel\nAna Manuel;Mesa 3;1;+258840000000;Família da noiva;Família;153;'; });
+      $('repairGuestsBtn').addEventListener('click', async ()=>{
+        const id = $('guestInviteSelect').value;
+        if (!id) return showMsg($('guestResult'), 'Seleccione primeiro o convite que pretende reparar.', true);
+        if (!confirm('Reparar normalizedName dos convidados deste convite?\n\nIsto corrige nomes antigos mal normalizados e ajuda a resolver erro 401 no login.')) return;
+        hideMsg($('guestResult'));
+        setGuestImportLoading(true, 'A reparar nomes normalizados...', 35);
+        try {
+          const out = await api(`/manager/invites/${id}/guests/repair-normalized`, { method:'POST', body:JSON.stringify({}) });
+          setGuestImportLoading(true, 'A actualizar listas...', 82);
+          await loadAll();
+          const d = out.data || {};
+          setGuestImportLoading(false, 'Reparação concluída', 100, true);
+          showMsg($('guestResult'), `${esc(out.message || 'Reparação concluída.')}<br>Verificados: <b>${esc(d.checked || 0)}</b> · Reparados: <b>${esc(d.repaired || 0)}</b> · Falhas: <b>${esc((d.failed || []).length)}</b>`);
+          setTimeout(() => {
+            const progress = $('guestImportProgress');
+            if (progress && progress.classList.contains('done')) progress.classList.remove('active', 'done');
+          }, 4200);
+        } catch(err) {
+          setGuestImportLoading(false, 'Reparação interrompida', 100, false);
+          showMsg($('guestResult'), err.message, true);
+        }
+      });
       $('guestForm').addEventListener('submit', async e=>{
         e.preventDefault();
         const id = $('guestInviteSelect').value;

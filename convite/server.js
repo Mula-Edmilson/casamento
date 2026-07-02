@@ -153,15 +153,10 @@ function parseGuestImportText(text) {
     };
   });
 }
-function buildGuestNotes({ notes, number, category, oldToken }) {
-  const parts = [];
-  if (notes) parts.push(String(notes).trim());
-  const meta = [];
-  if (number) meta.push(`Nº ${number}`);
-  if (category) meta.push(`Categoria: ${category}`);
-  if (oldToken) meta.push(`Token antigo: ${oldToken}`);
-  if (meta.length) parts.push(meta.join(' · '));
-  return Array.from(new Set(parts.filter(Boolean))).join(' — ');
+function buildGuestNotes({ notes }) {
+  // Mantém apenas notas humanas/operacionais. Dados estruturais como número,
+  // categoria e token antigo ficam nos próprios campos do convidado.
+  return Array.from(new Set([String(notes || '').trim()].filter(Boolean))).join(' — ');
 }
 
 function base64url(input) { return Buffer.from(input).toString('base64url'); }
@@ -182,6 +177,74 @@ async function ensureGuestInviteToken(invite, guest) {
   }
   return guest.inviteToken;
 }
+
+function exactRegex(value) {
+  return new RegExp(`^${escapeRegex(String(value || '').trim())}$`, 'i');
+}
+async function repairGuestNormalizedName(guest) {
+  if (!guest || !guest.name) return { changed: false, error: '' };
+  const expected = normalizeText(guest.name);
+  if (!expected || guest.normalizedName === expected) return { changed: false, error: '' };
+  const before = guest.normalizedName || '';
+  guest.normalizedName = expected;
+  try {
+    await guest.save();
+    return { changed: true, before, after: expected };
+  } catch (err) {
+    guest.normalizedName = before;
+    return { changed: false, error: err.message || 'Falha ao reparar normalizedName.' };
+  }
+}
+async function findGuestByNormalizedOrName(inviteId, rawName, options = {}) {
+  const name = String(rawName || '').trim();
+  if (!name) return null;
+  const normalizedName = normalizeText(name);
+
+  let guest = await Guest.findOne({ inviteId, normalizedName });
+
+  if (!guest) {
+    guest = await Guest.findOne({ inviteId, name: { $regex: exactRegex(name) } });
+  }
+
+  if (!guest) {
+    const candidates = await Guest.find({ inviteId }).select('_id name normalizedName');
+    const match = candidates.find(item => normalizeText(item.name) === normalizedName);
+    if (match) guest = await Guest.findById(match._id);
+  }
+
+  if (guest && options.repair !== false) await repairGuestNormalizedName(guest);
+  return guest;
+}
+async function repairGuestsForInvite(invite) {
+  const guests = await Guest.find({ inviteId: invite._id });
+  const result = { checked: guests.length, repaired: 0, alreadyOk: 0, failed: [] };
+
+  for (const guest of guests) {
+    const expected = normalizeText(guest.name);
+    if (!expected) {
+      result.failed.push({ id: String(guest._id), name: guest.name || '', error: 'Nome vazio.' });
+      continue;
+    }
+    if (guest.normalizedName === expected && guest.slug === invite.slug) {
+      result.alreadyOk += 1;
+      continue;
+    }
+
+    const before = guest.normalizedName || '';
+    guest.normalizedName = expected;
+    guest.slug = invite.slug;
+    try {
+      await guest.save();
+      result.repaired += 1;
+    } catch (err) {
+      guest.normalizedName = before;
+      result.failed.push({ id: String(guest._id), name: guest.name || '', before, expected, error: err.message });
+    }
+  }
+
+  return result;
+}
+
 function nowIso() { return new Date().toISOString(); }
 function parseBool(v) { return v === true || v === 'true' || v === '1' || v === 'on'; }
 function packageLabel(key) { return key === 'perola' ? 'Pérola' : key === 'esmeralda' ? 'Esmeralda' : key === 'rubi' ? 'Rubi' : key; }
@@ -254,6 +317,7 @@ const GuestSchema = new mongoose.Schema({
   companions: { type: Number, default: 0, min: 0 },
   phone: { type: String, default: '' },
   notes: { type: String, default: '' },
+  legacyToken: { type: String, default: '' },
   inviteToken: { type: String, default: '', index: true },
   number: { type: Number, default: 0, index: true },
   category: { type: String, default: '' },
@@ -525,21 +589,31 @@ app.get('/health', async (req, res) => res.json({ status: 'ok', service: 'lirand
 app.post('/manager/login', (req, res) => {
   const { password } = req.body || {};
   if (!process.env.MANAGER_PASSWORD) return res.status(500).json({ status: 'error', message: 'MANAGER_PASSWORD não configurado no Render.' });
-  if (String(password || '') !== String(process.env.MANAGER_PASSWORD)) return res.status(401).json({ status: 'error', message: 'Senha incorrecta.' });
-  if (!process.env.MANAGER_SECRET) {
-    // Compatibilidade: permite o admin.html validar a senha mesmo em deployments antigos sem MANAGER_SECRET.
-    // As acções sensíveis continuam protegidas pela própria senha em /admin-api.
-    return res.json({ status: 'success', token: '', message: 'Sessão validada por senha.' });
+  if (!process.env.MANAGER_SECRET || String(process.env.MANAGER_SECRET).length < 16) {
+    return res.status(500).json({ status: 'error', message: 'MANAGER_SECRET precisa de pelo menos 16 caracteres no Render.' });
   }
+  if (String(password || '') !== String(process.env.MANAGER_PASSWORD)) return res.status(401).json({ status: 'error', message: 'Senha incorrecta.' });
   const token = signToken({ role: 'manager', iat: Date.now(), exp: Date.now() + 1000 * 60 * 60 * 12 });
   res.json({ status: 'success', token });
 });
 
 app.get('/manager/summary', requireManager, async (req, res) => {
+  const activeInviteIds = await Invite.find({ status: { $ne: 'archived' } }).distinct('_id');
+  const scoped = { inviteId: { $in: activeInviteIds } };
   const [totalInvites, published, draft, guests, rsvps, messages, contributions, activities] = await Promise.all([
-    Invite.countDocuments({ status: { $ne: 'archived' } }), Invite.countDocuments({ status: 'published' }), Invite.countDocuments({ status: 'draft' }), Guest.countDocuments({}), Rsvp.countDocuments({}), Message.countDocuments({}), Contribution.countDocuments({}), Activity.find({}).sort({ timestamp: -1 }).limit(25)
+    Invite.countDocuments({ status: { $ne: 'archived' } }),
+    Invite.countDocuments({ status: 'published' }),
+    Invite.countDocuments({ status: 'draft' }),
+    Guest.countDocuments(scoped),
+    Rsvp.countDocuments(scoped),
+    Message.countDocuments(scoped),
+    Contribution.countDocuments(scoped),
+    Activity.find(activeInviteIds.length ? { inviteId: { $in: activeInviteIds } } : {}).sort({ timestamp: -1 }).limit(25)
   ]);
-  res.json({ status: 'success', data: { totalInvites, published, draft, guests, rsvps, messages, contributions, activities } });
+  res.json({
+    status: 'success',
+    data: { totalInvites, published, draft, guests, rsvps, messages, contributions, activities }
+  });
 });
 app.get('/manager/github/status', requireManager, (req, res) => res.json({ status: 'success', data: { configured: githubReady(), owner: process.env.GITHUB_OWNER || '', repo: process.env.GITHUB_REPO || '', branch: process.env.GITHUB_BRANCH || '', invitesBasePath: getInvitesBasePath(), templates: { perola: getTemplatePath('perola'), esmeralda: getTemplatePath('esmeralda'), rubi: getTemplatePath('rubi') } } }));
 
@@ -619,7 +693,8 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
   }
 
   try {
-    const github = await copyPackageTemplateToClient({ invite, allowOverwrite: false });
+    const allowOverwrite = parseBool(req.body?.allowOverwrite || req.query?.overwrite || false);
+    const github = await copyPackageTemplateToClient({ invite, allowOverwrite });
 
     invite.githubPath = github.path;
     invite.githubLastCommitSha = github.commitSha;
@@ -635,7 +710,7 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
 
     return res.json({
       status: 'success',
-      message: 'Pasta criada no GitHub com sucesso.',
+      message: allowOverwrite ? 'Pasta actualizada no GitHub com sucesso.' : 'Pasta criada no GitHub com sucesso.',
       data: cleanInviteDoc(invite),
       github
     });
@@ -671,6 +746,76 @@ app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (r
     });
   }
 }));
+
+app.get('/manager/invites/:id/guests', requireManager, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+  const q = String(req.query.q || '').trim();
+  const filter = { inviteId: invite._id };
+  if (q) {
+    const rx = new RegExp(escapeRegex(q), 'i');
+    filter.$or = [{ name: rx }, { normalizedName: rx }, { table: rx }, { category: rx }, { phone: rx }, { notes: rx }, { legacyToken: rx }, { inviteToken: rx }];
+  }
+  const guests = await Guest.find(filter).sort({ number: 1, name: 1 });
+  res.json({ status: 'success', data: guests.map(cleanGuestForManager) });
+}));
+
+app.post('/manager/invites/:id/guests', requireManager, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+  const payload = buildGuestPayloadForManager(invite, req.body || {});
+  await ensureNoGuestDuplicate(invite, payload.normalizedName);
+  const guest = await Guest.create(payload);
+  await logActivity({ invite, type: 'guests', title: 'Convidado criado no AdminManager', detail: guest.name, meta: { guestId: String(guest._id) } });
+  res.status(201).json({ status: 'success', message: 'Convidado criado com sucesso.', data: cleanGuestForManager(guest) });
+}));
+
+app.patch('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+  const guest = await Guest.findOne({ _id: req.params.guestId, inviteId: invite._id });
+  if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
+  const payload = buildGuestPayloadForManager(invite, req.body || {}, guest);
+  await ensureNoGuestDuplicate(invite, payload.normalizedName, guest._id);
+  Object.assign(guest, payload);
+  await guest.save();
+
+  await Promise.all([
+    Rsvp.updateMany({ inviteId: invite._id, guestId: guest._id }, { $set: { nome: guest.name, mesa: guest.table || '', guests: Number(guest.maxGuests) || 1, phone: guest.phone || '' } }),
+    CheckIn.updateMany({ inviteId: invite._id, guestId: guest._id }, { $set: { nome: guest.name, mesa: guest.table || '', guests: Number(guest.maxGuests) || 1, token: guest.inviteToken || '' } })
+  ]);
+
+  await logActivity({ invite, type: 'guests', title: 'Convidado editado no AdminManager', detail: guest.name, meta: { guestId: String(guest._id) } });
+  res.json({ status: 'success', message: 'Convidado actualizado com sucesso.', data: cleanGuestForManager(guest) });
+}));
+
+app.post('/manager/invites/:id/guests/:guestId/reset-access', requireManager, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+  const guest = await Guest.findOne({ _id: req.params.guestId, inviteId: invite._id });
+  if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
+  guest.deviceToken = '';
+  if (/^Convite Aberto$/i.test(String(guest.status || ''))) guest.status = 'Não aberto';
+  await guest.save();
+  await logActivity({ invite, type: 'guests', title: 'Acesso de convidado reiniciado', detail: guest.name, meta: { guestId: String(guest._id) } });
+  res.json({ status: 'success', message: 'Acesso do convidado reiniciado.', data: cleanGuestForManager(guest) });
+}));
+
+app.delete('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+  const guest = await Guest.findOne({ _id: req.params.guestId, inviteId: invite._id });
+  if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
+  const guestName = guest.name;
+  const [rsvps, checkins] = await Promise.all([
+    Rsvp.deleteMany({ inviteId: invite._id, guestId: guest._id }),
+    CheckIn.deleteMany({ inviteId: invite._id, guestId: guest._id })
+  ]);
+  await Guest.deleteOne({ _id: guest._id, inviteId: invite._id });
+  await logActivity({ invite, type: 'guests', title: 'Convidado eliminado no AdminManager', detail: `${guestName} · RSVP removidos: ${rsvps.deletedCount || 0} · Check-ins removidos: ${checkins.deletedCount || 0}` });
+  res.json({ status: 'success', message: 'Convidado eliminado com sucesso.', data: { deleted: 1, rsvps: rsvps.deletedCount || 0, checkins: checkins.deletedCount || 0 } });
+}));
+
 app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
@@ -694,10 +839,10 @@ app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) =>
     const number = Math.max(0, Number.parseInt(entry.numberRaw, 10) || 0);
     const category = String(entry.category || '').trim();
     const oldToken = String(entry.oldToken || '').trim();
-    const notes = buildGuestNotes({ notes: entry.notes, number, category, oldToken });
+    const notes = buildGuestNotes({ notes: entry.notes });
 
     try {
-      const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
+      const existing = await findGuestByNormalizedOrName(invite._id, nameRaw, { repair: true });
       if (existing) {
         existing.name = nameRaw;
         existing.slug = invite.slug;
@@ -708,6 +853,8 @@ app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) =>
         existing.notes = notes;
         existing.category = category || existing.category || '';
         existing.number = number || existing.number || 0;
+        existing.legacyToken = oldToken || existing.legacyToken || '';
+        existing.normalizedName = normalizedName;
         if (!existing.status) existing.status = 'Não aberto';
         if (!existing.inviteToken) existing.inviteToken = generateGuestPublicToken();
         await existing.save();
@@ -727,6 +874,7 @@ app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) =>
           notes,
           category,
           number,
+          legacyToken: oldToken,
           inviteToken: generateGuestPublicToken()
         });
         results.inserted += 1;
@@ -745,6 +893,52 @@ app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) =>
 
   return res.json({ status: 'success', data: results });
 });
+
+app.post('/manager/invites/:id/guests/repair-normalized', requireManager, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+
+  const result = await repairGuestsForInvite(invite);
+
+  await logActivity({
+    invite,
+    type: 'guests',
+    title: 'Normalização de convidados reparada',
+    detail: `${result.repaired} reparados · ${result.failed.length} falhas`
+  });
+
+  res.json({
+    status: 'success',
+    message: `Normalização verificada: ${result.repaired} reparado(s), ${result.alreadyOk} já correcto(s), ${result.failed.length} falha(s).`,
+    data: result
+  });
+}));
+
+app.post('/manager/guests/repair-normalized', requireManager, asyncRoute(async (req, res) => {
+  const invites = await Invite.find({});
+  const total = { checked: 0, repaired: 0, alreadyOk: 0, failed: [] };
+
+  for (const invite of invites) {
+    const result = await repairGuestsForInvite(invite);
+    total.checked += result.checked;
+    total.repaired += result.repaired;
+    total.alreadyOk += result.alreadyOk;
+    result.failed.forEach(item => total.failed.push({ slug: invite.slug, ...item }));
+  }
+
+  await logActivity({
+    type: 'guests',
+    title: 'Normalização global de convidados reparada',
+    detail: `${total.repaired} reparados · ${total.failed.length} falhas`
+  });
+
+  res.json({
+    status: 'success',
+    message: `Normalização global verificada: ${total.repaired} reparado(s), ${total.alreadyOk} já correcto(s), ${total.failed.length} falha(s).`,
+    data: total
+  });
+}));
+
 
 app.post('/manager/invites/:id/guests/reset-access', requireManager, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
@@ -837,6 +1031,49 @@ app.post('/manager/invites/:id/gifts/seed-defaults', requireManager, async (req,
     data: { total }
   });
 });
+
+
+app.delete('/manager/invites/:id/data', requireManager, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+
+  const allowed = new Set(['guests', 'rsvps', 'messages', 'gifts', 'contributions', 'checkins', 'photos', 'activities']);
+  let collections = req.body?.collections || req.query?.collections || 'all';
+  if (typeof collections === 'string') collections = collections.split(',').map(x => x.trim()).filter(Boolean);
+  if (!Array.isArray(collections) || !collections.length || collections.includes('all')) collections = Array.from(allowed);
+  collections = collections.filter(x => allowed.has(x));
+  if (!collections.length) return res.status(400).json({ status: 'error', message: 'Nenhuma colecção válida foi indicada para apagar.' });
+
+  const inviteId = invite._id;
+  const deleted = {};
+  async function del(key, fn) {
+    if (!collections.includes(key)) return;
+    const result = await fn();
+    deleted[key] = result.deletedCount || 0;
+  }
+
+  await del('guests', () => Guest.deleteMany({ inviteId }));
+  await del('rsvps', () => Rsvp.deleteMany({ inviteId }));
+  await del('messages', () => Message.deleteMany({ inviteId }));
+  await del('gifts', () => GiftItem.deleteMany({ inviteId }));
+  await del('contributions', () => Contribution.deleteMany({ inviteId }));
+  await del('checkins', () => CheckIn.deleteMany({ inviteId }));
+  await del('photos', () => CapsulePhoto.deleteMany({ inviteId }));
+  await del('activities', () => Activity.deleteMany({ inviteId }));
+
+  if (parseBool(req.body?.archive || req.query?.archive)) {
+    invite.status = 'archived';
+    await invite.save();
+  }
+
+  await logActivity({ invite, type: 'warning', title: 'Erase de dados executado', detail: `${invite.slug} · ${Object.entries(deleted).map(([k,v]) => `${k}: ${v}`).join(' · ')}`, meta: { deleted, keptInvite: true } });
+
+  res.json({
+    status: 'success',
+    message: 'Dados do convite apagados com sucesso. O registo do convite foi mantido.',
+    data: { slug: invite.slug, deleted, inviteKept: true, archived: invite.status === 'archived' }
+  });
+}));
 
 app.delete('/manager/invites/:id/purge', requireManager, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
@@ -957,7 +1194,7 @@ async function adminAddGuest(invite, data) {
     throw err;
   }
   const normalizedName = normalizeText(name);
-  const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
+  const existing = await findGuestByNormalizedOrName(invite._id, name, { repair: true });
   if (existing) {
     const err = new Error('Este convidado já existe na lista.');
     err.statusCode = 409;
@@ -1037,7 +1274,7 @@ async function adminRestoreRsvp(invite, data) {
     err.statusCode = 404;
     throw err;
   }
-  const guest = rsvp.guestId ? await Guest.findOne({ _id: rsvp.guestId, inviteId: invite._id }) : await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(rsvp.nome) });
+  const guest = rsvp.guestId ? await Guest.findOne({ _id: rsvp.guestId, inviteId: invite._id }) : await findGuestByNormalizedOrName(invite._id, rsvp.nome, { repair: true });
   await Rsvp.deleteOne({ _id: rsvp._id, inviteId: invite._id });
   if (guest) {
     guest.status = 'Convite Aberto';
@@ -1054,7 +1291,7 @@ async function adminRestoreCheckin(invite, data) {
     err.statusCode = 404;
     throw err;
   }
-  const guest = checkin.guestId ? await Guest.findOne({ _id: checkin.guestId, inviteId: invite._id }) : await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(checkin.nome) });
+  const guest = checkin.guestId ? await Guest.findOne({ _id: checkin.guestId, inviteId: invite._id }) : await findGuestByNormalizedOrName(invite._id, checkin.nome, { repair: true });
   await CheckIn.deleteOne({ _id: checkin._id, inviteId: invite._id });
   if (guest) {
     guest.checkedIn = false;
@@ -1160,6 +1397,64 @@ function cleanGuestForPublic(guest) {
     checkedInAt: guest.checkedInAt || null
   };
 }
+
+function cleanGuestForManager(guest) {
+  const data = cleanGuestForPublic(guest);
+  return {
+    ...data,
+    id: String(guest._id),
+    _id: String(guest._id),
+    inviteId: String(guest.inviteId || ''),
+    slug: guest.slug || '',
+    normalizedName: guest.normalizedName || '',
+    deviceToken: guest.deviceToken || '',
+    legacyToken: guest.legacyToken || '',
+    inviteToken: guest.inviteToken || '',
+    createdAt: guest.createdAt || null,
+    updatedAt: guest.updatedAt || null
+  };
+}
+
+function buildGuestPayloadForManager(invite, body = {}, existing = null) {
+  const name = String(body.name ?? body.nome ?? '').trim();
+  if (!name) {
+    const err = new Error('Nome do convidado é obrigatório.');
+    err.statusCode = 400;
+    throw err;
+  }
+  const companions = Math.max(0, Number.parseInt(body.companions ?? body.acompanhantes ?? 0, 10) || 0);
+  const explicitMaxGuests = Number.parseInt(body.maxGuests ?? body.maxGuestsTotal ?? '', 10);
+  const maxGuests = Number.isFinite(explicitMaxGuests) && explicitMaxGuests > 0 ? Math.max(1, explicitMaxGuests) : Math.max(1, companions + 1);
+  return {
+    inviteId: invite._id,
+    slug: invite.slug,
+    name,
+    normalizedName: normalizeText(name),
+    status: String(body.status ?? existing?.status ?? 'Não aberto').trim() || 'Não aberto',
+    deviceToken: String(body.deviceToken ?? existing?.deviceToken ?? '').trim(),
+    table: String(body.table ?? body.mesa ?? existing?.table ?? '').trim(),
+    companions,
+    maxGuests,
+    phone: String(body.phone ?? existing?.phone ?? '').trim(),
+    notes: buildGuestNotes({ notes: body.notes ?? existing?.notes ?? '' }),
+    legacyToken: String(body.legacyToken ?? existing?.legacyToken ?? '').trim(),
+    inviteToken: String(body.inviteToken ?? existing?.inviteToken ?? '').trim() || generateGuestPublicToken(),
+    number: Math.max(0, Number.parseInt(body.number ?? existing?.number ?? 0, 10) || 0),
+    category: String(body.category ?? existing?.category ?? '').trim(),
+    checkedIn: Boolean(body.checkedIn ?? existing?.checkedIn ?? false),
+    checkedInAt: body.checkedIn ? (existing?.checkedInAt || new Date()) : (existing?.checkedInAt || undefined)
+  };
+}
+
+async function ensureNoGuestDuplicate(invite, normalizedName, excludeGuestId = '') {
+  const duplicate = await Guest.findOne({ inviteId: invite._id, normalizedName });
+  if (duplicate && String(duplicate._id) !== String(excludeGuestId || '')) {
+    const err = new Error(`Já existe um convidado com este nome: ${duplicate.name}`);
+    err.statusCode = 409;
+    throw err;
+  }
+}
+
 async function findGuestByIdentity(invite, { nome, name, token } = {}) {
   const rawName = nome || name;
   let guest = null;
@@ -1178,7 +1473,7 @@ async function findGuestByIdentity(invite, { nome, name, token } = {}) {
     guest = await Guest.findOne({ inviteId: invite._id, $or: tokenFilters });
   }
 
-  if (!guest && rawName) guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(rawName) });
+  if (!guest && rawName) guest = await findGuestByNormalizedOrName(invite._id, rawName, { repair: true });
   return guest;
 }
 async function getPublicStats(req, res, invite) {
@@ -1255,7 +1550,7 @@ async function handleLogin(req, res, invite) {
   const { name } = req.body || {};
   if (!name) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
 
-  const guest = await Guest.findOne({ inviteId: invite._id, normalizedName: normalizeText(name) });
+  const guest = await findGuestByNormalizedOrName(invite._id, name, { repair: true });
   if (!guest) return res.status(401).json({ status: 'error', message: 'Nome não encontrado na lista.' });
 
   let shouldSave = false;
@@ -1345,7 +1640,7 @@ async function createPublicRsvpGuest(invite, data = {}) {
     });
   } catch (err) {
     if (err && err.code === 11000) {
-      const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
+      const existing = await findGuestByNormalizedOrName(invite._id, name, { repair: true });
       if (existing) return existing;
     }
     throw err;
@@ -1484,3 +1779,6 @@ async function start() {
   app.listen(PORT, () => console.log(`Lirandzo AdminManager API a correr na porta ${PORT}`));
 }
 start().catch(err => { console.error('Falha ao iniciar servidor:', err); process.exit(1); });
+
+
+
