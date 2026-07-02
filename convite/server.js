@@ -270,13 +270,32 @@ function verifyToken(token) {
     return payload;
   } catch { return null; }
 }
+function normalizeManagerRole(payload) {
+  if (!payload) return '';
+  if (payload.scope === 'manager' && ['admin', 'editor'].includes(payload.role)) return payload.role;
+  if (payload.role === 'manager') return 'admin'; // compatibilidade com tokens antigos
+  return '';
+}
 function requireManager(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : '';
   const payload = verifyToken(token);
-  if (!payload || payload.role !== 'manager') return res.status(401).json({ status: 'error', message: 'Sessão inválida ou expirada.' });
-  req.manager = payload;
+  const role = normalizeManagerRole(payload);
+  if (!payload || !role) return res.status(401).json({ status: 'error', message: 'Sessão inválida ou expirada.' });
+  req.manager = { ...payload, role, scope: 'manager' };
   return next();
+}
+function requireAdmin(req, res, next) {
+  if (!req.manager) return requireManager(req, res, () => requireAdmin(req, res, next));
+  if (req.manager.role !== 'admin') return res.status(403).json({ status: 'error', message: 'Acesso negado. Esta acção exige perfil Admin.' });
+  return next();
+}
+function ensureAdminAction(req, res) {
+  if (!req.manager || req.manager.role !== 'admin') {
+    res.status(403).json({ status: 'error', message: 'Acesso negado. Esta acção exige perfil Admin.' });
+    return false;
+  }
+  return true;
 }
 function sendJson(req, res, payload, status = 200) {
   const cb = req.query && req.query.callback;
@@ -587,14 +606,21 @@ async function seedDefaultGifts(invite) {
 app.get('/health', async (req, res) => res.json({ status: 'ok', service: 'lirandzo-adminmanager', mongo: mongoose.connection.readyState === 1 ? 'connected' : 'not_connected', githubConfigured: githubReady() }));
 
 app.post('/manager/login', (req, res) => {
-  const { password } = req.body || {};
-  if (!process.env.MANAGER_PASSWORD) return res.status(500).json({ status: 'error', message: 'MANAGER_PASSWORD não configurado no Render.' });
+  const { password, accessType, role } = req.body || {};
+  const requestedRole = String(accessType || role || 'admin').toLowerCase() === 'editor' ? 'editor' : 'admin';
+  const adminPassword = process.env.MANAGER_ADMIN_PASSWORD || process.env.MANAGER_PASSWORD;
+  const editorPassword = process.env.MANAGER_EDITOR_PASSWORD;
+
+  if (!adminPassword) return res.status(500).json({ status: 'error', message: 'MANAGER_ADMIN_PASSWORD ou MANAGER_PASSWORD não configurado no Render.' });
+  if (requestedRole === 'editor' && !editorPassword) return res.status(500).json({ status: 'error', message: 'MANAGER_EDITOR_PASSWORD não configurado no Render.' });
   if (!process.env.MANAGER_SECRET || String(process.env.MANAGER_SECRET).length < 16) {
     return res.status(500).json({ status: 'error', message: 'MANAGER_SECRET precisa de pelo menos 16 caracteres no Render.' });
   }
-  if (String(password || '') !== String(process.env.MANAGER_PASSWORD)) return res.status(401).json({ status: 'error', message: 'Senha incorrecta.' });
-  const token = signToken({ role: 'manager', iat: Date.now(), exp: Date.now() + 1000 * 60 * 60 * 12 });
-  res.json({ status: 'success', token });
+
+  const expectedPassword = requestedRole === 'editor' ? editorPassword : adminPassword;
+  if (String(password || '') !== String(expectedPassword)) return res.status(401).json({ status: 'error', message: 'Senha incorrecta para o tipo de acesso seleccionado.' });
+  const token = signToken({ scope: 'manager', role: requestedRole, iat: Date.now(), exp: Date.now() + 1000 * 60 * 60 * 12 });
+  res.json({ status: 'success', token, role: requestedRole, permissions: requestedRole === 'admin' ? ['view','create','edit','delete','erase'] : ['view','edit_limited'] });
 });
 
 app.get('/manager/summary', requireManager, async (req, res) => {
@@ -634,7 +660,7 @@ app.get('/manager/invites', requireManager, async (req, res) => {
   res.json({ status: 'success', data: invites.map(invite => ({ ...cleanInviteDoc(invite), stats: { guests: guestMap.get(String(invite._id)) || 0, rsvps: rsvpMap.get(String(invite._id)) || 0 } })) });
 });
 
-app.post('/manager/invites', requireManager, async (req, res) => {
+app.post('/manager/invites', requireManager, requireAdmin, async (req, res) => {
   const body = req.body || {};
   const packageKey = String(body.packageKey || '').toLowerCase();
   if (!['perola', 'esmeralda', 'rubi'].includes(packageKey)) return res.status(400).json({ status: 'error', message: 'Pacote inválido. Use perola, esmeralda ou rubi.' });
@@ -667,22 +693,25 @@ app.get('/manager/invites/:id', requireManager, async (req, res) => {
   res.json({ status: 'success', data: { invite: cleanInviteDoc(invite), guests, rsvps, messages, gifts, contributions } });
 });
 app.patch('/manager/invites/:id', requireManager, async (req, res) => {
-  const allowed = ['clientName', 'coupleNames', 'bride', 'groom', 'status', 'eventDateISO', 'rsvpDeadline', 'publicUrl', 'config'];
+  const adminAllowed = ['clientName', 'coupleNames', 'bride', 'groom', 'status', 'eventDateISO', 'rsvpDeadline', 'publicUrl', 'config'];
+  const editorAllowed = ['clientName', 'coupleNames', 'bride', 'groom', 'eventDateISO', 'rsvpDeadline', 'publicUrl', 'config'];
+  const allowed = req.manager.role === 'admin' ? adminAllowed : editorAllowed;
   const update = {};
   for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body, key)) update[key] = req.body[key];
+  if (Object.keys(update).length === 0) return res.status(403).json({ status: 'error', message: 'Editor não pode alterar estado, apagar, criar ou executar acções administrativas.' });
   if (update.status === 'published') update.publishedAt = new Date();
   const invite = await Invite.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true });
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
   await logActivity({ invite, type: 'invite', title: 'Convite actualizado', detail: invite.slug });
   res.json({ status: 'success', data: cleanInviteDoc(invite) });
 });
-app.delete('/manager/invites/:id', requireManager, async (req, res) => {
+app.delete('/manager/invites/:id', requireManager, requireAdmin, async (req, res) => {
   const invite = await Invite.findByIdAndUpdate(req.params.id, { status: 'archived' }, { new: true });
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
   await logActivity({ invite, type: 'invite', title: 'Convite arquivado', detail: invite.slug });
   res.json({ status: 'success', data: cleanInviteDoc(invite) });
 });
-app.post('/manager/invites/:id/github-sync', requireManager, asyncRoute(async (req, res) => {
+app.post('/manager/invites/:id/github-sync', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
 
   if (!invite) {
@@ -760,7 +789,7 @@ app.get('/manager/invites/:id/guests', requireManager, asyncRoute(async (req, re
   res.json({ status: 'success', data: guests.map(cleanGuestForManager) });
 }));
 
-app.post('/manager/invites/:id/guests', requireManager, asyncRoute(async (req, res) => {
+app.post('/manager/invites/:id/guests', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
   const payload = buildGuestPayloadForManager(invite, req.body || {});
@@ -775,7 +804,12 @@ app.patch('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(asy
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
   const guest = await Guest.findOne({ _id: req.params.guestId, inviteId: invite._id });
   if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
-  const payload = buildGuestPayloadForManager(invite, req.body || {}, guest);
+  let body = req.body || {};
+  if (req.manager.role === 'editor') {
+    const editorGuestFields = ['name', 'table', 'mesa', 'companions', 'phone', 'number', 'category', 'notes'];
+    body = Object.fromEntries(Object.entries(body).filter(([key]) => editorGuestFields.includes(key)));
+  }
+  const payload = buildGuestPayloadForManager(invite, body, guest);
   await ensureNoGuestDuplicate(invite, payload.normalizedName, guest._id);
   Object.assign(guest, payload);
   await guest.save();
@@ -789,7 +823,7 @@ app.patch('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(asy
   res.json({ status: 'success', message: 'Convidado actualizado com sucesso.', data: cleanGuestForManager(guest) });
 }));
 
-app.post('/manager/invites/:id/guests/:guestId/reset-access', requireManager, asyncRoute(async (req, res) => {
+app.post('/manager/invites/:id/guests/:guestId/reset-access', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
   const guest = await Guest.findOne({ _id: req.params.guestId, inviteId: invite._id });
@@ -801,7 +835,7 @@ app.post('/manager/invites/:id/guests/:guestId/reset-access', requireManager, as
   res.json({ status: 'success', message: 'Acesso do convidado reiniciado.', data: cleanGuestForManager(guest) });
 }));
 
-app.delete('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(async (req, res) => {
+app.delete('/manager/invites/:id/guests/:guestId', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
   const guest = await Guest.findOne({ _id: req.params.guestId, inviteId: invite._id });
@@ -816,7 +850,7 @@ app.delete('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(as
   res.json({ status: 'success', message: 'Convidado eliminado com sucesso.', data: { deleted: 1, rsvps: rsvps.deletedCount || 0, checkins: checkins.deletedCount || 0 } });
 }));
 
-app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) => {
+app.post('/manager/invites/:id/guests/bulk', requireManager, requireAdmin, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
@@ -894,7 +928,7 @@ app.post('/manager/invites/:id/guests/bulk', requireManager, async (req, res) =>
   return res.json({ status: 'success', data: results });
 });
 
-app.post('/manager/invites/:id/guests/repair-normalized', requireManager, asyncRoute(async (req, res) => {
+app.post('/manager/invites/:id/guests/repair-normalized', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
@@ -914,7 +948,7 @@ app.post('/manager/invites/:id/guests/repair-normalized', requireManager, asyncR
   });
 }));
 
-app.post('/manager/guests/repair-normalized', requireManager, asyncRoute(async (req, res) => {
+app.post('/manager/guests/repair-normalized', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invites = await Invite.find({});
   const total = { checked: 0, repaired: 0, alreadyOk: 0, failed: [] };
 
@@ -940,7 +974,7 @@ app.post('/manager/guests/repair-normalized', requireManager, asyncRoute(async (
 }));
 
 
-app.post('/manager/invites/:id/guests/reset-access', requireManager, async (req, res) => {
+app.post('/manager/invites/:id/guests/reset-access', requireManager, requireAdmin, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
@@ -968,7 +1002,7 @@ app.post('/manager/invites/:id/guests/reset-access', requireManager, async (req,
   });
 });
 
-app.post('/manager/invites/:id/gifts/reset-reservations', requireManager, async (req, res) => {
+app.post('/manager/invites/:id/gifts/reset-reservations', requireManager, requireAdmin, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
@@ -991,7 +1025,7 @@ app.post('/manager/invites/:id/gifts/reset-reservations', requireManager, async 
   });
 });
 
-app.delete('/manager/invites/:id/gifts', requireManager, async (req, res) => {
+app.delete('/manager/invites/:id/gifts', requireManager, requireAdmin, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
@@ -1011,7 +1045,7 @@ app.delete('/manager/invites/:id/gifts', requireManager, async (req, res) => {
   });
 });
 
-app.post('/manager/invites/:id/gifts/seed-defaults', requireManager, async (req, res) => {
+app.post('/manager/invites/:id/gifts/seed-defaults', requireManager, requireAdmin, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
@@ -1033,7 +1067,7 @@ app.post('/manager/invites/:id/gifts/seed-defaults', requireManager, async (req,
 });
 
 
-app.delete('/manager/invites/:id/data', requireManager, asyncRoute(async (req, res) => {
+app.delete('/manager/invites/:id/data', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
@@ -1075,7 +1109,7 @@ app.delete('/manager/invites/:id/data', requireManager, asyncRoute(async (req, r
   });
 }));
 
-app.delete('/manager/invites/:id/purge', requireManager, async (req, res) => {
+app.delete('/manager/invites/:id/purge', requireManager, requireAdmin, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
