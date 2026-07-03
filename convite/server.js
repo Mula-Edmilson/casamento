@@ -620,7 +620,7 @@ app.post('/manager/login', (req, res) => {
   const expectedPassword = requestedRole === 'editor' ? editorPassword : adminPassword;
   if (String(password || '') !== String(expectedPassword)) return res.status(401).json({ status: 'error', message: 'Senha incorrecta para o tipo de acesso seleccionado.' });
   const token = signToken({ scope: 'manager', role: requestedRole, iat: Date.now(), exp: Date.now() + 1000 * 60 * 60 * 12 });
-  res.json({ status: 'success', token, role: requestedRole, permissions: requestedRole === 'admin' ? ['view','create','edit','delete','erase','github_sync','bulk_import'] : ['view','edit','create_guest','reset_guest_access','repair_names','export'] });
+  res.json({ status: 'success', token, role: requestedRole, permissions: requestedRole === 'admin' ? ['view','create','edit','delete','erase'] : ['view','edit_limited'] });
 });
 
 app.get('/manager/summary', requireManager, async (req, res) => {
@@ -789,7 +789,7 @@ app.get('/manager/invites/:id/guests', requireManager, asyncRoute(async (req, re
   res.json({ status: 'success', data: guests.map(cleanGuestForManager) });
 }));
 
-app.post('/manager/invites/:id/guests', requireManager, asyncRoute(async (req, res) => {
+app.post('/manager/invites/:id/guests', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
   const payload = buildGuestPayloadForManager(invite, req.body || {});
@@ -806,7 +806,7 @@ app.patch('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(asy
   if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
   let body = req.body || {};
   if (req.manager.role === 'editor') {
-    const editorGuestFields = ['name', 'table', 'mesa', 'companions', 'phone', 'number', 'category', 'notes'];
+    const editorGuestFields = ['name', 'table', 'mesa', 'companions', 'phone', 'number', 'category', 'notes', 'status'];
     body = Object.fromEntries(Object.entries(body).filter(([key]) => editorGuestFields.includes(key)));
   }
   const payload = buildGuestPayloadForManager(invite, body, guest);
@@ -823,16 +823,17 @@ app.patch('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(asy
   res.json({ status: 'success', message: 'Convidado actualizado com sucesso.', data: cleanGuestForManager(guest) });
 }));
 
-app.post('/manager/invites/:id/guests/:guestId/reset-access', requireManager, asyncRoute(async (req, res) => {
+app.post('/manager/invites/:id/guests/:guestId/reset-access', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
   const guest = await Guest.findOne({ _id: req.params.guestId, inviteId: invite._id });
   if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
   guest.deviceToken = '';
-  if (/^Convite Aberto$/i.test(String(guest.status || ''))) guest.status = 'Não aberto';
+  const resetState = req.body?.resetState !== false;
+  if (resetState && !String(guest.status || '').toLowerCase().includes('confirmado')) guest.status = 'Não aberto';
   await guest.save();
-  await logActivity({ invite, type: 'guests', title: 'Acesso de convidado reiniciado', detail: guest.name, meta: { guestId: String(guest._id) } });
-  res.json({ status: 'success', message: 'Acesso do convidado reiniciado.', data: cleanGuestForManager(guest) });
+  await logActivity({ invite, type: 'guests', title: resetState ? 'Estado de convidado reposto' : 'Acesso de convidado reiniciado', detail: guest.name, meta: { guestId: String(guest._id), resetState } });
+  res.json({ status: 'success', message: resetState ? 'Acesso e estado do convidado repostos.' : 'Acesso do convidado reiniciado.', data: cleanGuestForManager(guest) });
 }));
 
 app.delete('/manager/invites/:id/guests/:guestId', requireManager, requireAdmin, asyncRoute(async (req, res) => {
@@ -928,7 +929,7 @@ app.post('/manager/invites/:id/guests/bulk', requireManager, requireAdmin, async
   return res.json({ status: 'success', data: results });
 });
 
-app.post('/manager/invites/:id/guests/repair-normalized', requireManager, asyncRoute(async (req, res) => {
+app.post('/manager/invites/:id/guests/repair-normalized', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
 
