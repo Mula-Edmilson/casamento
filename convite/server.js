@@ -823,16 +823,77 @@ app.patch('/manager/invites/:id/guests/:guestId', requireManager, asyncRoute(asy
   res.json({ status: 'success', message: 'Convidado actualizado com sucesso.', data: cleanGuestForManager(guest) });
 }));
 
+async function forceResetGuestState(invite, guestId, { resetStatus = true } = {}) {
+  const targetStatus = 'Não aberto';
+  const update = resetStatus
+    ? {
+        $set: { status: targetStatus, deviceToken: '' },
+        $unset: { openedAt: '', lastOpenedAt: '', lastOpenAt: '', accessDevice: '', deviceId: '', lastDeviceToken: '' }
+      }
+    : {
+        $set: { deviceToken: '' },
+        $unset: { accessDevice: '', deviceId: '', lastDeviceToken: '' }
+      };
+
+  const guest = await Guest.findOneAndUpdate(
+    { _id: guestId, inviteId: invite._id },
+    update,
+    { new: true, runValidators: false }
+  );
+
+  if (!guest) {
+    const err = new Error('Convidado não encontrado.');
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const verified = await Guest.findOne({ _id: guest._id, inviteId: invite._id });
+  if (!verified) {
+    const err = new Error('Não foi possível verificar o convidado depois da actualização.');
+    err.statusCode = 500;
+    throw err;
+  }
+
+  if (resetStatus && String(verified.status || '').trim() !== targetStatus) {
+    const err = new Error(`MongoDB não gravou o estado "${targetStatus}". Estado actual: ${verified.status || 'vazio'}.`);
+    err.statusCode = 500;
+    throw err;
+  }
+
+  return verified;
+}
+
+app.post('/manager/invites/:id/guests/:guestId/reset-state', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+
+  const guest = await forceResetGuestState(invite, req.params.guestId, { resetStatus: true });
+  await logActivity({
+    invite,
+    type: 'guests',
+    title: 'Estado de convidado reposto',
+    detail: guest.name,
+    meta: { guestId: String(guest._id), status: guest.status, endpoint: 'reset-state' }
+  });
+
+  res.json({ status: 'success', message: 'Convidado reposto para Não aberto.', data: cleanGuestForManager(guest) });
+}));
+
 app.post('/manager/invites/:id/guests/:guestId/reset-access', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
-  const guest = await Guest.findOne({ _id: req.params.guestId, inviteId: invite._id });
-  if (!guest) return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
-  guest.deviceToken = '';
-  const resetState = req.body?.resetState !== false;
-  if (resetState && !String(guest.status || '').toLowerCase().includes('confirmado')) guest.status = 'Não aberto';
-  await guest.save();
-  await logActivity({ invite, type: 'guests', title: resetState ? 'Estado de convidado reposto' : 'Acesso de convidado reiniciado', detail: guest.name, meta: { guestId: String(guest._id), resetState } });
+
+  const resetState = req.body?.resetState === true || req.body?.resetStatus === true;
+  const guest = await forceResetGuestState(invite, req.params.guestId, { resetStatus: resetState });
+
+  await logActivity({
+    invite,
+    type: 'guests',
+    title: resetState ? 'Estado de convidado reposto' : 'Acesso de convidado reiniciado',
+    detail: guest.name,
+    meta: { guestId: String(guest._id), resetState, endpoint: 'reset-access' }
+  });
+
   res.json({ status: 'success', message: resetState ? 'Acesso e estado do convidado repostos.' : 'Acesso do convidado reiniciado.', data: cleanGuestForManager(guest) });
 }));
 
