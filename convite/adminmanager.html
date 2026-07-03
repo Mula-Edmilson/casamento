@@ -1256,7 +1256,7 @@
 
 
     /* =========================================================
-       LIRANDZO ADMIN MANAGER · V6.3 MOBILE APP UX
+       LIRANDZO ADMIN MANAGER · V6.4 MOBILE NATIVE UX
        Camada mobile-app: força layout de aplicação, microinteracções,
        cards mobile-dashboard, navegação inferior real e loading castanho.
        ========================================================= */
@@ -1633,6 +1633,424 @@
       body.mobile-app .toolbar-right { gap:5px !important; }
     }
 
+
+    /* V6.4 MOBILE NATIVE UX */
+    @media (max-width: 920px), (hover:none), (pointer:coarse) {
+      html, body { width:100% !important; max-width:100% !important; overflow-x:hidden !important; }
+      body.mobile-app * { min-width:0; }
+      body.mobile-app {
+        background:
+          radial-gradient(circle at 52% -90px, rgba(185,130,91,.20), transparent 260px),
+          linear-gradient(180deg,#110e0d 0%,#1b1512 48%,#110e0c 100%) !important;
+      }
+      body.mobile-app .topbar {
+        min-height:calc(58px + var(--safe-top)) !important;
+        padding:var(--safe-top) 10px 0 !important;
+        background:rgba(20,16,14,.86) !important;
+        border-bottom:1px solid rgba(236,216,196,.08) !important;
+        box-shadow:0 10px 28px rgba(0,0,0,.22) !important;
+      }
+      body.mobile-app .topbar-left { gap:7px !important; }
+      body.mobile-app .topbar-title strong { font-size:15px !important; line-height:1 !important; }
+      body.mobile-app .topbar-title span { font-size:9.5px !important; margin-top:2px !important; }
+      body.mobile-app .topbar .btn.icon-only {
+        width:40px !important; min-width:40px !important; height:40px !important;
+        border-radius:15px !important;
+        background:rgba(255,255,255,.035) !important;
+        border-color:rgba(236,216,196,.13) !important;
+      }
+      body.mobile-app #backBtn { display:inline-flex !important; }
+      body.mobile-app #backBtn.hidden { display:none !important; }
+      body.mobile-app .main {
+        padding:calc(58px + var(--safe-top) + 10px) 10px calc(86px + var(--safe-bottom)) !important;
+        overflow-x:hidden !important;
+      }
+      body.mobile-app .content,
+      body.mobile-app .section,
+      body.mobile-app .command-shell,
+      body.mobile-app .command-main,
+      body.mobile-app .panel-card,
+      body.mobile-app .command-select-card,
+      body.mobile-app .command-hero,
+      body.mobile-app .mobile-card,
+      body.mobile-app .table-wrap,
+      body.mobile-app .modal-card {
+        max-width:100% !important;
+        width:100% !important;
+        min-width:0 !important;
+      }
+      body.mobile-app .section.active { animation:appPageIn .26s cubic-bezier(.2,.8,.2,1) both !important; }
+      body.mobile-app.navigating-soft .section.active { animation:appPagePush .24s cubic-bezier(.2,.8,.2,1) both !important; }
+      @keyframes appPageIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+      @keyframes appPagePush { from { opacity:0; transform:translateX(18px); } to { opacity:1; transform:none; } }
+
+      body.mobile-app #commandPanel .section-title {
+        display:grid !important;
+        grid-template-columns:minmax(0,1fr) auto !important;
+        align-items:center !important;
+        gap:8px !important;
+        margin:0 0 9px !important;
+        padding:0 2px !important;
+      }
+      body.mobile-app #commandPanel .section-title h1 {
+        font-size:18px !important;
+        line-height:1.08 !important;
+        letter-spacing:-.065em !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+      }
+      body.mobile-app #commandPanel .section-title p {
+        display:none !important;
+      }
+      body.mobile-app #commandPanel .section-title .badge {
+        min-height:22px !important;
+        padding:0 8px !important;
+        border-radius:999px !important;
+        font-size:9.2px !important;
+      }
+
+      body.mobile-app .command-shell {
+        display:flex !important;
+        flex-direction:column !important;
+        gap:9px !important;
+        overflow:visible !important;
+      }
+      body.mobile-app .command-sidebar {
+        position:static !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:8px !important;
+        width:100% !important;
+      }
+      body.mobile-app .command-select-card {
+        position:relative !important;
+        display:grid !important;
+        gap:9px !important;
+        padding:12px !important;
+        border-radius:24px !important;
+        overflow:hidden !important;
+        background:
+          linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015)),
+          rgba(27,22,19,.94) !important;
+        border:1px solid rgba(236,216,196,.11) !important;
+        box-shadow:0 16px 42px rgba(0,0,0,.20) !important;
+      }
+      body.mobile-app .command-select-card::before {
+        content:"";
+        position:absolute;
+        left:12px; right:12px; top:0;
+        height:1px;
+        background:linear-gradient(90deg,transparent,rgba(245,217,191,.34),transparent);
+        pointer-events:none;
+      }
+      body.mobile-app .command-select-card .field { margin:0 !important; }
+      body.mobile-app .command-select-card .field label {
+        font-size:9px !important;
+        color:var(--accent-2) !important;
+        letter-spacing:.13em !important;
+      }
+      body.mobile-app #commandInviteSelect {
+        width:100% !important;
+        height:42px !important;
+        min-height:42px !important;
+        border-radius:16px !important;
+        font-size:11.5px !important;
+        padding:0 12px !important;
+        background:rgba(12,10,9,.60) !important;
+        border-color:rgba(236,216,196,.16) !important;
+      }
+      body.mobile-app #commandLoadBtn {
+        min-height:42px !important;
+        border-radius:17px !important;
+        font-size:11.2px !important;
+        letter-spacing:-.015em !important;
+      }
+      body.mobile-app .command-mini-actions {
+        display:grid !important;
+        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+        gap:6px !important;
+        width:100% !important;
+        overflow:hidden !important;
+      }
+      body.mobile-app .command-mini-actions .btn {
+        width:100% !important;
+        min-width:0 !important;
+        min-height:35px !important;
+        height:35px !important;
+        padding:0 4px !important;
+        justify-content:center !important;
+        border-radius:14px !important;
+        font-size:9.4px !important;
+        gap:4px !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+      }
+      body.mobile-app .command-mini-actions .btn .feather { width:13px !important; height:13px !important; }
+      body.mobile-app .command-mini-actions .btn:nth-child(4) { grid-column:auto !important; }
+      body.mobile-app #commandPanel .command-context { display:none !important; }
+
+      body.mobile-app .command-main {
+        display:flex !important;
+        flex-direction:column !important;
+        gap:8px !important;
+        overflow:hidden !important;
+      }
+      body.mobile-app .command-tabs {
+        position:sticky !important;
+        top:calc(58px + var(--safe-top)) !important;
+        z-index:84 !important;
+        display:flex !important;
+        gap:6px !important;
+        margin:0 -2px 8px !important;
+        padding:6px 2px 7px !important;
+        overflow-x:auto !important;
+        max-width:100% !important;
+        border:0 !important;
+        background:rgba(17,14,12,.82) !important;
+        box-shadow:0 10px 26px rgba(0,0,0,.18) !important;
+        backdrop-filter:blur(16px) saturate(140%) !important;
+        scrollbar-width:none !important;
+      }
+      body.mobile-app .command-tabs::-webkit-scrollbar { display:none !important; }
+      body.mobile-app .command-tab {
+        flex:0 0 auto !important;
+        min-width:auto !important;
+        min-height:34px !important;
+        height:34px !important;
+        padding:0 10px !important;
+        border-radius:999px !important;
+        font-size:10px !important;
+        gap:5px !important;
+        background:rgba(255,255,255,.035) !important;
+        border-color:rgba(236,216,196,.12) !important;
+      }
+      body.mobile-app .command-tab.active {
+        background:linear-gradient(135deg,var(--accent),#946342) !important;
+        color:#fff !important;
+        box-shadow:0 8px 20px rgba(185,130,91,.18) !important;
+      }
+
+      body.mobile-app #commandBody {
+        display:grid !important;
+        gap:9px !important;
+        width:100% !important;
+        overflow:hidden !important;
+      }
+      body.mobile-app .command-hero {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:11px !important;
+        padding:14px !important;
+        margin:0 0 9px !important;
+        border-radius:24px !important;
+        overflow:hidden !important;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(185,130,91,.16), transparent 180px),
+          linear-gradient(180deg,rgba(255,255,255,.058),rgba(255,255,255,.018)),
+          rgba(25,20,18,.96) !important;
+        border:1px solid rgba(236,216,196,.12) !important;
+        box-shadow:0 18px 48px rgba(0,0,0,.24) !important;
+      }
+      body.mobile-app .command-hero h2 {
+        font-size:20px !important;
+        line-height:1.05 !important;
+        letter-spacing:-.07em !important;
+        max-width:100% !important;
+      }
+      body.mobile-app .command-hero p {
+        font-size:10.7px !important;
+        line-height:1.28 !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        word-break:normal !important;
+      }
+      body.mobile-app .command-status-row {
+        display:flex !important;
+        gap:5px !important;
+        flex-wrap:wrap !important;
+        margin-top:8px !important;
+      }
+      body.mobile-app .command-hero-actions {
+        display:grid !important;
+        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+        gap:7px !important;
+        width:100% !important;
+        justify-content:stretch !important;
+        overflow:hidden !important;
+      }
+      body.mobile-app .command-hero-actions .btn {
+        width:100% !important;
+        min-width:0 !important;
+        min-height:38px !important;
+        height:38px !important;
+        border-radius:15px !important;
+        padding:0 4px !important;
+        font-size:9.7px !important;
+        gap:4px !important;
+        justify-content:center !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+      }
+
+      body.mobile-app .command-kpi-grid,
+      body.mobile-app .metrics-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        gap:8px !important;
+        width:100% !important;
+      }
+      body.mobile-app .command-kpi,
+      body.mobile-app .metric-card {
+        min-height:82px !important;
+        padding:11px !important;
+        border-radius:20px !important;
+        overflow:hidden !important;
+        background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(0,0,0,.035)) !important;
+      }
+      body.mobile-app .command-kpi span,
+      body.mobile-app .metric-card span { font-size:8.8px !important; }
+      body.mobile-app .command-kpi strong,
+      body.mobile-app .metric-card strong { font-size:25px !important; line-height:1 !important; }
+      body.mobile-app .command-kpi small,
+      body.mobile-app .metric-card small { font-size:9.5px !important; }
+
+      body.mobile-app .command-health-grid,
+      body.mobile-app .command-data-grid,
+      body.mobile-app .command-ops-grid,
+      body.mobile-app .action-grid,
+      body.mobile-app .dashboard-grid,
+      body.mobile-app .grid-two {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:8px !important;
+        width:100% !important;
+      }
+      body.mobile-app .health-item,
+      body.mobile-app .command-data-box,
+      body.mobile-app .command-op,
+      body.mobile-app .action-card,
+      body.mobile-app .activity-item,
+      body.mobile-app .bad-name-row {
+        border-radius:20px !important;
+        overflow:hidden !important;
+        background:linear-gradient(180deg,rgba(255,255,255,.040),rgba(255,255,255,.010)) !important;
+        border-color:rgba(236,216,196,.105) !important;
+      }
+      body.mobile-app .health-item {
+        grid-template-columns:34px minmax(0,1fr) !important;
+        padding:10px !important;
+      }
+      body.mobile-app .health-icon { width:34px !important; height:34px !important; border-radius:13px !important; }
+      body.mobile-app .health-item strong { font-size:12px !important; }
+      body.mobile-app .health-item p { font-size:10.6px !important; line-height:1.32 !important; }
+      body.mobile-app .command-op { padding:12px !important; gap:7px !important; }
+      body.mobile-app .command-op .btn { width:100% !important; justify-self:stretch !important; }
+
+      body.mobile-app .command-inspector {
+        width:100% !important;
+        border-radius:22px !important;
+        overflow:hidden !important;
+        background:rgba(20,16,14,.88) !important;
+      }
+      body.mobile-app .command-inspector-head {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:8px !important;
+        padding:11px !important;
+      }
+      body.mobile-app .command-inspector-head h3 { font-size:12px !important; line-height:1.25 !important; }
+      body.mobile-app .command-inspector-head .toolbar-right {
+        display:grid !important;
+        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+        gap:6px !important;
+      }
+      body.mobile-app .command-inspector-head .toolbar-right .btn {
+        width:100% !important;
+        min-height:34px !important;
+        padding:0 3px !important;
+        font-size:9.5px !important;
+      }
+      body.mobile-app .bad-name-list { display:grid !important; gap:7px !important; padding:8px !important; }
+      body.mobile-app .bad-name-row {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:8px !important;
+        padding:10px !important;
+      }
+      body.mobile-app .bad-name-row .btn { width:100% !important; min-height:34px !important; }
+
+      body.mobile-app .mobile-list { display:grid !important; gap:8px !important; width:100% !important; }
+      body.mobile-app .mobile-card {
+        padding:11px !important;
+        border-radius:20px !important;
+        background:linear-gradient(180deg,rgba(255,255,255,.048),rgba(0,0,0,.028)) !important;
+        overflow:hidden !important;
+      }
+      body.mobile-app .mobile-card .table-actions,
+      body.mobile-app .toolbar-right,
+      body.mobile-app .form-actions-sticky {
+        display:grid !important;
+        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+        gap:6px !important;
+      }
+      body.mobile-app .mobile-card .table-actions .btn,
+      body.mobile-app .toolbar-right .btn,
+      body.mobile-app .form-actions-sticky .btn {
+        width:100% !important;
+        min-height:34px !important;
+        padding:0 3px !important;
+        font-size:9.5px !important;
+      }
+      body.mobile-app .toolbar,
+      body.mobile-app .guest-crud-toolbar { display:grid !important; grid-template-columns:1fr !important; gap:7px !important; }
+      body.mobile-app .toolbar-left,
+      body.mobile-app .guest-crud-toolbar .toolbar-left { display:grid !important; grid-template-columns:1fr !important; gap:7px !important; width:100% !important; }
+
+      body.mobile-app .mobile-tabs {
+        left:8px !important;
+        right:8px !important;
+        bottom:8px !important;
+        width:auto !important;
+        border-radius:24px !important;
+        padding:7px 7px calc(7px + var(--safe-bottom)) !important;
+        background:rgba(22,18,16,.92) !important;
+        border:1px solid rgba(236,216,196,.12) !important;
+        box-shadow:0 -12px 44px rgba(0,0,0,.36) !important;
+      }
+      body.mobile-app .mobile-tab {
+        min-height:46px !important;
+        border-radius:18px !important;
+        font-size:8.8px !important;
+        background:transparent !important;
+        border-color:transparent !important;
+      }
+      body.mobile-app .mobile-tab.active {
+        background:linear-gradient(135deg,var(--accent),#8e6042) !important;
+        box-shadow:0 10px 22px rgba(185,130,91,.22) !important;
+      }
+
+      body.mobile-app .app-loader {
+        top:calc(var(--safe-top) + 10px) !important;
+        min-height:34px !important;
+        padding:0 12px !important;
+        border-radius:999px !important;
+        background:rgba(22,18,16,.94) !important;
+      }
+      body.mobile-app .toast-stack { bottom:calc(82px + var(--safe-bottom)) !important; }
+    }
+
+    @media (max-width: 370px) {
+      body.mobile-app .command-mini-actions,
+      body.mobile-app .command-hero-actions,
+      body.mobile-app .mobile-card .table-actions,
+      body.mobile-app .toolbar-right,
+      body.mobile-app .form-actions-sticky,
+      body.mobile-app .command-inspector-head .toolbar-right { grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+      body.mobile-app .mobile-tab { font-size:8px !important; }
+      body.mobile-app .command-tab { font-size:9.3px !important; padding:0 8px !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -1722,7 +2140,7 @@
 
 
       <section class="section" id="commandPanel">
-        <div class="section-title"><div><h1>Lirandzo Command Center</h1><p>Ficha operacional por convite: visão, dados, saúde, operações e actividade num só lugar.</p></div><span class="badge blue">V6.3</span></div>
+        <div class="section-title"><div><h1>Lirandzo Command Center</h1><p>Ficha operacional por convite: visão, dados, saúde, operações e actividade num só lugar.</p></div><span class="badge blue">V6.4</span></div>
         <div class="command-shell">
           <aside class="command-sidebar">
             <div class="command-select-card">
