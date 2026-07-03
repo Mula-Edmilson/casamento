@@ -2752,7 +2752,7 @@
   </div>
 
   <div class="modal" id="detailsModal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Detalhes</h3><button class="btn icon-only" id="closeModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body" id="modalBody"></div></div></div>
-  <div class="modal" id="guestEditModal"><div class="modal-card narrow"><div class="modal-head"><h3 id="guestEditTitle">Convidado</h3><button class="btn icon-only" id="closeGuestEditModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body"><form id="guestEditForm"><input type="hidden" id="guestEditId"><div class="field"><label>Nome do convidado</label><input id="guestEditName" class="search-input" required placeholder="Nome completo"></div><div class="grid-two"><div class="field"><label>Mesa</label><input id="guestEditTable" class="search-input" placeholder="A indicar na entrada"></div><div class="field"><label>Acompanhantes</label><input id="guestEditCompanions" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Telefone</label><input id="guestEditPhone" class="search-input" placeholder="+258..."></div><div class="field"><label>Número</label><input id="guestEditNumber" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Categoria</label><input id="guestEditCategory" class="search-input" placeholder="Família, amigos, etc."></div><div class="field"><label>Estado</label><select id="guestEditStatus" class="search-input"><option>Não aberto</option><option>Convite Aberto</option><option>Ainda por confirmar</option><option>Confirmado</option></select></div></div><div class="field"><label>Token antigo / referência</label><input id="guestEditLegacyToken" class="search-input" placeholder="Opcional"></div><div class="field"><label>Notas internas</label><textarea id="guestEditNotes" rows="3" placeholder="Observações internas"></textarea></div><div class="field"><label>Token público actual</label><input id="guestEditInviteToken" class="search-input" readonly placeholder="Gerado automaticamente"></div><div id="guestEditResult" class="feedback hidden"></div><div class="form-actions-sticky"><button class="btn" type="button" id="guestResetAccessSingleBtn"><i data-feather="unlock"></i> Reset acesso</button><button class="btn danger" type="button" id="guestDeleteBtn"><i data-feather="trash-2"></i> Eliminar</button><button class="btn primary" type="submit"><i data-feather="save"></i> Guardar</button></div></form></div></div></div>
+  <div class="modal" id="guestEditModal"><div class="modal-card narrow"><div class="modal-head"><h3 id="guestEditTitle">Convidado</h3><button class="btn icon-only" id="closeGuestEditModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body"><form id="guestEditForm"><input type="hidden" id="guestEditId"><div class="field"><label>Nome do convidado</label><input id="guestEditName" class="search-input" required placeholder="Nome completo"></div><div class="grid-two"><div class="field"><label>Mesa</label><input id="guestEditTable" class="search-input" placeholder="A indicar na entrada"></div><div class="field"><label>Acompanhantes</label><input id="guestEditCompanions" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Telefone</label><input id="guestEditPhone" class="search-input" placeholder="+258..."></div><div class="field"><label>Número</label><input id="guestEditNumber" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Categoria</label><input id="guestEditCategory" class="search-input" placeholder="Família, amigos, etc."></div><div class="field"><label>Estado</label><select id="guestEditStatus" class="search-input"><option value="Não aberto">Não aberto</option><option value="Convite Aberto">Aberto</option><option value="Ainda por confirmar">Pendente</option><option value="Confirmado">Confirmado</option></select></div></div><div class="field"><label>Token antigo / referência</label><input id="guestEditLegacyToken" class="search-input" placeholder="Opcional"></div><div class="field"><label>Notas internas</label><textarea id="guestEditNotes" rows="3" placeholder="Observações internas"></textarea></div><div class="field"><label>Token público actual</label><input id="guestEditInviteToken" class="search-input" readonly placeholder="Gerado automaticamente"></div><div id="guestEditResult" class="feedback hidden"></div><div class="form-actions-sticky"><button class="btn" type="button" id="guestResetAccessSingleBtn" title="Limpar acesso e marcar como não aberto"><i data-feather="rotate-ccw"></i> Repor estado</button><button class="btn danger" type="button" id="guestDeleteBtn"><i data-feather="trash-2"></i> Eliminar</button><button class="btn primary" type="submit"><i data-feather="save"></i> Guardar</button></div></form></div></div></div>
 
 
   <div class="modal confirm-modal" id="confirmModal" aria-hidden="true">
@@ -3326,6 +3326,52 @@
       ['guestInviteSelect','guestCrudInviteSelect'].forEach(key => { const el=$(key); if(el && id && el.value !== id) el.value = id; });
     }
     function selectedGuestInvite(){ const id=selectedGuestInviteId(); return invites.find(inv=>inv.id===id) || null; }
+    function canonicalGuestStatus(raw){
+      const value = String(raw || '').trim();
+      const low = value.toLowerCase();
+      if (!value) return 'Não aberto';
+      if (low === 'aberto' || low.includes('convite aberto')) return 'Convite Aberto';
+      if (low.includes('pendente') || low.includes('confirmar')) return 'Ainda por confirmar';
+      if (low.startsWith('confirmado')) return value;
+      if (low.includes('aberto')) return 'Convite Aberto';
+      if (low.includes('não aberto') || low.includes('nao aberto')) return 'Não aberto';
+      return value;
+    }
+    function statusLabelForSelect(value){
+      const low = String(value || '').toLowerCase();
+      if (low.includes('convite aberto') || low === 'aberto') return 'Aberto';
+      if (low.includes('confirmado')) return String(value || 'Confirmado');
+      if (low.includes('confirmar') || low.includes('pendente')) return 'Pendente';
+      if (!value || low.includes('não aberto') || low.includes('nao aberto')) return 'Não aberto';
+      return String(value);
+    }
+    function setGuestStatusSelect(raw){
+      const select = $('guestEditStatus');
+      if (!select) return;
+      const value = canonicalGuestStatus(raw);
+      const hasOption = Array.from(select.options).some(opt => opt.value === value);
+      if (!hasOption) select.add(new Option(statusLabelForSelect(value), value));
+      select.value = value;
+    }
+    function guestPayloadFromExisting(g={}, overrides={}){
+      return {
+        name: String(overrides.name ?? g.name ?? '').trim(),
+        table: String(overrides.table ?? overrides.mesa ?? g.table ?? g.mesa ?? 'A indicar na entrada').trim(),
+        companions: Number(overrides.companions ?? g.companions ?? 0) || 0,
+        phone: String(overrides.phone ?? g.phone ?? '').trim(),
+        number: Number(overrides.number ?? g.number ?? 0) || 0,
+        category: String(overrides.category ?? g.category ?? '').trim(),
+        status: canonicalGuestStatus(overrides.status ?? g.status ?? 'Não aberto'),
+        legacyToken: String(overrides.legacyToken ?? g.legacyToken ?? '').trim(),
+        notes: String(overrides.notes ?? g.notes ?? '').trim(),
+        inviteToken: String(overrides.inviteToken ?? g.inviteToken ?? g.token ?? '').trim()
+      };
+    }
+    function updateCurrentGuest(updated){
+      if (!updated || !updated.id) return;
+      currentGuests = currentGuests.map(item => String(item.id) === String(updated.id) ? { ...item, ...updated } : item);
+      renderGuestCrudList();
+    }
     function guestPayloadFromForm(){
       return {
         name: $('guestEditName').value.trim(),
@@ -3334,7 +3380,7 @@
         phone: $('guestEditPhone').value.trim(),
         number: Number($('guestEditNumber').value || 0),
         category: $('guestEditCategory').value.trim(),
-        status: $('guestEditStatus').value.trim(),
+        status: canonicalGuestStatus($('guestEditStatus').value.trim()),
         legacyToken: $('guestEditLegacyToken').value.trim(),
         notes: $('guestEditNotes').value.trim(),
         inviteToken: $('guestEditInviteToken').value.trim()
@@ -3359,9 +3405,9 @@
       }
     }
     function renderGuestCrudList(){
-      const rows=currentGuests.map(g=>`<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Resetar acesso"><i data-feather="unlock"></i></button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button>`)}</div></td></tr>`).join('');
+      const rows=currentGuests.map(g=>`<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Repor estado"><i data-feather="rotate-ccw"></i></button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button>`)}</div></td></tr>`).join('');
       $('guestCrudTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convidado encontrado.</td></tr>';
-      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')"><i data-feather="unlock"></i> Reset</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')"><i data-feather="trash-2"></i> Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
+      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')"><i data-feather="rotate-ccw"></i> Repor</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')"><i data-feather="trash-2"></i> Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
       iconRefresh();
     }
     function badgeStatusFromGuest(status){ const s=String(status||'').toLowerCase(); if(s.includes('confirmado')) return '<span class="badge ok">Confirmado</span>'; if(s.includes('aberto')) return '<span class="badge blue">Aberto</span>'; if(s.includes('pendente') || s.includes('confirmar')) return '<span class="badge warn">Pendente</span>'; return '<span class="badge">Não aberto</span>'; }
@@ -3377,7 +3423,7 @@
       $('guestEditPhone').value = g.phone || '';
       $('guestEditNumber').value = Number(g.number||0);
       $('guestEditCategory').value = g.category || '';
-      $('guestEditStatus').value = g.status || 'Não aberto';
+      setGuestStatusSelect(g.status || 'Não aberto');
       $('guestEditLegacyToken').value = g.legacyToken || '';
       $('guestEditNotes').value = g.notes || '';
       $('guestEditInviteToken').value = g.inviteToken || g.token || '';
@@ -3397,16 +3443,45 @@
         const method=editingGuestId ? 'PATCH' : 'POST';
         const path=editingGuestId ? `/manager/invites/${inviteId}/guests/${editingGuestId}` : `/manager/invites/${inviteId}/guests`;
         const out=await api(path,{method,body:JSON.stringify(payload)});
+        const saved = out.data || null;
+        if (saved && String(canonicalGuestStatus(saved.status || '')) !== String(canonicalGuestStatus(payload.status || ''))) {
+          throw new Error(`A alteração de estado não foi gravada no servidor. Estado pedido: ${payload.status}; estado recebido: ${saved.status || 'vazio'}.`);
+        }
+        const savedId = saved?.id || editingGuestId;
+        await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]);
+        if (savedId) {
+          const fresh = currentGuests.find(item => String(item.id) === String(savedId));
+          if (fresh && String(canonicalGuestStatus(fresh.status || '')) !== String(canonicalGuestStatus(payload.status || ''))) {
+            throw new Error(`O servidor não confirmou o estado “${payload.status}”. Estado actual: ${fresh.status || 'vazio'}.`);
+          }
+        }
         showMsg($('guestEditResult'), out.message || 'Guardado com sucesso.');
-        await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails()]);
         setTimeout(()=>closeGuestModal(), 750);
       }catch(err){ showMsg($('guestEditResult'), err.message, true); }
     }
     window.resetSingleGuestAccess = async function(id){
       const inviteId=selectedGuestInviteId();
       if(!inviteId || !id) return;
-      if(!await appConfirm({ title:'Resetar acesso', message:'Resetar acesso deste convidado?', confirmLabel:'Resetar' })) return;
-      try{ const out=await api(`/manager/invites/${inviteId}/guests/${id}/reset-access`,{method:'POST',body:JSON.stringify({})}); showMsg($('guestCrudResult'), out.message || 'Acesso reiniciado.'); await loadGuestCrudList(); }catch(e){ showMsg($('guestCrudResult'), e.message, true); }
+      const g=currentGuests.find(item=>String(item.id)===String(id));
+      if(!g) return appToast('Convidado não encontrado na lista carregada.', 'error', 'Atenção');
+      if(!await appConfirm({ title:'Repor estado do convidado', message:'Isto vai limpar o acesso do dispositivo e marcar este convidado como “Não aberto”.', confirmLabel:'Repor estado' })) return;
+      try{
+        await api(`/manager/invites/${inviteId}/guests/${id}/reset-access`,{method:'POST',body:JSON.stringify({ resetState:true })});
+        const payload = guestPayloadFromExisting(g, { status:'Não aberto' });
+        const out = await api(`/manager/invites/${inviteId}/guests/${id}`,{method:'PATCH',body:JSON.stringify(payload)});
+        const updated = out.data || null;
+        if (updated && String(canonicalGuestStatus(updated.status || '')) !== 'Não aberto') {
+          throw new Error(`O servidor não gravou o estado “Não aberto”. Estado actual: ${updated.status || 'vazio'}.`);
+        }
+        updateCurrentGuest(updated || { ...g, status:'Não aberto' });
+        await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]);
+        const fresh = currentGuests.find(item => String(item.id) === String(id));
+        if (fresh && String(canonicalGuestStatus(fresh.status || '')) !== 'Não aberto') {
+          throw new Error(`O servidor não confirmou o estado “Não aberto”. Estado actual: ${fresh.status || 'vazio'}.`);
+        }
+        showMsg($('guestCrudResult'), 'Acesso e estado do convidado repostos.');
+        appToast('Convidado reposto para “Não aberto”.');
+      }catch(e){ showMsg($('guestCrudResult'), e.message, true); appToast(e.message, 'error', 'Erro'); }
     };
     window.deleteGuestFromManager = async function(id){
       const inviteId=selectedGuestInviteId();
