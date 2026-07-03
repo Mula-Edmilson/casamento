@@ -1254,6 +1254,385 @@
       .command-hero-actions .btn { min-height:31px; padding:0 6px; }
     }
 
+
+    /* =========================================================
+       LIRANDZO ADMIN MANAGER · V6.3 MOBILE APP UX
+       Camada mobile-app: força layout de aplicação, microinteracções,
+       cards mobile-dashboard, navegação inferior real e loading castanho.
+       ========================================================= */
+    .app-loader {
+      position:fixed;
+      left:50%;
+      top:calc(var(--safe-top) + 12px);
+      transform:translate(-50%,-8px) scale(.98);
+      z-index:2800;
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      min-height:38px;
+      padding:0 14px;
+      border:1px solid var(--line-strong);
+      border-radius:999px;
+      background:rgba(28,22,19,.92);
+      color:var(--text);
+      box-shadow:0 18px 50px rgba(0,0,0,.28);
+      backdrop-filter:blur(18px) saturate(140%);
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease, visibility .18s ease;
+      font-size:11px;
+      font-weight:900;
+    }
+    html[data-theme="light"] .app-loader { background:rgba(255,253,249,.94); }
+    .app-loader-dot {
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 0 0 rgba(185,130,91,.42);
+      animation:appLoaderPulse 1.15s ease-in-out infinite;
+    }
+    @keyframes appLoaderPulse {
+      0% { transform:scale(.88); box-shadow:0 0 0 0 rgba(185,130,91,.42); }
+      70% { transform:scale(1); box-shadow:0 0 0 9px rgba(185,130,91,0); }
+      100% { transform:scale(.88); box-shadow:0 0 0 0 rgba(185,130,91,0); }
+    }
+    body.route-loading .app-loader,
+    body.is-loading .app-loader {
+      opacity:1;
+      visibility:visible;
+      transform:translate(-50%,0) scale(1);
+    }
+    body.route-loading .section.active { filter:saturate(.98); }
+
+    html.mobile-app, body.mobile-app { overscroll-behavior-y:none; }
+      body.mobile-app {
+        font-size:12.4px;
+        background:
+          radial-gradient(circle at 50% -12%, rgba(185,130,91,.18), transparent 26%),
+          linear-gradient(180deg,#171311,#201915 42%,#15110f);
+      }
+      body.mobile-app::before { opacity:.12; background-size:32px 32px; }
+
+      body.mobile-app .sidebar {
+        left:0 !important;
+        width:min(86vw,330px) !important;
+        transform:translateX(-106%) !important;
+        z-index:1250 !important;
+        padding:14px 12px calc(18px + var(--safe-bottom)) !important;
+        border-right:1px solid rgba(236,216,196,.12) !important;
+        box-shadow:20px 0 70px rgba(0,0,0,.36) !important;
+      }
+      body.mobile-app .sidebar.open { transform:translateX(0) !important; }
+      body.mobile-app .overlay { display:block !important; z-index:1200 !important; }
+      body.mobile-app .menu-trigger { display:inline-flex !important; }
+
+      body.mobile-app .topbar {
+        left:0 !important;
+        right:0 !important;
+        min-height:calc(64px + var(--safe-top)) !important;
+        padding:var(--safe-top) 12px 0 !important;
+        background:rgba(28,22,19,.90) !important;
+        border-bottom:1px solid rgba(236,216,196,.09) !important;
+        box-shadow:0 12px 32px rgba(0,0,0,.22) !important;
+      }
+      html[data-theme="light"] body.mobile-app .topbar { background:rgba(255,253,249,.92) !important; }
+      body.mobile-app .topbar-left { gap:8px !important; min-width:0; }
+      body.mobile-app .topbar-title strong { font-size:16px !important; max-width:42vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      body.mobile-app .topbar-title span { font-size:10.5px !important; max-width:42vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      body.mobile-app .topbar-actions { gap:7px !important; }
+      body.mobile-app .sync-pill { display:none !important; }
+
+      body.mobile-app .main {
+        margin-left:0 !important;
+        width:100% !important;
+        max-width:100% !important;
+        padding:calc(64px + var(--safe-top) + 14px) 12px calc(86px + var(--safe-bottom)) !important;
+        overflow-x:hidden !important;
+      }
+      body.mobile-app .content { width:100% !important; max-width:100% !important; }
+
+      body.mobile-app .section.active { animation:mobilePageIn .24s cubic-bezier(.2,.8,.2,1) both !important; }
+      body.mobile-app.navigating-soft .section.active { animation:mobilePageSlide .24s cubic-bezier(.2,.8,.2,1) both !important; }
+      @keyframes mobilePageIn { from { opacity:0; transform:translateY(9px) scale(.992); } to { opacity:1; transform:none; } }
+      @keyframes mobilePageSlide { from { opacity:0; transform:translateX(14px); } to { opacity:1; transform:none; } }
+
+      body.mobile-app .section-title {
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:flex-start !important;
+        justify-content:space-between !important;
+        gap:10px !important;
+        margin:2px 0 12px !important;
+      }
+      body.mobile-app .section-title h1 {
+        font-size:20px !important;
+        line-height:1.12 !important;
+        letter-spacing:-.055em !important;
+      }
+      body.mobile-app .section-title p {
+        font-size:11.5px !important;
+        line-height:1.35 !important;
+        margin-top:4px !important;
+        max-width:100% !important;
+        color:var(--muted);
+      }
+      body.mobile-app .section-title .badge { align-self:flex-start; min-height:22px; }
+
+      body.mobile-app .panel-card,
+      body.mobile-app .metric-card,
+      body.mobile-app .mobile-card,
+      body.mobile-app .command-select-card,
+      body.mobile-app .command-context,
+      body.mobile-app .command-hero,
+      body.mobile-app .health-item,
+      body.mobile-app .command-kpi,
+      body.mobile-app .command-data-box,
+      body.mobile-app .command-op,
+      body.mobile-app .action-card {
+        border-radius:18px !important;
+        background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.05)) !important;
+        border:1px solid rgba(236,216,196,.105) !important;
+        box-shadow:0 14px 32px rgba(0,0,0,.12) !important;
+      }
+      body.mobile-app .panel-card { margin-bottom:11px !important; overflow:hidden; }
+      body.mobile-app .panel-head { min-height:44px !important; padding:10px 11px !important; }
+      body.mobile-app .panel-head h2 { font-size:13px !important; }
+      body.mobile-app .panel-body { padding:10px !important; }
+
+      body.mobile-app .btn {
+        min-height:34px !important;
+        padding:0 8px !important;
+        border-radius:13px !important;
+        font-size:10.2px !important;
+        font-weight:900 !important;
+        gap:5px !important;
+        white-space:nowrap !important;
+        min-width:0 !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+      }
+      body.mobile-app .btn.small { min-height:32px !important; padding:0 7px !important; font-size:9.8px !important; }
+      body.mobile-app .btn.icon-only { width:44px !important; min-width:44px !important; height:44px !important; border-radius:15px !important; padding:0 !important; }
+      body.mobile-app .btn .feather { width:14px !important; height:14px !important; flex:0 0 auto; }
+      body.mobile-app .btn.primary { box-shadow:0 10px 24px rgba(185,130,91,.20) !important; }
+      body.mobile-app .btn:active { transform:scale(.985) !important; }
+      body.mobile-app .btn[data-tooltip]::after,
+      body.mobile-app .btn[data-tooltip]::before { display:none !important; }
+
+      body.mobile-app .toolbar,
+      body.mobile-app .guest-crud-toolbar {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:8px !important;
+        align-items:stretch !important;
+      }
+      body.mobile-app .toolbar-left,
+      body.mobile-app .toolbar-right,
+      body.mobile-app .guest-crud-toolbar .toolbar-left,
+      body.mobile-app .guest-crud-toolbar .toolbar-right {
+        width:100% !important;
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:7px !important;
+      }
+      body.mobile-app .toolbar-right,
+      body.mobile-app .mobile-card .table-actions,
+      body.mobile-app .command-hero-actions,
+      body.mobile-app .command-mini-actions,
+      body.mobile-app .form-actions-sticky,
+      body.mobile-app .command-inspector-head .toolbar-right {
+        grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+        gap:7px !important;
+      }
+      body.mobile-app .toolbar-right .btn,
+      body.mobile-app .mobile-card .table-actions .btn,
+      body.mobile-app .command-hero-actions .btn,
+      body.mobile-app .command-mini-actions .btn,
+      body.mobile-app .form-actions-sticky .btn,
+      body.mobile-app .command-inspector-head .toolbar-right .btn {
+        width:100% !important;
+        justify-content:center !important;
+        min-width:0 !important;
+      }
+
+      body.mobile-app .field { margin-bottom:9px !important; gap:6px !important; }
+      body.mobile-app .field label { font-size:9.5px !important; letter-spacing:.095em !important; }
+      body.mobile-app .field input,
+      body.mobile-app .field select,
+      body.mobile-app .field textarea,
+      body.mobile-app .search-input {
+        min-height:42px !important;
+        border-radius:14px !important;
+        font-size:12.2px !important;
+        padding:10px 12px !important;
+        background:rgba(14,11,10,.58) !important;
+      }
+      html[data-theme="light"] body.mobile-app .field input,
+      html[data-theme="light"] body.mobile-app .field select,
+      html[data-theme="light"] body.mobile-app .field textarea,
+      html[data-theme="light"] body.mobile-app .search-input { background:rgba(255,255,255,.82) !important; }
+
+      body.mobile-app .metrics-grid,
+      body.mobile-app .command-kpi-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        gap:8px !important;
+      }
+      body.mobile-app .metric-card,
+      body.mobile-app .command-kpi {
+        min-height:76px !important;
+        padding:10px !important;
+      }
+      body.mobile-app .metric-card strong,
+      body.mobile-app .command-kpi strong { font-size:22px !important; }
+      body.mobile-app .metric-card span,
+      body.mobile-app .command-kpi span { font-size:9px !important; }
+      body.mobile-app .metric-card small,
+      body.mobile-app .command-kpi small { font-size:9.8px !important; }
+
+      body.mobile-app .desktop-table { display:none !important; }
+      body.mobile-app .mobile-list { display:grid !important; gap:9px !important; }
+      body.mobile-app .mobile-card { padding:11px !important; }
+      body.mobile-app .mobile-card strong { font-size:13px !important; line-height:1.25; }
+      body.mobile-app .mobile-card span { font-size:11.2px !important; line-height:1.38; }
+      body.mobile-app .badge { min-height:22px !important; padding:0 8px !important; font-size:9.5px !important; }
+
+      body.mobile-app .command-shell {
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        gap:10px !important;
+      }
+      body.mobile-app .command-sidebar {
+        position:static !important;
+        display:grid !important;
+        gap:9px !important;
+      }
+      body.mobile-app .command-select-card { padding:11px !important; gap:8px !important; }
+      body.mobile-app .command-select-card .btn.full { min-height:40px !important; }
+      body.mobile-app .command-context {
+        padding:11px !important;
+        gap:5px !important;
+      }
+      body.mobile-app .command-context strong { font-size:13px !important; }
+      body.mobile-app .command-context span { font-size:11px !important; }
+      body.mobile-app .command-status-row { gap:6px !important; }
+      body.mobile-app .command-tabs {
+        position:sticky !important;
+        top:calc(64px + var(--safe-top)) !important;
+        z-index:85 !important;
+        display:flex !important;
+        gap:7px !important;
+        flex-wrap:nowrap !important;
+        overflow-x:auto !important;
+        margin:0 -12px 10px !important;
+        padding:8px 12px !important;
+        border-top:1px solid rgba(236,216,196,.07) !important;
+        border-bottom:1px solid rgba(236,216,196,.09) !important;
+        background:rgba(23,19,17,.92) !important;
+        backdrop-filter:blur(16px) saturate(140%) !important;
+        scrollbar-width:none;
+      }
+      body.mobile-app .command-tabs::-webkit-scrollbar { display:none; }
+      html[data-theme="light"] body.mobile-app .command-tabs { background:rgba(255,253,249,.93) !important; }
+      body.mobile-app .command-tab {
+        flex:0 0 auto !important;
+        min-height:34px !important;
+        padding:0 10px !important;
+        border-radius:999px !important;
+        font-size:10.2px !important;
+      }
+      body.mobile-app .command-hero {
+        grid-template-columns:1fr !important;
+        gap:10px !important;
+        padding:12px !important;
+        margin-bottom:10px !important;
+      }
+      body.mobile-app .command-hero h2 {
+        font-size:20px !important;
+        line-height:1.08 !important;
+        letter-spacing:-.06em !important;
+      }
+      body.mobile-app .command-hero p { font-size:11.3px !important; word-break:break-all; }
+      body.mobile-app .command-health-grid,
+      body.mobile-app .command-data-grid,
+      body.mobile-app .command-ops-grid,
+      body.mobile-app .action-grid,
+      body.mobile-app .grid-two,
+      body.mobile-app .dashboard-grid { grid-template-columns:1fr !important; gap:9px !important; }
+      body.mobile-app .health-item { padding:10px !important; grid-template-columns:34px minmax(0,1fr) !important; gap:9px !important; }
+      body.mobile-app .health-icon { width:34px !important; height:34px !important; border-radius:12px !important; }
+      body.mobile-app .health-item strong { font-size:12.2px !important; }
+      body.mobile-app .health-item p { font-size:10.8px !important; }
+      body.mobile-app .command-op { padding:11px !important; gap:7px !important; }
+      body.mobile-app .command-op .btn { justify-self:start !important; width:min(150px,100%) !important; }
+      body.mobile-app .command-inspector { border-radius:17px !important; }
+      body.mobile-app .command-inspector-head { display:grid !important; grid-template-columns:1fr !important; gap:9px !important; }
+      body.mobile-app .bad-name-row { grid-template-columns:1fr !important; }
+      body.mobile-app .bad-name-row .btn { width:min(140px,100%) !important; }
+
+      body.mobile-app .mobile-tabs {
+        display:grid !important;
+        grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+        position:fixed !important;
+        left:0 !important;
+        right:0 !important;
+        bottom:0 !important;
+        top:auto !important;
+        z-index:1150 !important;
+        margin:0 !important;
+        padding:7px 7px calc(7px + var(--safe-bottom)) !important;
+        gap:6px !important;
+        background:rgba(24,19,17,.96) !important;
+        border-top:1px solid rgba(236,216,196,.12) !important;
+        box-shadow:0 -18px 50px rgba(0,0,0,.34) !important;
+        backdrop-filter:blur(20px) saturate(150%) !important;
+        overflow:visible !important;
+      }
+      html[data-theme="light"] body.mobile-app .mobile-tabs { background:rgba(255,253,249,.96) !important; }
+      body.mobile-app .mobile-tab {
+        min-width:0 !important;
+        min-height:50px !important;
+        border-radius:15px !important;
+        padding:5px 3px !important;
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:3px !important;
+        font-size:9px !important;
+        font-weight:900 !important;
+        line-height:1.1 !important;
+        background:rgba(255,255,255,.035) !important;
+      }
+      body.mobile-app .mobile-tab .feather { width:16px !important; height:16px !important; }
+      body.mobile-app .mobile-tab.active {
+        background:linear-gradient(135deg,var(--accent),#946342) !important;
+        color:#fff !important;
+        border-color:transparent !important;
+        box-shadow:0 10px 24px rgba(185,130,91,.20) !important;
+      }
+
+      body.mobile-app .modal { align-items:center !important; padding:12px !important; }
+      body.mobile-app .modal-card { border-radius:22px !important; max-height:88dvh !important; }
+      body.mobile-app .confirm-card { border-radius:22px !important; padding:15px !important; width:min(390px,100%) !important; }
+      body.mobile-app .confirm-actions { grid-template-columns:1fr 1fr !important; }
+      body.mobile-app .toast-stack { left:12px !important; right:12px !important; bottom:calc(78px + var(--safe-bottom)) !important; width:auto !important; }
+      body.mobile-app .toast-item { border-radius:17px !important; padding:10px !important; }
+
+    @media (hover:none), (pointer:coarse) {
+      body.mobile-app .app-loader { top:calc(var(--safe-top) + 14px); }
+    }
+
+    @media (max-width:380px) {
+      body.mobile-app .btn { font-size:9.3px !important; padding-left:5px !important; padding-right:5px !important; }
+      body.mobile-app .mobile-tab { font-size:8.3px !important; }
+      body.mobile-app .command-hero-actions,
+      body.mobile-app .command-mini-actions,
+      body.mobile-app .mobile-card .table-actions,
+      body.mobile-app .toolbar-right { gap:5px !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -1343,14 +1722,14 @@
 
 
       <section class="section" id="commandPanel">
-        <div class="section-title"><div><h1>Lirandzo Command Center</h1><p>Ficha operacional por convite: visão, dados, saúde, operações e actividade num só lugar.</p></div><span class="badge blue">V6</span></div>
+        <div class="section-title"><div><h1>Lirandzo Command Center</h1><p>Ficha operacional por convite: visão, dados, saúde, operações e actividade num só lugar.</p></div><span class="badge blue">V6.3</span></div>
         <div class="command-shell">
           <aside class="command-sidebar">
             <div class="command-select-card">
               <div class="field" style="margin-bottom:0"><label>Convite</label><select id="commandInviteSelect" class="search-input"><option value="">Seleccione um convite...</option></select></div>
               <button class="btn primary full" id="commandLoadBtn" type="button"><i data-feather="zap"></i> Abrir ficha</button>
               <div class="command-mini-actions">
-                <button class="btn small" id="commandGuestsBtn" type="button"><i data-feather="users"></i> Convidados</button>
+                <button class="btn small" id="commandGuestsBtn" type="button"><i data-feather="users"></i> Lista</button>
                 <button class="btn small" id="commandManageBtn" type="button"><i data-feather="settings"></i> Gestão</button>
                 <button class="btn small" id="commandCopySlugBtn" type="button"><i data-feather="copy"></i> Slug</button>
                 <button class="btn small" id="commandOpenInviteBtn" type="button"><i data-feather="external-link"></i> Abrir</button>
@@ -1397,6 +1776,7 @@
       </div>
     </div>
   </div>
+  <div id="appLoader" class="app-loader" aria-live="polite"><span class="app-loader-dot"></span><span id="appLoaderText">A carregar...</span></div>
   <div id="toastStack" class="toast-stack" aria-live="polite"></div>
 
   <script>
@@ -1416,6 +1796,8 @@
     let editingGuestId = null;
     let currentPanel = 'dashboard';
     let panelStack = [];
+    let routeLoaderTimer = null;
+    const primaryMobilePanels = ['dashboard','invites','command','guests','manage'];
     let confirmResolver = null;
     const $ = id => document.getElementById(id);
     const esc = v => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -1430,7 +1812,30 @@
       if (!res.ok) throw new Error(data.message || `Erro ${res.status}`);
       return data;
     }
-    function setLoading(on) { document.body.classList.toggle('is-loading', !!on); }
+    function detectMobileApp(){
+      const coarse = window.matchMedia && (window.matchMedia('(hover: none)').matches || window.matchMedia('(pointer: coarse)').matches);
+      const narrowScreen = Math.min(window.screen?.width || window.innerWidth, window.innerWidth) <= 920;
+      const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+      const active = !!(coarse || narrowScreen || mobileUA);
+      document.documentElement.classList.toggle('mobile-app', active);
+      document.body.classList.toggle('mobile-app', active);
+      return active;
+    }
+    function showRouteLoader(label='A carregar...'){
+      const el = $('appLoaderText');
+      if (el) el.textContent = label;
+      document.body.classList.add('route-loading');
+      clearTimeout(routeLoaderTimer);
+    }
+    function hideRouteLoader(delay=180){
+      clearTimeout(routeLoaderTimer);
+      routeLoaderTimer = setTimeout(()=>document.body.classList.remove('route-loading'), delay);
+    }
+    function setLoading(on) {
+      document.body.classList.toggle('is-loading', !!on);
+      if (on && detectMobileApp()) showRouteLoader('A sincronizar...');
+      if (!on) hideRouteLoader(160);
+    }
     function renderSkeletons() {
       $('metricsGrid').innerHTML = Array.from({length:4}).map(()=>'<article class="metric-card"><span class="skeleton-line" style="width:70%"></span><strong class="skeleton-line" style="width:38%;height:28px;margin-top:9px"></strong><small class="skeleton-line" style="width:56%;height:12px;margin-top:8px"></small></article>').join('');
       $('activityList').innerHTML = Array.from({length:5}).map(()=>'<article class="activity-item"><div class="skeleton-card" style="width:34px;min-height:34px"></div><div style="display:grid;gap:7px"><span class="skeleton-line" style="width:72%"></span><span class="skeleton-line" style="width:92%;height:12px"></span></div></article>').join('');
@@ -1438,7 +1843,8 @@
     }
     function buildNav() {
       $('sideNav').innerHTML = panels.map(p=>`<button class="nav-item ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
-      $('mobileTabs').innerHTML = panels.map(p=>`<button class="mobile-tab ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
+      const mobilePanels = panels.filter(p => primaryMobilePanels.includes(p.id));
+      $('mobileTabs').innerHTML = mobilePanels.map(p=>`<button class="mobile-tab ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
       document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.panel)));
       iconRefresh();
     }
@@ -1456,6 +1862,7 @@
       }
       currentPanel = id;
       document.body.classList.add('navigating-soft');
+      if (detectMobileApp()) showRouteLoader('A abrir ' + ((panels.find(p=>p.id===id)||{}).label || 'página') + '...');
       document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active', s.id === `${id}Panel`));
       document.querySelectorAll('[data-panel]').forEach(b=>b.classList.toggle('active', b.dataset.panel === id));
       const p = panels.find(x=>x.id===id);
@@ -1464,7 +1871,7 @@
       $('overlay').classList.remove('active');
       updateBackButton();
       window.scrollTo({ top: 0, behavior: options.instant ? 'auto' : 'smooth' });
-      setTimeout(()=>document.body.classList.remove('navigating-soft'), 260);
+      setTimeout(()=>{ document.body.classList.remove('navigating-soft'); hideRouteLoader(80); }, 280);
       iconRefresh();
       if (id === 'manage') renderManageSelect();
       if (id === 'command') { renderCommandSelect(); if (commandSelectedId()) loadCommandCenter(); }
@@ -1477,8 +1884,8 @@
     }
     
     function loginView(){ document.body.classList.remove('role-admin','role-editor'); $('loginScreen').classList.remove('hidden'); $('app').classList.remove('active'); iconRefresh(); }
-    function applyRoleUi(){ document.body.classList.toggle('role-editor', isEditor()); document.body.classList.toggle('role-admin', isAdmin()); $('connectionLabel').textContent = isEditor() ? 'Perfil Editor · operador seguro' : 'Perfil Admin · acesso total'; }
-    function appView(){ $('loginScreen').classList.add('hidden'); $('app').classList.add('active'); applyRoleUi(); loadAll(); iconRefresh(); }
+    function applyRoleUi(){ document.body.classList.toggle('role-editor', isEditor()); document.body.classList.toggle('role-admin', isAdmin()); $('connectionLabel').textContent = 'Sistema protegido'; }
+    function appView(){ detectMobileApp(); $('loginScreen').classList.add('hidden'); $('app').classList.add('active'); applyRoleUi(); loadAll(); iconRefresh(); }
     async function loadAll(){
       renderSkeletons();
       setLoading(true);
@@ -1770,7 +2177,7 @@
       const health = computeCommandHealth(d);
       const badNamesInspector = renderBadNamesInspector(d);
       const issues = health.filter(x=>x.level !== 'ok').length;
-      const hero = `<div class="command-hero"><div><h2>${esc(inv.coupleNames || inv.slug || 'Convite')}</h2><p>${esc(inv.publicUrl || inv.githubPath || inv.slug || '')}</p><div class="command-status-row" style="margin-top:8px">${badgeStatus(inv.status)}<span class="badge blue">${pkgLabel(inv.packageKey)}</span><span class="badge ${issues ? 'warn' : 'ok'}">${issues ? `${issues} alerta(s)` : 'Saúde OK'}</span></div></div><div class="command-hero-actions"><button class="btn" onclick="copyUrl('${esc(inv.slug || '')}')"><i data-feather="copy"></i> Copiar slug</button><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir convite</button><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Gerir convidados</button></div></div>`;
+      const hero = `<div class="command-hero"><div><h2>${esc(inv.coupleNames || inv.slug || 'Convite')}</h2><p>${esc(inv.publicUrl || inv.githubPath || inv.slug || '')}</p><div class="command-status-row" style="margin-top:8px">${badgeStatus(inv.status)}<span class="badge blue">${pkgLabel(inv.packageKey)}</span><span class="badge ${issues ? 'warn' : 'ok'}">${issues ? `${issues} alerta(s)` : 'Saúde OK'}</span></div></div><div class="command-hero-actions"><button class="btn" onclick="copyUrl('${esc(inv.slug || '')}')"><i data-feather="copy"></i> Slug</button><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button></div></div>`;
       let body = '';
       if(commandActiveTab === 'overview'){
         body = `${hero}<div class="command-kpi-grid"><article class="command-kpi"><span>Convidados</span><strong>${guests.length}</strong><small>base carregada</small></article><article class="command-kpi"><span>RSVP</span><strong>${rsvps.length}</strong><small>confirmações</small></article><article class="command-kpi"><span>Presentes</span><strong>${gifts.length}</strong><small>${gifts.filter(g=>g.reserved || g.reservedBy || g.reserved_by).length} reservados</small></article><article class="command-kpi"><span>Mensagens</span><strong>${messages.length}</strong><small>mural</small></article></div>${renderHealthItems(health.slice(0,4))}${badNamesInspector}`;
@@ -1779,7 +2186,7 @@
       } else if(commandActiveTab === 'data'){
         body = `${hero}<div class="command-data-grid"><div class="command-data-box"><span>ID</span><strong>${esc(inv.id || inv._id || '-')}</strong></div><div class="command-data-box"><span>Slug</span><strong>${esc(inv.slug || '-')}</strong></div><div class="command-data-box"><span>Cliente</span><strong>${esc(inv.clientName || '-')}</strong></div><div class="command-data-box"><span>Casal</span><strong>${esc(inv.coupleNames || '-')}</strong></div><div class="command-data-box"><span>Pacote</span><strong>${pkgLabel(inv.packageKey)}</strong></div><div class="command-data-box"><span>Estado</span><strong>${esc(inv.status || '-')}</strong></div><div class="command-data-box"><span>URL pública</span><strong>${esc(inv.publicUrl || '-')}</strong></div><div class="command-data-box"><span>GitHub</span><strong>${esc(inv.githubPath || '-')}</strong></div><div class="command-data-box"><span>Criado em</span><strong>${fmtDate(inv.createdAt)}</strong></div><div class="command-data-box"><span>Actualizado em</span><strong>${fmtDate(inv.updatedAt)}</strong></div></div>`;
       } else if(commandActiveTab === 'ops'){
-        body = `${hero}<div class="command-ops-grid"><article class="command-op"><strong>Convidados</strong><p>Abre a gestão directa filtrada neste convite.</p><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Abrir convidados</button></article><article class="command-op"><strong>Manutenção</strong><p>Abre reset de acessos, presentes, estado e erase controlado.</p><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i> Abrir gestão</button></article><article class="command-op"><strong>Reparar nomes</strong><p>Mostra os convidados afectados e corrige normalizedName deste convite.</p><button class="btn" onclick="handleHealthAction('badNames')"><i data-feather="list"></i> Ver lista</button></article><article class="command-op"><strong>Copiar URL</strong><p>Copia a URL pública para partilhar ou testar.</p><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="copy"></i> Copiar URL</button></article><article class="command-op"><strong>Abrir convite</strong><p>Testa a página pública do convite.</p><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button></article><article class="command-op"><strong>GitHub</strong><p>Abre a área de ligação GitHub para diagnóstico.</p><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i> Ver GitHub</button></article></div>`;
+        body = `${hero}<div class="command-ops-grid"><article class="command-op"><strong>Convidados</strong><p>Abre a gestão directa filtrada neste convite.</p><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button></article><article class="command-op"><strong>Manutenção</strong><p>Abre reset de acessos, presentes, estado e erase controlado.</p><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i> Gestão</button></article><article class="command-op"><strong>Reparar nomes</strong><p>Mostra os convidados afectados e corrige normalizedName deste convite.</p><button class="btn" onclick="handleHealthAction('badNames')"><i data-feather="list"></i> Ver lista</button></article><article class="command-op"><strong>Copiar URL</strong><p>Copia a URL pública para partilhar ou testar.</p><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="copy"></i> URL</button></article><article class="command-op"><strong>Abrir convite</strong><p>Testa a página pública do convite.</p><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button></article><article class="command-op"><strong>GitHub</strong><p>Abre a área de ligação GitHub para diagnóstico.</p><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i> GitHub</button></article></div>`;
       } else {
         const acts = [...rsvps.slice(0,6).map(r=>({title:'Presença confirmada', detail:`${r.nome || r.name || 'Convidado'} · ${fmtDate(r.timestamp || r.createdAt)}`, icon:'check-circle'})), ...messages.slice(0,6).map(m=>({title:'Mensagem recebida', detail:`${m.nome || m.name || 'Convidado'} · ${fmtDate(m.timestamp || m.createdAt)}`, icon:'message-square'})), ...contributions.slice(0,6).map(c=>({title:'Contribuição registada', detail:`${c.nome || c.name || 'Convidado'} · ${fmtDate(c.timestamp || c.createdAt)}`, icon:'credit-card'}))].slice(0,12);
         body = `${hero}<div class="command-activity">${acts.length ? acts.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.icon}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail)}</p></div></article>`).join('') : '<div class="command-empty">Ainda não há actividade detalhada para este convite.</div>'}</div>`;
@@ -2007,7 +2414,7 @@ Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, chec
       });
     }
     function applyTheme(theme){ const selected=theme==='light'?'light':'dark'; document.documentElement.setAttribute('data-theme',selected); localStorage.setItem('lirandzo_manager_theme',selected); $('themeBtn').innerHTML=`<i data-feather="${selected==='light'?'moon':'sun'}"></i> ${selected==='light'?'Tema escuro':'Tema claro'}`; iconRefresh(); }
-    function init(){ applyTheme(localStorage.getItem('lirandzo_manager_theme')||'dark'); buildNav(); bindEvents(); token ? appView() : loginView(); iconRefresh(); }
+    function init(){ detectMobileApp(); applyTheme(localStorage.getItem('lirandzo_manager_theme')||'dark'); buildNav(); bindEvents(); window.addEventListener('resize', detectMobileApp); window.addEventListener('orientationchange', () => setTimeout(detectMobileApp, 180)); token ? appView() : loginView(); iconRefresh(); }
     init();
   </script>
 </body>
