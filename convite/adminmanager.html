@@ -3330,11 +3330,13 @@
       const value = String(raw || '').trim();
       const low = value.toLowerCase();
       if (!value) return 'Não aberto';
+      // IMPORTANTE: “Não aberto” também contém a palavra “aberto”.
+      // Por isso, este caso tem de ser validado antes de “Convite Aberto”.
+      if (low.includes('não aberto') || low.includes('nao aberto')) return 'Não aberto';
       if (low === 'aberto' || low.includes('convite aberto')) return 'Convite Aberto';
       if (low.includes('pendente') || low.includes('confirmar')) return 'Ainda por confirmar';
       if (low.startsWith('confirmado')) return value;
       if (low.includes('aberto')) return 'Convite Aberto';
-      if (low.includes('não aberto') || low.includes('nao aberto')) return 'Não aberto';
       return value;
     }
     function statusLabelForSelect(value){
@@ -3410,7 +3412,7 @@
       $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')"><i data-feather="rotate-ccw"></i> Repor</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')"><i data-feather="trash-2"></i> Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
       iconRefresh();
     }
-    function badgeStatusFromGuest(status){ const s=String(status||'').toLowerCase(); if(s.includes('confirmado')) return '<span class="badge ok">Confirmado</span>'; if(s.includes('aberto')) return '<span class="badge blue">Aberto</span>'; if(s.includes('pendente') || s.includes('confirmar')) return '<span class="badge warn">Pendente</span>'; return '<span class="badge">Não aberto</span>'; }
+    function badgeStatusFromGuest(status){ const s=String(status||'').toLowerCase(); if(s.includes('confirmado')) return '<span class="badge ok">Confirmado</span>'; if(s.includes('não aberto') || s.includes('nao aberto')) return '<span class="badge">Não aberto</span>'; if(s.includes('aberto')) return '<span class="badge blue">Aberto</span>'; if(s.includes('pendente') || s.includes('confirmar')) return '<span class="badge warn">Pendente</span>'; return '<span class="badge">Não aberto</span>'; }
     function openGuestModal(){ $('guestEditModal').classList.add('open'); iconRefresh(); }
     function closeGuestModal(){ $('guestEditModal').classList.remove('open'); hideMsg($('guestEditResult')); }
     function fillGuestForm(g={}){
