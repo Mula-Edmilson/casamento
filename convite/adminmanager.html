@@ -1012,8 +1012,8 @@
 
 
     /* =========================================================
-       LIRANDZO COMMAND CENTER · V6
-       Ficha operacional por convite + diagnóstico visual.
+       LIRANDZO COMMAND CENTER · V7
+       Mobile App Command Center + diagnóstico accionável.
        ========================================================= */
     .command-shell { display:grid; grid-template-columns:300px minmax(0,1fr); gap:12px; align-items:start; }
     .command-sidebar { position:sticky; top:calc(var(--topbar) + var(--safe-top) + 16px); display:grid; gap:10px; }
@@ -2051,6 +2051,209 @@
       body.mobile-app .command-tab { font-size:9.3px !important; padding:0 8px !important; }
     }
 
+
+    /* V6.4.1 MOBILE SCROLL FIX
+       Garante que a página Ficha/Command Center no telemóvel usa scroll vertical real.
+       Mantém tabs e bottom navigation fixos, mas liberta os containers internos. */
+    @media (max-width: 920px), (hover:none), (pointer:coarse) {
+      html.mobile-app,
+      body.mobile-app {
+        height:auto !important;
+        min-height:100% !important;
+        max-height:none !important;
+        overflow-x:hidden !important;
+        overflow-y:auto !important;
+        overscroll-behavior-y:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+      }
+      body.mobile-app .app,
+      body.mobile-app .main,
+      body.mobile-app .content,
+      body.mobile-app .section,
+      body.mobile-app #commandPanel,
+      body.mobile-app .command-shell,
+      body.mobile-app .command-sidebar,
+      body.mobile-app .command-main,
+      body.mobile-app #commandBody {
+        height:auto !important;
+        min-height:0 !important;
+        max-height:none !important;
+        overflow:visible !important;
+      }
+      body.mobile-app .main {
+        display:block !important;
+        padding-bottom:calc(112px + var(--safe-bottom)) !important;
+      }
+      body.mobile-app #commandPanel.section.active {
+        display:block !important;
+        overflow:visible !important;
+        padding-bottom:10px !important;
+      }
+      body.mobile-app .command-tabs {
+        overflow-x:auto !important;
+        overflow-y:hidden !important;
+        -webkit-overflow-scrolling:touch !important;
+      }
+      body.mobile-app .command-select-card,
+      body.mobile-app .command-hero,
+      body.mobile-app .command-kpi,
+      body.mobile-app .health-item,
+      body.mobile-app .command-data-box,
+      body.mobile-app .command-op,
+      body.mobile-app .command-inspector,
+      body.mobile-app .bad-name-row {
+        max-height:none !important;
+      }
+      body.mobile-app .modal.open {
+        overflow-y:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+      }
+    }
+
+  
+
+    /* =========================================================
+       ADMIN MANAGER V7 · MOBILE APP COMMAND CENTER
+       Reconstrução mobile-first: app shell, cards nativos, sem layout desktop espremido.
+       ========================================================= */
+    @media (max-width: 860px), (hover: none), (pointer: coarse) {
+      html.mobile-app, body.mobile-app { height:auto !important; min-height:100% !important; overflow-x:hidden !important; overflow-y:auto !important; overscroll-behavior-y:contain; }
+      body.mobile-app { --topbar:58px; --bottomnav:72px; background:#17110f !important; font-size:13px; }
+      body.mobile-app::before { opacity:.08 !important; background-size:28px 28px !important; }
+
+      body.mobile-app .topbar { height:calc(var(--topbar) + var(--safe-top)) !important; min-height:calc(var(--topbar) + var(--safe-top)) !important; padding:var(--safe-top) 12px 0 !important; border-bottom:1px solid rgba(236,216,196,.10) !important; background:rgba(27,21,18,.94) !important; box-shadow:0 12px 30px rgba(0,0,0,.24) !important; }
+      body.mobile-app .topbar-title strong { font-size:15px !important; max-width:44vw !important; letter-spacing:-.04em; }
+      body.mobile-app .topbar-title span { font-size:10px !important; max-width:44vw !important; }
+      body.mobile-app .topbar-actions { gap:7px !important; }
+      body.mobile-app .btn.icon-only { width:42px !important; min-width:42px !important; height:42px !important; border-radius:16px !important; }
+
+      body.mobile-app .main { margin:0 !important; width:100% !important; max-width:100% !important; min-height:100dvh !important; padding:calc(var(--topbar) + var(--safe-top) + 10px) 12px calc(var(--bottomnav) + var(--safe-bottom) + 20px) !important; overflow:visible !important; }
+      body.mobile-app .content { width:100% !important; max-width:100% !important; overflow:visible !important; }
+      body.mobile-app .section.active { display:block !important; animation:v7RouteIn .24s cubic-bezier(.2,.85,.2,1) both !important; }
+      @keyframes v7RouteIn { from { opacity:0; transform:translateY(10px) scale(.992); } to { opacity:1; transform:none; } }
+
+      body.mobile-app .section-title { padding:0 2px !important; margin:0 0 12px !important; gap:6px !important; }
+      body.mobile-app .section-title h1 { font-size:22px !important; line-height:1.05 !important; letter-spacing:-.06em !important; }
+      body.mobile-app .section-title p { font-size:11px !important; line-height:1.38 !important; color:var(--muted) !important; }
+
+      body.mobile-app .mobile-tabs { position:fixed !important; left:10px !important; right:10px !important; bottom:calc(8px + var(--safe-bottom)) !important; height:58px !important; display:grid !important; grid-template-columns:repeat(5,1fr) !important; gap:6px !important; padding:6px !important; margin:0 !important; z-index:1700 !important; border:1px solid rgba(236,216,196,.13) !important; border-radius:22px !important; background:rgba(23,18,16,.92) !important; box-shadow:0 18px 55px rgba(0,0,0,.48) !important; backdrop-filter:blur(22px) saturate(130%) !important; overflow:hidden !important; }
+      body.mobile-app .mobile-tab { min-width:0 !important; width:100% !important; height:46px !important; min-height:46px !important; border:0 !important; border-radius:16px !important; padding:0 4px !important; display:grid !important; grid-template-rows:18px 1fr !important; place-items:center !important; gap:2px !important; background:transparent !important; color:var(--muted) !important; font-size:9px !important; line-height:1 !important; white-space:nowrap !important; }
+      body.mobile-app .mobile-tab .feather { width:16px !important; height:16px !important; }
+      body.mobile-app .mobile-tab.active { background:linear-gradient(135deg,#bf8a63,#936246) !important; color:#fff !important; box-shadow:0 10px 22px rgba(185,130,91,.26) !important; }
+
+      body.mobile-app .panel-card,
+      body.mobile-app .metric-card,
+      body.mobile-app .mobile-card,
+      body.mobile-app .v7-section-card,
+      body.mobile-app .v7-command-hero,
+      body.mobile-app .v7-ok-card { border-radius:20px !important; border:1px solid rgba(236,216,196,.10) !important; background:linear-gradient(180deg,rgba(46,37,32,.90),rgba(26,20,17,.92)) !important; box-shadow:0 16px 38px rgba(0,0,0,.22) !important; overflow:hidden !important; }
+      body.mobile-app .panel-head { min-height:42px !important; padding:10px 12px !important; }
+      body.mobile-app .panel-body { padding:12px !important; }
+      body.mobile-app .btn { min-height:38px !important; border-radius:14px !important; padding:0 10px !important; display:inline-flex !important; justify-content:center !important; align-items:center !important; gap:6px !important; font-size:10.5px !important; line-height:1 !important; white-space:nowrap !important; overflow:hidden !important; text-overflow:ellipsis !important; }
+      body.mobile-app .btn .feather { width:14px !important; height:14px !important; flex:0 0 auto !important; }
+      body.mobile-app .btn.primary { background:linear-gradient(135deg,#c99168,#986449) !important; }
+      body.mobile-app .btn:active { transform:scale(.98) !important; }
+
+      /* FICHA / COMMAND CENTER MOBILE APP */
+      body.mobile-app #commandPanel { padding:0 !important; overflow:visible !important; }
+      body.mobile-app #commandPanel .section-title { display:none !important; }
+      body.mobile-app .command-shell { display:block !important; width:100% !important; max-width:100% !important; overflow:visible !important; }
+      body.mobile-app .command-sidebar { position:static !important; display:block !important; width:100% !important; margin:0 0 10px !important; overflow:visible !important; }
+      body.mobile-app .command-main { width:100% !important; min-width:0 !important; overflow:visible !important; }
+      body.mobile-app .command-context { display:none !important; }
+      body.mobile-app .command-select-card { border-radius:22px !important; padding:12px !important; margin:0 0 10px !important; display:grid !important; gap:10px !important; background:linear-gradient(180deg,rgba(51,40,34,.96),rgba(27,20,17,.94)) !important; }
+      body.mobile-app .command-select-card .field label { font-size:9.5px !important; color:var(--accent-2) !important; }
+      body.mobile-app #commandInviteSelect { min-height:44px !important; border-radius:15px !important; font-size:12px !important; font-weight:800 !important; padding:0 12px !important; background:rgba(12,9,8,.62) !important; }
+      body.mobile-app #commandLoadBtn { width:100% !important; min-height:42px !important; }
+      body.mobile-app .command-mini-actions { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:7px !important; }
+      body.mobile-app .command-mini-actions .btn { width:100% !important; min-width:0 !important; padding:0 7px !important; }
+      body.mobile-app .command-mini-actions .btn:nth-child(4) { grid-column:auto !important; }
+
+      body.mobile-app .command-tabs { position:sticky !important; top:calc(var(--topbar) + var(--safe-top)) !important; z-index:500 !important; display:grid !important; grid-template-columns:repeat(5,minmax(0,1fr)) !important; gap:5px !important; width:calc(100% + 24px) !important; margin:0 -12px 10px !important; padding:8px 12px !important; overflow:hidden !important; background:linear-gradient(180deg,rgba(23,18,16,.98),rgba(23,18,16,.86)) !important; border-bottom:1px solid rgba(236,216,196,.10) !important; backdrop-filter:blur(18px) !important; }
+      body.mobile-app .command-tab { min-width:0 !important; min-height:34px !important; height:34px !important; padding:0 4px !important; border-radius:13px !important; justify-content:center !important; gap:4px !important; font-size:8.8px !important; font-weight:900 !important; letter-spacing:-.02em !important; white-space:nowrap !important; }
+      body.mobile-app .command-tab .feather { width:13px !important; height:13px !important; }
+      body.mobile-app #commandBody { display:block !important; width:100% !important; max-width:100% !important; min-height:auto !important; height:auto !important; overflow:visible !important; padding:0 !important; }
+      body.mobile-app .v7-mobile-command { display:grid !important; gap:10px !important; width:100% !important; overflow:visible !important; padding-bottom:12px !important; }
+      body.mobile-app .v7-command-hero { padding:14px !important; display:grid !important; gap:12px !important; }
+      body.mobile-app .v7-command-hero-top { display:flex !important; align-items:flex-start !important; justify-content:space-between !important; gap:10px !important; }
+      body.mobile-app .v7-eyebrow { display:block !important; color:var(--accent-2) !important; text-transform:uppercase !important; letter-spacing:.10em !important; font-weight:950 !important; font-size:9px !important; margin-bottom:6px !important; }
+      body.mobile-app .v7-command-hero h2 { color:var(--text) !important; font-size:20px !important; line-height:1.02 !important; letter-spacing:-.06em !important; margin:0 !important; }
+      body.mobile-app .v7-command-hero p { color:var(--muted) !important; font-size:11px !important; margin-top:5px !important; word-break:break-all !important; }
+      body.mobile-app .v7-health-pill { flex:0 0 auto !important; min-height:26px !important; border-radius:999px !important; padding:0 9px !important; display:inline-flex !important; align-items:center !important; font-size:10px !important; font-weight:900 !important; }
+      body.mobile-app .v7-health-pill.ok { background:rgba(22,199,132,.13) !important; color:var(--green) !important; }
+      body.mobile-app .v7-health-pill.warn { background:rgba(233,168,87,.14) !important; color:var(--orange) !important; }
+      body.mobile-app .v7-chip-row { display:flex !important; gap:6px !important; flex-wrap:wrap !important; }
+      body.mobile-app .v7-action-grid { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:7px !important; }
+      body.mobile-app .v7-action-grid .btn { width:100% !important; min-width:0 !important; padding:0 6px !important; }
+
+      body.mobile-app .v7-section-card { padding:12px !important; display:grid !important; gap:10px !important; }
+      body.mobile-app .v7-section-head { display:flex !important; align-items:center !important; justify-content:space-between !important; gap:8px !important; }
+      body.mobile-app .v7-section-head strong { color:var(--text) !important; font-size:13px !important; font-weight:950 !important; letter-spacing:-.03em !important; }
+      body.mobile-app .v7-section-head span { color:var(--muted) !important; font-size:10px !important; font-weight:800 !important; }
+      body.mobile-app .v7-kpi-grid { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:8px !important; }
+      body.mobile-app .v7-kpi { position:relative !important; min-height:84px !important; padding:11px !important; border:1px solid rgba(236,216,196,.09) !important; border-radius:17px !important; background:rgba(12,9,8,.30) !important; overflow:hidden !important; }
+      body.mobile-app .v7-kpi-icon { position:absolute !important; right:10px !important; top:10px !important; width:28px !important; height:28px !important; border-radius:11px !important; display:grid !important; place-items:center !important; background:rgba(185,130,91,.11) !important; color:var(--accent-2) !important; }
+      body.mobile-app .v7-kpi-icon .feather { width:14px !important; height:14px !important; }
+      body.mobile-app .v7-kpi span { display:block !important; color:var(--muted) !important; font-size:9px !important; text-transform:uppercase !important; letter-spacing:.08em !important; font-weight:950 !important; }
+      body.mobile-app .v7-kpi strong { display:block !important; color:var(--text) !important; font-size:25px !important; line-height:1 !important; letter-spacing:-.06em !important; margin-top:12px !important; }
+      body.mobile-app .v7-kpi small { display:block !important; color:var(--accent-2) !important; font-size:10px !important; margin-top:4px !important; }
+      body.mobile-app .v7-ok-card { display:grid !important; grid-template-columns:34px minmax(0,1fr) !important; gap:10px !important; padding:12px !important; align-items:center !important; }
+      body.mobile-app .v7-ok-card .feather { width:22px !important; height:22px !important; color:var(--green) !important; }
+      body.mobile-app .v7-ok-card strong { color:var(--text) !important; display:block !important; font-size:13px !important; }
+      body.mobile-app .v7-ok-card span { color:var(--muted) !important; display:block !important; font-size:11px !important; margin-top:2px !important; }
+
+      body.mobile-app .health-item { display:grid !important; grid-template-columns:34px minmax(0,1fr) !important; gap:10px !important; padding:11px !important; border-radius:17px !important; background:rgba(12,9,8,.26) !important; min-height:auto !important; }
+      body.mobile-app .health-icon { width:34px !important; height:34px !important; border-radius:13px !important; }
+      body.mobile-app .health-item strong { font-size:12.5px !important; }
+      body.mobile-app .health-item p { font-size:10.8px !important; line-height:1.38 !important; }
+      body.mobile-app .command-health-grid { display:grid !important; grid-template-columns:1fr !important; gap:8px !important; }
+
+      body.mobile-app .command-data-grid { display:grid !important; grid-template-columns:1fr !important; gap:8px !important; }
+      body.mobile-app .command-data-box { padding:11px !important; border-radius:16px !important; background:rgba(12,9,8,.28) !important; }
+      body.mobile-app .command-data-box span { font-size:9px !important; }
+      body.mobile-app .command-data-box strong { font-size:11.5px !important; }
+      body.mobile-app .command-ops-grid { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:8px !important; }
+      body.mobile-app .command-op { padding:11px !important; border-radius:17px !important; background:rgba(12,9,8,.28) !important; }
+      body.mobile-app .command-op strong { font-size:12px !important; }
+      body.mobile-app .command-op p { font-size:10.5px !important; line-height:1.35 !important; min-height:30px !important; }
+      body.mobile-app .command-op .btn { width:100% !important; }
+
+      body.mobile-app .command-inspector { border-radius:20px !important; overflow:hidden !important; margin:0 !important; background:linear-gradient(180deg,rgba(70,35,32,.28),rgba(12,9,8,.25)) !important; border:1px solid rgba(239,104,104,.22) !important; }
+      body.mobile-app .command-inspector-head { display:grid !important; grid-template-columns:1fr !important; gap:9px !important; padding:12px !important; }
+      body.mobile-app .command-inspector-head h3 { font-size:12.5px !important; line-height:1.25 !important; }
+      body.mobile-app .command-inspector-head .toolbar-right { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:7px !important; width:100% !important; }
+      body.mobile-app .command-inspector-head .toolbar-right .btn { width:100% !important; padding:0 5px !important; }
+      body.mobile-app .bad-name-list { display:grid !important; gap:8px !important; padding:0 12px 12px !important; }
+      body.mobile-app .bad-name-row { display:grid !important; grid-template-columns:1fr !important; gap:9px !important; padding:11px !important; border-radius:17px !important; background:rgba(12,9,8,.34) !important; border:1px solid rgba(236,216,196,.09) !important; }
+      body.mobile-app .bad-name-row strong { color:var(--text) !important; font-size:12.5px !important; }
+      body.mobile-app .bad-name-row small { display:block !important; color:var(--muted) !important; font-size:10.5px !important; line-height:1.35 !important; margin-top:2px !important; word-break:break-word !important; }
+      body.mobile-app .bad-name-row mark { border-radius:6px !important; padding:1px 5px !important; background:rgba(239,104,104,.16) !important; color:#ffd2d2 !important; }
+      body.mobile-app .bad-name-row code { color:var(--green) !important; font-family:inherit !important; }
+      body.mobile-app .v7-row-actions { display:grid !important; grid-template-columns:1fr 1fr !important; gap:7px !important; }
+      body.mobile-app .v7-row-actions .btn { width:100% !important; }
+
+      body.mobile-app .mobile-card { padding:12px !important; display:grid !important; gap:6px !important; }
+      body.mobile-app .mobile-card .table-actions { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:7px !important; }
+      body.mobile-app .mobile-card .table-actions .btn { width:100% !important; padding:0 6px !important; }
+      body.mobile-app .toolbar-right { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:7px !important; width:100% !important; }
+      body.mobile-app .toolbar-right .btn { width:100% !important; }
+
+      body.mobile-app.route-loading::after { content:""; position:fixed; inset:0; z-index:2400; pointer-events:none; background:radial-gradient(circle at 50% 38%,rgba(185,130,91,.10),transparent 30%); animation:v7LoaderFade .18s ease both; }
+      body.mobile-app #appRouteLoader { border-radius:999px !important; background:rgba(25,19,17,.84) !important; border:1px solid rgba(236,216,196,.12) !important; box-shadow:0 16px 42px rgba(0,0,0,.34) !important; }
+      body.mobile-app #appRouteLoader .app-loader-dot { background:#b9825b !important; box-shadow:0 0 0 6px rgba(185,130,91,.14) !important; }
+      @keyframes v7LoaderFade { from { opacity:0; } to { opacity:1; } }
+    }
+
+    @media (max-width: 390px) {
+      body.mobile-app .v7-action-grid,
+      body.mobile-app .command-mini-actions,
+      body.mobile-app .command-inspector-head .toolbar-right,
+      body.mobile-app .mobile-card .table-actions { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+      body.mobile-app .btn { font-size:10px !important; padding:0 5px !important; }
+      body.mobile-app .mobile-tab { font-size:8.5px !important; }
+      body.mobile-app .command-tab { font-size:8.2px !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -2140,7 +2343,7 @@
 
 
       <section class="section" id="commandPanel">
-        <div class="section-title"><div><h1>Lirandzo Command Center</h1><p>Ficha operacional por convite: visão, dados, saúde, operações e actividade num só lugar.</p></div><span class="badge blue">V6.4</span></div>
+        <div class="section-title"><div><h1>Lirandzo Command Center</h1><p>Ficha operacional por convite: visão, dados, saúde, operações e actividade num só lugar.</p></div><span class="badge blue">V7</span></div>
         <div class="command-shell">
           <aside class="command-sidebar">
             <div class="command-select-card">
@@ -2578,14 +2781,56 @@
     function renderBadNamesInspector(d){
       const badNames = getBadNormalizedGuests(d);
       if(!badNames.length) return '';
-      const rows = badNames.map(({guest, expected, current, token}) => `<article class="bad-name-row"><div><strong>${esc(guest.name || 'Sem nome')}</strong><small>Actual: <mark>${esc(current || 'vazio')}</mark></small><small>Correcto: <code>${esc(expected)}</code></small><small>Token: ${esc(token || '-')}</small></div><button class="btn small" onclick="goCommandGuestEditor('${esc(guest.id || guest._id || '')}')"><i data-feather="edit-3"></i> Editar</button></article>`).join('');
-      return `<section class="command-inspector" id="badNamesInspector"><div class="command-inspector-head"><h3><i data-feather="alert-triangle"></i> Convidados com normalização inconsistente <span class="badge red">${badNames.length}</span></h3><div class="toolbar-right"><button class="btn primary" onclick="repairCommandNames()"><i data-feather="tool"></i> Corrigir</button><button class="btn" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button><button class="btn" onclick="copyBadNamesList()"><i data-feather="copy"></i> Copiar</button></div></div><div class="bad-name-list">${rows}</div></section>`;
+      const mobile = detectMobileApp();
+      const rows = badNames.map(({guest, expected, current, token}, index) => {
+        const guestId = esc(guest.id || guest._id || '');
+        const number = guest.number ? `Nº ${esc(guest.number)}` : `#${index + 1}`;
+        return `<article class="bad-name-row ${mobile ? 'v7-bad-row' : ''}"><div><strong>${esc(guest.name || 'Sem nome')}</strong><small>${number} · ${esc(guest.mesa || guest.table || 'Mesa não definida')}</small><small>Actual: <mark>${esc(current || 'vazio')}</mark></small><small>Correcto: <code>${esc(expected)}</code></small><small>Token: ${esc(token || '-')}</small></div><div class="v7-row-actions"><button class="btn small" onclick="goCommandGuestEditor('${guestId}')"><i data-feather="edit-3"></i> Ver</button><button class="btn small primary" onclick="repairCommandNames()"><i data-feather="tool"></i> Corrigir</button></div></article>`;
+      }).join('');
+      return `<section class="command-inspector v7-inspector" id="badNamesInspector"><div class="command-inspector-head"><h3><i data-feather="alert-triangle"></i> Normalização inconsistente <span class="badge red">${badNames.length}</span></h3><div class="toolbar-right"><button class="btn primary" onclick="repairCommandNames()"><i data-feather="tool"></i> Corrigir todos</button><button class="btn" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button><button class="btn" onclick="copyBadNamesList()"><i data-feather="copy"></i> Copiar</button></div></div><div class="bad-name-list">${rows}</div></section>`;
     }
     function renderHealthItems(items){
       return `<div class="command-health-grid">${items.map(item=>`<article class="health-item ${item.level} ${item.action ? 'actionable' : ''}" ${item.action ? `onclick="handleHealthAction('${item.action}')"` : ''}><div class="health-icon"><i data-feather="${item.icon}"></i></div><div><strong>${esc(item.title)}</strong><p>${esc(item.text)}</p></div></article>`).join('')}</div>`;
     }
     function handleHealthAction(action){ if(action === 'badNames') { commandActiveTab = 'health'; renderCommandCenter(commandDetails); setTimeout(()=>document.getElementById('badNamesInspector')?.scrollIntoView({behavior:'smooth',block:'start'}), 80); } }
+    function renderCommandMobileKpi(label, value, small, icon){
+      return `<article class="v7-kpi"><div class="v7-kpi-icon"><i data-feather="${icon}"></i></div><span>${esc(label)}</span><strong>${esc(value)}</strong><small>${esc(small)}</small></article>`;
+    }
+    function renderCommandMobileHeader(inv, issues){
+      return `<section class="v7-command-hero"><div class="v7-command-hero-top"><div><span class="v7-eyebrow">Ficha activa</span><h2>${esc(inv.coupleNames || inv.slug || 'Convite')}</h2><p>${esc(inv.slug || '-')}</p></div><span class="v7-health-pill ${issues ? 'warn' : 'ok'}">${issues ? `${issues} alerta(s)` : 'OK'}</span></div><div class="v7-chip-row">${badgeStatus(inv.status)}<span class="badge blue">${pkgLabel(inv.packageKey)}</span></div><div class="v7-action-grid"><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i><span>Lista</span></button><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i><span>Gestão</span></button><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i><span>Abrir</span></button><button class="btn" onclick="copyUrl('${esc(inv.slug || '')}')"><i data-feather="copy"></i><span>Slug</span></button><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="link"></i><span>URL</span></button><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i><span>GitHub</span></button></div></section>`;
+    }
+    function renderCommandCenterMobile(d){
+      const inv = d.invite || {};
+      const guests = d.guests || [];
+      const rsvps = d.rsvps || [];
+      const gifts = d.gifts || [];
+      const messages = d.messages || [];
+      const contributions = d.contributions || [];
+      const health = computeCommandHealth(d);
+      const issues = health.filter(x=>x.level !== 'ok').length;
+      const badNames = getBadNormalizedGuests(d);
+      const reserved = gifts.filter(g=>g.reserved || g.reservedBy || g.reserved_by).length;
+      const header = renderCommandMobileHeader(inv, issues);
+      const badNamesInspector = renderBadNamesInspector(d);
+      const critical = health.filter(h=>h.level !== 'ok');
+      let body = '';
+      if(commandActiveTab === 'overview'){
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Resumo</strong><span>${esc(inv.slug || '')}</span></div><div class="v7-kpi-grid">${renderCommandMobileKpi('Convidados', guests.length, 'base', 'users')}${renderCommandMobileKpi('RSVP', rsvps.length, 'confirmados', 'heart')}${renderCommandMobileKpi('Presentes', reserved, 'reservados', 'gift')}${renderCommandMobileKpi('Mensagens', messages.length, 'mural', 'message-square')}</div></section>${critical.length ? `<section class="v7-section-card"><div class="v7-section-head"><strong>Atenção</strong><span>${critical.length} ponto(s)</span></div>${renderHealthItems(critical.slice(0,3))}</section>` : `<section class="v7-ok-card"><i data-feather="check-circle"></i><div><strong>Saúde operacional OK</strong><span>Não há inconsistências críticas visíveis neste convite.</span></div></section>`}${badNamesInspector}`;
+      } else if(commandActiveTab === 'health'){
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Diagnóstico</strong><span>${issues ? `${issues} alerta(s)` : 'sem alertas'}</span></div>${renderHealthItems(health)}</section>${badNamesInspector}`;
+      } else if(commandActiveTab === 'data'){
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Dados do convite</strong><span>MongoDB</span></div><div class="command-data-grid"><div class="command-data-box"><span>ID</span><strong>${esc(inv.id || inv._id || '-')}</strong></div><div class="command-data-box"><span>Slug</span><strong>${esc(inv.slug || '-')}</strong></div><div class="command-data-box"><span>Cliente</span><strong>${esc(inv.clientName || '-')}</strong></div><div class="command-data-box"><span>Casal</span><strong>${esc(inv.coupleNames || '-')}</strong></div><div class="command-data-box"><span>Pacote</span><strong>${pkgLabel(inv.packageKey)}</strong></div><div class="command-data-box"><span>Estado</span><strong>${esc(inv.status || '-')}</strong></div><div class="command-data-box"><span>URL pública</span><strong>${esc(inv.publicUrl || '-')}</strong></div><div class="command-data-box"><span>GitHub</span><strong>${esc(inv.githubPath || '-')}</strong></div></div></section>`;
+      } else if(commandActiveTab === 'ops'){
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Operações rápidas</strong><span>Acções seguras</span></div><div class="command-ops-grid"><article class="command-op"><strong>Convidados</strong><p>Gestão filtrada neste convite.</p><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button></article><article class="command-op"><strong>Manutenção</strong><p>Reset, presentes e estado.</p><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i> Gestão</button></article><article class="command-op"><strong>Reparar nomes</strong><p>Corrige normalizedName.</p><button class="btn" onclick="handleHealthAction('badNames')"><i data-feather="tool"></i> Corrigir</button></article><article class="command-op"><strong>Convite</strong><p>Abre o convite público.</p><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button></article><article class="command-op"><strong>Copiar</strong><p>Copia URL pública.</p><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="copy"></i> URL</button></article><article class="command-op"><strong>GitHub</strong><p>Diagnóstico GitHub.</p><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i> GitHub</button></article></div></section>`;
+      } else {
+        const acts = [...rsvps.slice(0,6).map(r=>({title:'Presença confirmada', detail:`${r.nome || r.name || 'Convidado'} · ${fmtDate(r.timestamp || r.createdAt)}`, icon:'check-circle'})), ...messages.slice(0,6).map(m=>({title:'Mensagem recebida', detail:`${m.nome || m.name || 'Convidado'} · ${fmtDate(m.timestamp || m.createdAt)}`, icon:'message-square'})), ...contributions.slice(0,6).map(c=>({title:'Contribuição registada', detail:`${c.nome || c.name || 'Convidado'} · ${fmtDate(c.timestamp || c.createdAt)}`, icon:'credit-card'}))].slice(0,12);
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Actividade</strong><span>${acts.length} registos</span></div><div class="command-activity">${acts.length ? acts.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.icon}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail)}</p></div></article>`).join('') : '<div class="command-empty">Ainda não há actividade detalhada para este convite.</div>'}</div></section>`;
+      }
+      $('commandBody').innerHTML = `<div class="v7-mobile-command">${body}</div>`;
+      iconRefresh();
+    }
     function renderCommandCenter(d){
+      if (detectMobileApp() || window.matchMedia('(max-width: 860px)').matches) return renderCommandCenterMobile(d);
       const inv = d.invite || {};
       const guests = d.guests || [];
       const rsvps = d.rsvps || [];
