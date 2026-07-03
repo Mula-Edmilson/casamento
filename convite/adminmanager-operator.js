@@ -1,10 +1,11 @@
 (function(){
   'use strict';
-  const BOT_VERSION='OMNI-Deterministic-v2.0-Ultra';
-  const LS_KEY='lirandzo_operator_history_v2';
+  const BOT_VERSION='OMNI-Deterministic-v4.0-NaturalLanguage';
+  const LS_KEY='lirandzo_operator_history_v4';
+  const SCOPE_KEY='lirandzo_operator_scope_v4';
   const CACHE_TTL=45*1000;
   const MAX_PREVIEW=18;
-  const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,history:[],booted:false,loading:false};
+  const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,history:[],booted:false,loading:false,scopeId:localStorage.getItem(SCOPE_KEY)||'__all__'};
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const txt=v=>String(v??'').trim();
@@ -23,11 +24,29 @@
     if(!res.ok) throw new Error(data.message||`Erro ${res.status}`);
     return data;
   }
+  function getScopeValue(){
+    const el=$('lzOperatorScopeSelect');
+    return el ? (el.value||'__all__') : (state.scopeId||localStorage.getItem(SCOPE_KEY)||'__all__');
+  }
+  function setScopeValue(value){
+    state.scopeId=value||'__all__';
+    localStorage.setItem(SCOPE_KEY,state.scopeId);
+    const el=$('lzOperatorScopeSelect'); if(el&&el.value!==state.scopeId) el.value=state.scopeId;
+  }
   function selectedInviteId(){
+    const scope=getScopeValue();
+    if(scope&&scope!=='__all__'&&scope!=='__current__') return scope;
+    if(scope==='__all__') return '';
     const ids=['commandInviteSelect','manageInviteSelect','guestInviteSelect','guestCrudInviteSelect'];
     for(const id of ids){const el=$(id); if(el&&el.value) return el.value;}
     const rows=document.querySelector('[data-invite-id]'); if(rows) return rows.getAttribute('data-invite-id');
     return '';
+  }
+  function inviteTitle(inv){return inv?.coupleNames||inv?.clientName||inv?.name||inv?.slug||'Convite';}
+  function inviteIdOf(ctx){return String(ctx?.invite?.id||ctx?.invite?._id||ctx?.invite?.slug||'');}
+  function isMultiScope(message=''){
+    const m=norm(message);
+    return getScopeValue()==='__all__'||/\b(todos|todas|geral|global|multi|por convite|separado|separar por convite|cada convite)\b/.test(m);
   }
   async function getInvites(force=false){
     if(!force&&state.invites&&Date.now()-state.invites.time<CACHE_TTL) return state.invites.data;
@@ -159,11 +178,12 @@
     const wrap=document.createElement('div'); wrap.className='lz-operator'; wrap.id='lzOperator'; wrap.innerHTML=`
       <button class="lz-operator-toggle" id="lzOperatorToggle" type="button" aria-label="Abrir operador Lirandzo"><span class="lz-operator-pulse"></span>${iconSvg('bot')}</button>
       <div class="lz-operator-window" id="lzOperatorWindow" role="dialog" aria-label="Lirandzo Operator">
-        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain determinístico · sem IA paga</span></div></div><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div>
-        <div class="lz-operator-brainbar"><i></i><span>Brain: filtros avançados · funil RSVP · mesas · categorias · riscos · relatórios · todos convites</span></div>
+        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain v4 · sem IA paga</span></div></div><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div>
+        <div class="lz-operator-brainbar"><i></i><span>Brain v4: linguagem natural · entende nomes dos convites · respostas separadas · filtros compostos</span></div>
+        <div class="lz-operator-scope"><label for="lzOperatorScopeSelect">Escopo</label><select id="lzOperatorScopeSelect"><option value="__all__">Todos convites · resultados separados</option><option value="__current__">Convite actual do painel</option></select><button id="lzOperatorReload" type="button" title="Recarregar dados">↻</button></div>
         <div class="lz-operator-messages" id="lzOperatorMessages"></div>
         <div class="lz-operator-quick" id="lzOperatorQuick"></div>
-        <form class="lz-operator-form" id="lzOperatorForm"><input id="lzOperatorInput" type="text" placeholder="Ex: pendentes mesa 5, funil, categorias, recepção, comparar convites..." autocomplete="off"><button class="lz-operator-send" type="submit">${iconSvg('send')}</button></form>
+        <form class="lz-operator-form" id="lzOperatorForm"><input id="lzOperatorInput" type="text" placeholder="Ex: quantos convidados abriram o convite rosalina-monteiro?" autocomplete="off"><button class="lz-operator-send" type="submit">${iconSvg('send')}</button></form>
       </div>`;
     document.body.appendChild(wrap);
     bind(); state.booted=true; restore(); renderQuick(); updateVisibility();
@@ -173,22 +193,162 @@
     $('lzOperatorClose').addEventListener('click',()=>toggle(false));
     $('lzOperatorForm').addEventListener('submit',e=>{e.preventDefault(); const input=$('lzOperatorInput'); const msg=txt(input.value); if(!msg)return; input.value=''; handle(msg);});
     $('lzOperatorQuick').addEventListener('click',e=>{const b=e.target.closest('[data-op-chip]'); if(b) handle(b.dataset.opChip);});
+    $('lzOperatorScopeSelect')?.addEventListener('change',e=>{setScopeValue(e.target.value); state.inviteCache.clear(); updateStatusLabel(); handle('Mapa');});
+    $('lzOperatorReload')?.addEventListener('click',()=>{state.inviteCache.clear(); state.invites=null; renderInviteScopeSelect(true); handle('Mapa');});
     $('lzOperatorMessages').addEventListener('click',e=>{const b=e.target.closest('[data-op-action]'); if(b) runAction(b.dataset.opAction,b.dataset.opPayload||'');});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.open)toggle(false);});
     ['commandInviteSelect','manageInviteSelect','guestInviteSelect','guestCrudInviteSelect'].forEach(id=>$(id)?.addEventListener('change',()=>{state.inviteCache.clear(); updateStatusLabel();}));
     const obs=new MutationObserver(updateVisibility); const app=$('app'); if(app) obs.observe(app,{attributes:true,attributeFilter:['class']});
   }
   function updateVisibility(){const el=$('lzOperator'); if(!el)return; el.classList.toggle('ready',Boolean($('app')?.classList.contains('active')&&token()));}
-  async function updateStatusLabel(){try{const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:'Seleccione um convite';}catch{$('lzOperatorStatus').textContent='Brain determinístico · sem IA paga';}}
-  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora opero por convite com filtros avançados. Posso separar pendentes por mesa/categoria, detectar riscos, preparar recepção, comparar convites e gerar relatórios — sem IA externa e sem custos.`);}}}
-  function renderQuick(){const chips=['Mapa','Funil RSVP','Pendentes','Não abriram','Abriram sem confirmar','Mesas','Categorias','Riscos','Recepção','Relatório','Comparar convites','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
+  async function updateStatusLabel(){try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:'Seleccione um convite';}catch{$('lzOperatorStatus').textContent='Brain v4 · linguagem natural sem IA paga';}}
+  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora também entendo perguntas naturais, por exemplo: <b>quantos convidados abriram o convite rosalina-monteiro?</b>, <b>quem confirmou no convite minoca-abubacar?</b> ou <b>lista pendentes mesa 5 do convite calate-helder</b>.`);}}}
+  function renderQuick(){const chips=['Quantos abriram?','Quem confirmou?','Pendentes por convite','Não abriram por convite','Abriram sem confirmar','Sem contacto','Sem mesa','Funil por convite','Riscos por convite','Relatório','Comparar convites','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
+  async function renderInviteScopeSelect(force=false){
+    const el=$('lzOperatorScopeSelect'); if(!el||!token()) return;
+    const current=getScopeValue();
+    try{
+      const invites=await getInvites(force);
+      const opts=['<option value="__all__">Todos convites · resultados separados</option>','<option value="__current__">Convite actual do painel</option>'].concat(invites.map(inv=>`<option value="${esc(inv.id||inv._id||inv.slug)}">${esc(inviteTitle(inv))}</option>`));
+      el.innerHTML=opts.join('');
+      el.value=[...el.options].some(o=>o.value===current)?current:'__all__';
+      setScopeValue(el.value);
+    }catch(err){/* mantém opções básicas */}
+  }
   function restore(){try{state.history=JSON.parse(localStorage.getItem(LS_KEY)||'[]').slice(-10); state.history.forEach(m=>addMsg(m.html,m.user,false));}catch{state.history=[];}}
   function persist(html,user){state.history.push({html,user}); state.history=state.history.slice(-24); localStorage.setItem(LS_KEY,JSON.stringify(state.history));}
   function addMsg(html,user=false,save=true){const box=$('lzOperatorMessages'); if(!box)return; const div=document.createElement('div'); div.className=`lz-op-msg ${user?'user':'bot'}`; div.innerHTML=html; box.appendChild(div); box.scrollTop=box.scrollHeight; if(save)persist(html,user);}
   function user(html){addMsg(esc(html),true);} function bot(html){addMsg(html,false);} function typing(on=true){const box=$('lzOperatorMessages'); if(!box)return; let el=$('lzOpTyping'); if(on){if(el)return; el=document.createElement('div');el.id='lzOpTyping';el.className='lz-operator-typing';el.innerHTML='<span></span><span></span><span></span>';box.appendChild(el);box.scrollTop=box.scrollHeight;}else el?.remove();}
   async function handle(message){user(message); typing(true); try{await new Promise(r=>setTimeout(r,120+Math.random()*180)); const reply=await route(message); typing(false); bot(reply); updateStatusLabel();}catch(err){typing(false); bot(`<strong>Não consegui executar.</strong><br>${esc(err.message||err)}<div class="lz-op-actions"><button class="lz-op-action" data-op-action="refresh">Tentar novamente</button></div>`);} }
+
+  function normLoose(v){return norm(v).replace(/[&+\-_.]+/g,' ').replace(/\b(convite|casamento|cliente|slug|admin)\b/g,' ').replace(/\s+/g,' ').trim();}
+  function inviteSearchText(inv){return [inv?.slug,inv?.coupleNames,inv?.clientName,inv?.name,inv?.title].map(normLoose).filter(Boolean).join(' | ');}
+  function scoreInviteMatch(message,inv){
+    const m=normLoose(message); const slug=normLoose(inv?.slug||''); const title=normLoose(inviteTitle(inv)); const hay=inviteSearchText(inv);
+    if(!m||!hay) return 0;
+    let score=0;
+    if(slug&&m.includes(slug)) score+=120;
+    if(title&&m.includes(title)) score+=110;
+    const rawSlug=norm(inv?.slug||''); if(rawSlug&&norm(message).includes(rawSlug)) score+=130;
+    const tokens=[...new Set(hay.split(/\s+/).filter(t=>t.length>=3&&!['convite','casamento','cliente','com','dos','das','para'].includes(t)))];
+    let hits=0; tokens.forEach(t=>{ if(m.includes(t)) hits+=1; });
+    if(tokens.length) score+=Math.round((hits/tokens.length)*70)+hits*8;
+    const after=(normLoose((String(message).match(/(?:convite|casamento|cliente)\s+([a-z0-9&+\-_.\s]+)/i)||[])[1]||''));
+    if(after){const afterTokens=after.split(/\s+/).filter(t=>t.length>=3); const afterHits=afterTokens.filter(t=>hay.includes(t)).length; score+=afterHits*18;}
+    return score;
+  }
+  async function resolveInviteFromMessage(message){
+    const invites=await getInvites(false);
+    const ranked=invites.map(inv=>({inv,score:scoreInviteMatch(message,inv)})).filter(x=>x.score>25).sort((a,b)=>b.score-a.score);
+    if(!ranked.length) return {match:null,ambiguous:[],invites};
+    if(ranked.length>1 && ranked[0].score-ranked[1].score<18) return {match:null,ambiguous:ranked.slice(0,5),invites};
+    return {match:ranked[0].inv,ambiguous:[],invites};
+  }
+  function detectMetricIntent(m){
+    const has=(r)=>r.test(m);
+    if(has(/abriu.*nao|abriu.*não|abriram.*nao|abriram.*não|sem confirmar|abriram mas|abertos sem/)) return {type:'openedNoConfirm',label:'abriram sem confirmar',subject:'convidados que abriram mas ainda não confirmaram'};
+    if(has(/nao abrir|não abrir|nao aberto|não aberto|por abrir|nunca abriu|ainda nao abriu|ainda não abriu/)) return {type:'notOpened',label:'não abriram',subject:'convidados que ainda não abriram'};
+    if(has(/abriram|abriu|abertos|aberto|visualizaram|visualizou|viram|viu|acessaram|acessou|leram|lido/) && !has(/nao|não|sem confirmar/)) return {type:'opened',label:'abriram o convite',subject:'convidados que já abriram o convite'};
+    if(has(/confirmaram|confirmad|rsvp positivo|presenca confirmada|presença confirmada/)) return {type:'confirmed',label:'confirmaram',subject:'convidados confirmados'};
+    if(has(/pendente|pendentes|por confirmar|falta confirmar|ainda nao confirm|ainda não confirm/)) return {type:'pending',label:'pendentes',subject:'convidados pendentes'};
+    if(has(/recusaram|recusad|declinaram|declinad|nao vao|não vão|nao vai|não vai/)) return {type:'declined',label:'recusaram',subject:'convidados que recusaram'};
+    if(has(/check.?in|entraram|entrou|ja entrou|já entrou|presentes no evento|entrada feita/)) return {type:'checkedIn',label:'check-in feito',subject:'convidados com check-in feito'};
+    if(has(/sem mesa|mesa em falta|nao tem mesa|não tem mesa|confirmados sem mesa/)) return {type:'missingTables',label:'sem mesa',subject:'confirmados sem mesa definida'};
+    if(has(/sem contacto|sem contato|sem telefone|telefone em falta|contacto em falta|contato em falta/)) return {type:'missingPhones',label:'sem contacto',subject:'convidados sem contacto'};
+    if(has(/sem token|sem link|token em falta|link individual em falta|sem acesso individual/)) return {type:'missingTokens',label:'sem token',subject:'convidados sem token individual'};
+    if(has(/vip.*pendente|pendente.*vip/)) return {type:'vipPending',label:'VIP pendentes',subject:'convidados VIP pendentes'};
+    if(has(/\bvip\b|padrinhos|madrinhas|honra/)) return {type:'vip',label:'VIP',subject:'convidados VIP'};
+    if(has(/duplicad|repetid|mesma pessoa|nomes iguais/)) return {type:'duplicated',label:'possíveis duplicados',subject:'grupos de possíveis duplicados'};
+    if(has(/nomes problem|nomes estranhos|nome errado|erros nos nomes|corrigir nomes/)) return {type:'badNames',label:'nomes problemáticos',subject:'convidados com nomes problemáticos'};
+    if(has(/mensagens|mural|recados/)) return {type:'messages',label:'mensagens recebidas',subject:'mensagens recebidas'};
+    if(has(/contribuic|contribuiç|pagamentos|valor recebido|dinheiro/)) return {type:'contributions',label:'contribuições',subject:'contribuições registadas'};
+    if(has(/presentes reservados|presentes|gift/)) return {type:'reservedGifts',label:'presentes reservados',subject:'presentes reservados'};
+    if(has(/pessoas previstas|presencas previstas|presenças previstas|pessoas confirmadas|quantas pessoas/)) return {type:'totalPeople',label:'pessoas previstas',subject:'pessoas previstas pelos confirmados'};
+    if(has(/convidados|base total|lista total|total da lista/)) return {type:'guests',label:'convidados registados',subject:'convidados registados'};
+    return null;
+  }
+  function getMetricList(ctx,type){
+    const a=ctx.analysis; const map={guests:a.guests,opened:a.opened,openedNoConfirm:a.openedNoConfirm,notOpened:a.notOpened,confirmed:a.confirmed,pending:a.pending,declined:a.declined,checkedIn:a.checkedIn,missingTables:a.missingTables,missingPhones:a.missingPhones,missingTokens:a.missingTokens,vip:a.vipGuests,vipPending:a.vipPending};
+    return map[type]||[];
+  }
+  function getMetricValue(ctx,type){
+    const a=ctx.analysis;
+    if(type==='duplicated') return a.duplicated.length;
+    if(type==='badNames') return a.badNames.length;
+    if(type==='messages') return a.messages.length;
+    if(type==='contributions') return a.contributions.length;
+    if(type==='reservedGifts') return a.reservedGifts.length;
+    if(type==='totalPeople') return a.totalPeople;
+    const list=getMetricList(ctx,type); return list.length;
+  }
+  function naturalAction(m){
+    if(/^(quem|quais|lista|listar|mostra|mostrar|ver|diz me quem|diz-me quem|quero ver)\b/.test(m)) return 'list';
+    if(/percent|percentagem|taxa|porcent/.test(m)) return 'rate';
+    if(/quantos|quantas|quanto|qtd|quantidade|numero|número|total|conta|contar/.test(m)) return 'count';
+    if(/tem\s+\d+|há\s+\d+/.test(m)) return 'count';
+    return '';
+  }
+  function parseNaturalCriteria(message,m){
+    const criteria={raw:message};
+    const table=message.match(/mesa\s+([a-z0-9\-\/]+)/i); if(table) criteria.table=table[1];
+    const cat=message.match(/categoria\s+([^,.;?]+)/i)||message.match(/grupo\s+([^,.;?]+)/i); if(cat) criteria.category=cat[1];
+    if(/vip/.test(m)) criteria.vip=true;
+    return criteria;
+  }
+  function applyNaturalFilters(ctx,list,criteria){
+    if(!criteria) return list;
+    let out=list.slice();
+    if(criteria.table){const t=norm(criteria.table); out=out.filter(g=>norm(displayTable(g)).includes(t));}
+    if(criteria.category){const c=norm(criteria.category); out=out.filter(g=>norm(getCategory(g)).includes(c));}
+    if(criteria.vip) out=out.filter(isVip);
+    return out;
+  }
+  function metricRate(ctx,type,value){
+    const a=ctx.analysis; const total=a.guests.length||1;
+    if(type==='confirmed') return fmtPct(value,total)+'% da lista';
+    if(type==='opened'||type==='notOpened'||type==='openedNoConfirm'||type==='pending'||type==='declined') return fmtPct(value,total)+'% da lista';
+    if(type==='checkedIn') return fmtPct(value,a.confirmed.length||1)+'% dos confirmados';
+    return '';
+  }
+  function naturalCountAnswer(ctx,intent,criteria){
+    const a=ctx.analysis; let value=getMetricValue(ctx,intent.type); let list=getMetricList(ctx,intent.type);
+    if(list.length && criteria && (criteria.table||criteria.category||criteria.vip)){list=applyNaturalFilters(ctx,list,criteria); value=list.length;}
+    state.lastContext=ctx; state.lastList=attachInvite(list,ctx);
+    const rate=metricRate(ctx,intent.type,value);
+    const filterText=[criteria?.table?`mesa ${criteria.table}`:'',criteria?.category?`categoria ${criteria.category}`:'',criteria?.vip?'VIP':''].filter(Boolean).join(' · ');
+    return `<strong>Resposta directa — ${esc(shortInvite(ctx))}</strong><br>${filterText?`Filtro aplicado: <b>${esc(filterText)}</b>.<br>`:''}No convite <b>${esc(shortInvite(ctx))}</b>, <b>${esc(value)}</b> ${esc(intent.subject)}.${rate?`<br>Isso representa <b>${esc(rate)}</b>.`:''}${intent.type==='opened'?`<br><small>Nota: aqui “abriram” inclui todos que já tiveram algum estado posterior a “Não aberto”, incluindo confirmados.</small>`:''}<div class="lz-op-actions">${list.length?'<button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button>':''}${actionAsk('Ver funil',`funil ${shortInvite(ctx)}`)}</div>`;
+  }
+  function naturalListAnswer(ctx,intent,criteria){
+    let list=getMetricList(ctx,intent.type); if(criteria) list=applyNaturalFilters(ctx,list,criteria);
+    state.lastContext=ctx; state.lastList=attachInvite(list,ctx);
+    const filterText=[criteria?.table?`mesa ${criteria.table}`:'',criteria?.category?`categoria ${criteria.category}`:'',criteria?.vip?'VIP':''].filter(Boolean).join(' · ');
+    if(!list.length) return `<strong>${esc(cap(intent.label))} — ${esc(shortInvite(ctx))}</strong><br>Não encontrei registos para este pedido${filterText?` com filtro <b>${esc(filterText)}</b>`:''}.`;
+    return `<strong>${esc(cap(intent.label))} — ${esc(shortInvite(ctx))}</strong><br>Encontrei <b>${list.length}</b> ${esc(intent.subject)}${filterText?` com filtro <b>${esc(filterText)}</b>`:''}.<div class="lz-op-list">${list.slice(0,MAX_PREVIEW).map(g=>guestRow(g,getPhone(g)||'')).join('')}${list.length>MAX_PREVIEW?`<div class="lz-op-card"><span>+ ${list.length-MAX_PREVIEW} registo(s) fora da prévia.</span></div>`:''}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button><button class="lz-op-action" data-op-action="go-guests">Abrir convidados</button></div>`;
+  }
+  async function naturalMultiAnswer(message,m,intent,criteria,action){
+    const contexts=await getValidContexts(); let flat=[];
+    const blocks=contexts.map(ctx=>{let list=getMetricList(ctx,intent.type); if(criteria) list=applyNaturalFilters(ctx,list,criteria); const value=(['duplicated','badNames','messages','contributions','reservedGifts','totalPeople'].includes(intent.type) && !criteria?.table && !criteria?.category && !criteria?.vip) ? getMetricValue(ctx,intent.type) : list.length; flat=flat.concat(attachInvite(list,ctx)); return {ctx,list,value};});
+    state.lastList=flat;
+    if(action==='count'||action==='rate'){
+      const total=blocks.reduce((s,b)=>s+Number(b.value||0),0);
+      return `<strong>${esc(cap(intent.label))} — separado por convite</strong><br>Total global apenas para referência: <b>${esc(total)}</b>. Abaixo está separado por convite.<div class="lz-op-list multi">${blocks.map(b=>`<div class="lz-op-invite-block">${inviteHeaderRow(b.ctx,b.value,`${intent.subject} · ${b.ctx.analysis.guests.length} convidados`,message)}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-csv">Copiar CSV</button>${actionAsk('Comparar convites','Comparar convites')}</div>`;
+    }
+    return `<strong>${esc(cap(intent.label))} — separado por convite</strong><br>Listei os resultados por convite, sem misturar clientes.<div class="lz-op-list multi">${blocks.map(b=>`<div class="lz-op-invite-block">${inviteHeaderRow(b.ctx,b.list.length,intent.subject,message)}${b.list.length?b.list.slice(0,6).map(x=>guestRow(x)).join(''):`<div class="lz-op-card"><span>Sem registos neste convite.</span></div>`}${b.list.length>6?`<div class="lz-op-card"><span>+ ${b.list.length-6} registo(s) deste convite fora da prévia.</span></div>`:''}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar tudo separado</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button></div>`;
+  }
+  async function routeNatural(message,m){
+    const action=naturalAction(m); const intent=detectMetricIntent(m); if(!action||!intent) return '';
+    const criteria=parseNaturalCriteria(message,m);
+    const resolved=await resolveInviteFromMessage(message);
+    if(resolved.ambiguous.length){return `<strong>Encontrei mais de um convite possível.</strong><br>Escolha qual quer analisar:<div class="lz-op-actions">${resolved.ambiguous.map(x=>`<button class="lz-op-action" data-op-action="select-invite" data-op-payload="${esc(x.inv.id||x.inv._id||x.inv.slug)}">${esc(inviteTitle(x.inv))}</button>`).join('')}</div>`;}
+    if(resolved.match){const ctx=await getContext(false,resolved.match.id||resolved.match._id||resolved.match.slug); return action==='list'?naturalListAnswer(ctx,intent,criteria):naturalCountAnswer(ctx,intent,criteria);}
+    if(getScopeValue()==='__all__') return naturalMultiAnswer(message,m,intent,criteria,action);
+    const ctx=await getContext(false); if(!ctx.invite) return '';
+    return action==='list'?naturalListAnswer(ctx,intent,criteria):naturalCountAnswer(ctx,intent,criteria);
+  }
   async function route(message){
     const m=norm(message);
+    const natural=await routeNatural(message,m); if(natural) return natural;
+    if(isMultiScope(message)) return routeMulti(message,m);
     if(/todos.*convite|comparar|ranking|geral multi|todos os clientes/.test(m)) return compareInvites();
     const ctx=await getContext(false); if(!ctx.invite) return `Ainda não há convite seleccionado. Carregue os convites primeiro ou seleccione um convite no painel.`;
     if(/^(ajuda|help|comandos|o que podes|manual)/.test(m)) return help(ctx);
@@ -222,6 +382,64 @@
     if(/filtra|filtrar|separa|separar|segmenta|segmentar|lista|listar|mostra|mostrar|ver /.test(m)) return viewCustomFilter(ctx,message);
     return smartFallback(ctx,message);
   }
+
+  function classifyListType(m){
+    if(/vip.*pendente|pendente.*vip/.test(m)) return 'vipPending';
+    if(/vip/.test(m)) return 'vip';
+    if(/token|acesso individual|link individual/.test(m)) return 'missingTokens';
+    if(/sem mesa|confirmados sem mesa/.test(m)) return 'missingTables';
+    if(/telefone|contacto|contato|sem contacto|sem telefone/.test(m)) return 'missingPhones';
+    if(/abriu.*nao|abriu.*não|sem confirmar/.test(m)) return 'openedNoConfirm';
+    if(/abriram|abriu|abertos|aberto|visualizaram|acessaram/.test(m)) return 'opened';
+    if(/nao abrir|não abrir|nao aberto|não aberto|por abrir|nunca abriu/.test(m)) return 'notOpened';
+    if(/confirmad|confirmaram|rsvp/.test(m)) return 'confirmed';
+    if(/recus|declin|nao vai|não vai/.test(m)) return 'declined';
+    if(/check.?in|ja entrou|já entrou/.test(m)) return 'checkedIn';
+    return 'pending';
+  }
+  async function getValidContexts(limit=30){
+    const contexts=await getAllContexts(limit);
+    return contexts.filter(c=>c&&c.analysis);
+  }
+  function attachInvite(list,ctx){return (list||[]).map(g=>Object.assign({},g,{__inviteTitle:shortInvite(ctx),__inviteId:inviteIdOf(ctx)}));}
+  function guestRowWithInvite(g,extra=''){const inv=g.__inviteTitle?`${g.__inviteTitle} · `:''; return `<div class="lz-op-list-row"><div><strong>${esc(getName(g)||'Sem nome')}</strong><small>${esc(inv)}${esc(displayTable(g))} · ${esc(getCategory(g))} · ${esc(g.status||g.guestStatus||'sem estado')} · ${peopleCount(g)} pessoa(s)${extra?` · ${esc(extra)}`:''}</small></div><small>#${esc(getNumber(g))}</small></div>`;}
+  function inviteHeaderRow(ctx,count,extra='',cmd='Mapa'){return `<div class="lz-op-invite-head"><div><strong>${esc(shortInvite(ctx))}</strong><small>${esc(extra)}</small></div><b>${esc(count)}</b><button class="lz-op-mini" data-op-action="select-invite" data-op-payload="${esc(inviteIdOf(ctx))}">Focar</button><button class="lz-op-mini" data-op-action="ask" data-op-payload="${esc(cmd)}">Ver</button></div>`;}
+  async function routeMulti(message,m){
+    if(/^(ajuda|help|comandos|o que podes|manual)/.test(m)) return multiHelp();
+    if(/comparar|ranking/.test(m)) return compareInvites();
+    if(/funil|funnel|jornada|conversao|conversão/.test(m)) return viewMultiFunnel();
+    if(/risco|prioridade|urgente|critico|crítico|alerta/.test(m)) return viewMultiRisks();
+    if(/qualidade|higiene|auditoria|dados ruins|inconsisten/.test(m)) return viewMultiQuality();
+    if(/recepcao|recepção|entrada|dia do evento/.test(m)) return viewMultiReception();
+    if(/mesa|mesas|seating|lugares|lotacao|lotação/.test(m)&&!/sem mesa|mesa\s+\w+/.test(m)) return viewMultiGroups('table');
+    if(/categoria|categorias|grupo|grupos/.test(m)&&!/categoria\s+/.test(m)) return viewMultiGroups('category');
+    if(/whats|mensagem|lembrete|texto|enviar|copy|copiar texto/.test(m)) return generateMultiMessage(message,m);
+    if(/relatorio|relatório|report|resumo executivo|cliente/.test(m)) return generateMultiReport();
+    if(/duplicad|repetid|nomes iguais|mesma pessoa/.test(m)) return viewMultiDuplicates();
+    if(/nome.*err|limpar|corrigir nomes|nomes estranhos|bad names|reparar nomes/.test(m)) return viewMultiBadNames();
+    const profile=message.match(/(?:perfil|detalhes|ver convidado|convidado)\s+(.+)/i); if(profile) return searchAllGuests(profile[1]);
+    const search=message.match(/(?:procura|procurar|buscar|pesquisar|encontra|encontrar)\s+(.+)/i); if(search) return searchAllGuests(search[1]);
+    const table=message.match(/mesa\s+([\w\-\/]+)/i); if(table) return viewMultiFiltered({table:table[1],raw:message},`Mesa ${table[1]}`);
+    const cat=message.match(/categoria\s+(.+)/i); if(cat) return viewMultiFiltered({category:cat[1],raw:message},`Categoria ${cat[1]}`);
+    if(/filtra|filtrar|separa|separar|segmenta|segmentar|lista|listar|mostra|mostrar|ver /.test(m)) return viewMultiFiltered({raw:message},'Filtro avançado');
+    if(/pendente|nao abrir|não abrir|abriu|confirmad|recus|check|token|contacto|telefone|sem mesa|vip|rsvp/.test(m)) return viewMultiList(classifyListType(m));
+    return viewMultiMap();
+  }
+  function multiHelp(){return `<strong>Modo multi-convite activo</strong><br>Agora os resultados são separados por convite, sem misturar listas de clientes.<ul><li><b>Quantos convidados abriram o convite rosalina-monteiro?</b></li><li><b>Quem confirmou no convite minoca-abubacar?</b></li><li><b>Lista pendentes mesa 5 do convite calate-helder</b></li><li><b>Quantos convidados sem contacto por convite?</b></li><li><b>Riscos por convite</b></li><li><b>Funil por convite</b></li><li><b>Relatório geral</b></li></ul><div class="lz-op-actions">${actionAsk('Mapa geral','Mapa geral',true)}${actionAsk('Pendentes por convite','Pendentes por convite')}${actionAsk('Riscos por convite','Riscos por convite')}</div>`;}
+  async function viewMultiMap(){const contexts=await getValidContexts(); const totals=contexts.reduce((acc,c)=>{acc.g+=c.analysis.guests.length;acc.c+=c.analysis.confirmed.length;acc.p+=c.analysis.pending.length;acc.n+=c.analysis.notOpened.length;acc.o+=c.analysis.openedNoConfirm.length;return acc;},{g:0,c:0,p:0,n:0,o:0}); return `<strong>Mapa geral separado por convite</strong><br>Não estou a unir os dados: cada bloco abaixo pertence a um convite específico.${metric('Convites analisados',contexts.length)}${metric('Convidados totais',totals.g)}${metric('Confirmados totais',`${totals.c} (${fmtPct(totals.c,totals.g)}%)`)}${metric('Pendentes totais',totals.p)}<div class="lz-op-list">${contexts.map(c=>inviteHeaderRow(c,c.analysis.score+'%',`${c.analysis.guests.length} convidados · ${c.analysis.confirmed.length} confirmados · ${c.analysis.pending.length} pendentes · ${c.analysis.notOpened.length} não abriram`,'Mapa')).join('')}</div><div class="lz-op-actions">${actionAsk('Pendentes por convite','Pendentes por convite',true)}${actionAsk('Funil por convite','Funil por convite')}${actionAsk('Riscos por convite','Riscos por convite')}</div>`;}
+  async function viewMultiList(type){const contexts=await getValidContexts(); let flat=[]; const groups=contexts.map(c=>{const [title,list,desc]=listMap(c,type); flat=flat.concat(attachInvite(list,c)); return {ctx:c,title,list,desc};}); state.lastList=flat; const total=flat.length; const title=groups[0]?.title||'Lista'; return `<strong>${esc(title)} por convite</strong><br>Resultado separado por convite. Total global apenas para referência: <b>${total}</b>.<div class="lz-op-list multi">${groups.map(g=>`<div class="lz-op-invite-block">${inviteHeaderRow(g.ctx,g.list.length,g.desc,type)}${g.list.length?g.list.slice(0,6).map(x=>guestRow(x)).join(''):`<div class="lz-op-card"><span>Sem registos neste convite.</span></div>`}${g.list.length>6?`<div class="lz-op-card"><span>+ ${g.list.length-6} registo(s) deste convite fora da prévia.</span></div>`:''}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar tudo separado</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV com coluna Convite</button>${['pending','notOpened','openedNoConfirm'].includes(type)?'<button class="lz-op-action" data-op-action="ask" data-op-payload="Mensagem por convite">Gerar mensagens</button>':''}</div>`;}
+  async function viewMultiFiltered(criteria,title='Filtro'){const contexts=await getValidContexts(); let flat=[]; const groups=contexts.map(c=>{const list=filterGuests(c,criteria); flat=flat.concat(attachInvite(list,c)); return {ctx:c,list};}); state.lastList=flat; return `<strong>${esc(title)} — separado por convite</strong><br>Filtro aplicado individualmente em cada convite. Total encontrado: <b>${flat.length}</b>.<div class="lz-op-list multi">${groups.map(g=>`<div class="lz-op-invite-block">${inviteHeaderRow(g.ctx,g.list.length,'resultado(s) neste convite',title)}${g.list.length?g.list.slice(0,7).map(x=>guestRow(x)).join(''):`<div class="lz-op-card"><span>Sem resultados neste convite.</span></div>`}${g.list.length>7?`<div class="lz-op-card"><span>+ ${g.list.length-7} deste convite.</span></div>`:''}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar resultado</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button></div>`;}
+  async function viewMultiFunnel(){const contexts=await getValidContexts(); return `<strong>Funil RSVP por convite</strong><br>Cada convite tem o seu próprio funil, sem mistura de convidados.<div class="lz-op-cards">${contexts.map(c=>{const a=c.analysis; return `<div class="lz-op-card"><strong>${esc(shortInvite(c))}</strong><span>Base: ${a.guests.length} · Não abriram: ${a.notOpened.length} · Abriram sem confirmar: ${a.openedNoConfirm.length} · Confirmados: ${a.confirmed.length} (${a.rsvpRate}%) · Check-in: ${a.checkedIn.length}</span><div class="lz-op-funnel"><div><span>Confirmados</span><b>${a.confirmed.length}</b><i style="width:${Math.max(2,a.rsvpRate)}%"></i><small>${a.rsvpRate}%</small></div></div></div>`;}).join('')}</div><div class="lz-op-actions">${actionAsk('Não abriram por convite','Não abriram por convite',true)}${actionAsk('Abriram sem confirmar','Abriram sem confirmar')}</div>`;}
+  async function viewMultiRisks(){const contexts=await getValidContexts(); const html=contexts.map(c=>{const a=c.analysis; const risks=[]; if(a.missingTokens.length) risks.push(`${a.missingTokens.length} sem token`); if(a.duplicateTokens.length) risks.push(`${a.duplicateTokens.length} tokens repetidos`); if(a.vipPending.length) risks.push(`${a.vipPending.length} VIP pendente(s)`); if(a.missingTables.length) risks.push(`${a.missingTables.length} confirmados sem mesa`); if(a.duplicated.length) risks.push(`${a.duplicated.length} duplicados prováveis`); if(!risks.length) risks.push('sem riscos fortes'); return `<div class="lz-op-list-row"><div><strong>${esc(shortInvite(c))}</strong><small>${esc(risks.join(' · '))}</small></div><b>${a.score}%</b></div>`;}).join(''); return `<strong>Riscos por convite</strong><br>Separação de prioridades por cada cliente/convite.<div class="lz-op-list">${html}</div><div class="lz-op-actions">${actionAsk('Qualidade por convite','Qualidade por convite',true)}${actionAsk('Sem token por convite','Sem token por convite')}</div>`;}
+  async function viewMultiQuality(){const contexts=await getValidContexts(); return `<strong>Auditoria de dados por convite</strong><br>Separação de problemas por convite.<div class="lz-op-list">${contexts.map(c=>{const a=c.analysis; return `<div class="lz-op-list-row"><div><strong>${esc(shortInvite(c))}</strong><small>Nomes: ${a.badNames.length} · Sem contacto: ${a.missingPhones.length} · Sem token: ${a.missingTokens.length} · Contactos repetidos: ${a.duplicatePhones.length}</small></div><b>${a.score}%</b></div>`;}).join('')}</div><div class="lz-op-actions">${actionAsk('Nomes estranhos por convite','Nomes estranhos por convite',true)}${actionAsk('Sem contacto por convite','Sem contacto por convite')}</div>`;}
+  async function viewMultiReception(){const contexts=await getValidContexts(); let flat=[]; return `<strong>Recepção por convite</strong><br>Briefing separado para cada evento/convite.<div class="lz-op-list">${contexts.map(c=>{const a=c.analysis; const pendingEntry=a.confirmed.filter(g=>!a.checkedIn.includes(g)); flat=flat.concat(attachInvite(pendingEntry,c)); return `<div class="lz-op-list-row"><div><strong>${esc(shortInvite(c))}</strong><small>Esperados: ${a.confirmed.length} · Pessoas previstas: ${a.totalPeople} · Por entrar: ${pendingEntry.length} · Sem mesa: ${a.missingTables.length}</small></div><b>${a.checkinRate}%</b></div>`;}).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar por entrar</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button></div>`;}
+  async function viewMultiGroups(kind='table'){const contexts=await getValidContexts(); const label=kind==='category'?'Categorias':'Mesas'; return `<strong>${label} por convite</strong><br>Distribuição separada por convite.<div class="lz-op-cards">${contexts.map(c=>{const map=kind==='category'?c.analysis.byCategory:c.analysis.byTable; const top=sortedEntries(map).slice(0,8).map(([k,l])=>`${k}: ${l.length}`).join(' · ')||'sem dados'; return `<div class="lz-op-card"><strong>${esc(shortInvite(c))}</strong><span>${esc(top)}</span></div>`;}).join('')}</div>`;}
+  async function viewMultiDuplicates(){const contexts=await getValidContexts(); let flat=[]; const html=contexts.map(c=>{const d=c.analysis.duplicated; d.forEach(cl=>flat=flat.concat(attachInvite(cl.items,c))); return `<div class="lz-op-invite-block">${inviteHeaderRow(c,d.length,'cluster(s) provável(eis)','Duplicados')}${d.length?d.slice(0,5).map((cl,i)=>`<div class="lz-op-card"><strong>${i+1}. ${esc(cl.type)}</strong><span>${esc(cl.items.map(g=>getName(g)).join(' / '))}</span></div>`).join(''):`<div class="lz-op-card"><span>Sem duplicados fortes.</span></div>`}</div>`;}).join(''); state.lastList=flat; return `<strong>Duplicados prováveis por convite</strong><br>Não mistura nomes de convites diferentes.<div class="lz-op-list multi">${html}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button></div>`;}
+  async function viewMultiBadNames(){const contexts=await getValidContexts(); let flat=[]; const html=contexts.map(c=>{const list=c.analysis.badNames; flat=flat.concat(attachInvite(list.map(x=>x.guest),c)); return `<div class="lz-op-invite-block">${inviteHeaderRow(c,list.length,'nome(s) a rever','Nomes estranhos')}${list.length?list.slice(0,6).map(x=>`<div class="lz-op-card"><strong>${esc(getName(x.guest)||'Sem nome')}</strong><span>${esc(x.issues.join(', '))}</span></div>`).join(''):`<div class="lz-op-card"><span>Sem problemas fortes nos nomes.</span></div>`}</div>`;}).join(''); state.lastList=flat; return `<strong>Nomes problemáticos por convite</strong><br>Revisão separada por convite.<div class="lz-op-list multi">${html}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar nomes</button></div>`;}
+  async function searchAllGuests(q){const contexts=await getValidContexts(); const needle=norm(q); let flat=[]; const groups=contexts.map(c=>{const list=c.analysis.guests.filter(g=>norm(getName(g)).includes(needle)||norm(getPhone(g)).includes(needle)||norm(displayTable(g)).includes(needle)||norm(getCategory(g)).includes(needle)||norm(getNumber(g)).includes(needle)); flat=flat.concat(attachInvite(list,c)); return {ctx:c,list};}); state.lastList=flat; return `<strong>Pesquisa em todos os convites</strong><br>Resultado separado para: <b>${esc(q)}</b>. Total: <b>${flat.length}</b>.<div class="lz-op-list multi">${groups.map(g=>`<div class="lz-op-invite-block">${inviteHeaderRow(g.ctx,g.list.length,'resultado(s)','Pesquisar')}${g.list.length?g.list.slice(0,6).map(x=>guestRow(x,getPhone(x)||'sem contacto')).join(''):`<div class="lz-op-card"><span>Sem resultado neste convite.</span></div>`}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar pesquisa</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button></div>`;}
+  async function generateMultiMessage(message,m){const type=classifyListType(m); const contexts=await getValidContexts(); const blocks=[]; let flat=[]; contexts.forEach(c=>{const [target,list]=listMap(c,type); flat=flat.concat(attachInvite(list,c)); const deadline=c.invite?.rsvpDeadline?fmtDate(c.invite.rsvpDeadline):'a data indicada'; const link=c.invite?.publicUrl||'[link do convite]'; const text=`Olá, [Nome]. Esperamos que esteja bem. Lembramos com carinho sobre a confirmação de presença no casamento de ${shortInvite(c)}. Por favor, confirme até ${deadline}: ${link}`; blocks.push(`### ${shortInvite(c)}\nSegmento: ${target} · ${list.length} convidado(s)\n${text}`);}); const out=blocks.join('\n\n'); state.lastMessage=out; state.lastList=flat; return `<strong>Mensagens por convite</strong><br>Gerei mensagens separadas por convite, com nome/link/prazo de cada evento quando disponível.<div class="lz-op-card"><span>${esc(out).replace(/\n/g,'<br>')}</span></div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-message">Copiar mensagens</button><button class="lz-op-action" data-op-action="copy-list">Copiar segmentos</button></div>`;}
+  async function generateMultiReport(){const contexts=await getValidContexts(); const report=contexts.map(c=>{const a=c.analysis; return `RELATÓRIO — ${shortInvite(c)}\n- Saúde: ${a.score}%\n- Convidados: ${a.guests.length}\n- Confirmados: ${a.confirmed.length} (${a.rsvpRate}%)\n- Pendentes: ${a.pending.length}\n- Não abriram: ${a.notOpened.length}\n- Abriram sem confirmar: ${a.openedNoConfirm.length}\n- Duplicados prováveis: ${a.duplicated.length}\n- Confirmados sem mesa: ${a.missingTables.length}`;}).join('\n\n'); state.lastReport=report; return `<strong>Relatório geral separado por convite</strong><br>Preparei um bloco para cada convite, sem consolidar indevidamente os dados.<div class="lz-op-card"><span>${esc(report).replace(/\n/g,'<br>')}</span></div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-report">Copiar relatório</button></div>`;}
+
   function help(ctx){return `<strong>Comandos Ultra disponíveis</strong><br>Estou focado no convite <b>${esc(shortInvite(ctx))}</b>.<ul><li><b>Mapa</b> — central operacional do convite.</li><li><b>Funil RSVP</b> — não abriu → abriu → confirmou → check-in.</li><li><b>Pendentes mesa 5</b>, <b>não abriram categoria família</b>, <b>confirmados sem mesa</b>.</li><li><b>Mesas</b>, <b>Categorias</b>, <b>Famílias</b>, <b>Riscos</b>, <b>Qualidade</b>.</li><li><b>Recepção</b> — briefing para equipa de entrada.</li><li><b>Perfil Ana</b> — visão 360º de um convidado.</li><li><b>Comparar convites</b> — ranking multi-cliente.</li></ul><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="ask" data-op-payload="Mapa">Mapa</button><button class="lz-op-action" data-op-action="ask" data-op-payload="Funil RSVP">Funil</button><button class="lz-op-action" data-op-action="ask" data-op-payload="Riscos">Riscos</button></div>`;}
   function scoreClass(score){return score>=80?'ok':score>=58?'warn':'bad';}
   function metric(label,value){return `<div class="metric-row"><span>${esc(label)}</span><b>${esc(value)}</b></div>`;}
@@ -236,7 +454,7 @@
   function viewTables(ctx){const a=ctx.analysis; const entries=sortedEntries(a.byTable).slice(0,22); return `<strong>Mapa de mesas</strong><br>Distribuição actual por mesa. Inclui pendentes e confirmados, porque a base pode ainda estar em preparação.<div class="lz-op-list">${entries.map(([table,list])=>{const conf=list.filter(g=>a.confirmed.includes(g)).length; const people=list.reduce((s,g)=>s+peopleCount(g),0); return `<div class="lz-op-list-row"><div><strong>${esc(table)}</strong><small>${list.length} convidado(s) · ${conf} confirmado(s) · ${people} pessoa(s)</small></div><button class="lz-op-mini" data-op-action="ask" data-op-payload="mesa ${esc(table)}">Ver</button></div>`;}).join('')}</div><div class="lz-op-actions">${actionAsk('Sem mesa','Confirmados sem mesa',true)}${actionAsk('Recepção','Recepção')}</div>`;}
   function viewCategories(ctx){const a=ctx.analysis; const entries=sortedEntries(a.byCategory).slice(0,24); return `<strong>Categorias / grupos</strong><br>Separação operacional dos convidados por categoria.<div class="lz-op-list">${entries.map(([cat,list])=>{const conf=list.filter(g=>a.confirmed.includes(g)).length; const pend=list.filter(g=>a.pending.includes(g)).length; return `<div class="lz-op-list-row"><div><strong>${esc(cat)}</strong><small>${list.length} total · ${conf} confirmado(s) · ${pend} pendente(s)</small></div><button class="lz-op-mini" data-op-action="ask" data-op-payload="categoria ${esc(cat)}">Ver</button></div>`;}).join('')}</div><div class="lz-op-actions">${actionAsk('VIP pendentes','vip pendentes',true)}${actionAsk('Famílias','Famílias')}</div>`;}
   function viewFamilies(ctx){const groups=ctx.analysis.familyGroups; if(!groups.length) return `<strong>Famílias prováveis</strong><br>Não encontrei agrupamentos fortes por apelido/nome familiar.`; return `<strong>Famílias prováveis</strong><br>Agrupamento automático por apelido/base de nome. Não altera dados, só ajuda na revisão.<div class="lz-op-list">${groups.slice(0,18).map(([family,list])=>`<div class="lz-op-list-row"><div><strong>${esc(cap(family))}</strong><small>${list.map(g=>getName(g)).slice(0,4).join(' · ')}${list.length>4?'...':''}</small></div><b>${list.length}</b></div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-families">Copiar famílias</button></div>`;}
-  function listMap(ctx,type){const a=ctx.analysis; const map={pending:['Pendentes',a.pending,'Ainda não confirmaram nem recusaram.'],notOpened:['Não abriram',a.notOpened,'Ainda não abriram o convite.'],openedNoConfirm:['Abriram sem confirmar',a.openedNoConfirm,'Abriram, mas não concluíram o RSVP.'],confirmed:['Confirmados',a.confirmed,'Presença confirmada.'],declined:['Recusados',a.declined,'Indicaram ausência/recusa.'],checkedIn:['Check-in feito',a.checkedIn,'Já entraram no evento.'],missingTokens:['Sem token',a.missingTokens,'Sem token/link individual.'],missingTables:['Confirmados sem mesa',a.missingTables,'Confirmaram, mas não têm mesa definida.'],missingPhones:['Sem contacto',a.missingPhones,'Sem telefone registado.'],vip:['VIP',a.vipGuests,'Convidados detectados como VIP/honra.'],vipPending:['VIP pendentes',a.vipPending,'VIPs ainda sem confirmação.']};return map[type]||map.pending;}
+  function listMap(ctx,type){const a=ctx.analysis; const map={pending:['Pendentes',a.pending,'Ainda não confirmaram nem recusaram.'],opened:['Abriram o convite',a.opened,'Já abriram/acederam ao convite.'],notOpened:['Não abriram',a.notOpened,'Ainda não abriram o convite.'],openedNoConfirm:['Abriram sem confirmar',a.openedNoConfirm,'Abriram, mas não concluíram o RSVP.'],confirmed:['Confirmados',a.confirmed,'Presença confirmada.'],declined:['Recusados',a.declined,'Indicaram ausência/recusa.'],checkedIn:['Check-in feito',a.checkedIn,'Já entraram no evento.'],missingTokens:['Sem token',a.missingTokens,'Sem token/link individual.'],missingTables:['Confirmados sem mesa',a.missingTables,'Confirmaram, mas não têm mesa definida.'],missingPhones:['Sem contacto',a.missingPhones,'Sem telefone registado.'],vip:['VIP',a.vipGuests,'Convidados detectados como VIP/honra.'],vipPending:['VIP pendentes',a.vipPending,'VIPs ainda sem confirmação.']};return map[type]||map.pending;}
   function guestRow(g,extra=''){return `<div class="lz-op-list-row"><div><strong>${esc(getName(g)||'Sem nome')}</strong><small>${esc(displayTable(g))} · ${esc(getCategory(g))} · ${esc(g.status||g.guestStatus||'sem estado')} · ${peopleCount(g)} pessoa(s)${extra?` · ${esc(extra)}`:''}</small></div><small>#${esc(getNumber(g))}</small></div>`;}
   function viewList(ctx,type){const [title,list,desc]=listMap(ctx,type); state.lastList=list; const rows=list.slice(0,MAX_PREVIEW).map(g=>guestRow(g)).join(''); return `<strong>${esc(title)} — ${esc(shortInvite(ctx))}</strong><br>${esc(desc)}<div class="metric-row"><span>Total encontrado</span><b>${list.length}</b></div>${list.length?`<div class="lz-op-list">${rows}${list.length>MAX_PREVIEW?`<div class="lz-op-card"><span>+ ${list.length-MAX_PREVIEW} registo(s) não exibidos nesta prévia.</span></div>`:''}</div>`:'<div class="lz-op-card"><strong>Lista vazia</strong><span>Nenhum registo encontrado nesta categoria.</span></div>'}<div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button><button class="lz-op-action" data-op-action="go-guests">Abrir convidados</button>${['pending','notOpened','openedNoConfirm'].includes(type)?'<button class="lz-op-action" data-op-action="ask" data-op-payload="Mensagem WhatsApp">Gerar lembrete</button>':''}</div>`;}
   function filterGuests(ctx,criteria={}){const a=ctx.analysis; let list=a.guests.slice(); const m=norm(criteria.raw||'');
@@ -269,11 +487,12 @@
   async function compareInvites(){const contexts=await getAllContexts(20); const valid=contexts.filter(c=>c.analysis); if(!valid.length) return `<strong>Comparação geral</strong><br>Não consegui carregar convites para comparação.`; const rows=valid.sort((a,b)=>b.analysis.score-a.analysis.score).map(c=>`<div class="lz-op-list-row"><div><strong>${esc(shortInvite(c))}</strong><small>${c.analysis.guests.length} convidados · ${c.analysis.confirmed.length} confirmados · ${c.analysis.pending.length} pendentes · ${c.analysis.notOpened.length} não abriram</small></div><b>${c.analysis.score}%</b></div>`).join(''); const totals=valid.reduce((acc,c)=>{acc.guests+=c.analysis.guests.length;acc.confirmed+=c.analysis.confirmed.length;acc.pending+=c.analysis.pending.length;acc.notOpened+=c.analysis.notOpened.length;return acc;},{guests:0,confirmed:0,pending:0,notOpened:0}); return `<strong>Ranking geral dos convites</strong><br>Comparação operacional dos convites carregados.${metric('Convites analisados',valid.length)}${metric('Convidados totais',totals.guests)}${metric('Confirmados totais',`${totals.confirmed} (${fmtPct(totals.confirmed,totals.guests)}%)`)}${metric('Pendentes totais',totals.pending)}<div class="lz-op-list">${rows}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-comparison">Copiar ranking</button></div>`;}
   function smartFallback(ctx,message){const a=ctx.analysis; return `<strong>Posso fazer isso, mas preciso de um comando mais objectivo.</strong><br>O meu cérebro funciona por operações determinísticas. Para este convite vejo ${a.pending.length} pendentes, ${a.notOpened.length} não abertos, ${a.openedNoConfirm.length} abriram sem confirmar e ${a.duplicated.length} possíveis duplicados.<br><br>Use exemplos como: <b>pendentes mesa 5</b>, <b>não abriram categoria família</b>, <b>perfil Ana</b>, <b>funil</b>, <b>recepção</b> ou <b>comparar convites</b>.<div class="lz-op-actions">${actionAsk('Mapa','Mapa',true)}${actionAsk('Ajuda','Ajuda')}</div>`;}
   async function copy(text){try{await navigator.clipboard.writeText(text); return true;}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();return true;}}
-  function listToText(list){return list.map((g,i)=>`${i+1}. ${getName(g)} | Mesa: ${displayTable(g)} | Categoria: ${getCategory(g)} | Estado: ${g.status||g.guestStatus||'-'} | Pessoas: ${peopleCount(g)} | Contacto: ${getPhone(g)||'-'} | Nº: ${getNumber(g)||'-'}`).join('\n');}
-  function listToCsv(list){const header=['Nome','Mesa','Categoria','Estado','Pessoas','Contacto','Numero','Token','Notas']; const rows=list.map(g=>[getName(g),displayTable(g),getCategory(g),g.status||g.guestStatus||'',peopleCount(g),getPhone(g),getNumber(g),hasToken(g)?'sim':'não',getNotes(g)].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')); return [header.join(';'),...rows].join('\n');}
+  function listToText(list){return list.map((g,i)=>`${i+1}. ${g.__inviteTitle?`[${g.__inviteTitle}] `:''}${getName(g)} | Mesa: ${displayTable(g)} | Categoria: ${getCategory(g)} | Estado: ${g.status||g.guestStatus||'-'} | Pessoas: ${peopleCount(g)} | Contacto: ${getPhone(g)||'-'} | Nº: ${getNumber(g)||'-'}`).join('\n');}
+  function listToCsv(list){const header=['Convite','Nome','Mesa','Categoria','Estado','Pessoas','Contacto','Numero','Token','Notas']; const rows=list.map(g=>[g.__inviteTitle||'',getName(g),displayTable(g),getCategory(g),g.status||g.guestStatus||'',peopleCount(g),getPhone(g),getNumber(g),hasToken(g)?'sim':'não',getNotes(g)].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')); return [header.join(';'),...rows].join('\n');}
   async function runAction(action,payload){
     if(action==='ask') return handle(payload);
-    if(action==='refresh'){state.inviteCache.clear();state.invites=null;return handle('Mapa');}
+    if(action==='refresh'){state.inviteCache.clear();state.invites=null;await renderInviteScopeSelect(true);return handle('Mapa');}
+    if(action==='select-invite'){setScopeValue(payload); await renderInviteScopeSelect(false); return handle('Mapa');}
     if(action==='go-guests'){if(window.showPanel) window.showPanel('guests'); else document.querySelector('[data-panel="guests"]')?.click(); return;}
     if(action==='copy-list'){await copy(listToText(state.lastList||[])); bot('Lista copiada para a área de transferência.'); return;}
     if(action==='copy-csv'){await copy(listToCsv(state.lastList||[])); bot('CSV copiado. Pode colar no Excel/Sheets.'); return;}
@@ -284,6 +503,6 @@
     if(action==='copy-families'){const ctx=state.lastContext||await getContext(false); const text=ctx.analysis.familyGroups.map(([f,list],i)=>`${i+1}. ${cap(f)}: ${list.map(g=>getName(g)).join(' / ')}`).join('\n'); await copy(text); bot('Famílias prováveis copiadas.'); return;}
     if(action==='copy-comparison'){const contexts=await getAllContexts(20); const text=contexts.filter(c=>c.analysis).map((c,i)=>`${i+1}. ${shortInvite(c)} | Saúde ${c.analysis.score}% | Convidados ${c.analysis.guests.length} | Confirmados ${c.analysis.confirmed.length} | Pendentes ${c.analysis.pending.length}`).join('\n'); await copy(text); bot('Ranking geral copiado.'); return;}
   }
-  function init(){create(); setInterval(updateVisibility,1200); setTimeout(updateStatusLabel,800);}
+  function init(){create(); setInterval(updateVisibility,1200); setTimeout(()=>{renderInviteScopeSelect(false);updateStatusLabel();},800);}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
 })();
