@@ -2254,6 +2254,378 @@
       body.mobile-app .command-tab { font-size:8.2px !important; }
     }
 
+  
+
+    /* =========================================================
+       LIRANDZO ADMIN MANAGER · V7.1 MOBILE APP POLISH
+       Reconstrução visual mobile: compacto, consistente e com loading real.
+       ========================================================= */
+    body.mobile-app {
+      --app-gap:8px;
+      --app-radius:14px;
+      --app-radius-lg:16px;
+      --app-card-bg:linear-gradient(180deg,rgba(255,255,255,.034),rgba(0,0,0,.028));
+      --app-border:rgba(236,216,196,.095);
+      font-size:11.8px !important;
+      letter-spacing:-.012em !important;
+      background:linear-gradient(180deg,#15110f 0%,#1c1613 42%,#120f0d 100%) !important;
+    }
+    body.mobile-app * { min-width:0 !important; }
+    body.mobile-app strong,
+    body.mobile-app b { font-weight:700 !important; }
+    body.mobile-app h1,
+    body.mobile-app h2,
+    body.mobile-app h3 { font-weight:760 !important; letter-spacing:-.052em !important; }
+
+    body.mobile-app .topbar {
+      min-height:calc(54px + var(--safe-top)) !important;
+      padding:var(--safe-top) 8px 0 !important;
+      background:rgba(18,14,12,.90) !important;
+      backdrop-filter:blur(18px) saturate(135%) !important;
+    }
+    body.mobile-app .topbar .btn.icon-only {
+      width:36px !important; min-width:36px !important; height:36px !important;
+      border-radius:13px !important;
+    }
+    body.mobile-app .topbar-title strong { font-size:13.5px !important; font-weight:760 !important; }
+    body.mobile-app .topbar-title span { font-size:9px !important; opacity:.82 !important; }
+    body.mobile-app .main {
+      padding:calc(54px + var(--safe-top) + 8px) 8px calc(76px + var(--safe-bottom)) !important;
+    }
+
+    body.mobile-app .section-title {
+      margin:0 0 8px !important;
+      padding:0 1px !important;
+      gap:7px !important;
+    }
+    body.mobile-app .section-title h1 { font-size:17px !important; line-height:1.08 !important; font-weight:760 !important; }
+    body.mobile-app .section-title p { font-size:10px !important; line-height:1.25 !important; opacity:.76 !important; }
+    body.mobile-app #commandPanel .section-title { margin-bottom:7px !important; }
+    body.mobile-app #commandPanel .section-title h1 { font-size:16px !important; }
+
+    body.mobile-app .panel-card,
+    body.mobile-app .mobile-card,
+    body.mobile-app .metric-card,
+    body.mobile-app .command-select-card,
+    body.mobile-app .command-context,
+    body.mobile-app .command-hero,
+    body.mobile-app .health-item,
+    body.mobile-app .command-kpi,
+    body.mobile-app .command-data-box,
+    body.mobile-app .command-op,
+    body.mobile-app .action-card,
+    body.mobile-app .v7-section-card,
+    body.mobile-app .v7-command-hero,
+    body.mobile-app .v7-ok-card,
+    body.mobile-app .v7-kpi,
+    body.mobile-app .v7-inspector,
+    body.mobile-app .bad-name-row {
+      border-radius:var(--app-radius) !important;
+      background:var(--app-card-bg) !important;
+      border:1px solid var(--app-border) !important;
+      box-shadow:0 8px 18px rgba(0,0,0,.08) !important;
+    }
+    body.mobile-app .panel-card { margin-bottom:8px !important; }
+    body.mobile-app .panel-head {
+      min-height:37px !important;
+      padding:8px 9px !important;
+      border-bottom-color:rgba(236,216,196,.075) !important;
+    }
+    body.mobile-app .panel-head h2 { font-size:11.6px !important; font-weight:720 !important; }
+    body.mobile-app .panel-body { padding:8px !important; }
+
+    body.mobile-app .btn {
+      min-height:30px !important;
+      height:auto !important;
+      padding:0 7px !important;
+      border-radius:11px !important;
+      font-size:9.4px !important;
+      font-weight:680 !important;
+      gap:4px !important;
+      letter-spacing:-.01em !important;
+      line-height:1 !important;
+      white-space:nowrap !important;
+      overflow:hidden !important;
+      text-overflow:ellipsis !important;
+      box-shadow:none !important;
+    }
+    body.mobile-app .btn.small { min-height:29px !important; padding:0 6px !important; font-size:9px !important; }
+    body.mobile-app .btn .feather { width:12.5px !important; height:12.5px !important; }
+    body.mobile-app .btn.icon-only { width:34px !important; min-width:34px !important; height:34px !important; }
+    body.mobile-app .btn.primary { box-shadow:0 7px 16px rgba(185,130,91,.12) !important; }
+    body.mobile-app .toolbar-right,
+    body.mobile-app .mobile-card .table-actions,
+    body.mobile-app .command-mini-actions,
+    body.mobile-app .command-hero-actions,
+    body.mobile-app .v7-action-grid,
+    body.mobile-app .form-actions-sticky,
+    body.mobile-app .command-inspector-head .toolbar-right,
+    body.mobile-app .v7-row-actions {
+      display:grid !important;
+      grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+      gap:5px !important;
+      width:100% !important;
+      align-items:center !important;
+    }
+    body.mobile-app .toolbar-right .btn,
+    body.mobile-app .mobile-card .table-actions .btn,
+    body.mobile-app .command-mini-actions .btn,
+    body.mobile-app .command-hero-actions .btn,
+    body.mobile-app .v7-action-grid .btn,
+    body.mobile-app .form-actions-sticky .btn,
+    body.mobile-app .command-inspector-head .toolbar-right .btn,
+    body.mobile-app .v7-row-actions .btn {
+      width:100% !important;
+      min-width:0 !important;
+      justify-content:center !important;
+    }
+
+    body.mobile-app .field { gap:4px !important; margin-bottom:7px !important; }
+    body.mobile-app .field label { font-size:8.4px !important; letter-spacing:.12em !important; font-weight:760 !important; }
+    body.mobile-app .field input,
+    body.mobile-app .field select,
+    body.mobile-app .field textarea,
+    body.mobile-app .search-input {
+      min-height:36px !important;
+      border-radius:12px !important;
+      padding:8px 10px !important;
+      font-size:11px !important;
+      background:rgba(11,9,8,.58) !important;
+    }
+
+    body.mobile-app .metrics-grid,
+    body.mobile-app .command-kpi-grid,
+    body.mobile-app .v7-kpi-grid {
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+      gap:6px !important;
+      margin-bottom:7px !important;
+    }
+    body.mobile-app .metric-card,
+    body.mobile-app .command-kpi,
+    body.mobile-app .v7-kpi {
+      min-height:58px !important;
+      padding:8px !important;
+      display:grid !important;
+      align-content:center !important;
+      gap:2px !important;
+      position:relative !important;
+    }
+    body.mobile-app .metric-card::after { display:none !important; }
+    body.mobile-app .metric-card span,
+    body.mobile-app .command-kpi span,
+    body.mobile-app .v7-kpi span {
+      font-size:8.4px !important;
+      font-weight:720 !important;
+      letter-spacing:.08em !important;
+      opacity:.82 !important;
+    }
+    body.mobile-app .metric-card strong,
+    body.mobile-app .command-kpi strong,
+    body.mobile-app .v7-kpi strong {
+      font-size:20px !important;
+      line-height:1 !important;
+      font-weight:740 !important;
+      letter-spacing:-.045em !important;
+      margin:2px 0 0 !important;
+    }
+    body.mobile-app .metric-card small,
+    body.mobile-app .command-kpi small,
+    body.mobile-app .v7-kpi small {
+      font-size:8.8px !important;
+      font-weight:620 !important;
+      margin:0 !important;
+    }
+    body.mobile-app .v7-kpi-icon {
+      position:absolute !important;
+      right:7px !important;
+      top:7px !important;
+      width:20px !important;
+      height:20px !important;
+      border-radius:8px !important;
+      opacity:.76 !important;
+    }
+    body.mobile-app .v7-kpi-icon .feather { width:11px !important; height:11px !important; }
+
+    body.mobile-app .mobile-list { gap:6px !important; }
+    body.mobile-app .mobile-card { padding:8px !important; }
+    body.mobile-app .mobile-card strong { font-size:11.6px !important; line-height:1.18 !important; }
+    body.mobile-app .mobile-card span { font-size:10px !important; line-height:1.26 !important; opacity:.82 !important; }
+    body.mobile-app .badge {
+      min-height:19px !important;
+      padding:0 7px !important;
+      font-size:8.4px !important;
+      font-weight:720 !important;
+    }
+
+    body.mobile-app .activity-list,
+    body.mobile-app .command-activity { gap:5px !important; max-height:none !important; overflow:visible !important; }
+    body.mobile-app .activity-item {
+      grid-template-columns:27px minmax(0,1fr) !important;
+      gap:7px !important;
+      min-height:44px !important;
+      padding:7px !important;
+      border-radius:13px !important;
+      background:rgba(255,255,255,.026) !important;
+      border:1px solid rgba(236,216,196,.08) !important;
+      box-shadow:none !important;
+    }
+    body.mobile-app .activity-icon {
+      width:27px !important;
+      height:27px !important;
+      border-radius:10px !important;
+      background:rgba(185,130,91,.12) !important;
+    }
+    body.mobile-app .activity-icon .feather { width:13px !important; height:13px !important; }
+    body.mobile-app .activity-item strong { font-size:10.6px !important; font-weight:680 !important; line-height:1.14 !important; }
+    body.mobile-app .activity-item p { font-size:9.4px !important; line-height:1.18 !important; margin-top:2px !important; opacity:.76 !important; }
+
+    body.mobile-app .command-shell { gap:7px !important; }
+    body.mobile-app .command-select-card {
+      padding:9px !important;
+      border-radius:16px !important;
+      gap:7px !important;
+      box-shadow:0 10px 22px rgba(0,0,0,.12) !important;
+    }
+    body.mobile-app .command-select-card::before { display:none !important; }
+    body.mobile-app #commandLoadBtn { min-height:34px !important; border-radius:12px !important; font-size:9.8px !important; }
+    body.mobile-app .command-mini-actions { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
+    body.mobile-app .command-mini-actions .btn { min-height:30px !important; height:30px !important; font-size:8.8px !important; padding:0 4px !important; }
+    body.mobile-app .command-mini-actions .btn:nth-child(4) { grid-column:auto !important; }
+    body.mobile-app #commandPanel .command-context { display:none !important; }
+
+    body.mobile-app .command-tabs {
+      top:calc(54px + var(--safe-top)) !important;
+      margin:0 -8px 7px !important;
+      padding:5px 8px !important;
+      gap:5px !important;
+      background:rgba(18,14,12,.92) !important;
+      box-shadow:0 8px 18px rgba(0,0,0,.16) !important;
+    }
+    body.mobile-app .command-tab {
+      height:30px !important;
+      min-height:30px !important;
+      padding:0 8px !important;
+      font-size:8.9px !important;
+      font-weight:680 !important;
+      gap:4px !important;
+      border-radius:999px !important;
+    }
+    body.mobile-app .command-tab .feather { width:11.5px !important; height:11.5px !important; }
+
+    body.mobile-app .v7-mobile-command { gap:7px !important; }
+    body.mobile-app .v7-command-hero {
+      padding:10px !important;
+      border-radius:16px !important;
+      gap:8px !important;
+      box-shadow:0 12px 26px rgba(0,0,0,.14) !important;
+    }
+    body.mobile-app .v7-command-hero-top { gap:8px !important; align-items:flex-start !important; }
+    body.mobile-app .v7-eyebrow { font-size:8px !important; font-weight:720 !important; }
+    body.mobile-app .v7-command-hero h2 { font-size:16px !important; line-height:1.05 !important; font-weight:760 !important; }
+    body.mobile-app .v7-command-hero p { font-size:9.5px !important; line-height:1.18 !important; }
+    body.mobile-app .v7-health-pill { min-height:22px !important; font-size:8.4px !important; padding:0 7px !important; }
+    body.mobile-app .v7-chip-row { gap:4px !important; margin-top:5px !important; }
+    body.mobile-app .v7-action-grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:5px !important; }
+    body.mobile-app .v7-action-grid .btn { min-height:31px !important; font-size:8.8px !important; }
+
+    body.mobile-app .v7-section-card,
+    body.mobile-app .v7-ok-card,
+    body.mobile-app .command-inspector { padding:8px !important; margin:0 0 7px !important; border-radius:15px !important; }
+    body.mobile-app .v7-section-head { margin-bottom:7px !important; }
+    body.mobile-app .v7-section-head strong { font-size:11.4px !important; font-weight:720 !important; }
+    body.mobile-app .v7-section-head span { font-size:9.2px !important; font-weight:620 !important; opacity:.72 !important; }
+
+    body.mobile-app .health-item {
+      grid-template-columns:28px minmax(0,1fr) !important;
+      gap:7px !important;
+      padding:8px !important;
+      border-radius:13px !important;
+      box-shadow:none !important;
+    }
+    body.mobile-app .health-icon { width:28px !important; height:28px !important; border-radius:10px !important; }
+    body.mobile-app .health-icon .feather { width:13px !important; height:13px !important; }
+    body.mobile-app .health-item strong { font-size:10.7px !important; font-weight:700 !important; }
+    body.mobile-app .health-item p { font-size:9.4px !important; line-height:1.22 !important; opacity:.78 !important; }
+
+    body.mobile-app .command-data-grid { grid-template-columns:1fr 1fr !important; gap:6px !important; }
+    body.mobile-app .command-data-box { padding:8px !important; border-radius:13px !important; }
+    body.mobile-app .command-data-box span { font-size:8px !important; font-weight:720 !important; margin-bottom:3px !important; }
+    body.mobile-app .command-data-box strong { font-size:9.8px !important; font-weight:620 !important; }
+
+    body.mobile-app .command-ops-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:6px !important; }
+    body.mobile-app .command-op { padding:8px !important; gap:6px !important; border-radius:14px !important; }
+    body.mobile-app .command-op strong { font-size:10.8px !important; font-weight:720 !important; }
+    body.mobile-app .command-op p { font-size:9.2px !important; line-height:1.2 !important; opacity:.74 !important; }
+    body.mobile-app .command-op .btn { width:100% !important; justify-self:stretch !important; min-height:29px !important; }
+
+    body.mobile-app .command-inspector-head {
+      display:grid !important;
+      grid-template-columns:1fr !important;
+      gap:7px !important;
+      padding:0 0 8px !important;
+      border-bottom:1px solid rgba(236,216,196,.075) !important;
+    }
+    body.mobile-app .command-inspector-head h3 { font-size:11.2px !important; font-weight:720 !important; }
+    body.mobile-app .bad-name-list { gap:6px !important; padding-top:7px !important; }
+    body.mobile-app .bad-name-row { padding:8px !important; gap:7px !important; border-radius:13px !important; }
+    body.mobile-app .bad-name-row strong { font-size:10.8px !important; font-weight:700 !important; }
+    body.mobile-app .bad-name-row small { font-size:9px !important; line-height:1.2 !important; opacity:.76 !important; }
+
+    body.mobile-app .mobile-tabs {
+      padding:6px 7px calc(6px + var(--safe-bottom)) !important;
+      gap:5px !important;
+      background:rgba(18,14,12,.96) !important;
+      box-shadow:0 -10px 24px rgba(0,0,0,.22) !important;
+    }
+    body.mobile-app .mobile-tab {
+      min-height:42px !important;
+      min-width:0 !important;
+      flex:1 1 0 !important;
+      padding:0 4px !important;
+      border-radius:13px !important;
+      font-size:8.5px !important;
+      font-weight:680 !important;
+      gap:3px !important;
+    }
+    body.mobile-app .mobile-tab .feather { width:14px !important; height:14px !important; }
+
+    body.mobile-app .app-loader {
+      top:calc(var(--safe-top) + 8px) !important;
+      min-height:32px !important;
+      padding:0 11px !important;
+      font-size:10px !important;
+      border-radius:999px !important;
+      box-shadow:0 14px 38px rgba(0,0,0,.24) !important;
+    }
+    body.mobile-app .app-loader-dot { width:9px !important; height:9px !important; }
+    body.api-loading .app-loader { opacity:1; visibility:visible; transform:translate(-50%,0) scale(1); }
+    body.api-loading .section.active { transition:opacity .18s ease, filter .18s ease; }
+
+    .app-skeleton-card {
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px;
+      background:rgba(255,255,255,.026);
+      display:grid;
+      gap:8px;
+      overflow:hidden;
+    }
+    .app-skeleton-row { display:grid; grid-template-columns:30px 1fr; gap:8px; align-items:center; }
+    .app-skeleton-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+    .app-skeleton-tile { min-height:58px; border-radius:13px; background:rgba(236,216,196,.07); position:relative; overflow:hidden; }
+    body.mobile-app .app-skeleton-card .skeleton-line,
+    body.mobile-app .app-skeleton-card .skeleton-card,
+    .app-skeleton-tile { animation:skeletonSoft 1.1s ease-in-out infinite; }
+    @keyframes skeletonSoft { 0%,100%{opacity:.52} 50%{opacity:1} }
+
+    @media (max-width:380px) {
+      body.mobile-app .btn { font-size:8.5px !important; padding:0 4px !important; }
+      body.mobile-app .command-tab { font-size:8.2px !important; padding:0 7px !important; }
+      body.mobile-app .mobile-tab { font-size:7.9px !important; }
+      body.mobile-app .v7-action-grid,
+      body.mobile-app .command-mini-actions { gap:4px !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -2418,6 +2790,8 @@
     let currentPanel = 'dashboard';
     let panelStack = [];
     let routeLoaderTimer = null;
+    let activeApiRequests = 0;
+    let apiLoaderStartedAt = 0;
     const primaryMobilePanels = ['dashboard','invites','command','guests','manage'];
     let confirmResolver = null;
     const $ = id => document.getElementById(id);
@@ -2428,10 +2802,34 @@
     const hideMsg = el => el.classList.add('hidden');
 
     async function api(path, options = {}) {
-      const res = await fetch(`${API_BASE}${path}`, { ...options, headers:{ 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}), ...(options.headers || {}) } });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || `Erro ${res.status}`);
-      return data;
+      const shouldShowLoader = !!token && detectMobileApp();
+      if (shouldShowLoader) {
+        activeApiRequests += 1;
+        apiLoaderStartedAt = apiLoaderStartedAt || Date.now();
+        document.body.classList.add('api-loading');
+        showRouteLoader((options.method && options.method !== 'GET') ? 'A guardar...' : 'A carregar...');
+      }
+      try {
+        const res = await fetch(`${API_BASE}${path}`, { ...options, headers:{ 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}), ...(options.headers || {}) } });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || `Erro ${res.status}`);
+        return data;
+      } finally {
+        if (shouldShowLoader) {
+          activeApiRequests = Math.max(0, activeApiRequests - 1);
+          if (activeApiRequests === 0) {
+            const elapsed = Date.now() - apiLoaderStartedAt;
+            const wait = Math.max(180 - elapsed, 60);
+            setTimeout(() => {
+              if (activeApiRequests === 0) {
+                document.body.classList.remove('api-loading');
+                apiLoaderStartedAt = 0;
+                hideRouteLoader(90);
+              }
+            }, wait);
+          }
+        }
+      }
     }
     function detectMobileApp(){
       const coarse = window.matchMedia && (window.matchMedia('(hover: none)').matches || window.matchMedia('(pointer: coarse)').matches);
@@ -2461,6 +2859,12 @@
       $('metricsGrid').innerHTML = Array.from({length:4}).map(()=>'<article class="metric-card"><span class="skeleton-line" style="width:70%"></span><strong class="skeleton-line" style="width:38%;height:28px;margin-top:9px"></strong><small class="skeleton-line" style="width:56%;height:12px;margin-top:8px"></small></article>').join('');
       $('activityList').innerHTML = Array.from({length:5}).map(()=>'<article class="activity-item"><div class="skeleton-card" style="width:34px;min-height:34px"></div><div style="display:grid;gap:7px"><span class="skeleton-line" style="width:72%"></span><span class="skeleton-line" style="width:92%;height:12px"></span></div></article>').join('');
       $('invitesTbody').innerHTML = Array.from({length:5}).map(()=>'<tr>'+Array.from({length:7}).map(()=>'<td><span class="skeleton-cell"></span></td>').join('')+'</tr>').join('');
+    }
+    function appCardSkeleton(type='cards', count=4) {
+      if (type === 'list') {
+        return `<div class="app-skeleton-card">${Array.from({length:count}).map(()=>`<div class="app-skeleton-row"><span class="skeleton-card" style="width:27px;min-height:27px;border-radius:10px"></span><div style="display:grid;gap:5px"><span class="skeleton-line" style="width:64%;height:11px"></span><span class="skeleton-line" style="width:88%;height:9px"></span></div></div>`).join('')}</div>`;
+      }
+      return `<div class="app-skeleton-card"><div class="skeleton-line" style="width:54%;height:12px"></div><div class="app-skeleton-grid">${Array.from({length:count}).map(()=>'<div class="app-skeleton-tile"></div>').join('')}</div></div>`;
     }
     function buildNav() {
       $('sideNav').innerHTML = panels.map(p=>`<button class="nav-item ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
@@ -2522,12 +2926,39 @@
         iconRefresh();
       }
     }
-    async function loadSummary(){ const out = await api('/manager/summary'); const d = out.data || {}; renderMetrics(d); renderActivity((d.activities || []).slice(0,5)); renderSystemInfo(d); }
+    async function loadSummary(){
+      if (detectMobileApp()) {
+        $('metricsGrid').innerHTML = appCardSkeleton('cards',4).replace('app-skeleton-card','app-skeleton-card span-2');
+        $('activityList').innerHTML = appCardSkeleton('list',4);
+      }
+      const out = await api('/manager/summary');
+      const d = out.data || {};
+      renderMetrics(d);
+      renderActivity((d.activities || []).slice(0,5));
+      renderSystemInfo(d);
+    }
     function renderMetrics(d){ const items=[['Total de convites',d.totalInvites||0,'activos','folder'],['Publicados',d.published||0,'online','check-circle'],['Convidados',d.guests||0,'geral','users'],['RSVP',d.rsvps||0,'confirmados','heart']]; $('metricsGrid').innerHTML = items.map(([label,value,small,icon])=>`<article class="metric-card"><span>${esc(label)}</span><strong>${esc(value)}</strong><small><i data-feather="${icon}"></i> ${esc(small)}</small></article>`).join(''); }
     function renderActivity(list){ $('activityBadge').textContent = `${list.length} registos`; $('activityList').innerHTML = list.length ? list.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.type==='warning'?'alert-triangle':a.type==='github'?'git-commit':a.type==='gift'?'gift':a.type==='guests'?'users':'activity'}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail||'')} · ${fmtDate(a.timestamp)}</p></div></article>`).join('') : '<div class="feedback">Ainda não há actividade registada.</div>'; }
     function renderSystemInfo(d){ $('systemInfo').innerHTML = `<div class="info-row"><span>Sistema</span><strong>${$('syncText')?.textContent === 'Parcial' ? 'Online com avisos' : 'Online e protegido'}</strong></div><div class="info-row"><span>Convites</span><strong>${esc(d.totalInvites||0)} activos · ${esc(d.draft||0)} rascunho(s)</strong></div><div class="info-row"><span>Dados activos</span><strong>${esc(d.messages||0)} mensagens · ${esc(d.contributions||0)} contribuições</strong></div>`; }
-    async function loadInvites(){ const q=encodeURIComponent($('searchInput')?.value||''); const status=encodeURIComponent($('statusFilter')?.value||'all'); const packageKey=encodeURIComponent($('packageFilter')?.value||'all'); const out=await api(`/manager/invites?q=${q}&status=${status}&packageKey=${packageKey}`); invites=out.data||[]; renderInvites(); renderGuestSelect(); renderManageSelect(); renderCommandSelect(); if (document.getElementById('guestsPanel')?.classList.contains('active')) loadGuestCrudList(); if (document.getElementById('commandPanel')?.classList.contains('active')) loadCommandCenter(); }
-    async function loadArchivedInvites(){ const el=$('archivedTbody'); if(!el) return; const q=encodeURIComponent($('archivedSearchInput')?.value||''); const out=await api(`/manager/invites?q=${q}&status=archived&packageKey=all`); archivedInvites=out.data||[]; renderArchivedInvites(); }
+    async function loadInvites(){
+      const q=encodeURIComponent($('searchInput')?.value||'');
+      const status=encodeURIComponent($('statusFilter')?.value||'all');
+      const packageKey=encodeURIComponent($('packageFilter')?.value||'all');
+      if (detectMobileApp() && $('invitesMobile')) $('invitesMobile').innerHTML = appCardSkeleton('list',4);
+      const out=await api(`/manager/invites?q=${q}&status=${status}&packageKey=${packageKey}`);
+      invites=out.data||[];
+      renderInvites(); renderGuestSelect(); renderManageSelect(); renderCommandSelect();
+      if (document.getElementById('guestsPanel')?.classList.contains('active')) loadGuestCrudList();
+      if (document.getElementById('commandPanel')?.classList.contains('active')) loadCommandCenter();
+    }
+    async function loadArchivedInvites(){
+      const el=$('archivedTbody'); if(!el) return;
+      const q=encodeURIComponent($('archivedSearchInput')?.value||'');
+      if (detectMobileApp() && $('archivedMobile')) $('archivedMobile').innerHTML = appCardSkeleton('list',3);
+      const out=await api(`/manager/invites?q=${q}&status=archived&packageKey=all`);
+      archivedInvites=out.data||[];
+      renderArchivedInvites();
+    }
     function renderArchivedInvites(){
       const desktopActions = inv => `<button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button>` + adminOnlyHtml(`<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho"><i data-feather="rotate-ccw"></i> Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente"><i data-feather="trash-2"></i> Eliminar</button>`);
       const mobileActions = inv => `<button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button>` + adminOnlyHtml(`<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho"><i data-feather="rotate-ccw"></i> Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente"><i data-feather="trash-2"></i> Eliminar</button>`);
@@ -2565,7 +2996,16 @@
     }
     function renderManageSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('manageInviteSelect').innerHTML = html; if(invites.length && !selectedInviteDetails) loadManageDetails(); }
     async function loadGithubStatus(){ try { const out = await api('/manager/github/status'); const d=out.data||{}; $('githubStatus').innerHTML = d.configured ? `<b>GitHub configurado correctamente.</b><br><br>Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>Branch: <b>${esc(d.branch)}</b><br>Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br>Templates:<br>Pérola: <b>${esc(d.templates?.perola||'-')}</b><br>Esmeralda: <b>${esc(d.templates?.esmeralda||'-')}</b><br>Rubi: <b>${esc(d.templates?.rubi||'-')}</b>` : `<b>GitHub ainda não está configurado.</b><br><br>Configure no Render: <b>GITHUB_TOKEN</b>, <b>GITHUB_OWNER</b>, <b>GITHUB_REPO</b>, <b>GITHUB_BRANCH</b> e os caminhos dos templates.`; } catch(e){ $('githubStatus').textContent = e.message; } }
-    async function loadManageDetails(){ const id=$('manageInviteSelect').value; if(!id) return; const out=await api(`/manager/invites/${id}`); selectedInviteDetails=out.data; const d=out.data; $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small>registos</small></article>`; iconRefresh(); }
+    async function loadManageDetails(){
+      const id=$('manageInviteSelect').value;
+      if(!id) return;
+      if (detectMobileApp()) $('manageStats').innerHTML = appCardSkeleton('cards',4).replace('app-skeleton-card','app-skeleton-card span-2');
+      const out=await api(`/manager/invites/${id}`);
+      selectedInviteDetails=out.data;
+      const d=out.data;
+      $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small><i data-feather="users"></i> ${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small><i data-feather="heart"></i> confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small><i data-feather="gift"></i> ${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small><i data-feather="credit-card"></i> registos</small></article>`;
+      iconRefresh();
+    }
     async function managerAction(path, method, confirmText, successMsg){ if(confirmText && !await appConfirm({ title:'Confirmar operação', message:confirmText, confirmLabel:'Continuar', variant:method==='DELETE'?'danger':'' })) return; hideMsg($('manageResult')); try { const out=await api(path,{method,body:JSON.stringify({})}); const msg = out.message || successMsg || 'Operação concluída.'; showMsg($('manageResult'), msg); appToast(msg); await Promise.allSettled([loadManageDetails(),loadSummary(),loadInvites(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]); } catch(e){ showMsg($('manageResult'), e.message, true); appToast(e.message,'error','Erro'); } }
     function selectedManageId(){ return $('manageInviteSelect').value; }
     function setLoginLoading(active){
@@ -2739,7 +3179,9 @@
       const id = commandSelectedId();
       renderCommandContext(invites.find(inv=>inv.id===id));
       if(!id){ $('commandBody').innerHTML = '<div class="command-empty">Seleccione um convite para carregar o Command Center.</div>'; return; }
-      $('commandBody').innerHTML = '<div class="command-empty">A carregar ficha operacional...</div>';
+      $('commandBody').innerHTML = detectMobileApp()
+        ? `<div class="v7-mobile-command">${appCardSkeleton('cards',4)}${appCardSkeleton('list',3)}</div>`
+        : '<div class="command-empty">A carregar ficha operacional...</div>';
       try{
         const out = await api(`/manager/invites/${id}`);
         commandDetails = out.data;
@@ -2906,6 +3348,7 @@
       const q=encodeURIComponent($('guestSearchInput')?.value || '');
       try{
         tbody.innerHTML='<tr><td colspan="7">A carregar convidados...</td></tr>';
+        if (detectMobileApp()) $('guestCrudMobile').innerHTML = appCardSkeleton('list',5);
         const out=await api(`/manager/invites/${id}/guests?q=${q}`);
         currentGuests=out.data||[];
         renderGuestCrudList();
