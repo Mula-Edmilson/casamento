@@ -2628,6 +2628,7 @@
 
   </style>
   <link rel="stylesheet" href="adminmanager.mobile.css">
+  <link rel="stylesheet" href="adminmanager-operator.css">
 </head>
 <body>
   <section class="login-screen" id="loginScreen">
@@ -3599,5 +3600,6 @@ Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, chec
     function init(){ detectMobileApp(); applyTheme(localStorage.getItem('lirandzo_manager_theme')||'dark'); buildNav(); bindEvents(); window.addEventListener('resize', detectMobileApp); window.addEventListener('orientationchange', () => setTimeout(detectMobileApp, 180)); token ? appView() : loginView(); iconRefresh(); }
     init();
   </script>
+  <script src="adminmanager-operator.js"></script>
 </body>
 </html>
