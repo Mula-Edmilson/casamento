@@ -20,3 +20,17 @@
 .lz-op-invite-head b{color:var(--text);font-size:11px;min-width:24px;text-align:right}
 html[data-theme="light"] .lz-operator-scope select,html[data-theme="light"] .lz-op-invite-block{background:rgba(255,255,255,.72)}
 @media(max-width:760px){.lz-operator-scope{grid-template-columns:auto minmax(0,1fr) 30px;padding:7px 10px}.lz-operator-scope select{font-size:10px}.lz-op-invite-head{grid-template-columns:minmax(0,1fr) auto}.lz-op-invite-head .lz-op-mini{display:none}.lz-op-list.multi{max-height:280px}}
+
+/* Ultra v5 contextual brain */
+.lz-op-context{
+  margin:8px 0 0;
+  padding:7px 9px;
+  border:1px solid rgba(154,107,72,.18);
+  background:rgba(154,107,72,.08);
+  border-radius:8px;
+  color:var(--muted,#847367);
+  font-size:10.5px;
+  font-weight:800;
+}
+.lz-op-card strong+span{margin-top:4px;display:block;}
+.lz-op-actions .primary{font-weight:900;}

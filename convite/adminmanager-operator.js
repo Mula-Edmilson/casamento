@@ -1,11 +1,11 @@
 (function(){
   'use strict';
-  const BOT_VERSION='OMNI-Deterministic-v4.0-NaturalLanguage';
-  const LS_KEY='lirandzo_operator_history_v4';
-  const SCOPE_KEY='lirandzo_operator_scope_v4';
+  const BOT_VERSION='OMNI-Deterministic-v5.0-ContextualBrain';
+  const LS_KEY='lirandzo_operator_history_v5';
+  const SCOPE_KEY='lirandzo_operator_scope_v5';
   const CACHE_TTL=45*1000;
   const MAX_PREVIEW=18;
-  const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,history:[],booted:false,loading:false,scopeId:localStorage.getItem(SCOPE_KEY)||'__all__'};
+  const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,history:[],booted:false,loading:false,scopeId:localStorage.getItem(SCOPE_KEY)||'__all__',dialog:{inviteId:'',inviteTitle:'',intent:null,criteria:null,action:null,lastQuestion:'',lastListLabel:''}};
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const txt=v=>String(v??'').trim();
@@ -178,8 +178,8 @@
     const wrap=document.createElement('div'); wrap.className='lz-operator'; wrap.id='lzOperator'; wrap.innerHTML=`
       <button class="lz-operator-toggle" id="lzOperatorToggle" type="button" aria-label="Abrir operador Lirandzo"><span class="lz-operator-pulse"></span>${iconSvg('bot')}</button>
       <div class="lz-operator-window" id="lzOperatorWindow" role="dialog" aria-label="Lirandzo Operator">
-        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain v4 · sem IA paga</span></div></div><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div>
-        <div class="lz-operator-brainbar"><i></i><span>Brain v4: linguagem natural · entende nomes dos convites · respostas separadas · filtros compostos</span></div>
+        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain v5 · contextual · sem IA paga</span></div></div><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div>
+        <div class="lz-operator-brainbar"><i></i><span>Brain v5: memória de contexto · perguntas de continuação · filtros combinados · plano de acção</span></div>
         <div class="lz-operator-scope"><label for="lzOperatorScopeSelect">Escopo</label><select id="lzOperatorScopeSelect"><option value="__all__">Todos convites · resultados separados</option><option value="__current__">Convite actual do painel</option></select><button id="lzOperatorReload" type="button" title="Recarregar dados">↻</button></div>
         <div class="lz-operator-messages" id="lzOperatorMessages"></div>
         <div class="lz-operator-quick" id="lzOperatorQuick"></div>
@@ -201,9 +201,9 @@
     const obs=new MutationObserver(updateVisibility); const app=$('app'); if(app) obs.observe(app,{attributes:true,attributeFilter:['class']});
   }
   function updateVisibility(){const el=$('lzOperator'); if(!el)return; el.classList.toggle('ready',Boolean($('app')?.classList.contains('active')&&token()));}
-  async function updateStatusLabel(){try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:'Seleccione um convite';}catch{$('lzOperatorStatus').textContent='Brain v4 · linguagem natural sem IA paga';}}
-  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora também entendo perguntas naturais, por exemplo: <b>quantos convidados abriram o convite rosalina-monteiro?</b>, <b>quem confirmou no convite minoca-abubacar?</b> ou <b>lista pendentes mesa 5 do convite calate-helder</b>.`);}}}
-  function renderQuick(){const chips=['Quantos abriram?','Quem confirmou?','Pendentes por convite','Não abriram por convite','Abriram sem confirmar','Sem contacto','Sem mesa','Funil por convite','Riscos por convite','Relatório','Comparar convites','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
+  async function updateStatusLabel(){try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:'Seleccione um convite';}catch{$('lzOperatorStatus').textContent='Brain v5 · contextual sem IA paga';}}
+  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora entendo perguntas naturais e continuação de conversa. Por exemplo: <b>quantos convidados abriram o convite rosalina-monteiro?</b>, <b>quem confirmou no convite minoca-abubacar?</b> ou <b>lista pendentes mesa 5 do convite calate-helder</b>.`);}}}
+  function renderQuick(){const chips=['Focar convite','Quantos abriram?','Mostra a lista','E quantos pendentes?','Plano de acção','Qual convite precisa de atenção?','Perfil convidado','Confirmados sem mesa','Sem contacto e sem token','Funil por convite','Relatório','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
   async function renderInviteScopeSelect(force=false){
     const el=$('lzOperatorScopeSelect'); if(!el||!token()) return;
     const current=getScopeValue();
@@ -282,25 +282,52 @@
     const list=getMetricList(ctx,type); return list.length;
   }
   function naturalAction(m){
-    if(/^(quem|quais|lista|listar|mostra|mostrar|ver|diz me quem|diz-me quem|quero ver)\b/.test(m)) return 'list';
+    if(/^(quem|quais|lista|listar|mostra|mostrar|ver|diz me quem|diz-me quem|quero ver|mostra me|mostra-me)\b/.test(m)) return 'list';
     if(/percent|percentagem|taxa|porcent/.test(m)) return 'rate';
     if(/quantos|quantas|quanto|qtd|quantidade|numero|número|total|conta|contar/.test(m)) return 'count';
+    if(/^(e\s+)?(a lista|lista|mostra|mostrar|separa|separar|exporta|gerar lista)/.test(m)) return 'list';
     if(/tem\s+\d+|há\s+\d+/.test(m)) return 'count';
+    return '';
+  }
+  function inferCategoryFromWords(m){
+    const pairs=[['família','familia|família|familiares'],['amigos','amigo|amigos'],['colegas','colega|colegas|trabalho'],['padrinhos','padrinho|padrinhos|madrinha|madrinhas'],['VIP','vip|honra|mesa principal'],['noiva','noiva'],['noivo','noivo']];
+    for(const [label,rx] of pairs){ if(new RegExp(`\\b(${rx})\\b`).test(m)) return label; }
     return '';
   }
   function parseNaturalCriteria(message,m){
     const criteria={raw:message};
-    const table=message.match(/mesa\s+([a-z0-9\-\/]+)/i); if(table) criteria.table=table[1];
+    const table=message.match(/mesa\s+([a-z0-9\-\/]+)/i); if(table&&!/sem\s+mesa/i.test(message)) criteria.table=table[1];
     const cat=message.match(/categoria\s+([^,.;?]+)/i)||message.match(/grupo\s+([^,.;?]+)/i); if(cat) criteria.category=cat[1];
-    if(/vip/.test(m)) criteria.vip=true;
+    if(!criteria.category){ const inferred=inferCategoryFromWords(m); if(inferred && !/por convite|todos|todas|geral/.test(m)) criteria.category=inferred; }
+    if(/\bvip\b|padrinho|madrinha|honra/.test(m)) criteria.vip=true;
+    if(/sem mesa|mesa em falta|nao tem mesa|não tem mesa/.test(m)) criteria.missingTable=true;
+    if(/com mesa|mesa definida|tem mesa/.test(m) && !criteria.missingTable) criteria.hasTable=true;
+    if(/sem contacto|sem contato|sem telefone|contacto em falta|contato em falta|telefone em falta/.test(m)) criteria.missingPhone=true;
+    if(/com contacto|com contato|com telefone|tem telefone/.test(m) && !criteria.missingPhone) criteria.hasPhone=true;
+    if(/sem token|sem link|sem acesso|token em falta|link individual em falta/.test(m)) criteria.missingToken=true;
+    if(/com token|tem token|com link individual/.test(m) && !criteria.missingToken) criteria.hasToken=true;
+    if(/com acompanhante|com acompanhantes|mais de uma pessoa|levam acompanhante|leva acompanhante/.test(m)) criteria.withCompanions=true;
+    if(/sem acompanhante|sem acompanhantes|sozinho|sozinha/.test(m)) criteria.noCompanions=true;
+    if(/contacto repetido|contato repetido|telefone repetido/.test(m)) criteria.duplicatePhone=true;
     return criteria;
   }
+  function criteriaHasFilters(criteria){return Boolean(criteria&&(criteria.table||criteria.category||criteria.vip||criteria.missingTable||criteria.hasTable||criteria.missingPhone||criteria.hasPhone||criteria.missingToken||criteria.hasToken||criteria.withCompanions||criteria.noCompanions||criteria.duplicatePhone));}
+  function criteriaLabel(criteria){return [criteria?.table?`mesa ${criteria.table}`:'',criteria?.category?`categoria ${criteria.category}`:'',criteria?.vip?'VIP':'',criteria?.missingTable?'sem mesa':'',criteria?.hasTable?'com mesa':'',criteria?.missingPhone?'sem contacto':'',criteria?.hasPhone?'com contacto':'',criteria?.missingToken?'sem token':'',criteria?.hasToken?'com token':'',criteria?.withCompanions?'com acompanhantes':'',criteria?.noCompanions?'sem acompanhantes':'',criteria?.duplicatePhone?'contacto repetido':''].filter(Boolean).join(' · ');}
   function applyNaturalFilters(ctx,list,criteria){
     if(!criteria) return list;
-    let out=list.slice();
+    let out=list.slice(); const a=ctx.analysis;
     if(criteria.table){const t=norm(criteria.table); out=out.filter(g=>norm(displayTable(g)).includes(t));}
-    if(criteria.category){const c=norm(criteria.category); out=out.filter(g=>norm(getCategory(g)).includes(c));}
+    if(criteria.category){const c=norm(criteria.category); out=out.filter(g=>norm(getCategory(g)).includes(c)||norm(getNotes(g)).includes(c));}
     if(criteria.vip) out=out.filter(isVip);
+    if(criteria.missingTable) out=out.filter(isTableMissing);
+    if(criteria.hasTable) out=out.filter(g=>!isTableMissing(g));
+    if(criteria.missingPhone) out=out.filter(g=>!getPhone(g));
+    if(criteria.hasPhone) out=out.filter(g=>Boolean(getPhone(g)));
+    if(criteria.missingToken) out=out.filter(g=>!hasToken(g));
+    if(criteria.hasToken) out=out.filter(g=>hasToken(g));
+    if(criteria.withCompanions) out=out.filter(g=>peopleCount(g)>1);
+    if(criteria.noCompanions) out=out.filter(g=>peopleCount(g)<=1);
+    if(criteria.duplicatePhone){ const repeated=new Set(a.duplicatePhones.flatMap(x=>x.items.map(guestKey))); out=out.filter(g=>repeated.has(guestKey(g))); }
     return out;
   }
   function metricRate(ctx,type,value){
@@ -310,48 +337,97 @@
     if(type==='checkedIn') return fmtPct(value,a.confirmed.length||1)+'% dos confirmados';
     return '';
   }
+  function rememberContext(ctx,intent=null,criteria=null,action=null,listLabel=''){
+    if(!ctx||!ctx.invite) return;
+    state.lastContext=ctx;
+    state.dialog={inviteId:inviteIdOf(ctx),inviteTitle:shortInvite(ctx),intent,criteria,action,lastQuestion:state.dialog.lastQuestion||'',lastListLabel:listLabel||state.dialog.lastListLabel||''};
+  }
+  function isExplicitMulti(m){return /\b(todos|todas|geral|global|multi|por convite|separado|separar por convite|cada convite|todos os convites|todos convites)\b/.test(m);}
+  function looksLikeFollowup(m){return Boolean(state.dialog.inviteId)&&!/\b(convite|casamento|cliente)\s+/.test(m)&&!isExplicitMulti(m)&&/^(e\s+|agora\s+|entao\s+|então\s+|depois\s+|tambem\s+|também\s+|lista\b|mostra\b|separa\b|gera\b|gerar\b|exporta\b|copia\b|copiar\b|quantos\b|quantas\b|quem\b|quais\b|qual\b|o que\b|plano\b|perfil\b)/.test(m);}
+  function maybeInheritIntent(m,intent){
+    if(intent) return intent;
+    if(/^(lista|mostra|mostrar|ver|separa|separar|exporta|copia|copiar)\b/.test(m) && state.dialog.intent) return state.dialog.intent;
+    return null;
+  }
+  function mergeCriteria(base,extra){return Object.assign({},base||{},extra||{});}
   function naturalCountAnswer(ctx,intent,criteria){
-    const a=ctx.analysis; let value=getMetricValue(ctx,intent.type); let list=getMetricList(ctx,intent.type);
-    if(list.length && criteria && (criteria.table||criteria.category||criteria.vip)){list=applyNaturalFilters(ctx,list,criteria); value=list.length;}
-    state.lastContext=ctx; state.lastList=attachInvite(list,ctx);
-    const rate=metricRate(ctx,intent.type,value);
-    const filterText=[criteria?.table?`mesa ${criteria.table}`:'',criteria?.category?`categoria ${criteria.category}`:'',criteria?.vip?'VIP':''].filter(Boolean).join(' · ');
-    return `<strong>Resposta directa — ${esc(shortInvite(ctx))}</strong><br>${filterText?`Filtro aplicado: <b>${esc(filterText)}</b>.<br>`:''}No convite <b>${esc(shortInvite(ctx))}</b>, <b>${esc(value)}</b> ${esc(intent.subject)}.${rate?`<br>Isso representa <b>${esc(rate)}</b>.`:''}${intent.type==='opened'?`<br><small>Nota: aqui “abriram” inclui todos que já tiveram algum estado posterior a “Não aberto”, incluindo confirmados.</small>`:''}<div class="lz-op-actions">${list.length?'<button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button>':''}${actionAsk('Ver funil',`funil ${shortInvite(ctx)}`)}</div>`;
+    let value=getMetricValue(ctx,intent.type); let list=getMetricList(ctx,intent.type);
+    if(list.length && criteriaHasFilters(criteria)){list=applyNaturalFilters(ctx,list,criteria); value=list.length;}
+    state.lastList=attachInvite(list,ctx); rememberContext(ctx,intent,criteria,'count',intent.label);
+    const rate=metricRate(ctx,intent.type,value); const filterText=criteriaLabel(criteria);
+    return `<strong>Resposta directa — ${esc(shortInvite(ctx))}</strong><br>${filterText?`Filtro aplicado: <b>${esc(filterText)}</b>.<br>`:''}No convite <b>${esc(shortInvite(ctx))}</b>, <b>${esc(value)}</b> ${esc(intent.subject)}.${rate?`<br>Isso representa <b>${esc(rate)}</b>.`:''}${intent.type==='opened'?`<br><small>Critério: “abriram” inclui todos que já saíram de “Não aberto”, incluindo confirmados.</small>`:''}<div class="lz-op-context">Contexto guardado: ${esc(shortInvite(ctx))}</div><div class="lz-op-actions">${list.length?'<button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button>':''}${actionAsk('Mostrar lista','lista '+intent.label)}${actionAsk('Ver funil','funil')}</div>`;
   }
   function naturalListAnswer(ctx,intent,criteria){
     let list=getMetricList(ctx,intent.type); if(criteria) list=applyNaturalFilters(ctx,list,criteria);
-    state.lastContext=ctx; state.lastList=attachInvite(list,ctx);
-    const filterText=[criteria?.table?`mesa ${criteria.table}`:'',criteria?.category?`categoria ${criteria.category}`:'',criteria?.vip?'VIP':''].filter(Boolean).join(' · ');
-    if(!list.length) return `<strong>${esc(cap(intent.label))} — ${esc(shortInvite(ctx))}</strong><br>Não encontrei registos para este pedido${filterText?` com filtro <b>${esc(filterText)}</b>`:''}.`;
-    return `<strong>${esc(cap(intent.label))} — ${esc(shortInvite(ctx))}</strong><br>Encontrei <b>${list.length}</b> ${esc(intent.subject)}${filterText?` com filtro <b>${esc(filterText)}</b>`:''}.<div class="lz-op-list">${list.slice(0,MAX_PREVIEW).map(g=>guestRow(g,getPhone(g)||'')).join('')}${list.length>MAX_PREVIEW?`<div class="lz-op-card"><span>+ ${list.length-MAX_PREVIEW} registo(s) fora da prévia.</span></div>`:''}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button><button class="lz-op-action" data-op-action="go-guests">Abrir convidados</button></div>`;
+    state.lastList=attachInvite(list,ctx); rememberContext(ctx,intent,criteria,'list',intent.label);
+    const filterText=criteriaLabel(criteria);
+    if(!list.length) return `<strong>${esc(cap(intent.label))} — ${esc(shortInvite(ctx))}</strong><br>Não encontrei registos para este pedido${filterText?` com filtro <b>${esc(filterText)}</b>`:''}.<div class="lz-op-context">Contexto guardado: ${esc(shortInvite(ctx))}</div>`;
+    return `<strong>${esc(cap(intent.label))} — ${esc(shortInvite(ctx))}</strong><br>Encontrei <b>${list.length}</b> ${esc(intent.subject)}${filterText?` com filtro <b>${esc(filterText)}</b>`:''}.<div class="lz-op-list">${list.slice(0,MAX_PREVIEW).map(g=>guestRow(g,getPhone(g)||'')).join('')}${list.length>MAX_PREVIEW?`<div class="lz-op-card"><span>+ ${list.length-MAX_PREVIEW} registo(s) fora da prévia.</span></div>`:''}</div><div class="lz-op-context">Contexto guardado: ${esc(shortInvite(ctx))}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button><button class="lz-op-action" data-op-action="go-guests">Abrir convidados</button>${actionAsk('Gerar mensagem','mensagem para '+intent.label)}</div>`;
   }
   async function naturalMultiAnswer(message,m,intent,criteria,action){
     const contexts=await getValidContexts(); let flat=[];
-    const blocks=contexts.map(ctx=>{let list=getMetricList(ctx,intent.type); if(criteria) list=applyNaturalFilters(ctx,list,criteria); const value=(['duplicated','badNames','messages','contributions','reservedGifts','totalPeople'].includes(intent.type) && !criteria?.table && !criteria?.category && !criteria?.vip) ? getMetricValue(ctx,intent.type) : list.length; flat=flat.concat(attachInvite(list,ctx)); return {ctx,list,value};});
-    state.lastList=flat;
+    const blocks=contexts.map(ctx=>{let list=getMetricList(ctx,intent.type); if(criteria) list=applyNaturalFilters(ctx,list,criteria); const value=(['duplicated','badNames','messages','contributions','reservedGifts','totalPeople'].includes(intent.type) && !criteriaHasFilters(criteria)) ? getMetricValue(ctx,intent.type) : list.length; flat=flat.concat(attachInvite(list,ctx)); return {ctx,list,value};});
+    state.lastList=flat; state.dialog.intent=intent; state.dialog.criteria=criteria; state.dialog.action=action; state.dialog.inviteId=''; state.dialog.inviteTitle='Todos convites';
+    const filterText=criteriaLabel(criteria);
     if(action==='count'||action==='rate'){
       const total=blocks.reduce((s,b)=>s+Number(b.value||0),0);
-      return `<strong>${esc(cap(intent.label))} — separado por convite</strong><br>Total global apenas para referência: <b>${esc(total)}</b>. Abaixo está separado por convite.<div class="lz-op-list multi">${blocks.map(b=>`<div class="lz-op-invite-block">${inviteHeaderRow(b.ctx,b.value,`${intent.subject} · ${b.ctx.analysis.guests.length} convidados`,message)}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-csv">Copiar CSV</button>${actionAsk('Comparar convites','Comparar convites')}</div>`;
+      return `<strong>${esc(cap(intent.label))} — separado por convite</strong><br>${filterText?`Filtro aplicado em cada convite: <b>${esc(filterText)}</b>.<br>`:''}Total global apenas para referência: <b>${esc(total)}</b>. Abaixo está separado por convite.<div class="lz-op-list multi">${blocks.map(b=>`<div class="lz-op-invite-block">${inviteHeaderRow(b.ctx,b.value,`${intent.subject} · ${b.ctx.analysis.guests.length} convidados`,message)}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-csv">Copiar CSV</button>${actionAsk('Comparar convites','Comparar convites')}</div>`;
     }
-    return `<strong>${esc(cap(intent.label))} — separado por convite</strong><br>Listei os resultados por convite, sem misturar clientes.<div class="lz-op-list multi">${blocks.map(b=>`<div class="lz-op-invite-block">${inviteHeaderRow(b.ctx,b.list.length,intent.subject,message)}${b.list.length?b.list.slice(0,6).map(x=>guestRow(x)).join(''):`<div class="lz-op-card"><span>Sem registos neste convite.</span></div>`}${b.list.length>6?`<div class="lz-op-card"><span>+ ${b.list.length-6} registo(s) deste convite fora da prévia.</span></div>`:''}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar tudo separado</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button></div>`;
+    return `<strong>${esc(cap(intent.label))} — separado por convite</strong><br>${filterText?`Filtro aplicado em cada convite: <b>${esc(filterText)}</b>.<br>`:''}Listei os resultados por convite, sem misturar clientes.<div class="lz-op-list multi">${blocks.map(b=>`<div class="lz-op-invite-block">${inviteHeaderRow(b.ctx,b.list.length,intent.subject,message)}${b.list.length?b.list.slice(0,6).map(x=>guestRow(x)).join(''):`<div class="lz-op-card"><span>Sem registos neste convite.</span></div>`}${b.list.length>6?`<div class="lz-op-card"><span>+ ${b.list.length-6} registo(s) deste convite fora da prévia.</span></div>`:''}</div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar tudo separado</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button></div>`;
   }
   async function routeNatural(message,m){
-    const action=naturalAction(m); const intent=detectMetricIntent(m); if(!action||!intent) return '';
-    const criteria=parseNaturalCriteria(message,m);
+    let action=naturalAction(m); let intent=maybeInheritIntent(m,detectMetricIntent(m));
+    if(!action&&intent) action='count';
+    if(!action||!intent) return '';
+    let criteria=parseNaturalCriteria(message,m);
+    if(looksLikeFollowup(m)) criteria=mergeCriteria(state.dialog.criteria,criteria);
     const resolved=await resolveInviteFromMessage(message);
     if(resolved.ambiguous.length){return `<strong>Encontrei mais de um convite possível.</strong><br>Escolha qual quer analisar:<div class="lz-op-actions">${resolved.ambiguous.map(x=>`<button class="lz-op-action" data-op-action="select-invite" data-op-payload="${esc(x.inv.id||x.inv._id||x.inv.slug)}">${esc(inviteTitle(x.inv))}</button>`).join('')}</div>`;}
     if(resolved.match){const ctx=await getContext(false,resolved.match.id||resolved.match._id||resolved.match.slug); return action==='list'?naturalListAnswer(ctx,intent,criteria):naturalCountAnswer(ctx,intent,criteria);}
-    if(getScopeValue()==='__all__') return naturalMultiAnswer(message,m,intent,criteria,action);
+    if(looksLikeFollowup(m)&&state.dialog.inviteId){const ctx=await getContext(false,state.dialog.inviteId); if(ctx?.invite) return action==='list'?naturalListAnswer(ctx,intent,criteria):naturalCountAnswer(ctx,intent,criteria);}
+    if(getScopeValue()==='__all__'||isExplicitMulti(m)) return naturalMultiAnswer(message,m,intent,criteria,action);
     const ctx=await getContext(false); if(!ctx.invite) return '';
     return action==='list'?naturalListAnswer(ctx,intent,criteria):naturalCountAnswer(ctx,intent,criteria);
   }
+  function groupLastList(kind='table'){
+    const list=state.lastList||[]; if(!list.length) return `<strong>Sem lista anterior.</strong><br>Peça primeiro uma lista, por exemplo: <b>quem ainda não abriu?</b>`;
+    const label=kind==='category'?'categoria':kind==='invite'?'convite':'mesa';
+    const fn=kind==='category'?getCategory:kind==='invite'?(g=>g.__inviteTitle||'Convite actual'):displayTable;
+    const groups=sortedEntries(groupBy(list,fn));
+    return `<strong>Lista anterior separada por ${esc(label)}</strong><br>Separei <b>${list.length}</b> registo(s) do último resultado.<div class="lz-op-list">${groups.map(([k,items])=>`<div class="lz-op-card"><strong>${esc(k)} · ${items.length}</strong><span>${esc(items.slice(0,12).map(g=>getName(g)||'Sem nome').join(' / '))}${items.length>12?' ...':''}</span></div>`).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar lista original</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button></div>`;
+  }
+  function generateMessageFromLastList(m){
+    const list=state.lastList||[]; if(!list.length) return '';
+    const couple=state.dialog.inviteTitle&&state.dialog.inviteTitle!=='Todos convites'?state.dialog.inviteTitle:'o convite';
+    const target=state.dialog.lastListLabel||'segmento filtrado';
+    const text=/curt/.test(m)?`Olá, [Nome]. Lembramos com carinho que a sua confirmação para ${couple} ainda está pendente. Por favor, confirme pelo link do convite.`:`Olá, [Nome]. Esperamos que esteja bem.\n\nPassamos para lembrar com carinho sobre a confirmação de presença em ${couple}.\n\nPor favor, aceda ao convite e conclua a sua confirmação assim que possível.\n\nCom carinho,\nEquipa Lirandzo`;
+    state.lastMessage=text;
+    return `<strong>Mensagem gerada para a lista actual</strong><br>Segmento em memória: <b>${esc(target)}</b> · ${list.length} convidado(s).<div class="lz-op-card"><span>${esc(text).replace(/\n/g,'<br>')}</span></div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-message">Copiar mensagem</button><button class="lz-op-action" data-op-action="copy-list">Copiar segmento</button></div>`;
+  }
+
+  async function focusInviteFromMessage(message,m){
+    const resolved=await resolveInviteFromMessage(message);
+    if(resolved.ambiguous.length){return `<strong>Encontrei mais de um convite possível para focar.</strong><br>Escolha abaixo:<div class="lz-op-actions">${resolved.ambiguous.map(x=>`<button class="lz-op-action" data-op-action="select-invite" data-op-payload="${esc(x.inv.id||x.inv._id||x.inv.slug)}">${esc(inviteTitle(x.inv))}</button>`).join('')}</div>`;}
+    if(!resolved.match) return `<strong>Não encontrei esse convite.</strong><br>Escreva o slug ou parte do nome do casal. Exemplo: <b>focar convite rosalina-monteiro</b>.`;
+    const id=resolved.match.id||resolved.match._id||resolved.match.slug;
+    setScopeValue(id); const ctx=await getContext(false,id); rememberContext(ctx,null,null,'focus');
+    return `<strong>Convite focado</strong><br>Agora estou focado em <b>${esc(shortInvite(ctx))}</b>. Pode continuar com perguntas curtas como <b>quantos pendentes?</b>, <b>mostra a lista</b>, <b>separa por mesa</b> ou <b>gera mensagem</b>.<div class="lz-op-actions">${actionAsk('Mapa','Mapa',true)}${actionAsk('Plano de acção','O que devo fazer agora?')}${actionAsk('Funil','Funil')}</div>`;
+  }
   async function route(message){
-    const m=norm(message);
+    const m=norm(message); state.dialog.lastQuestion=message;
+    if((/separa|separar|agrupa|agrupar/.test(m))&&/mesa/.test(m)&&state.lastList?.length) return groupLastList('table');
+    if((/separa|separar|agrupa|agrupar/.test(m))&&/categoria|grupo/.test(m)&&state.lastList?.length) return groupLastList('category');
+    if((/separa|separar|agrupa|agrupar/.test(m))&&/convite/.test(m)&&state.lastList?.length) return groupLastList('invite');
+    if(/mensagem|lembrete|whats/.test(m)&&/(esses|estas|essa lista|este segmento|segmento|lista actual|lista atual)/.test(m)&&state.lastList?.length){const out=generateMessageFromLastList(m); if(out) return out;}
+    if(/^(foca|focar|seleciona|seleccionar|selecionar|usar|trabalhar no|trabalha no)\b/.test(m)&&/convite|casamento|cliente/.test(m)) return focusInviteFromMessage(message,m);
+    if(/qual convite|mais pendente|mais pendentes|pior taxa|melhor taxa|precisa de atencao|precisa de atenção|mais critico|mais crítico|menos confirm/.test(m)) return compareInvitesSmart(message,m);
     const natural=await routeNatural(message,m); if(natural) return natural;
     if(isMultiScope(message)) return routeMulti(message,m);
-    if(/todos.*convite|comparar|ranking|geral multi|todos os clientes/.test(m)) return compareInvites();
+    if(/todos.*convite|comparar|ranking|geral multi|todos os clientes/.test(m)) return compareInvitesSmart(message,m);
     const ctx=await getContext(false); if(!ctx.invite) return `Ainda não há convite seleccionado. Carregue os convites primeiro ou seleccione um convite no painel.`;
+    rememberContext(ctx,state.dialog.intent,state.dialog.criteria,state.dialog.action);
     if(/^(ajuda|help|comandos|o que podes|manual)/.test(m)) return help(ctx);
+    if(/plano de acao|plano de ação|o que devo fazer|o que fazer agora|proxima accao|próxima acção|proxima ação|prioridades agora|tarefas agora/.test(m)) return actionPlan(ctx);
     if(/mapa|indice|índice|visao geral|visão geral|central|comando/.test(m)) return viewMap(ctx);
     if(/funil|funnel|jornada|conversao|conversão/.test(m)) return viewFunnel(ctx);
     if(/risco|prioridade|urgente|critico|crítico|alerta/.test(m)) return viewRisks(ctx);
@@ -406,7 +482,8 @@
   function inviteHeaderRow(ctx,count,extra='',cmd='Mapa'){return `<div class="lz-op-invite-head"><div><strong>${esc(shortInvite(ctx))}</strong><small>${esc(extra)}</small></div><b>${esc(count)}</b><button class="lz-op-mini" data-op-action="select-invite" data-op-payload="${esc(inviteIdOf(ctx))}">Focar</button><button class="lz-op-mini" data-op-action="ask" data-op-payload="${esc(cmd)}">Ver</button></div>`;}
   async function routeMulti(message,m){
     if(/^(ajuda|help|comandos|o que podes|manual)/.test(m)) return multiHelp();
-    if(/comparar|ranking/.test(m)) return compareInvites();
+    if(/plano de acao|plano de ação|o que devo fazer|o que fazer agora|prioridades agora/.test(m)) return multiActionPlan();
+    if(/comparar|ranking|qual convite|pior taxa|melhor taxa|mais pendentes|precisa de atencao|precisa de atenção/.test(m)) return compareInvitesSmart(message,m);
     if(/funil|funnel|jornada|conversao|conversão/.test(m)) return viewMultiFunnel();
     if(/risco|prioridade|urgente|critico|crítico|alerta/.test(m)) return viewMultiRisks();
     if(/qualidade|higiene|auditoria|dados ruins|inconsisten/.test(m)) return viewMultiQuality();
@@ -421,6 +498,7 @@
     const search=message.match(/(?:procura|procurar|buscar|pesquisar|encontra|encontrar)\s+(.+)/i); if(search) return searchAllGuests(search[1]);
     const table=message.match(/mesa\s+([\w\-\/]+)/i); if(table) return viewMultiFiltered({table:table[1],raw:message},`Mesa ${table[1]}`);
     const cat=message.match(/categoria\s+(.+)/i); if(cat) return viewMultiFiltered({category:cat[1],raw:message},`Categoria ${cat[1]}`);
+    if(/sem contacto.*sem token|sem token.*sem contacto|sem telefone.*sem token|sem token.*sem telefone|com acompanhantes|sem acompanhantes/.test(m)) return viewMultiFiltered({raw:message},'Filtro combinado');
     if(/filtra|filtrar|separa|separar|segmenta|segmentar|lista|listar|mostra|mostrar|ver /.test(m)) return viewMultiFiltered({raw:message},'Filtro avançado');
     if(/pendente|nao abrir|não abrir|abriu|confirmad|recus|check|token|contacto|telefone|sem mesa|vip|rsvp/.test(m)) return viewMultiList(classifyListType(m));
     return viewMultiMap();
@@ -484,6 +562,47 @@
   function viewStats(ctx){const a=ctx.analysis;return `<strong>Indicadores detalhados</strong>${metric('Total convidados',a.guests.length)}${metric('Capacidade/lista potencial',a.totalCapacity)}${metric('Confirmados',`${a.confirmed.length} (${a.rsvpRate}%)`)}${metric('Pendentes',a.pending.length)}${metric('Abertura',`${a.openRate}%`)}${metric('Pessoas previstas',a.totalPeople)}${metric('Check-in',`${a.checkedIn.length} (${a.checkinRate}%)`)}${metric('Mensagens',a.messages.length)}${metric('Contribuições',a.contributions.length)}${metric('Presentes reservados',`${a.reservedGifts.length}/${a.gifts.length}`)}<div class="lz-op-actions">${actionAsk('Funil','Funil RSVP',true)}${actionAsk('Mesas','Mesas')}${actionAsk('Categorias','Categorias')}</div>`;}
   function searchGuest(ctx,q){const needle=norm(q); const found=ctx.analysis.guests.filter(g=>norm(getName(g)).includes(needle)||norm(getPhone(g)).includes(needle)||norm(displayTable(g)).includes(needle)||norm(getCategory(g)).includes(needle)||norm(getNumber(g)).includes(needle)).slice(0,20); if(!found.length)return `<strong>Pesquisa</strong><br>Não encontrei convidados para: <b>${esc(q)}</b>.`; state.lastList=found; return `<strong>Pesquisa de convidado</strong><br>Resultado para: <b>${esc(q)}</b><div class="lz-op-list">${found.map(g=>guestRow(g,getPhone(g)||'sem contacto')).join('')}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar resultado</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button><button class="lz-op-action" data-op-action="go-guests">Abrir convidados</button></div>`;}
   function viewGuestProfile(ctx,q){const needle=norm(q); const g=ctx.analysis.guests.find(x=>norm(getName(x)).includes(needle)||norm(getPhone(x)).includes(needle)||norm(getNumber(x))===needle); if(!g) return searchGuest(ctx,q); const a=ctx.analysis; const flags=[]; if(a.confirmed.includes(g)) flags.push('Confirmado'); if(a.pending.includes(g)) flags.push('Pendente'); if(a.notOpened.includes(g)) flags.push('Não aberto'); if(a.openedNoConfirm.includes(g)) flags.push('Abriu sem confirmar'); if(a.checkedIn.includes(g)) flags.push('Check-in feito'); if(!hasToken(g)) flags.push('Sem token'); if(!getPhone(g)) flags.push('Sem contacto'); if(isTableMissing(g)) flags.push('Sem mesa'); return `<strong>Perfil 360º do convidado</strong><br><b>${esc(getName(g)||'Sem nome')}</b>${badges(flags.map(f=>[f,'',f.includes('Sem')?'bad':'']))}${metric('Mesa',displayTable(g))}${metric('Categoria',getCategory(g))}${metric('Estado',g.status||g.guestStatus||'-')}${metric('Pessoas/acompanhantes',peopleCount(g))}${metric('Contacto',getPhone(g)||'-')}${metric('Número',getNumber(g)||'-')}${metric('Token',hasToken(g)?'Existe':'Em falta')}${metric('Última data detectada',fmtDateTime(dateOf(g,'confirmedAt','rsvpAt','openedAt','lastOpenedAt','checkedInAt','updatedAt','createdAt')))}${getNotes(g)?`<div class="lz-op-card"><strong>Notas</strong><span>${esc(getNotes(g))}</span></div>`:''}<div class="lz-op-actions">${actionAsk('Pesquisar similares',`pesquisar ${getName(g).split(' ')[0]}`,true)}${actionAsk('Mesa','mesa '+displayTable(g))}</div>`;}
+  function riskScore(ctx){const a=ctx.analysis; return Math.max(0,Math.min(100,(100-a.score)+(a.missingTokens.length*9)+(a.duplicateTokens.length*11)+(a.missingTables.length*3)+(a.vipPending.length*5)+(a.openedNoConfirm.length*2)+Math.round((a.notOpened.length/(a.guests.length||1))*18)));}
+  function topRiskLabel(ctx){const a=ctx.analysis; const items=[]; if(a.missingTokens.length) items.push(`${a.missingTokens.length} sem token`); if(a.missingTables.length) items.push(`${a.missingTables.length} confirmados sem mesa`); if(a.vipPending.length) items.push(`${a.vipPending.length} VIP pendente(s)`); if(a.openedNoConfirm.length) items.push(`${a.openedNoConfirm.length} abriram sem confirmar`); if(a.notOpened.length) items.push(`${a.notOpened.length} não abriram`); if(a.duplicated.length) items.push(`${a.duplicated.length} duplicado(s)`); return items.slice(0,4).join(' · ')||'sem riscos fortes';}
+  function rankedContexts(contexts,mode='attention'){
+    const rows=contexts.filter(c=>c.analysis).map(c=>{const a=c.analysis; return {ctx:c,score:riskScore(c),pending:a.pending.length,notOpened:a.notOpened.length,openedNoConfirm:a.openedNoConfirm.length,confirmedRate:Number(a.rsvpRate||0),openRate:Number(a.openRate||0),health:a.score};});
+    if(mode==='pending') rows.sort((a,b)=>b.pending-a.pending||b.score-a.score);
+    else if(mode==='notOpened') rows.sort((a,b)=>b.notOpened-a.notOpened||b.score-a.score);
+    else if(mode==='worstRate') rows.sort((a,b)=>a.confirmedRate-b.confirmedRate||b.score-a.score);
+    else if(mode==='bestRate') rows.sort((a,b)=>b.confirmedRate-a.confirmedRate||a.score-b.score);
+    else rows.sort((a,b)=>b.score-a.score||a.health-b.health);
+    return rows;
+  }
+  async function compareInvitesSmart(message='',m=''){
+    const contexts=await getValidContexts(30); if(!contexts.length) return `<strong>Comparação geral</strong><br>Não consegui carregar convites para comparação.`;
+    let mode='attention', headline='Ranking de atenção operacional';
+    if(/mais pendente|mais pendentes|maior pendencia|maior pendência/.test(m)){mode='pending'; headline='Convite com mais pendentes';}
+    else if(/mais nao abrir|mais não abrir|nao abriram mais|não abriram mais/.test(m)){mode='notOpened'; headline='Convite com mais não abertos';}
+    else if(/pior taxa|menos confirm|menor taxa/.test(m)){mode='worstRate'; headline='Convite com pior taxa de confirmação';}
+    else if(/melhor taxa|mais confirm|maior taxa/.test(m)){mode='bestRate'; headline='Convite com melhor taxa de confirmação';}
+    const rows=rankedContexts(contexts,mode); const first=rows[0];
+    const totals=contexts.reduce((acc,c)=>{const a=c.analysis; acc.guests+=a.guests.length; acc.confirmed+=a.confirmed.length; acc.pending+=a.pending.length; acc.notOpened+=a.notOpened.length; acc.openedNoConfirm+=a.openedNoConfirm.length; return acc;},{guests:0,confirmed:0,pending:0,notOpened:0,openedNoConfirm:0});
+    const direct=/qual convite|mais pendente|pior taxa|melhor taxa|precisa de atencao|precisa de atenção|mais critico|mais crítico/.test(m);
+    const rowsHtml=rows.map((r,i)=>`<div class="lz-op-list-row"><div><strong>${i+1}. ${esc(shortInvite(r.ctx))}</strong><small>Saúde ${r.health}% · RSVP ${r.confirmedRate}% · Pendentes ${r.pending} · Não abriram ${r.notOpened} · ${esc(topRiskLabel(r.ctx))}</small></div><b>${r.score}</b></div>`).join('');
+    const directHtml=direct&&first?`<div class="lz-op-card"><strong>Resposta directa</strong><span>${esc(shortInvite(first.ctx))} é o destaque deste critério. Motivo: ${esc(topRiskLabel(first.ctx))}.</span></div>`:'';
+    return `<strong>${esc(headline)}</strong>${directHtml}${metric('Convites analisados',contexts.length)}${metric('Convidados totais',totals.guests)}${metric('Confirmados totais',`${totals.confirmed} (${fmtPct(totals.confirmed,totals.guests)}%)`)}${metric('Pendentes totais',totals.pending)}<div class="lz-op-list">${rowsHtml}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-comparison">Copiar ranking</button>${first?`<button class="lz-op-action" data-op-action="select-invite" data-op-payload="${esc(inviteIdOf(first.ctx))}">Focar ${esc(shortInvite(first.ctx))}</button>`:''}${actionAsk('Plano por convite','Plano de acção por convite')}</div>`;
+  }
+  function buildActionItems(ctx){
+    const a=ctx.analysis; const items=[];
+    if(a.missingTokens.length) items.push(['Crítico',`Corrigir ${a.missingTokens.length} convidado(s) sem token individual.`,'Sem token']);
+    if(a.duplicateTokens.length) items.push(['Crítico',`Resolver ${a.duplicateTokens.length} token(s) repetido(s).`,'Tokens repetidos']);
+    if(a.missingTables.length) items.push(['Operação',`Definir mesa para ${a.missingTables.length} confirmado(s).`,'Confirmados sem mesa']);
+    if(a.vipPending.length) items.push(['Prioridade',`Contactar manualmente ${a.vipPending.length} VIP pendente(s).`,'VIP pendentes']);
+    if(a.openedNoConfirm.length) items.push(['RSVP',`Enviar lembrete para ${a.openedNoConfirm.length} convidado(s) que abriram mas não confirmaram.`,'Abriram sem confirmar']);
+    if(a.notOpened.length) items.push(['Distribuição',`Verificar envio/link dos ${a.notOpened.length} convidado(s) que ainda não abriram.`,'Não abriram']);
+    if(a.missingPhones.length) items.push(['Dados',`Completar contacto de ${a.missingPhones.length} convidado(s).`,'Sem contacto']);
+    if(a.duplicated.length) items.push(['Dados',`Rever ${a.duplicated.length} grupo(s) de possíveis duplicados.`,'Duplicados']);
+    if(!items.length) items.push(['OK','Convite sem bloqueios fortes. Preparar relatório e briefing de recepção.','Relatório']);
+    return items;
+  }
+  function actionPlan(ctx){const items=buildActionItems(ctx); rememberContext(ctx,null,null,'actionPlan'); return `<strong>Plano de acção — ${esc(shortInvite(ctx))}</strong><br>Ordem sugerida para resolver o que mais impacta este convite.<div class="lz-op-cards">${items.map((it,i)=>`<div class="lz-op-card"><strong>${i+1}. ${esc(it[0])}</strong><span>${esc(it[1])}</span></div>`).join('')}</div><div class="lz-op-actions">${items.slice(0,4).map((it,i)=>actionAsk(i===0?'Ver prioridade 1':it[2],it[2],i===0)).join('')}${actionAsk('Gerar relatório','Relatório')}</div>`;}
+  async function multiActionPlan(){const contexts=await getValidContexts(30); const ranked=rankedContexts(contexts,'attention'); return `<strong>Plano de acção por convite</strong><br>Priorizei os convites com maior risco operacional primeiro.<div class="lz-op-list multi">${ranked.map((r,i)=>{const first=buildActionItems(r.ctx)[0]; return `<div class="lz-op-invite-block">${inviteHeaderRow(r.ctx,r.score,`${first[0]} · ${first[1]}`,'Plano de acção')}</div>`;}).join('')}</div><div class="lz-op-actions">${actionAsk('Ranking de atenção','Qual convite precisa de atenção?',true)}${actionAsk('Riscos por convite','Riscos por convite')}</div>`;}
+
   async function compareInvites(){const contexts=await getAllContexts(20); const valid=contexts.filter(c=>c.analysis); if(!valid.length) return `<strong>Comparação geral</strong><br>Não consegui carregar convites para comparação.`; const rows=valid.sort((a,b)=>b.analysis.score-a.analysis.score).map(c=>`<div class="lz-op-list-row"><div><strong>${esc(shortInvite(c))}</strong><small>${c.analysis.guests.length} convidados · ${c.analysis.confirmed.length} confirmados · ${c.analysis.pending.length} pendentes · ${c.analysis.notOpened.length} não abriram</small></div><b>${c.analysis.score}%</b></div>`).join(''); const totals=valid.reduce((acc,c)=>{acc.guests+=c.analysis.guests.length;acc.confirmed+=c.analysis.confirmed.length;acc.pending+=c.analysis.pending.length;acc.notOpened+=c.analysis.notOpened.length;return acc;},{guests:0,confirmed:0,pending:0,notOpened:0}); return `<strong>Ranking geral dos convites</strong><br>Comparação operacional dos convites carregados.${metric('Convites analisados',valid.length)}${metric('Convidados totais',totals.guests)}${metric('Confirmados totais',`${totals.confirmed} (${fmtPct(totals.confirmed,totals.guests)}%)`)}${metric('Pendentes totais',totals.pending)}<div class="lz-op-list">${rows}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-comparison">Copiar ranking</button></div>`;}
   function smartFallback(ctx,message){const a=ctx.analysis; return `<strong>Posso fazer isso, mas preciso de um comando mais objectivo.</strong><br>O meu cérebro funciona por operações determinísticas. Para este convite vejo ${a.pending.length} pendentes, ${a.notOpened.length} não abertos, ${a.openedNoConfirm.length} abriram sem confirmar e ${a.duplicated.length} possíveis duplicados.<br><br>Use exemplos como: <b>pendentes mesa 5</b>, <b>não abriram categoria família</b>, <b>perfil Ana</b>, <b>funil</b>, <b>recepção</b> ou <b>comparar convites</b>.<div class="lz-op-actions">${actionAsk('Mapa','Mapa',true)}${actionAsk('Ajuda','Ajuda')}</div>`;}
   async function copy(text){try{await navigator.clipboard.writeText(text); return true;}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();return true;}}
