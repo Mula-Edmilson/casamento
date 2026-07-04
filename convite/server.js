@@ -1844,6 +1844,336 @@ async function handleUploadComprovativo(req, res, invite) {
   return res.json({ status: 'success', message: 'Comprovativo enviado.', data: { id: doc._id, fileUrl: doc.fileUrl } });
 }
 
+
+// -----------------------------------------------------------------------------
+// Lirandzo Operator Bot v6 · Acções Seguras
+// Operações via bot com confirmação obrigatória e as mesmas permissões Admin/Editor.
+// -----------------------------------------------------------------------------
+const BOT_PENDING_ACTIONS = new Map();
+const BOT_ACTION_TTL_MS = 5 * 60 * 1000;
+const BOT_ADMIN_ONLY_ACTIONS = new Set([
+  'add_guest', 'delete_guest', 'reset_access', 'reset_rsvp', 'reset_checkin',
+  'reset_guest_full', 'reset_invite_operational_data'
+]);
+const BOT_EDITOR_ALLOWED_ACTIONS = new Set(['edit_guest']);
+const BOT_EDITOR_ALLOWED_FIELDS = ['name', 'table', 'mesa', 'companions', 'phone', 'number', 'category', 'notes', 'status'];
+
+function botRoleLabel(role) { return role === 'editor' ? 'Editor' : 'Administrador'; }
+function botCleanGuestSummary(guest) {
+  if (!guest) return null;
+  return {
+    id: String(guest._id),
+    name: guest.name || '',
+    status: guest.status || '',
+    table: guest.table || '',
+    category: guest.category || '',
+    phone: guest.phone || '',
+    number: guest.number || 0,
+    companions: guest.companions || 0,
+    maxGuests: guest.maxGuests || 1,
+    checkedIn: Boolean(guest.checkedIn),
+    checkedInAt: guest.checkedInAt || null,
+    inviteToken: guest.inviteToken || '',
+    hasToken: Boolean(guest.inviteToken)
+  };
+}
+function botActionLabel(actionType) {
+  const map = {
+    add_guest: 'Adicionar convidado',
+    edit_guest: 'Editar convidado',
+    delete_guest: 'Eliminar convidado',
+    reset_access: 'Repor acesso',
+    reset_rsvp: 'Repor confirmação/RSVP',
+    reset_checkin: 'Repor check-in',
+    reset_guest_full: 'Repor dados do convidado',
+    reset_invite_operational_data: 'Repor dados operacionais do convite'
+  };
+  return map[actionType] || actionType;
+}
+function botNormalize(value) { return normalizeText(value).replace(/[^a-z0-9\s-]+/g, ' ').replace(/\s+/g, ' ').trim(); }
+function botStripInvitePart(message, invite) {
+  let out = String(message || '');
+  const patterns = [invite?.slug, invite?.coupleNames, invite?.clientName].filter(Boolean);
+  for (const p of patterns) out = out.replace(new RegExp(escapeRegex(p), 'ig'), ' ');
+  out = out.replace(/\b(no|na|ao|a|do|da)?\s*convite\b/ig, ' ');
+  return out.replace(/\s+/g, ' ').trim();
+}
+async function botFindInvite(raw, explicitId = '') {
+  if (explicitId) {
+    const byId = mongoose.Types.ObjectId.isValid(String(explicitId)) ? await Invite.findById(explicitId) : null;
+    if (byId) return { invite: byId, ambiguous: [] };
+    const bySlug = await Invite.findOne({ slug: slugify(explicitId), status: { $ne: 'archived' } });
+    if (bySlug) return { invite: bySlug, ambiguous: [] };
+  }
+  const invites = await Invite.find({ status: { $ne: 'archived' } }).sort({ updatedAt: -1, createdAt: -1 }).limit(80);
+  const m = botNormalize(raw);
+  const scores = invites.map(inv => {
+    const slug = botNormalize(inv.slug);
+    const couple = botNormalize(inv.coupleNames);
+    const client = botNormalize(inv.clientName);
+    let score = 0;
+    if (slug && m.includes(slug)) score += 120;
+    if (couple && m.includes(couple)) score += 100;
+    if (client && m.includes(client)) score += 70;
+    for (const part of [slug, couple, client]) {
+      if (!part) continue;
+      const words = part.split(' ').filter(w => w.length > 2);
+      score += words.filter(w => m.includes(w)).length * 16;
+    }
+    return { invite: inv, score };
+  }).filter(x => x.score > 22).sort((a, b) => b.score - a.score);
+  if (!scores.length) return { invite: null, ambiguous: [] };
+  if (scores.length > 1 && scores[0].score - scores[1].score < 18) return { invite: null, ambiguous: scores.slice(0, 6).map(x => cleanInviteDoc(x.invite)) };
+  return { invite: scores[0].invite, ambiguous: [] };
+}
+function botDetectActionType(raw) {
+  const m = botNormalize(raw);
+  if (/\b(adicionar|add|criar|inserir|novo)\b.*\b(convidado|convidada|pessoa)\b/.test(m)) return 'add_guest';
+  if (/\b(eliminar|apagar|remover|deletar|delete)\b.*\b(convidado|convidada|pessoa)?\b/.test(m)) return 'delete_guest';
+  if (/\b(repor|resetar|reiniciar|restaurar)\b.*\b(todos os dados|dados completos|completo|total)\b.*\b(convite)\b/.test(m)) return 'reset_invite_operational_data';
+  if (/\b(repor|resetar|reiniciar|restaurar)\b.*\b(todos os dados|dados completos|completo|total)\b/.test(m)) return 'reset_guest_full';
+  if (/\b(repor|resetar|reiniciar|restaurar)\b.*\b(checkin|check in|check-in|entrada)\b/.test(m)) return 'reset_checkin';
+  if (/\b(repor|resetar|reiniciar|restaurar)\b.*\b(rsvp|confirmacao|confirmação|presenca|presença)\b/.test(m)) return 'reset_rsvp';
+  if (/\b(repor|resetar|reiniciar|restaurar)\b.*\b(acesso|link|token)\b/.test(m)) return 'reset_access';
+  if (/\b(editar|alterar|mudar|corrigir|actualizar|atualizar|definir|trocar)\b/.test(m)) return 'edit_guest';
+  return '';
+}
+function botExtractGuestName(raw, invite, actionType) {
+  let s = botStripInvitePart(raw, invite);
+  const cleanStop = /(\s+para\s+|\s+por\s+|\s+com\s+|\s+na\s+mesa\s+|\s+mesa\s+|\s+telefone\s+|\s+contacto\s+|\s+contato\s+|\s+categoria\s+|\s+acompanhantes?\s+|\s+n[oºu]mero\s+)/i;
+  const patterns = [
+    /(?:de|do|da)\s+(.+?)(?=$|\s+no\s+convite|\s+na\s+convite|\s+ao\s+convite|\s+convite|\s+para\s+|\s+por\s+)/i,
+    /(?:convidado|convidada|pessoa)\s+(.+?)(?=$|\s+no\s+convite|\s+convite|\s+para\s+|\s+por\s+)/i
+  ];
+  if (actionType === 'add_guest') {
+    const m = s.match(/(?:adicionar|add|criar|inserir|novo)\s+(?:convidado|convidada|pessoa)?\s*(.+?)(?=$|\s+no\s+convite|\s+ao\s+convite|\s+convite|\s+com\s+\d|\s+na\s+mesa|\s+mesa\s+|\s+telefone\s+|\s+contacto\s+|\s+categoria\s+)/i);
+    if (m) return m[1].replace(cleanStop, ' ').trim();
+  }
+  if (actionType === 'edit_guest') {
+    const m1 = s.match(/(?:mesa|telefone|contacto|contato|categoria|acompanhantes?|estado|nome|notas|numero|número)\s+(?:de|do|da)\s+(.+?)(?=\s+para\s+|\s+por\s+|$)/i);
+    if (m1) return m1[1].trim();
+    const m2 = s.match(/(?:editar|alterar|mudar|corrigir|actualizar|atualizar|definir|trocar)\s+(.+?)(?=\s+para\s+|\s+por\s+|\s+no\s+convite|\s+convite|$)/i);
+    if (m2) return m2[1].replace(/^(a\s+)?(mesa|telefone|contacto|contato|categoria|acompanhantes?|estado|nome|notas|numero|número)\s+(de|do|da)\s+/i, '').trim();
+  }
+  for (const rx of patterns) {
+    const m = s.match(rx);
+    if (m) return m[1].replace(cleanStop, ' ').trim();
+  }
+  s = s.replace(/\b(repor|resetar|reiniciar|restaurar|eliminar|apagar|remover|deletar|delete|acesso|link|token|rsvp|confirmacao|confirmação|checkin|check|entrada|todos os dados|dados completos|completo|total|convidado|convidada|pessoa)\b/ig, ' ');
+  return s.replace(/\s+/g, ' ').trim();
+}
+function botParseGuestPayload(raw) {
+  const out = {};
+  const mesa = raw.match(/(?:mesa|na mesa)\s+([a-z0-9\-\/]+)/i);
+  if (mesa) out.table = mesa[1].trim();
+  const phone = raw.match(/(?:telefone|contacto|contato|whatsapp)\s+([+\d][\d\s+\-().]{5,})/i);
+  if (phone) out.phone = phone[1].replace(/\s+/g, ' ').trim();
+  const comp = raw.match(/(\d+)\s+acompanhantes?/i) || raw.match(/com\s+(\d+)\s+pessoas?/i);
+  if (comp) out.companions = Number(comp[1]);
+  const cat = raw.match(/categoria\s+([^,.;]+)/i) || raw.match(/grupo\s+([^,.;]+)/i);
+  if (cat) out.category = cat[1].trim();
+  const num = raw.match(/(?:numero|número|nº|no\.?|ordem)\s+(\d+)/i);
+  if (num) out.number = Number(num[1]);
+  const status = raw.match(/estado\s+([^,.;]+)/i);
+  if (status) out.status = status[1].trim();
+  const notes = raw.match(/(?:nota|notas|observacao|observação)\s+([^;]+)/i);
+  if (notes) out.notes = notes[1].trim();
+  const newName = raw.match(/nome\s+(?:para|por)\s+([^,.;]+)/i);
+  if (newName) out.name = newName[1].trim();
+  return out;
+}
+async function botFindGuests(invite, query) {
+  const q = String(query || '').trim();
+  if (!q) return [];
+  const normalized = normalizeText(q);
+  const rx = new RegExp(escapeRegex(q), 'i');
+  let guests = await Guest.find({ inviteId: invite._id, $or: [{ name: rx }, { normalizedName: new RegExp(escapeRegex(normalized), 'i') }, { phone: rx }, { table: rx }] }).sort({ number: 1, name: 1 }).limit(12);
+  if (!guests.length) {
+    const all = await Guest.find({ inviteId: invite._id }).sort({ number: 1, name: 1 }).limit(500);
+    guests = all.filter(g => botNormalize(g.name).includes(botNormalize(q)) || botNormalize(q).includes(botNormalize(g.name))).slice(0, 12);
+  }
+  return guests;
+}
+function botPermissionCheck(role, actionType) {
+  if (role === 'admin') return { ok: true };
+  if (role === 'editor' && BOT_EDITOR_ALLOWED_ACTIONS.has(actionType)) return { ok: true };
+  return { ok: false, message: `Está logado como Editor. Esta acção (${botActionLabel(actionType)}) exige perfil Administrador.` };
+}
+function botPrepareSummary({ actionType, role, invite, guest, payload, before, after, rsvpsCount = 0, checkinsCount = 0 }) {
+  const destructive = ['delete_guest', 'reset_guest_full', 'reset_invite_operational_data'].includes(actionType);
+  const warnings = [];
+  if (destructive) warnings.push('Acção sensível. Confirme apenas se tiver certeza absoluta.');
+  if (role === 'editor') warnings.push('Perfil Editor: só são permitidas edições limitadas de convidado.');
+  if (actionType === 'reset_access') warnings.push('O RSVP/check-in não será eliminado por esta acção; apenas o acesso/token será renovado.');
+  if (actionType === 'reset_rsvp' && rsvpsCount) warnings.push(`${rsvpsCount} RSVP(s) associado(s) serão removidos.`);
+  if (actionType === 'reset_checkin' && checkinsCount) warnings.push(`${checkinsCount} check-in(s) associado(s) serão removidos.`);
+  const confirmationPhrase = actionType === 'delete_guest'
+    ? `ELIMINAR ${guest?.name || ''}`.trim()
+    : actionType === 'reset_invite_operational_data'
+      ? `REPOR ${invite.slug}`.trim()
+      : '';
+  return { destructive, warnings, confirmationPhrase };
+}
+
+app.post('/manager/bot/prepare-action', requireManager, asyncRoute(async (req, res) => {
+  const raw = String(req.body?.message || '').trim();
+  const explicitInviteId = String(req.body?.inviteId || '').trim();
+  const explicitGuestId = String(req.body?.guestId || '').trim();
+  const explicitActionType = String(req.body?.actionType || '').trim();
+  if (!raw && !explicitActionType) return res.status(400).json({ status: 'error', message: 'Comando vazio.' });
+
+  const actionType = explicitActionType || botDetectActionType(raw);
+  if (!actionType) return res.status(400).json({ status: 'error', message: 'Não reconheci uma acção operacional. Exemplos: repor acesso de João no convite X; alterar mesa de Ana para 8; adicionar convidado Carlos ao convite X.' });
+
+  const permission = botPermissionCheck(req.manager.role, actionType);
+  if (!permission.ok) return res.status(403).json({ status: 'error', code: 'BOT_PERMISSION_DENIED', role: req.manager.role, message: permission.message });
+
+  const foundInvite = await botFindInvite(raw, explicitInviteId);
+  if (foundInvite.ambiguous.length) return res.json({ status: 'selection_required', selectionType: 'invite', actionType, message: 'Encontrei mais de um convite possível.', candidates: foundInvite.ambiguous });
+  const invite = foundInvite.invite;
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Não encontrei o convite. Informe o slug ou nome do casal.' });
+
+  let guest = null;
+  let payload = botParseGuestPayload(raw);
+  if (actionType === 'add_guest') {
+    const name = String(req.body?.name || botExtractGuestName(raw, invite, actionType)).trim();
+    if (!name) return res.status(400).json({ status: 'error', message: 'Não consegui identificar o nome do novo convidado.' });
+    payload.name = name;
+  } else if (actionType !== 'reset_invite_operational_data') {
+    if (explicitGuestId) guest = await Guest.findOne({ _id: explicitGuestId, inviteId: invite._id });
+    if (!guest) {
+      const guestQuery = botExtractGuestName(raw, invite, actionType);
+      const matches = await botFindGuests(invite, guestQuery);
+      if (!matches.length) return res.status(404).json({ status: 'error', message: `Não encontrei convidado correspondente a “${guestQuery || raw}” neste convite.` });
+      if (matches.length > 1) return res.json({
+        status: 'selection_required', selectionType: 'guest', actionType, invite: cleanInviteDoc(invite), message: 'Encontrei mais de um convidado possível. Escolha o registo correcto antes de avançar.',
+        candidates: matches.map(botCleanGuestSummary)
+      });
+      guest = matches[0];
+    }
+    if (actionType === 'edit_guest') {
+      if (!Object.keys(payload).length) return res.status(400).json({ status: 'error', message: 'Não identifiquei o campo a editar. Exemplos: alterar mesa de João para 8; mudar telefone de Ana para 84xxxxxxx.' });
+      if (req.manager.role === 'editor') payload = Object.fromEntries(Object.entries(payload).filter(([key]) => BOT_EDITOR_ALLOWED_FIELDS.includes(key)));
+      if (!Object.keys(payload).length) return res.status(403).json({ status: 'error', code: 'BOT_PERMISSION_DENIED', role: req.manager.role, message: 'Está logado como Editor. O campo pedido não está permitido para Editor.' });
+    }
+  }
+
+  const before = guest ? botCleanGuestSummary(guest) : null;
+  let after = before ? { ...before } : null;
+  if (actionType === 'add_guest') after = { name: payload.name, status: 'Não aberto', table: payload.table || '', category: payload.category || '', phone: payload.phone || '', companions: payload.companions || 0, maxGuests: Math.max(1, Number(payload.companions || 0) + 1), hasToken: true };
+  if (actionType === 'edit_guest' && after) Object.assign(after, { table: payload.table ?? payload.mesa ?? after.table, phone: payload.phone ?? after.phone, category: payload.category ?? after.category, companions: payload.companions ?? after.companions, number: payload.number ?? after.number, status: payload.status ?? after.status, name: payload.name ?? after.name, notes: payload.notes ?? after.notes });
+  if (actionType === 'reset_access' && after) Object.assign(after, { inviteToken: 'novo token será gerado', hasToken: true });
+  if (actionType === 'reset_rsvp' && after) Object.assign(after, { status: 'Aberto', checkedIn: false });
+  if (actionType === 'reset_checkin' && after) Object.assign(after, { checkedIn: false, checkedInAt: null });
+  if (actionType === 'reset_guest_full' && after) Object.assign(after, { status: 'Não aberto', inviteToken: 'novo token será gerado', checkedIn: false, checkedInAt: null });
+
+  const [rsvpsCount, checkinsCount] = guest ? await Promise.all([
+    Rsvp.countDocuments({ inviteId: invite._id, guestId: guest._id }),
+    CheckIn.countDocuments({ inviteId: invite._id, guestId: guest._id })
+  ]) : [0, 0];
+  const meta = botPrepareSummary({ actionType, role: req.manager.role, invite, guest, payload, before, after, rsvpsCount, checkinsCount });
+  const actionId = crypto.randomBytes(16).toString('hex');
+  BOT_PENDING_ACTIONS.set(actionId, { actionId, actionType, role: req.manager.role, inviteId: String(invite._id), guestId: guest ? String(guest._id) : '', payload, createdAt: Date.now(), expiresAt: Date.now() + BOT_ACTION_TTL_MS, confirmationPhrase: meta.confirmationPhrase });
+
+  res.json({
+    status: 'success',
+    message: 'Acção preparada. Confirme antes de executar.',
+    data: { actionId, actionType, actionLabel: botActionLabel(actionType), role: req.manager.role, roleLabel: botRoleLabel(req.manager.role), invite: cleanInviteDoc(invite), guest: before, before, after, payload, expiresInSeconds: Math.round(BOT_ACTION_TTL_MS / 1000), ...meta }
+  });
+}));
+
+app.post('/manager/bot/apply-action', requireManager, asyncRoute(async (req, res) => {
+  const actionId = String(req.body?.actionId || '').trim();
+  const confirmText = String(req.body?.confirmText || '').trim();
+  const pending = BOT_PENDING_ACTIONS.get(actionId);
+  if (!pending) return res.status(404).json({ status: 'error', message: 'Acção pendente não encontrada ou já executada.' });
+  if (Date.now() > pending.expiresAt) { BOT_PENDING_ACTIONS.delete(actionId); return res.status(410).json({ status: 'error', message: 'A confirmação expirou. Prepare a acção novamente.' }); }
+  const permission = botPermissionCheck(req.manager.role, pending.actionType);
+  if (!permission.ok) return res.status(403).json({ status: 'error', code: 'BOT_PERMISSION_DENIED', role: req.manager.role, message: permission.message });
+  if (pending.confirmationPhrase && confirmText !== pending.confirmationPhrase) return res.status(400).json({ status: 'error', message: `Confirmação forte inválida. Escreva exactamente: ${pending.confirmationPhrase}` });
+
+  const invite = await Invite.findById(pending.inviteId);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+  const actionType = pending.actionType;
+  const payload = pending.payload || {};
+  let guest = pending.guestId ? await Guest.findOne({ _id: pending.guestId, inviteId: invite._id }) : null;
+  const before = guest ? botCleanGuestSummary(guest) : null;
+  let result = {};
+
+  if (actionType === 'add_guest') {
+    const createPayload = buildGuestPayloadForManager(invite, payload);
+    await ensureNoGuestDuplicate(invite, createPayload.normalizedName);
+    guest = await Guest.create(createPayload);
+    await logActivity({ invite, type: 'guests', title: 'Convidado criado pelo Operator Bot', detail: guest.name, meta: { role: req.manager.role, actionId } });
+    result = { guest: cleanGuestForManager(guest) };
+  } else if (!guest && actionType !== 'reset_invite_operational_data') {
+    return res.status(404).json({ status: 'error', message: 'Convidado não encontrado.' });
+  } else if (actionType === 'edit_guest') {
+    let body = payload;
+    if (req.manager.role === 'editor') body = Object.fromEntries(Object.entries(body).filter(([key]) => BOT_EDITOR_ALLOWED_FIELDS.includes(key)));
+    const updatePayload = buildGuestPayloadForManager(invite, { ...guest.toObject(), ...body, name: body.name || guest.name }, guest);
+    await ensureNoGuestDuplicate(invite, updatePayload.normalizedName, guest._id);
+    Object.assign(guest, updatePayload);
+    await guest.save();
+    await Promise.all([
+      Rsvp.updateMany({ inviteId: invite._id, guestId: guest._id }, { $set: { nome: guest.name, mesa: guest.table || '', guests: Number(guest.maxGuests) || 1, phone: guest.phone || '' } }),
+      CheckIn.updateMany({ inviteId: invite._id, guestId: guest._id }, { $set: { nome: guest.name, mesa: guest.table || '', guests: Number(guest.maxGuests) || 1, token: guest.inviteToken || '' } })
+    ]);
+    await logActivity({ invite, type: 'guests', title: 'Convidado editado pelo Operator Bot', detail: guest.name, meta: { role: req.manager.role, actionId, fields: Object.keys(body) } });
+    result = { guest: cleanGuestForManager(guest) };
+  } else if (actionType === 'reset_access') {
+    guest.inviteToken = generateGuestPublicToken();
+    guest.deviceToken = '';
+    await guest.save();
+    await logActivity({ invite, type: 'guests', title: 'Acesso de convidado reposto pelo Operator Bot', detail: guest.name, meta: { role: req.manager.role, actionId } });
+    result = { guest: cleanGuestForManager(guest), publicLink: `${defaultPublicUrl(invite.slug)}?token=${encodeURIComponent(guest.inviteToken)}` };
+  } else if (actionType === 'reset_rsvp') {
+    const rsvps = await Rsvp.deleteMany({ inviteId: invite._id, guestId: guest._id });
+    await CheckIn.deleteMany({ inviteId: invite._id, guestId: guest._id });
+    guest.status = 'Aberto'; guest.checkedIn = false; guest.checkedInAt = undefined;
+    await guest.save();
+    await logActivity({ invite, type: 'guests', title: 'RSVP de convidado reposto pelo Operator Bot', detail: `${guest.name} · RSVP removidos: ${rsvps.deletedCount || 0}`, meta: { role: req.manager.role, actionId } });
+    result = { guest: cleanGuestForManager(guest), rsvpsDeleted: rsvps.deletedCount || 0 };
+  } else if (actionType === 'reset_checkin') {
+    const checkins = await CheckIn.deleteMany({ inviteId: invite._id, guestId: guest._id });
+    guest.checkedIn = false; guest.checkedInAt = undefined;
+    if (/check/i.test(String(guest.status || ''))) guest.status = 'Confirmado';
+    await guest.save();
+    await logActivity({ invite, type: 'checkin', title: 'Check-in de convidado reposto pelo Operator Bot', detail: `${guest.name} · Check-ins removidos: ${checkins.deletedCount || 0}`, meta: { role: req.manager.role, actionId } });
+    result = { guest: cleanGuestForManager(guest), checkinsDeleted: checkins.deletedCount || 0 };
+  } else if (actionType === 'reset_guest_full') {
+    const [rsvps, checkins] = await Promise.all([
+      Rsvp.deleteMany({ inviteId: invite._id, guestId: guest._id }),
+      CheckIn.deleteMany({ inviteId: invite._id, guestId: guest._id })
+    ]);
+    guest.status = 'Não aberto'; guest.deviceToken = ''; guest.inviteToken = generateGuestPublicToken(); guest.checkedIn = false; guest.checkedInAt = undefined;
+    await guest.save();
+    await logActivity({ invite, type: 'guests', title: 'Dados do convidado repostos pelo Operator Bot', detail: `${guest.name} · RSVP ${rsvps.deletedCount || 0} · Check-in ${checkins.deletedCount || 0}`, meta: { role: req.manager.role, actionId } });
+    result = { guest: cleanGuestForManager(guest), rsvpsDeleted: rsvps.deletedCount || 0, checkinsDeleted: checkins.deletedCount || 0, publicLink: `${defaultPublicUrl(invite.slug)}?token=${encodeURIComponent(guest.inviteToken)}` };
+  } else if (actionType === 'delete_guest') {
+    const guestName = guest.name;
+    const [rsvps, checkins] = await Promise.all([
+      Rsvp.deleteMany({ inviteId: invite._id, guestId: guest._id }),
+      CheckIn.deleteMany({ inviteId: invite._id, guestId: guest._id })
+    ]);
+    await Guest.deleteOne({ _id: guest._id, inviteId: invite._id });
+    await logActivity({ invite, type: 'guests', title: 'Convidado eliminado pelo Operator Bot', detail: `${guestName} · RSVP removidos: ${rsvps.deletedCount || 0} · Check-ins removidos: ${checkins.deletedCount || 0}`, meta: { role: req.manager.role, actionId } });
+    result = { deletedGuest: guestName, rsvpsDeleted: rsvps.deletedCount || 0, checkinsDeleted: checkins.deletedCount || 0 };
+  } else if (actionType === 'reset_invite_operational_data') {
+    const guests = await Guest.find({ inviteId: invite._id });
+    for (const g of guests) { g.status = 'Não aberto'; g.deviceToken = ''; g.inviteToken = generateGuestPublicToken(); g.checkedIn = false; g.checkedInAt = undefined; await g.save(); }
+    const [rsvps, checkins] = await Promise.all([Rsvp.deleteMany({ inviteId: invite._id }), CheckIn.deleteMany({ inviteId: invite._id })]);
+    await logActivity({ invite, type: 'warning', title: 'Dados operacionais do convite repostos pelo Operator Bot', detail: `${guests.length} convidados reiniciados · RSVP ${rsvps.deletedCount || 0} · Check-in ${checkins.deletedCount || 0}`, meta: { role: req.manager.role, actionId } });
+    result = { guestsReset: guests.length, rsvpsDeleted: rsvps.deletedCount || 0, checkinsDeleted: checkins.deletedCount || 0 };
+  }
+
+  BOT_PENDING_ACTIONS.delete(actionId);
+  if (String(pending.inviteId)) {
+    // força leituras futuras a verem timestamps actualizados; sem cache server-side.
+  }
+  res.json({ status: 'success', message: `${botActionLabel(actionType)} executado com sucesso.`, data: { actionId, actionType, actionLabel: botActionLabel(actionType), role: req.manager.role, roleLabel: botRoleLabel(req.manager.role), invite: cleanInviteDoc(invite), before, result } });
+}));
+
 app.get('/api/capsule/:id/file', async (req, res) => {
   const doc = await CapsulePhoto.findById(req.params.id);
   if (!doc || !doc.fileBase64) return res.status(404).send('Ficheiro não encontrado.');

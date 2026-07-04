@@ -1,11 +1,11 @@
 (function(){
   'use strict';
-  const BOT_VERSION='OMNI-Deterministic-v5.0-ContextualBrain';
-  const LS_KEY='lirandzo_operator_history_v5';
-  const SCOPE_KEY='lirandzo_operator_scope_v5';
+  const BOT_VERSION='OMNI-Deterministic-v6.0-SafeActionsBrain';
+  const LS_KEY='lirandzo_operator_history_v6';
+  const SCOPE_KEY='lirandzo_operator_scope_v6';
   const CACHE_TTL=45*1000;
   const MAX_PREVIEW=18;
-  const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,history:[],booted:false,loading:false,scopeId:localStorage.getItem(SCOPE_KEY)||'__all__',dialog:{inviteId:'',inviteTitle:'',intent:null,criteria:null,action:null,lastQuestion:'',lastListLabel:''}};
+  const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,history:[],booted:false,loading:false,pendingAction:null,scopeId:localStorage.getItem(SCOPE_KEY)||'__all__',dialog:{inviteId:'',inviteTitle:'',intent:null,criteria:null,action:null,lastQuestion:'',lastListLabel:''}};
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const txt=v=>String(v??'').trim();
@@ -17,6 +17,10 @@
   const cap=v=>txt(v).replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
   const apiBase=()=>String(window.LIRANDZO_MANAGER_API_BASE||localStorage.getItem('lirandzo_manager_api')||'').replace(/\/+$/,'');
   const token=()=>sessionStorage.getItem('lirandzo_manager_token')||'';
+  const currentRole=()=>sessionStorage.getItem('lirandzo_manager_role')||'admin';
+  const isEditorRole=()=>currentRole()==='editor';
+  const roleLabel=()=>isEditorRole()?'Editor':'Administrador';
+  const roleBadgeClass=()=>isEditorRole()?'editor':'admin';
   async function api(path,options={}){
     const base=apiBase(); if(!base) throw new Error('API do AdminManager não configurada.');
     const res=await fetch(base+path,{...options,headers:{'Content-Type':'application/json',...(token()?{Authorization:`Bearer ${token()}`}:{}) ,...(options.headers||{})}});
@@ -178,8 +182,8 @@
     const wrap=document.createElement('div'); wrap.className='lz-operator'; wrap.id='lzOperator'; wrap.innerHTML=`
       <button class="lz-operator-toggle" id="lzOperatorToggle" type="button" aria-label="Abrir operador Lirandzo"><span class="lz-operator-pulse"></span>${iconSvg('bot')}</button>
       <div class="lz-operator-window" id="lzOperatorWindow" role="dialog" aria-label="Lirandzo Operator">
-        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain v5 · contextual · sem IA paga</span></div></div><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div>
-        <div class="lz-operator-brainbar"><i></i><span>Brain v5: memória de contexto · perguntas de continuação · filtros combinados · plano de acção</span></div>
+        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain v6 · acções seguras · sem IA paga</span></div></div><div class="lz-operator-head-actions"><span id="lzOperatorRole" class="lz-operator-role">Perfil</span><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div></div>
+        <div class="lz-operator-brainbar"><i></i><span>Brain v6: contexto · linguagem natural · acções seguras com confirmação · permissões Admin/Editor</span></div>
         <div class="lz-operator-scope"><label for="lzOperatorScopeSelect">Escopo</label><select id="lzOperatorScopeSelect"><option value="__all__">Todos convites · resultados separados</option><option value="__current__">Convite actual do painel</option></select><button id="lzOperatorReload" type="button" title="Recarregar dados">↻</button></div>
         <div class="lz-operator-messages" id="lzOperatorMessages"></div>
         <div class="lz-operator-quick" id="lzOperatorQuick"></div>
@@ -201,9 +205,12 @@
     const obs=new MutationObserver(updateVisibility); const app=$('app'); if(app) obs.observe(app,{attributes:true,attributeFilter:['class']});
   }
   function updateVisibility(){const el=$('lzOperator'); if(!el)return; el.classList.toggle('ready',Boolean($('app')?.classList.contains('active')&&token()));}
-  async function updateStatusLabel(){try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:'Seleccione um convite';}catch{$('lzOperatorStatus').textContent='Brain v5 · contextual sem IA paga';}}
-  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora entendo perguntas naturais e continuação de conversa. Por exemplo: <b>quantos convidados abriram o convite rosalina-monteiro?</b>, <b>quem confirmou no convite minoca-abubacar?</b> ou <b>lista pendentes mesa 5 do convite calate-helder</b>.`);}}}
-  function renderQuick(){const chips=['Focar convite','Quantos abriram?','Mostra a lista','E quantos pendentes?','Plano de acção','Qual convite precisa de atenção?','Perfil convidado','Confirmados sem mesa','Sem contacto e sem token','Funil por convite','Relatório','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
+  async function updateStatusLabel(){
+    const roleEl=$('lzOperatorRole');
+    if(roleEl){roleEl.textContent=roleLabel(); roleEl.className='lz-operator-role '+roleBadgeClass(); roleEl.title=isEditorRole()?'Perfil Editor: edições limitadas; acções críticas bloqueadas.':'Perfil Administrador: acesso total às acções do bot.';}
+    try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${roleLabel()} · ${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${roleLabel()} · ${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:`${roleLabel()} · seleccione um convite`;}catch{$('lzOperatorStatus').textContent=`${roleLabel()} · Brain v6 · acções seguras`;}}
+  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora também preparo acções reais com confirmação obrigatória e respeito ao perfil logado. Está em <b>${esc(roleLabel())}</b>. Exemplos: <b>repor acesso de João no convite rosalina-monteiro</b>, <b>alterar mesa de Ana para 8</b>, <b>adicionar convidado Carlos ao convite minoca-abubacar</b>.`);}}}
+  function renderQuick(){const chips=['Focar convite','Quantos abriram?','Mostra a lista','Plano de acção','Repor acesso','Editar mesa','Adicionar convidado','Eliminar convidado','Perfil convidado','Qual convite precisa de atenção?','Confirmados sem mesa','Relatório','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
   async function renderInviteScopeSelect(force=false){
     const el=$('lzOperatorScopeSelect'); if(!el||!token()) return;
     const current=getScopeValue();
@@ -413,8 +420,67 @@
     setScopeValue(id); const ctx=await getContext(false,id); rememberContext(ctx,null,null,'focus');
     return `<strong>Convite focado</strong><br>Agora estou focado em <b>${esc(shortInvite(ctx))}</b>. Pode continuar com perguntas curtas como <b>quantos pendentes?</b>, <b>mostra a lista</b>, <b>separa por mesa</b> ou <b>gera mensagem</b>.<div class="lz-op-actions">${actionAsk('Mapa','Mapa',true)}${actionAsk('Plano de acção','O que devo fazer agora?')}${actionAsk('Funil','Funil')}</div>`;
   }
+  function isYes(m){return /^(sim|s|yes|confirmo|confirmar|pode executar|executar|aplicar|ok|certo)$/i.test(txt(m));}
+  function isNo(m){return /^(nao|não|n|no|cancelar|cancela|errado|parar)$/i.test(txt(m));}
+  function looksLikeBotWriteAction(m){
+    return /\b(repor|resetar|reiniciar|restaurar|adicionar|add|criar|inserir|novo|editar|alterar|mudar|corrigir|actualizar|atualizar|definir|trocar|eliminar|apagar|remover|deletar|delete)\b/.test(m)
+      && /\b(convidado|convidada|pessoa|acesso|link|token|rsvp|confirmacao|confirmação|checkin|check-in|check in|entrada|mesa|telefone|contacto|contato|categoria|acompanhantes|convite|dados)\b/.test(m);
+  }
+  function actionPayload(obj){return esc(JSON.stringify(obj));}
+  function formatGuestMini(g){
+    if(!g) return '';
+    return `<div class="lz-op-card compact"><strong>${esc(g.name||'Sem nome')}</strong><span>Mesa: ${esc(g.table||'A definir')} · Categoria: ${esc(g.category||'Sem categoria')} · Estado: ${esc(g.status||'-')} · Contacto: ${esc(g.phone||'-')} · Pessoas: ${esc(g.maxGuests||g.companions||1)} · Token: ${g.hasToken?'sim':'não'}</span></div>`;
+  }
+  function diffCard(before,after){
+    if(!before&&!after) return '';
+    const fields=[['name','Nome'],['table','Mesa'],['phone','Contacto'],['category','Categoria'],['status','Estado'],['companions','Acompanhantes'],['maxGuests','Pessoas máx.'],['number','Número'],['checkedIn','Check-in'],['inviteToken','Token']];
+    const rows=fields.map(([k,label])=>{const b=before?before[k]:''; const a=after?after[k]:''; if(String(b??'')===String(a??'')) return ''; return `<div class="metric-row"><span>${esc(label)}</span><b>${esc(b??'-')} → ${esc(a??'-')}</b></div>`;}).filter(Boolean).join('');
+    return rows?`<div class="lz-op-card"><strong>Antes / Depois previsto</strong>${rows}</div>`:'';
+  }
+  function renderSelectionRequired(data, originalMessage){
+    if(data.selectionType==='guest'){
+      const buttons=(data.candidates||[]).map(g=>`<button class="lz-op-action" data-op-action="prepare-action" data-op-payload="${actionPayload({message:originalMessage,guestId:g.id,actionType:data.actionType})}">${esc(g.name)} · ${esc(g.table||'sem mesa')}</button>`).join('');
+      return `<strong>Preciso confirmar o convidado exacto.</strong><br>${esc(data.message||'Escolha um registo.')}<div class="lz-op-list">${(data.candidates||[]).map(formatGuestMini).join('')}</div><div class="lz-op-actions">${buttons}<button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button></div>`;
+    }
+    if(data.selectionType==='invite'){
+      const buttons=(data.candidates||[]).map(inv=>`<button class="lz-op-action" data-op-action="prepare-action" data-op-payload="${actionPayload({message:originalMessage,inviteId:inv.id,actionType:data.actionType})}">${esc(inv.coupleNames||inv.clientName||inv.slug)}</button>`).join('');
+      return `<strong>Preciso confirmar o convite exacto.</strong><br>${esc(data.message||'Escolha um convite.')}<div class="lz-op-actions">${buttons}<button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button></div>`;
+    }
+    return `<strong>Selecção necessária.</strong>`;
+  }
+  function renderPreparedAction(data){
+    const d=data.data||data;
+    state.pendingAction=d;
+    const roleClass=d.role==='editor'?'warn':'ok';
+    const warnings=(d.warnings||[]).map(w=>`<div class="lz-op-warning">${esc(w)}</div>`).join('');
+    const strong=d.confirmationPhrase?`<div class="lz-op-danger"><strong>Confirmação forte obrigatória</strong><span>Para executar, escreva exactamente: <b>${esc(d.confirmationPhrase)}</b></span></div>`:'';
+    const confirmButtons=d.confirmationPhrase?`<button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button>`:`<button class="lz-op-action primary" data-op-action="confirm-pending">Sim, executar</button><button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button>`;
+    return `<strong>Acção preparada: ${esc(d.actionLabel||d.actionType)}</strong><br><span class="lz-op-roleline ${roleClass}">Sessão actual: ${esc(d.roleLabel||roleLabel())}</span>${metric('Convite',d.invite?.coupleNames||d.invite?.clientName||d.invite?.slug||'-')}${d.guest?formatGuestMini(d.guest):''}${diffCard(d.before,d.after)}${warnings}${strong}<div class="lz-op-actions">${confirmButtons}</div>`;
+  }
+  async function prepareBotAction(message, extra={}){
+    const inviteId=(extra&&extra.inviteId) || (getScopeValue()!=='__all__'&&getScopeValue()!=='__current__'?getScopeValue():selectedInviteId());
+    const out=await api('/manager/bot/prepare-action',{method:'POST',body:JSON.stringify({message,inviteId,...extra})});
+    if(out.status==='selection_required') return renderSelectionRequired(out,message);
+    return renderPreparedAction(out);
+  }
+  async function applyPendingAction(confirmText=''){
+    const pending=state.pendingAction;
+    if(!pending) return `<strong>Não há acção pendente.</strong><br>Peça primeiro uma operação, por exemplo: <b>repor acesso de João no convite rosalina-monteiro</b>.`;
+    const out=await api('/manager/bot/apply-action',{method:'POST',body:JSON.stringify({actionId:pending.actionId,confirmText})});
+    state.pendingAction=null; state.inviteCache.clear(); state.invites=null;
+    const d=out.data||{}; const guest=d.result?.guest; const link=d.result?.publicLink; if(link) state.lastMessage=link;
+    return `<strong>${esc(out.message||'Acção executada.')}</strong>${metric('Perfil usado',d.roleLabel||roleLabel())}${metric('Convite',d.invite?.coupleNames||d.invite?.clientName||d.invite?.slug||'-')}${d.before?formatGuestMini(d.before):''}${guest?`<div class="lz-op-card"><strong>Resultado actualizado</strong><span>${esc(guest.name||'')} · Estado: ${esc(guest.status||'-')} · Mesa: ${esc(guest.table||guest.mesa||'-')} · Token: ${guest.inviteToken?'actualizado/existente':'em falta'}</span></div>`:''}${link?`<div class="lz-op-card"><strong>Novo link individual</strong><span>${esc(link)}</span></div>`:''}${d.result?.deletedGuest?metric('Convidado eliminado',d.result.deletedGuest):''}${d.result?.rsvpsDeleted!==undefined?metric('RSVP removidos',d.result.rsvpsDeleted):''}${d.result?.checkinsDeleted!==undefined?metric('Check-ins removidos',d.result.checkinsDeleted):''}${d.result?.guestsReset!==undefined?metric('Convidados reiniciados',d.result.guestsReset):''}<div class="lz-op-actions">${link?'<button class="lz-op-action primary" data-op-action="copy-last-link">Copiar link</button>':''}<button class="lz-op-action" data-op-action="refresh">Actualizar mapa</button><button class="lz-op-action" data-op-action="go-guests">Abrir convidados</button></div>`;
+  }
+
   async function route(message){
     const m=norm(message); state.dialog.lastQuestion=message;
+    if(state.pendingAction){
+      if(isNo(message)){state.pendingAction=null; return `<strong>Acção cancelada.</strong><br>Nada foi alterado.`;}
+      if(isYes(message)) return applyPendingAction('');
+      if(state.pendingAction.confirmationPhrase && txt(message)===state.pendingAction.confirmationPhrase) return applyPendingAction(txt(message));
+      if(state.pendingAction.confirmationPhrase) return `<strong>Confirmação forte necessária.</strong><br>Para executar, escreva exactamente: <b>${esc(state.pendingAction.confirmationPhrase)}</b>. Para cancelar, escreva <b>não</b>.`;
+    }
+    if(looksLikeBotWriteAction(m)) return prepareBotAction(message);
     if((/separa|separar|agrupa|agrupar/.test(m))&&/mesa/.test(m)&&state.lastList?.length) return groupLastList('table');
     if((/separa|separar|agrupa|agrupar/.test(m))&&/categoria|grupo/.test(m)&&state.lastList?.length) return groupLastList('category');
     if((/separa|separar|agrupa|agrupar/.test(m))&&/convite/.test(m)&&state.lastList?.length) return groupLastList('invite');
@@ -610,6 +676,10 @@
   function listToCsv(list){const header=['Convite','Nome','Mesa','Categoria','Estado','Pessoas','Contacto','Numero','Token','Notas']; const rows=list.map(g=>[g.__inviteTitle||'',getName(g),displayTable(g),getCategory(g),g.status||g.guestStatus||'',peopleCount(g),getPhone(g),getNumber(g),hasToken(g)?'sim':'não',getNotes(g)].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')); return [header.join(';'),...rows].join('\n');}
   async function runAction(action,payload){
     if(action==='ask') return handle(payload);
+    if(action==='prepare-action'){try{const p=JSON.parse(payload||'{}'); const html=await prepareBotAction(p.message||state.dialog.lastQuestion||'',p); bot(html);}catch(err){bot(`<strong>Não consegui preparar a acção.</strong><br>${esc(err.message||err)}`);} return;}
+    if(action==='confirm-pending'){try{const html=await applyPendingAction(''); bot(html); updateStatusLabel();}catch(err){bot(`<strong>Não consegui executar.</strong><br>${esc(err.message||err)}`);} return;}
+    if(action==='cancel-pending'){state.pendingAction=null; bot('<strong>Acção cancelada.</strong><br>Nada foi alterado.'); return;}
+    if(action==='copy-last-link'){const link=state.lastMessage||''; if(link){await copy(link); bot('Link copiado.');} return;}
     if(action==='refresh'){state.inviteCache.clear();state.invites=null;await renderInviteScopeSelect(true);return handle('Mapa');}
     if(action==='select-invite'){setScopeValue(payload); await renderInviteScopeSelect(false); return handle('Mapa');}
     if(action==='go-guests'){if(window.showPanel) window.showPanel('guests'); else document.querySelector('[data-panel="guests"]')?.click(); return;}
