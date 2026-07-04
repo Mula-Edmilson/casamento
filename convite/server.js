@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const crypto = require('crypto');
+const zlib = require('zlib');
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -434,6 +435,27 @@ const ActivitySchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 }, { timestamps: true });
 
+const BackupSchema = new mongoose.Schema({
+  label: { type: String, default: '', trim: true },
+  scope: { type: String, enum: ['invite', 'all'], required: true, index: true },
+  inviteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invite', index: true },
+  slug: { type: String, default: '', index: true },
+  coupleNames: { type: String, default: '' },
+  status: { type: String, enum: ['available', 'restored', 'deleted'], default: 'available', index: true },
+  counts: { type: mongoose.Schema.Types.Mixed, default: {} },
+  payloadGzipBase64: { type: String, required: true },
+  payloadBytes: { type: Number, default: 0 },
+  compressedBytes: { type: Number, default: 0 },
+  hash: { type: String, default: '', index: true },
+  source: { type: String, default: 'adminmanager' },
+  createdByRole: { type: String, default: '' },
+  restoredAt: { type: Date },
+  restoredByRole: { type: String, default: '' },
+  restoredMode: { type: String, default: '' }
+}, { timestamps: true });
+BackupSchema.index({ createdAt: -1 });
+BackupSchema.index({ scope: 1, slug: 1, createdAt: -1 });
+
 const Invite = mongoose.model('Invite', InviteSchema);
 const Guest = mongoose.model('Guest', GuestSchema);
 const Rsvp = mongoose.model('Rsvp', RsvpSchema);
@@ -466,6 +488,7 @@ async function ensureGiftIndexes() {
 const CheckIn = mongoose.model('CheckIn', CheckInSchema);
 const CapsulePhoto = mongoose.model('CapsulePhoto', CapsulePhotoSchema);
 const Activity = mongoose.model('Activity', ActivitySchema);
+const Backup = mongoose.model('Backup', BackupSchema);
 
 function cleanInviteDoc(doc) {
   if (!doc) return null;
@@ -477,6 +500,195 @@ function cleanInviteDoc(doc) {
     publicUrl: o.publicUrl, githubPath: o.githubPath, githubLastCommitSha: o.githubLastCommitSha,
     createdAt: o.createdAt, updatedAt: o.updatedAt, publishedAt: o.publishedAt, config: o.config || {}
   };
+}
+
+function plainDoc(doc) {
+  if (!doc) return null;
+  return JSON.parse(JSON.stringify(doc.toObject ? doc.toObject() : doc));
+}
+function cleanBackupDoc(doc) {
+  if (!doc) return null;
+  const o = doc.toObject ? doc.toObject() : doc;
+  return {
+    id: String(o._id), label: o.label || '', scope: o.scope, slug: o.slug || '', coupleNames: o.coupleNames || '',
+    status: o.status || 'available', counts: o.counts || {}, payloadBytes: o.payloadBytes || 0,
+    compressedBytes: o.compressedBytes || 0, hash: o.hash || '', source: o.source || 'adminmanager',
+    createdByRole: o.createdByRole || '', restoredAt: o.restoredAt || null, restoredByRole: o.restoredByRole || '',
+    restoredMode: o.restoredMode || '', createdAt: o.createdAt, updatedAt: o.updatedAt
+  };
+}
+function gzipJsonToBase64(payload) {
+  const json = JSON.stringify(payload);
+  const raw = Buffer.from(json, 'utf8');
+  const compressed = zlib.gzipSync(raw, { level: 9 });
+  return {
+    payloadGzipBase64: compressed.toString('base64'),
+    payloadBytes: raw.length,
+    compressedBytes: compressed.length,
+    hash: crypto.createHash('sha256').update(raw).digest('hex')
+  };
+}
+function payloadFromBackupDoc(backup) {
+  try {
+    const buffer = Buffer.from(String(backup.payloadGzipBase64 || ''), 'base64');
+    return JSON.parse(zlib.gunzipSync(buffer).toString('utf8'));
+  } catch (err) {
+    const e = new Error('Backup corrompido ou ilegível. Não foi possível descomprimir o payload.');
+    e.statusCode = 500;
+    throw e;
+  }
+}
+function backupDownloadName(backup) {
+  const stamp = new Date(backup.createdAt || Date.now()).toISOString().replace(/[:.]/g, '-');
+  const scope = backup.scope === 'all' ? 'todos-convites' : (backup.slug || 'convite');
+  return `lirandzo-backup-${scope}-${stamp}.json`;
+}
+function backupCounts(payload) {
+  const c = payload.collections || {};
+  return {
+    invites: payload.scope === 'all' ? (payload.invites || []).length : (payload.invite ? 1 : 0),
+    guests: (c.guests || []).length,
+    rsvps: (c.rsvps || []).length,
+    messages: (c.messages || []).length,
+    gifts: (c.gifts || []).length,
+    contributions: (c.contributions || []).length,
+    checkins: (c.checkins || []).length,
+    photos: (c.photos || []).length,
+    activities: (c.activities || []).length
+  };
+}
+async function collectInviteBackupPayload(invite) {
+  const inviteId = invite._id;
+  const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities] = await Promise.all([
+    Guest.find({ inviteId }).sort({ number: 1, name: 1 }).lean(),
+    Rsvp.find({ inviteId }).sort({ timestamp: 1 }).lean(),
+    Message.find({ inviteId }).sort({ timestamp: 1 }).lean(),
+    GiftItem.find({ inviteId }).sort({ name: 1 }).lean(),
+    Contribution.find({ inviteId }).sort({ timestamp: 1 }).lean(),
+    CheckIn.find({ inviteId }).sort({ timestamp: 1 }).lean(),
+    CapsulePhoto.find({ inviteId }).sort({ timestamp: 1 }).lean(),
+    Activity.find({ inviteId }).sort({ timestamp: 1 }).lean()
+  ]);
+  const payload = {
+    schemaVersion: 1,
+    generator: 'lirandzo-adminmanager',
+    exportedAt: new Date().toISOString(),
+    scope: 'invite',
+    invite: plainDoc(invite),
+    collections: { guests, rsvps, messages, gifts, contributions, checkins, photos, activities }
+  };
+  payload.counts = backupCounts(payload);
+  return payload;
+}
+async function collectAllBackupPayload({ includeArchived = true } = {}) {
+  const inviteFilter = includeArchived ? {} : { status: { $ne: 'archived' } };
+  const invites = await Invite.find(inviteFilter).sort({ updatedAt: -1 }).lean();
+  const ids = invites.map(i => i._id);
+  const scoped = ids.length ? { inviteId: { $in: ids } } : { inviteId: { $in: [] } };
+  const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities] = await Promise.all([
+    Guest.find(scoped).sort({ slug: 1, number: 1, name: 1 }).lean(),
+    Rsvp.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
+    Message.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
+    GiftItem.find(scoped).sort({ slug: 1, name: 1 }).lean(),
+    Contribution.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
+    CheckIn.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
+    CapsulePhoto.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
+    Activity.find(scoped).sort({ slug: 1, timestamp: 1 }).lean()
+  ]);
+  const payload = {
+    schemaVersion: 1,
+    generator: 'lirandzo-adminmanager',
+    exportedAt: new Date().toISOString(),
+    scope: 'all',
+    includeArchived,
+    invites,
+    collections: { guests, rsvps, messages, gifts, contributions, checkins, photos, activities }
+  };
+  payload.counts = backupCounts(payload);
+  return payload;
+}
+async function createBackupRecord({ payload, label = '', managerRole = '' }) {
+  const packed = gzipJsonToBase64(payload);
+  const backup = await Backup.create({
+    label: String(label || '').trim() || (payload.scope === 'all' ? 'Backup geral' : `Backup · ${payload.invite?.slug || 'convite'}`),
+    scope: payload.scope,
+    inviteId: payload.scope === 'invite' && payload.invite?._id ? payload.invite._id : undefined,
+    slug: payload.scope === 'invite' ? (payload.invite?.slug || '') : '',
+    coupleNames: payload.scope === 'invite' ? (payload.invite?.coupleNames || '') : 'Todos os convites',
+    counts: payload.counts || backupCounts(payload),
+    createdByRole: managerRole,
+    ...packed
+  });
+  return backup;
+}
+async function insertManyIfAny(Model, docs) {
+  if (!Array.isArray(docs) || !docs.length) return { inserted: 0 };
+  await Model.insertMany(docs, { ordered: true });
+  return { inserted: docs.length };
+}
+async function deleteInviteRelatedByIdsAndSlug({ oldId, existingId, slug }) {
+  const ids = Array.from(new Set([oldId, existingId].filter(Boolean).map(String))).filter(validObjectId).map(id => new mongoose.Types.ObjectId(id));
+  const filter = { $or: [] };
+  if (ids.length) filter.$or.push({ inviteId: { $in: ids } });
+  if (slug) filter.$or.push({ slug });
+  if (!filter.$or.length) return {};
+  const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities] = await Promise.all([
+    Guest.deleteMany(filter), Rsvp.deleteMany(filter), Message.deleteMany(filter), GiftItem.deleteMany(filter),
+    Contribution.deleteMany(filter), CheckIn.deleteMany(filter), CapsulePhoto.deleteMany(filter), Activity.deleteMany(filter)
+  ]);
+  return { guests: guests.deletedCount || 0, rsvps: rsvps.deletedCount || 0, messages: messages.deletedCount || 0, gifts: gifts.deletedCount || 0, contributions: contributions.deletedCount || 0, checkins: checkins.deletedCount || 0, photos: photos.deletedCount || 0, activities: activities.deletedCount || 0 };
+}
+async function restoreInviteBackupPayload(payload) {
+  if (!payload || payload.scope !== 'invite' || !payload.invite) {
+    const err = new Error('Este backup não é de um convite individual.');
+    err.statusCode = 400;
+    throw err;
+  }
+  const inviteDoc = payload.invite;
+  const oldId = inviteDoc._id;
+  const slug = inviteDoc.slug;
+  const existing = await Invite.findOne({ $or: [{ slug }, ...(validObjectId(oldId) ? [{ _id: oldId }] : [])] });
+  const existingId = existing?._id;
+  await deleteInviteRelatedByIdsAndSlug({ oldId, existingId, slug });
+  await Invite.deleteMany({ $or: [{ slug }, ...(validObjectId(oldId) ? [{ _id: oldId }] : [])] });
+  await Invite.create(inviteDoc);
+  const c = payload.collections || {};
+  const inserted = {};
+  inserted.guests = (await insertManyIfAny(Guest, c.guests)).inserted;
+  inserted.rsvps = (await insertManyIfAny(Rsvp, c.rsvps)).inserted;
+  inserted.messages = (await insertManyIfAny(Message, c.messages)).inserted;
+  inserted.gifts = (await insertManyIfAny(GiftItem, c.gifts)).inserted;
+  inserted.contributions = (await insertManyIfAny(Contribution, c.contributions)).inserted;
+  inserted.checkins = (await insertManyIfAny(CheckIn, c.checkins)).inserted;
+  inserted.photos = (await insertManyIfAny(CapsulePhoto, c.photos)).inserted;
+  inserted.activities = (await insertManyIfAny(Activity, c.activities)).inserted;
+  const restoredInvite = await Invite.findOne({ slug });
+  await logActivity({ invite: restoredInvite, type: 'warning', title: 'Backup restaurado', detail: slug, meta: { scope: 'invite', inserted } });
+  return { scope: 'invite', slug, inserted, invite: cleanInviteDoc(restoredInvite) };
+}
+async function restoreAllBackupPayload(payload) {
+  if (!payload || payload.scope !== 'all' || !Array.isArray(payload.invites)) {
+    const err = new Error('Este backup não é geral.');
+    err.statusCode = 400;
+    throw err;
+  }
+  await Promise.all([
+    Invite.deleteMany({}), Guest.deleteMany({}), Rsvp.deleteMany({}), Message.deleteMany({}), GiftItem.deleteMany({}),
+    Contribution.deleteMany({}), CheckIn.deleteMany({}), CapsulePhoto.deleteMany({}), Activity.deleteMany({})
+  ]);
+  const c = payload.collections || {};
+  const inserted = {};
+  inserted.invites = (await insertManyIfAny(Invite, payload.invites)).inserted;
+  inserted.guests = (await insertManyIfAny(Guest, c.guests)).inserted;
+  inserted.rsvps = (await insertManyIfAny(Rsvp, c.rsvps)).inserted;
+  inserted.messages = (await insertManyIfAny(Message, c.messages)).inserted;
+  inserted.gifts = (await insertManyIfAny(GiftItem, c.gifts)).inserted;
+  inserted.contributions = (await insertManyIfAny(Contribution, c.contributions)).inserted;
+  inserted.checkins = (await insertManyIfAny(CheckIn, c.checkins)).inserted;
+  inserted.photos = (await insertManyIfAny(CapsulePhoto, c.photos)).inserted;
+  inserted.activities = (await insertManyIfAny(Activity, c.activities)).inserted;
+  await Activity.create({ type: 'warning', title: 'Backup geral restaurado', detail: `${inserted.invites || 0} convite(s) restaurados`, meta: { scope: 'all', inserted }, timestamp: new Date() });
+  return { scope: 'all', inserted };
 }
 async function findInviteBySlug(slug) {
   const clean = slugify(slug);
@@ -1208,6 +1420,99 @@ app.delete('/manager/invites/:id/purge', requireManager, requireAdmin, async (re
     }
   });
 });
+
+
+app.get('/manager/backups', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const { scope = 'all', q = '', limit = '80' } = req.query;
+  const filter = { status: { $ne: 'deleted' } };
+  if (['invite', 'all'].includes(String(scope))) filter.scope = scope;
+  if (q) {
+    const rx = new RegExp(escapeRegex(q), 'i');
+    filter.$or = [{ label: rx }, { slug: rx }, { coupleNames: rx }, { hash: rx }];
+  }
+  const safeLimit = Math.min(Math.max(Number.parseInt(limit, 10) || 80, 1), 200);
+  const backups = await Backup.find(filter).sort({ createdAt: -1 }).limit(safeLimit);
+  res.json({ status: 'success', data: backups.map(cleanBackupDoc) });
+}));
+
+app.post('/manager/backups', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const scope = String(req.body?.scope || 'invite').toLowerCase() === 'all' ? 'all' : 'invite';
+  let payload;
+  let invite = null;
+  if (scope === 'all') {
+    payload = await collectAllBackupPayload({ includeArchived: req.body?.includeArchived !== false });
+  } else {
+    const inviteId = String(req.body?.inviteId || '').trim();
+    if (!validObjectId(inviteId)) return res.status(400).json({ status: 'error', message: 'Seleccione um convite válido para criar backup.' });
+    invite = await Invite.findById(inviteId);
+    if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+    payload = await collectInviteBackupPayload(invite);
+  }
+  const backup = await createBackupRecord({ payload, label: req.body?.label || '', managerRole: req.manager.role });
+  await logActivity({ invite, type: 'backup', title: scope === 'all' ? 'Backup geral criado' : 'Backup de convite criado', detail: scope === 'all' ? `${payload.counts.invites} convite(s)` : (invite?.slug || backup.slug), meta: { backupId: String(backup._id), counts: backup.counts } });
+  res.status(201).json({ status: 'success', message: scope === 'all' ? 'Backup geral criado com sucesso.' : 'Backup do convite criado com sucesso.', data: cleanBackupDoc(backup) });
+}));
+
+app.get('/manager/backups/:id/download', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  if (!validObjectId(req.params.id)) return res.status(400).json({ status: 'error', message: 'Backup inválido.' });
+  const backup = await Backup.findOne({ _id: req.params.id, status: { $ne: 'deleted' } });
+  if (!backup) return res.status(404).json({ status: 'error', message: 'Backup não encontrado.' });
+  const payload = payloadFromBackupDoc(backup);
+  const body = JSON.stringify({ lirandzoBackup: true, backup: cleanBackupDoc(backup), payload }, null, 2);
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="${backupDownloadName(backup)}"`);
+  res.send(body);
+}));
+
+app.post('/manager/backups/import', requireManager, requireAdmin, upload.single('backup'), asyncRoute(async (req, res) => {
+  let parsed;
+  if (req.file?.buffer) {
+    parsed = JSON.parse(req.file.buffer.toString('utf8'));
+  } else if (req.body?.payload) {
+    parsed = typeof req.body.payload === 'string' ? JSON.parse(req.body.payload) : req.body.payload;
+  } else {
+    return res.status(400).json({ status: 'error', message: 'Envie um ficheiro JSON de backup.' });
+  }
+  const payload = parsed.payload || parsed;
+  if (!payload || !['invite', 'all'].includes(payload.scope)) return res.status(400).json({ status: 'error', message: 'Ficheiro de backup inválido.' });
+  payload.counts = payload.counts || backupCounts(payload);
+  const backup = await createBackupRecord({ payload, label: req.body?.label || parsed.backup?.label || 'Backup importado', managerRole: req.manager.role });
+  await Activity.create({ type: 'backup', title: 'Backup importado', detail: backup.scope === 'all' ? 'Backup geral' : backup.slug, meta: { backupId: String(backup._id), counts: backup.counts }, timestamp: new Date() });
+  res.status(201).json({ status: 'success', message: 'Backup importado com sucesso. Agora já pode restaurar a partir da lista.', data: cleanBackupDoc(backup) });
+}));
+
+app.post('/manager/backups/:id/restore', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  if (!validObjectId(req.params.id)) return res.status(400).json({ status: 'error', message: 'Backup inválido.' });
+  const backup = await Backup.findOne({ _id: req.params.id, status: { $ne: 'deleted' } });
+  if (!backup) return res.status(404).json({ status: 'error', message: 'Backup não encontrado.' });
+  const confirmation = String(req.body?.confirmation || '').trim();
+  const required = backup.scope === 'all' ? 'RESTAURAR TODOS OS CONVITES' : `RESTAURAR ${String(backup.slug || '').toUpperCase()}`;
+  if (confirmation !== required) {
+    return res.status(400).json({ status: 'error', message: `Confirmação inválida. Para restaurar, escreva exactamente: ${required}` });
+  }
+  const payload = payloadFromBackupDoc(backup);
+  const result = backup.scope === 'all' ? await restoreAllBackupPayload(payload) : await restoreInviteBackupPayload(payload);
+  backup.status = 'restored';
+  backup.restoredAt = new Date();
+  backup.restoredByRole = req.manager.role;
+  backup.restoredMode = backup.scope === 'all' ? 'replace_all' : 'replace_invite';
+  await backup.save();
+  res.json({ status: 'success', message: backup.scope === 'all' ? 'Backup geral restaurado com sucesso.' : `Backup do convite ${backup.slug} restaurado com sucesso.`, data: { backup: cleanBackupDoc(backup), result } });
+}));
+
+app.delete('/manager/backups/:id', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  if (!validObjectId(req.params.id)) return res.status(400).json({ status: 'error', message: 'Backup inválido.' });
+  const backup = await Backup.findOne({ _id: req.params.id, status: { $ne: 'deleted' } });
+  if (!backup) return res.status(404).json({ status: 'error', message: 'Backup não encontrado.' });
+  const confirmation = String(req.body?.confirmation || req.query?.confirmation || '').trim();
+  if (confirmation !== 'ELIMINAR BACKUP') {
+    return res.status(400).json({ status: 'error', message: 'Para eliminar este backup, escreva exactamente: ELIMINAR BACKUP' });
+  }
+  backup.status = 'deleted';
+  await backup.save();
+  await Activity.create({ type: 'backup', title: 'Backup eliminado', detail: backup.scope === 'all' ? 'Backup geral' : backup.slug, meta: { backupId: String(backup._id) }, timestamp: new Date() });
+  res.json({ status: 'success', message: 'Backup eliminado da lista com sucesso.', data: cleanBackupDoc(backup) });
+}));
 
 async function getInviteFromRequest(req) {
   const slug = req.body?.slug || req.query?.slug || req.headers['x-invite-slug'];
