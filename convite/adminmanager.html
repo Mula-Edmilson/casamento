@@ -1624,6 +1624,8 @@
       body.mobile-app .app-loader { top:calc(var(--safe-top) + 14px); }
     }
 
+    .clients-grid { align-items:start; }
+    @media (max-width:1020px){ .clients-grid{ grid-template-columns:1fr; } }
     .backup-grid { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr); gap:10px; align-items:start; }
     .backup-kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-bottom:10px; }
     .backup-kpi { border:1px solid var(--line); border-radius:16px; background:rgba(33,28,25,.26); padding:10px; min-height:70px; }
@@ -2731,6 +2733,72 @@
       </section>
 
 
+
+      <section class="section" id="clientsPanel" data-admin-only>
+        <div class="section-title"><div><h1>Clientes</h1><p>Base comercial Lirandzo para contactos, histórico e mail marketing em massa via Resend.</p></div><span class="badge red">Admin only</span></div>
+        <div class="metrics-grid" id="clientsMetrics"></div>
+        <div class="grid-two clients-grid">
+          <section class="panel-card">
+            <div class="panel-head"><h2><i data-feather="user-plus"></i> Cliente</h2><button class="btn small" id="clientClearFormBtn" type="button"><i data-feather="plus"></i> Novo</button></div>
+            <div class="panel-body">
+              <form id="clientForm" class="form-grid">
+                <input type="hidden" id="clientId">
+                <div class="field"><label>Nome do cliente</label><input id="clientName" class="search-input" required placeholder="Nome do cliente / referência"></div>
+                <div class="field"><label>Email</label><input id="clientEmail" class="search-input" type="email" placeholder="cliente@dominio.com"></div>
+                <div class="field"><label>Telefone</label><input id="clientPhone" class="search-input" placeholder="+258..."></div>
+                <div class="field"><label>WhatsApp</label><input id="clientWhatsapp" class="search-input" placeholder="+258..."></div>
+                <div class="field"><label>Empresa / organização</label><input id="clientCompany" class="search-input" placeholder="Opcional"></div>
+                <div class="field"><label>Pessoa de contacto</label><input id="clientContactPerson" class="search-input" placeholder="Opcional"></div>
+                <div class="field"><label>Tipo</label><input id="clientType" class="search-input" value="Casamento" placeholder="Casamento, Corporate, Aniversário..."></div>
+                <div class="field"><label>Estado</label><select id="clientStatus" class="search-input"><option value="active">Activo</option><option value="paused">Pausado</option><option value="unsubscribed">Removido da lista</option><option value="archived">Arquivado</option></select></div>
+                <div class="field"><label>Convite ligado</label><select id="clientInviteSelect" class="search-input"><option value="">Sem convite ligado</option></select></div>
+                <div class="field"><label>Tags</label><input id="clientTags" class="search-input" placeholder="VIP, antigo cliente, corporate"></div>
+                <div class="field span-2"><label>Notas internas</label><textarea id="clientNotes" rows="4" placeholder="Preferências, observações, contexto comercial..."></textarea></div>
+                <div class="field span-2"><label class="badge"><input type="checkbox" id="clientConsent" checked> Pode receber comunicados e campanhas por email</label></div>
+                <div id="clientFormResult" class="feedback hidden span-2"></div>
+                <div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="clientArchiveBtn"><i data-feather="archive"></i> Arquivar</button><button class="btn primary" type="submit"><i data-feather="save"></i> Guardar cliente</button></div>
+              </form>
+            </div>
+          </section>
+          <section class="panel-card">
+            <div class="panel-head"><h2><i data-feather="send"></i> Mail marketing</h2><span id="resendStatusBadge" class="badge">Resend</span></div>
+            <div class="panel-body">
+              <form id="campaignForm" class="form-grid">
+                <div class="field"><label>Público</label><select id="campaignScope" class="search-input"><option value="active">Todos clientes activos com consentimento</option><option value="selected">Clientes seleccionados na lista</option></select></div>
+                <div class="field"><label>Pré-header</label><input id="campaignPreview" class="search-input" placeholder="Resumo curto que aparece no email"></div>
+                <div class="field span-2"><label>Assunto</label><input id="campaignSubject" class="search-input" placeholder="Ex: Nova actualização Lirandzo" required></div>
+                <div class="field span-2"><label>Mensagem</label><textarea id="campaignBody" rows="10" placeholder="Escreve a mensagem. Podes usar parágrafos simples; o sistema formata como email limpo." required></textarea></div>
+                <div class="span-2"><div class="feedback">Antes de enviar, o sistema confirma a quantidade de destinatários. O envio exige a confirmação forte: <b>ENVIAR EMAILS</b>.</div></div>
+                <div id="campaignResult" class="feedback hidden span-2"></div>
+                <div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="campaignHistoryBtn"><i data-feather="clock"></i> Histórico</button><button class="btn primary" type="submit"><i data-feather="send"></i> Enviar campanha</button></div>
+              </form>
+            </div>
+          </section>
+        </div>
+        <section class="panel-card">
+          <div class="panel-head"><h2><i data-feather="users"></i> Base de clientes</h2><button class="btn small" id="clientsRefreshBtn" type="button"><i data-feather="refresh-cw"></i> Actualizar</button></div>
+          <div class="panel-body">
+            <div class="toolbar"><div class="toolbar-left"><input id="clientsSearchInput" class="search-input" placeholder="Pesquisar por nome, email, telefone, tag ou convite"><select id="clientsStatusFilter" class="search-input"><option value="active">Activos</option><option value="paused">Pausados</option><option value="unsubscribed">Removidos da lista</option><option value="archived">Arquivados</option><option value="all">Todos</option></select></div><div class="toolbar-right"><button class="btn" id="clientsFilterBtn" type="button"><i data-feather="search"></i> Filtrar</button></div></div>
+            <div class="desktop-table table-wrap"><table><thead><tr><th><input type="checkbox" id="clientsSelectAll"></th><th>Cliente</th><th>Contacto</th><th>Estado</th><th>Convite</th><th>Marketing</th><th>Acções</th></tr></thead><tbody id="clientsTbody"></tbody></table></div>
+            <div id="clientsMobile" class="mobile-list"></div>
+          </div>
+        </section>
+        <section class="panel-card">
+          <div class="panel-head"><h2><i data-feather="upload"></i> Importar clientes</h2></div>
+          <div class="panel-body">
+            <form id="clientsImportForm" class="form-grid">
+              <div class="field span-2"><label>CSV/TXT</label><textarea id="clientsImportText" rows="6" placeholder="Nome;Email;Telefone;Empresa;Tags;Notas"></textarea><p class="hint">Formato recomendado: Nome;Email;Telefone;Empresa;Tags;Notas. Um cliente por linha.</p></div>
+              <div id="clientsImportResult" class="feedback hidden span-2"></div>
+              <div class="span-2" style="display:flex;justify-content:flex-end"><button class="btn primary" type="submit"><i data-feather="upload"></i> Importar clientes</button></div>
+            </form>
+          </div>
+        </section>
+        <section class="panel-card">
+          <div class="panel-head"><h2><i data-feather="mail"></i> Histórico de campanhas</h2><button class="btn small" id="campaignsRefreshBtn" type="button"><i data-feather="refresh-cw"></i> Actualizar</button></div>
+          <div class="panel-body"><div id="campaignList" class="backup-card-list"><div class="feedback">A carregar campanhas...</div></div></div>
+        </section>
+      </section>
+
       <section class="section" id="backupsPanel" data-admin-only>
         <div class="section-title"><div><h1>Backups</h1><p>Gestão completa de cópias de segurança: criar, descarregar, importar e restaurar convites.</p></div><span class="badge red">Admin only</span></div>
         <div class="backup-kpis" id="backupKpis">
@@ -2835,7 +2903,7 @@
 
   <script>
     const panels = [
-      { id:'dashboard', label:'Dashboard', icon:'layout' }, { id:'invites', label:'Convites', icon:'folder' }, { id:'command', label:'Ficha', icon:'command' }, { id:'backups', label:'Backups', icon:'hard-drive', adminOnly:true }, { id:'archived', label:'Arquivados', icon:'archive' }, { id:'newInvite', label:'Novo cliente', icon:'plus-circle', adminOnly:true }, { id:'manage', label:'Gestão', icon:'settings' }, { id:'guests', label:'Convidados', icon:'users' }, { id:'github', label:'GitHub', icon:'git-branch' }
+      { id:'dashboard', label:'Dashboard', icon:'layout' }, { id:'invites', label:'Convites', icon:'folder' }, { id:'clients', label:'Clientes', icon:'briefcase', adminOnly:true }, { id:'command', label:'Ficha', icon:'command' }, { id:'backups', label:'Backups', icon:'hard-drive', adminOnly:true }, { id:'archived', label:'Arquivados', icon:'archive' }, { id:'newInvite', label:'Novo cliente', icon:'plus-circle', adminOnly:true }, { id:'manage', label:'Gestão', icon:'settings' }, { id:'guests', label:'Convidados', icon:'users' }, { id:'github', label:'GitHub', icon:'git-branch' }
     ];
     const DEFAULT_API = window.LIRANDZO_MANAGER_API_BASE || localStorage.getItem('lirandzo_manager_api') || 'https://SEU-BACKEND-RENDER.onrender.com';
     let API_BASE = DEFAULT_API.replace(/\/+$/, '');
@@ -2846,6 +2914,8 @@
     let invites = [];
     let archivedInvites = [];
     let backups = [];
+    let clients = [];
+    let campaigns = [];
     let selectedInviteDetails = null;
     let currentGuests = [];
     let editingGuestId = null;
@@ -2854,7 +2924,7 @@
     let routeLoaderTimer = null;
     let activeApiRequests = 0;
     let apiLoaderStartedAt = 0;
-    const primaryMobilePanels = ['dashboard','invites','command','guests','backups'];
+    const primaryMobilePanels = ['dashboard','invites','clients','command','guests','backups'];
     let confirmResolver = null;
     const $ = id => document.getElementById(id);
     const esc = v => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -2965,6 +3035,7 @@
       iconRefresh();
       if (id === 'manage') renderManageSelect();
       if (id === 'command') { renderCommandSelect(); if (commandSelectedId()) loadCommandCenter(); }
+      if (id === 'clients') { renderClientInviteSelect(); loadClientsPage(); }
       if (id === 'backups') { renderBackupInviteSelect(); loadBackups(); }
       if (id === 'guests') { renderGuestSelect(); loadGuestCrudList(); }
       if (id === 'archived') loadArchivedInvites();
@@ -3602,6 +3673,85 @@ Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, chec
       const restored=backups.filter(b=>b.status==='restored').length;
       el.innerHTML = [['Total',total],['Gerais',general],['Por convite',invite],['Restaurados',restored]].map(([l,v])=>`<div class="backup-kpi"><span>${esc(l)}</span><strong>${esc(v)}</strong></div>`).join('');
     }
+
+    function renderClientInviteSelect(){
+      const sel=$('clientInviteSelect');
+      if(!sel) return;
+      const current=sel.value;
+      sel.innerHTML='<option value="">Sem convite ligado</option>'+invites.map(inv=>`<option value="${esc(inv.id)}" data-slug="${esc(inv.slug)}">${esc(inv.coupleNames || inv.clientName)} · ${esc(inv.slug)}</option>`).join('');
+      if(current) sel.value=current;
+    }
+    function selectedClientIds(){ return Array.from(document.querySelectorAll('.client-select:checked')).map(cb=>cb.value).filter(Boolean); }
+    async function loadClientsPage(){ await Promise.allSettled([loadClientStats(), loadClients(), loadCampaigns()]); }
+    async function loadClientStats(){
+      const out=await api('/manager/clients/stats');
+      const d=out.data||{};
+      $('resendStatusBadge').className='badge '+(d.resendConfigured?'ok':'warn');
+      $('resendStatusBadge').textContent=d.resendConfigured?'Resend activo':'Resend por configurar';
+      $('clientsMetrics').innerHTML=[['Clientes',d.total||0,'total','briefcase'],['Activos',d.active||0,'base comercial','users'],['Com email',d.withEmail||0,'contactáveis','mail'],['Campanhas',d.campaigns||0,'histórico','send']].map(([label,value,small,icon])=>`<article class="metric-card"><span>${esc(label)}</span><strong>${esc(value)}</strong><small><i data-feather="${icon}"></i> ${esc(small)}</small></article>`).join('');
+      iconRefresh();
+    }
+    async function loadClients(){
+      const q=encodeURIComponent($('clientsSearchInput')?.value||'');
+      const status=encodeURIComponent($('clientsStatusFilter')?.value||'active');
+      const out=await api(`/manager/clients?q=${q}&status=${status}`);
+      clients=out.data||[];
+      renderClients();
+    }
+    function renderClients(){
+      const rows = clients.map(c=>{
+        const inviteLabel = c.slug ? c.slug : '-';
+        const consent = c.marketingConsent && c.status==='active' && c.email ? '<span class="badge ok">Elegível</span>' : '<span class="badge warn">Bloqueado</span>';
+        return `<tr><td><input type="checkbox" class="client-select" value="${esc(c.id)}" ${(!c.email || c.status!=='active' || !c.marketingConsent)?'disabled':''}></td><td><strong>${esc(c.name)}</strong><br><small>${esc(c.company||c.type||'')}</small></td><td><small>${esc(c.email||'-')}<br>${esc(c.phone||c.whatsapp||'-')}</small></td><td>${clientStatusBadge(c.status)}</td><td><small>${esc(inviteLabel)}</small></td><td>${consent}<br><small>${c.emailsSent||0} envio(s)</small></td><td><div class="table-actions"><button class="btn small" type="button" onclick="editClient('${esc(c.id)}')"><i data-feather="edit-2"></i> Editar</button><button class="btn small" type="button" onclick="copyClientEmail('${esc(c.email||'')}')"><i data-feather="copy"></i> Email</button></div></td></tr>`;
+      }).join('');
+      $('clientsTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum cliente encontrado.</td></tr>';
+      $('clientsMobile').innerHTML = clients.length ? clients.map(c=>`<article class="mobile-card"><strong>${esc(c.name)}</strong><span>${esc(c.email||'-')} · ${esc(c.phone||c.whatsapp||'-')}</span><span>${esc(c.slug||'Sem convite')} · ${esc(c.type||'')}</span><div class="table-actions"><button class="btn small" type="button" onclick="editClient('${esc(c.id)}')"><i data-feather="edit-2"></i> Editar</button></div></article>`).join('') : '<div class="feedback">Nenhum cliente encontrado.</div>';
+      const all=$('clientsSelectAll'); if(all) all.checked=false;
+      iconRefresh();
+    }
+    function clientStatusBadge(status){ const s=String(status||'active'); if(s==='active') return '<span class="badge ok">Activo</span>'; if(s==='paused') return '<span class="badge warn">Pausado</span>'; if(s==='unsubscribed') return '<span class="badge red">Removido</span>'; if(s==='archived') return '<span class="badge">Arquivado</span>'; return `<span class="badge">${esc(s)}</span>`; }
+    function resetClientForm(){ ['clientId','clientName','clientEmail','clientPhone','clientWhatsapp','clientCompany','clientContactPerson','clientTags','clientNotes'].forEach(id=>{ if($(id)) $(id).value=''; }); if($('clientType')) $('clientType').value='Casamento'; if($('clientStatus')) $('clientStatus').value='active'; if($('clientInviteSelect')) $('clientInviteSelect').value=''; if($('clientConsent')) $('clientConsent').checked=true; hideMsg($('clientFormResult')); }
+    window.editClient = function(id){ const c=clients.find(x=>x.id===id); if(!c) return; $('clientId').value=c.id; $('clientName').value=c.name||''; $('clientEmail').value=c.email||''; $('clientPhone').value=c.phone||''; $('clientWhatsapp').value=c.whatsapp||''; $('clientCompany').value=c.company||''; $('clientContactPerson').value=c.contactPerson||''; $('clientType').value=c.type||'Casamento'; $('clientStatus').value=c.status||'active'; $('clientInviteSelect').value=c.inviteId||''; $('clientTags').value=(c.tags||[]).join(', '); $('clientNotes').value=c.notes||''; $('clientConsent').checked=c.marketingConsent!==false; hideMsg($('clientFormResult')); window.scrollTo({top:0,behavior:'smooth'}); };
+    window.copyClientEmail = function(email){ if(!email) return appToast('Este cliente não tem email.','warning'); copyUrl(email); };
+    async function saveClient(e){
+      e.preventDefault();
+      const inviteId=$('clientInviteSelect').value; const inv=invites.find(x=>x.id===inviteId);
+      const payload={ name:$('clientName').value, email:$('clientEmail').value, phone:$('clientPhone').value, whatsapp:$('clientWhatsapp').value, company:$('clientCompany').value, contactPerson:$('clientContactPerson').value, type:$('clientType').value, status:$('clientStatus').value, inviteId, slug:inv?.slug||'', tags:$('clientTags').value, notes:$('clientNotes').value, marketingConsent:$('clientConsent').checked };
+      const id=$('clientId').value;
+      hideMsg($('clientFormResult'));
+      try{ const out=await api(id?`/manager/clients/${id}`:'/manager/clients',{method:id?'PUT':'POST',body:JSON.stringify(payload)}); showMsg($('clientFormResult'), out.message||'Cliente guardado.'); appToast(out.message||'Cliente guardado.'); await Promise.allSettled([loadClients(),loadClientStats()]); if(!id) resetClientForm(); }
+      catch(err){ showMsg($('clientFormResult'),err.message,true); appToast(err.message,'error','Erro'); }
+    }
+    async function archiveClient(){
+      const id=$('clientId').value; if(!id) return appToast('Seleccione um cliente para arquivar.','warning');
+      if(!await appConfirm({title:'Arquivar cliente',message:'Este cliente sairá da lista activa, mas ficará guardado no histórico.',confirmLabel:'Arquivar',variant:'danger',requireText:'ARQUIVAR CLIENTE'})) return;
+      try{ const out=await api(`/manager/clients/${id}`,{method:'DELETE',body:JSON.stringify({confirmation:'ARQUIVAR CLIENTE'})}); showMsg($('clientFormResult'),out.message||'Cliente arquivado.'); appToast(out.message||'Cliente arquivado.'); resetClientForm(); await Promise.allSettled([loadClients(),loadClientStats()]); } catch(err){ showMsg($('clientFormResult'),err.message,true); appToast(err.message,'error','Erro'); }
+    }
+    async function importClients(e){
+      e.preventDefault();
+      const text=$('clientsImportText').value;
+      if(!text.trim()) return appToast('Cole a lista de clientes para importar.','warning');
+      if(!await appConfirm({title:'Importar clientes',message:'Importar esta lista para a base comercial?',confirmLabel:'Importar'})) return;
+      try{ const out=await api('/manager/clients/import',{method:'POST',body:JSON.stringify({text})}); showMsg($('clientsImportResult'),out.message||'Importação concluída.'); appToast(out.message||'Importação concluída.'); $('clientsImportText').value=''; await Promise.allSettled([loadClients(),loadClientStats()]); } catch(err){ showMsg($('clientsImportResult'),err.message,true); appToast(err.message,'error','Erro'); }
+    }
+    async function sendCampaign(e){
+      e.preventDefault();
+      const scope=$('campaignScope').value; const ids=selectedClientIds();
+      if(scope==='selected' && !ids.length) return appToast('Seleccione clientes na lista antes de enviar.','warning');
+      const subject=$('campaignSubject').value.trim(); const body=$('campaignBody').value.trim();
+      const count = scope==='selected' ? ids.length : (clients.filter(c=>c.status==='active' && c.marketingConsent && c.email).length || 'todos elegíveis');
+      if(!await appConfirm({title:'Enviar campanha por email',message:`Enviar “${subject}” para ${count} cliente(s)?\n\nEsta acção usa Resend e não deve ser feita como teste em massa.`,confirmLabel:'Enviar',variant:'danger',requireText:'ENVIAR EMAILS'})) return;
+      const payload={scope, clientIds:ids, subject, previewText:$('campaignPreview').value, bodyText:body, confirmation:'ENVIAR EMAILS'};
+      hideMsg($('campaignResult'));
+      try{ const out=await api('/manager/marketing/send',{method:'POST',body:JSON.stringify(payload)}); showMsg($('campaignResult'),out.message||'Campanha enviada.'); appToast(out.message||'Campanha enviada.'); await Promise.allSettled([loadCampaigns(),loadClientStats(),loadClients()]); } catch(err){ showMsg($('campaignResult'),err.message,true); appToast(err.message,'error','Erro'); }
+    }
+    async function loadCampaigns(){
+      const out=await api('/manager/marketing/campaigns?limit=30');
+      campaigns=out.data||[];
+      $('campaignList').innerHTML = campaigns.length ? campaigns.map(c=>`<article class="backup-item"><div class="backup-item-top"><div><strong>${esc(c.subject)}</strong><small>${esc(c.status)} · ${fmtDate(c.createdAt)}<br>${esc(c.totals?.sent||0)} enviado(s) · ${esc(c.totals?.failed||0)} falha(s)</small></div><span class="badge ${c.status==='sent'?'ok':c.status==='partial'?'warn':c.status==='failed'?'red':''}">${esc(c.status)}</span></div></article>`).join('') : '<div class="feedback">Ainda não existem campanhas registadas.</div>';
+      iconRefresh();
+    }
+
     async function loadBackups(){
       if(!isAdmin()) return;
       const list=$('backupList'); if(list) list.innerHTML = appCardSkeleton('list',4);
@@ -3720,7 +3870,7 @@ ${fmtDate(backup.createdAt)}`, confirmLabel:'Eliminar backup', variant:'danger',
     function bindEvents(){
       $('loginForm').addEventListener('submit', async e=>{ e.preventDefault(); hideMsg($('loginError')); API_BASE=(window.LIRANDZO_MANAGER_API_BASE || API_BASE || '').trim().replace(/\/+$/,''); const accessType = document.querySelector('input[name="accessType"]:checked')?.value || 'admin'; setLoginLoading(true); try{ const out=await api('/manager/login',{method:'POST',body:JSON.stringify({password:$('passwordInput').value, accessType})}); token=out.token; managerRole=out.role || accessType; sessionStorage.setItem('lirandzo_manager_token',token); sessionStorage.setItem('lirandzo_manager_role',managerRole); appView(); }catch(err){ showMsg($('loginError'),err.message,true); } finally { setLoginLoading(false); } });
       $('menuBtn').addEventListener('click',()=>{ $('sidebar').classList.add('open'); $('overlay').classList.add('active'); }); $('backBtn')?.addEventListener('click',goBackPanel); $('overlay').addEventListener('click',()=>{ $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); });
-      $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); sessionStorage.removeItem('lirandzo_manager_role'); token=''; managerRole=''; loginView(); }); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); $('commandInviteSelect')?.addEventListener('change',()=>{ renderCommandContext(invites.find(inv=>inv.id===commandSelectedId())); loadCommandCenter(); }); $('commandLoadBtn')?.addEventListener('click',loadCommandCenter); $('commandGuestsBtn')?.addEventListener('click',goCommandGuests); $('commandManageBtn')?.addEventListener('click',goCommandManage); $('commandCopySlugBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); copyUrl(inv?.slug||''); }); $('commandOpenInviteBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); if(inv?.publicUrl) window.open(inv.publicUrl,'_blank'); }); document.querySelectorAll('[data-command-tab]').forEach(btn=>btn.addEventListener('click',()=>setCommandTab(btn.dataset.commandTab))); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto))); $('backupScope')?.addEventListener('change',()=>{ const all=$('backupScope').value==='all'; $('backupInviteWrap')?.classList.toggle('hidden', all); }); $('backupCreateForm')?.addEventListener('submit', createBackupFromForm); $('backupRefreshBtn')?.addEventListener('click', loadBackups); $('backupFilterBtn')?.addEventListener('click', loadBackups); $('backupSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadBackups(); }); $('backupScopeFilter')?.addEventListener('change', loadBackups); $('backupImportForm')?.addEventListener('submit', importBackupFromForm);
+      $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); sessionStorage.removeItem('lirandzo_manager_role'); token=''; managerRole=''; loginView(); }); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); $('commandInviteSelect')?.addEventListener('change',()=>{ renderCommandContext(invites.find(inv=>inv.id===commandSelectedId())); loadCommandCenter(); }); $('commandLoadBtn')?.addEventListener('click',loadCommandCenter); $('commandGuestsBtn')?.addEventListener('click',goCommandGuests); $('commandManageBtn')?.addEventListener('click',goCommandManage); $('commandCopySlugBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); copyUrl(inv?.slug||''); }); $('commandOpenInviteBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); if(inv?.publicUrl) window.open(inv.publicUrl,'_blank'); }); document.querySelectorAll('[data-command-tab]').forEach(btn=>btn.addEventListener('click',()=>setCommandTab(btn.dataset.commandTab))); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto))); $('clientForm')?.addEventListener('submit', saveClient); $('clientClearFormBtn')?.addEventListener('click', resetClientForm); $('clientArchiveBtn')?.addEventListener('click', archiveClient); $('clientsRefreshBtn')?.addEventListener('click', loadClientsPage); $('clientsFilterBtn')?.addEventListener('click', loadClients); $('clientsSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadClients(); }); $('clientsStatusFilter')?.addEventListener('change', loadClients); $('clientsSelectAll')?.addEventListener('change', e=>{ document.querySelectorAll('.client-select:not(:disabled)').forEach(cb=>cb.checked=e.target.checked); }); $('clientsImportForm')?.addEventListener('submit', importClients); $('campaignForm')?.addEventListener('submit', sendCampaign); $('campaignHistoryBtn')?.addEventListener('click', ()=>document.getElementById('campaignList')?.scrollIntoView({behavior:'smooth'})); $('campaignsRefreshBtn')?.addEventListener('click', loadCampaigns); $('backupScope')?.addEventListener('change',()=>{ const all=$('backupScope').value==='all'; $('backupInviteWrap')?.classList.toggle('hidden', all); }); $('backupCreateForm')?.addEventListener('submit', createBackupFromForm); $('backupRefreshBtn')?.addEventListener('click', loadBackups); $('backupFilterBtn')?.addEventListener('click', loadBackups); $('backupSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadBackups(); }); $('backupScopeFilter')?.addEventListener('change', loadBackups); $('backupImportForm')?.addEventListener('submit', importBackupFromForm);
       $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
       $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('guestEditModal')?.classList.remove('open'); $('confirmModal')?.classList.remove('open'); if(confirmResolver){ confirmResolver(false); confirmResolver=null; } $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
       $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); if(!isAdmin()) return showMsg($('createResult'), 'Perfil Editor não pode criar convites.', true); const fd=new FormData(e.currentTarget); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); showMsg($('createResult'), out.message || `Convite criado: ${out.data.publicUrl}`); e.currentTarget.reset(); await loadAll(); }catch(err){ showMsg($('createResult'),err.message,true); } });

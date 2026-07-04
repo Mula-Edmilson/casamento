@@ -456,6 +456,46 @@ const BackupSchema = new mongoose.Schema({
 BackupSchema.index({ createdAt: -1 });
 BackupSchema.index({ scope: 1, slug: 1, createdAt: -1 });
 
+
+
+const ClientSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  normalizedName: { type: String, default: '', index: true },
+  company: { type: String, default: '', trim: true },
+  contactPerson: { type: String, default: '', trim: true },
+  email: { type: String, default: '', trim: true, lowercase: true, index: true },
+  normalizedEmail: { type: String, default: '', index: true },
+  phone: { type: String, default: '', trim: true },
+  whatsapp: { type: String, default: '', trim: true },
+  type: { type: String, default: 'Casamento', trim: true, index: true },
+  status: { type: String, enum: ['active', 'paused', 'unsubscribed', 'archived'], default: 'active', index: true },
+  tags: { type: [String], default: [] },
+  inviteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Invite', index: true },
+  slug: { type: String, default: '', index: true },
+  source: { type: String, default: 'manual', trim: true },
+  marketingConsent: { type: Boolean, default: true, index: true },
+  notes: { type: String, default: '' },
+  lastEmailAt: { type: Date },
+  emailsSent: { type: Number, default: 0 },
+  lastCampaignId: { type: mongoose.Schema.Types.ObjectId, ref: 'MarketingCampaign' }
+}, { timestamps: true });
+ClientSchema.index({ status: 1, marketingConsent: 1, email: 1 });
+ClientSchema.index({ slug: 1, status: 1 });
+
+const MarketingCampaignSchema = new mongoose.Schema({
+  subject: { type: String, required: true, trim: true },
+  previewText: { type: String, default: '', trim: true },
+  bodyHtml: { type: String, default: '' },
+  bodyText: { type: String, default: '' },
+  audience: { type: String, default: 'active' },
+  requestedByRole: { type: String, default: '' },
+  status: { type: String, enum: ['draft', 'sending', 'sent', 'partial', 'failed'], default: 'draft', index: true },
+  totals: { type: mongoose.Schema.Types.Mixed, default: {} },
+  recipients: { type: [mongoose.Schema.Types.Mixed], default: [] },
+  sentAt: { type: Date }
+}, { timestamps: true });
+MarketingCampaignSchema.index({ createdAt: -1 });
+
 const Invite = mongoose.model('Invite', InviteSchema);
 const Guest = mongoose.model('Guest', GuestSchema);
 const Rsvp = mongoose.model('Rsvp', RsvpSchema);
@@ -489,6 +529,8 @@ const CheckIn = mongoose.model('CheckIn', CheckInSchema);
 const CapsulePhoto = mongoose.model('CapsulePhoto', CapsulePhotoSchema);
 const Activity = mongoose.model('Activity', ActivitySchema);
 const Backup = mongoose.model('Backup', BackupSchema);
+const Client = mongoose.model('Client', ClientSchema);
+const MarketingCampaign = mongoose.model('MarketingCampaign', MarketingCampaignSchema);
 
 function cleanInviteDoc(doc) {
   if (!doc) return null;
@@ -517,6 +559,80 @@ function cleanBackupDoc(doc) {
     restoredMode: o.restoredMode || '', createdAt: o.createdAt, updatedAt: o.updatedAt
   };
 }
+
+function normalizeEmail(value) { return String(value || '').trim().toLowerCase(); }
+function isValidEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim()); }
+function parseTags(value) {
+  if (Array.isArray(value)) return Array.from(new Set(value.map(v => String(v || '').trim()).filter(Boolean)));
+  return Array.from(new Set(String(value || '').split(/[,;|]/).map(v => v.trim()).filter(Boolean)));
+}
+function cleanClientDoc(doc) {
+  if (!doc) return null;
+  const o = doc.toObject ? doc.toObject() : doc;
+  return {
+    id: String(o._id), name: o.name || '', normalizedName: o.normalizedName || '', company: o.company || '',
+    contactPerson: o.contactPerson || '', email: o.email || '', phone: o.phone || '', whatsapp: o.whatsapp || '',
+    type: o.type || 'Casamento', status: o.status || 'active', tags: o.tags || [], inviteId: o.inviteId ? String(o.inviteId) : '',
+    slug: o.slug || '', source: o.source || 'manual', marketingConsent: o.marketingConsent !== false,
+    notes: o.notes || '', lastEmailAt: o.lastEmailAt || null, emailsSent: o.emailsSent || 0,
+    createdAt: o.createdAt, updatedAt: o.updatedAt
+  };
+}
+function cleanCampaignDoc(doc) {
+  if (!doc) return null;
+  const o = doc.toObject ? doc.toObject() : doc;
+  return {
+    id: String(o._id), subject: o.subject || '', previewText: o.previewText || '', audience: o.audience || '',
+    requestedByRole: o.requestedByRole || '', status: o.status || 'draft', totals: o.totals || {},
+    recipients: Array.isArray(o.recipients) ? o.recipients.slice(0, 80) : [], sentAt: o.sentAt || null,
+    createdAt: o.createdAt, updatedAt: o.updatedAt
+  };
+}
+function clientPayloadFromBody(body = {}) {
+  const inviteId = String(body.inviteId || '').trim();
+  const email = normalizeEmail(body.email);
+  const name = String(body.name || body.clientName || body.company || email || '').trim();
+  return {
+    name,
+    normalizedName: normalizeText(name),
+    company: String(body.company || '').trim(),
+    contactPerson: String(body.contactPerson || '').trim(),
+    email,
+    normalizedEmail: email,
+    phone: String(body.phone || '').trim(),
+    whatsapp: String(body.whatsapp || body.phone || '').trim(),
+    type: String(body.type || 'Casamento').trim() || 'Casamento',
+    status: ['active', 'paused', 'unsubscribed', 'archived'].includes(String(body.status || 'active')) ? String(body.status || 'active') : 'active',
+    tags: parseTags(body.tags),
+    inviteId: validObjectId(inviteId) ? new mongoose.Types.ObjectId(inviteId) : undefined,
+    slug: String(body.slug || '').trim().toLowerCase(),
+    source: String(body.source || 'manual').trim() || 'manual',
+    marketingConsent: body.marketingConsent !== false && body.marketingConsent !== 'false',
+    notes: String(body.notes || '').trim()
+  };
+}
+function htmlToPlainText(html) {
+  return String(html || '').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n\n').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\n{3,}/g, '\n\n').replace(/[ \t]{2,}/g, ' ').trim();
+}
+function marketingEmailHtml({ subject, previewText, bodyHtml, bodyText }) {
+  const content = bodyHtml && /<[^>]+>/.test(bodyHtml) ? bodyHtml : String(bodyText || bodyHtml || '').split(/\n{2,}/).map(p => `<p>${String(p).split(/\n/).map(escHtml).join('<br>')}</p>`).join('');
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(subject)}</title></head><body style="margin:0;background:#f7f1eb;font-family:Inter,Arial,sans-serif;color:#2c231e"><div style="display:none;max-height:0;overflow:hidden;opacity:0">${escHtml(previewText || '')}</div><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f1eb;padding:28px 14px"><tr><td align="center"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#fffaf5;border:1px solid #ead9ca"><tr><td style="padding:24px 26px;border-bottom:1px solid #ead9ca"><div style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#9a6b48;font-weight:800">Lirandzo</div><h1 style="font-size:24px;line-height:1.18;margin:8px 0 0;color:#2c231e">${escHtml(subject)}</h1></td></tr><tr><td style="padding:26px;font-size:15px;line-height:1.65;color:#56483f">${content}</td></tr><tr><td style="padding:18px 26px;border-top:1px solid #ead9ca;color:#847367;font-size:12px;line-height:1.5">Recebeu este email porque consta na base de clientes Lirandzo. Para sair da lista, responda a este email com “remover”.</td></tr></table></td></tr></table></body></html>`;
+}
+function escHtml(v) { return String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+async function sendResendEmail({ to, subject, html, text }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail = process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM || '';
+  const fromName = process.env.RESEND_FROM_NAME || 'Lirandzo';
+  if (!apiKey) { const e = new Error('RESEND_API_KEY não configurada no Render.'); e.statusCode = 500; throw e; }
+  if (!fromEmail || !isValidEmail(fromEmail)) { const e = new Error('RESEND_FROM_EMAIL precisa de ser um email validado no Resend.'); e.statusCode = 500; throw e; }
+  const payload = { from: `${fromName} <${fromEmail}>`, to: [to], subject, html, text };
+  if (process.env.RESEND_REPLY_TO && isValidEmail(process.env.RESEND_REPLY_TO)) payload.reply_to = process.env.RESEND_REPLY_TO;
+  const resp = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) { const e = new Error(data.message || data.error || `Resend devolveu erro ${resp.status}`); e.statusCode = resp.status; e.resend = data; throw e; }
+  return data;
+}
+
 function gzipJsonToBase64(payload) {
   const json = JSON.stringify(payload);
   const raw = Buffer.from(json, 'utf8');
@@ -554,12 +670,14 @@ function backupCounts(payload) {
     contributions: (c.contributions || []).length,
     checkins: (c.checkins || []).length,
     photos: (c.photos || []).length,
-    activities: (c.activities || []).length
+    activities: (c.activities || []).length,
+    clients: (c.clients || []).length,
+    campaigns: (c.campaigns || []).length
   };
 }
 async function collectInviteBackupPayload(invite) {
   const inviteId = invite._id;
-  const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities] = await Promise.all([
+  const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities, clients] = await Promise.all([
     Guest.find({ inviteId }).sort({ number: 1, name: 1 }).lean(),
     Rsvp.find({ inviteId }).sort({ timestamp: 1 }).lean(),
     Message.find({ inviteId }).sort({ timestamp: 1 }).lean(),
@@ -567,7 +685,8 @@ async function collectInviteBackupPayload(invite) {
     Contribution.find({ inviteId }).sort({ timestamp: 1 }).lean(),
     CheckIn.find({ inviteId }).sort({ timestamp: 1 }).lean(),
     CapsulePhoto.find({ inviteId }).sort({ timestamp: 1 }).lean(),
-    Activity.find({ inviteId }).sort({ timestamp: 1 }).lean()
+    Activity.find({ inviteId }).sort({ timestamp: 1 }).lean(),
+    Client.find({ $or: [{ inviteId }, { slug: invite.slug }] }).sort({ name: 1 }).lean()
   ]);
   const payload = {
     schemaVersion: 1,
@@ -575,7 +694,7 @@ async function collectInviteBackupPayload(invite) {
     exportedAt: new Date().toISOString(),
     scope: 'invite',
     invite: plainDoc(invite),
-    collections: { guests, rsvps, messages, gifts, contributions, checkins, photos, activities }
+    collections: { guests, rsvps, messages, gifts, contributions, checkins, photos, activities, clients }
   };
   payload.counts = backupCounts(payload);
   return payload;
@@ -585,7 +704,7 @@ async function collectAllBackupPayload({ includeArchived = true } = {}) {
   const invites = await Invite.find(inviteFilter).sort({ updatedAt: -1 }).lean();
   const ids = invites.map(i => i._id);
   const scoped = ids.length ? { inviteId: { $in: ids } } : { inviteId: { $in: [] } };
-  const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities] = await Promise.all([
+  const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities, clients, campaigns] = await Promise.all([
     Guest.find(scoped).sort({ slug: 1, number: 1, name: 1 }).lean(),
     Rsvp.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
     Message.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
@@ -593,7 +712,9 @@ async function collectAllBackupPayload({ includeArchived = true } = {}) {
     Contribution.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
     CheckIn.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
     CapsulePhoto.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
-    Activity.find(scoped).sort({ slug: 1, timestamp: 1 }).lean()
+    Activity.find(scoped).sort({ slug: 1, timestamp: 1 }).lean(),
+    Client.find({}).sort({ name: 1 }).lean(),
+    MarketingCampaign.find({}).sort({ createdAt: 1 }).lean()
   ]);
   const payload = {
     schemaVersion: 1,
@@ -602,7 +723,7 @@ async function collectAllBackupPayload({ includeArchived = true } = {}) {
     scope: 'all',
     includeArchived,
     invites,
-    collections: { guests, rsvps, messages, gifts, contributions, checkins, photos, activities }
+    collections: { guests, rsvps, messages, gifts, contributions, checkins, photos, activities, clients, campaigns }
   };
   payload.counts = backupCounts(payload);
   return payload;
@@ -634,9 +755,9 @@ async function deleteInviteRelatedByIdsAndSlug({ oldId, existingId, slug }) {
   if (!filter.$or.length) return {};
   const [guests, rsvps, messages, gifts, contributions, checkins, photos, activities] = await Promise.all([
     Guest.deleteMany(filter), Rsvp.deleteMany(filter), Message.deleteMany(filter), GiftItem.deleteMany(filter),
-    Contribution.deleteMany(filter), CheckIn.deleteMany(filter), CapsulePhoto.deleteMany(filter), Activity.deleteMany(filter)
+    Contribution.deleteMany(filter), CheckIn.deleteMany(filter), CapsulePhoto.deleteMany(filter), Activity.deleteMany(filter), Client.deleteMany(filter)
   ]);
-  return { guests: guests.deletedCount || 0, rsvps: rsvps.deletedCount || 0, messages: messages.deletedCount || 0, gifts: gifts.deletedCount || 0, contributions: contributions.deletedCount || 0, checkins: checkins.deletedCount || 0, photos: photos.deletedCount || 0, activities: activities.deletedCount || 0 };
+  return { guests: guests.deletedCount || 0, rsvps: rsvps.deletedCount || 0, messages: messages.deletedCount || 0, gifts: gifts.deletedCount || 0, contributions: contributions.deletedCount || 0, checkins: checkins.deletedCount || 0, photos: photos.deletedCount || 0, activities: activities.deletedCount || 0, clients: clients.deletedCount || 0 };
 }
 async function restoreInviteBackupPayload(payload) {
   if (!payload || payload.scope !== 'invite' || !payload.invite) {
@@ -662,6 +783,7 @@ async function restoreInviteBackupPayload(payload) {
   inserted.checkins = (await insertManyIfAny(CheckIn, c.checkins)).inserted;
   inserted.photos = (await insertManyIfAny(CapsulePhoto, c.photos)).inserted;
   inserted.activities = (await insertManyIfAny(Activity, c.activities)).inserted;
+  inserted.clients = (await insertManyIfAny(Client, c.clients)).inserted;
   const restoredInvite = await Invite.findOne({ slug });
   await logActivity({ invite: restoredInvite, type: 'warning', title: 'Backup restaurado', detail: slug, meta: { scope: 'invite', inserted } });
   return { scope: 'invite', slug, inserted, invite: cleanInviteDoc(restoredInvite) };
@@ -674,7 +796,7 @@ async function restoreAllBackupPayload(payload) {
   }
   await Promise.all([
     Invite.deleteMany({}), Guest.deleteMany({}), Rsvp.deleteMany({}), Message.deleteMany({}), GiftItem.deleteMany({}),
-    Contribution.deleteMany({}), CheckIn.deleteMany({}), CapsulePhoto.deleteMany({}), Activity.deleteMany({})
+    Contribution.deleteMany({}), CheckIn.deleteMany({}), CapsulePhoto.deleteMany({}), Activity.deleteMany({}), Client.deleteMany({}), MarketingCampaign.deleteMany({})
   ]);
   const c = payload.collections || {};
   const inserted = {};
@@ -687,6 +809,8 @@ async function restoreAllBackupPayload(payload) {
   inserted.checkins = (await insertManyIfAny(CheckIn, c.checkins)).inserted;
   inserted.photos = (await insertManyIfAny(CapsulePhoto, c.photos)).inserted;
   inserted.activities = (await insertManyIfAny(Activity, c.activities)).inserted;
+  inserted.clients = (await insertManyIfAny(Client, c.clients)).inserted;
+  inserted.campaigns = (await insertManyIfAny(MarketingCampaign, c.campaigns)).inserted;
   await Activity.create({ type: 'warning', title: 'Backup geral restaurado', detail: `${inserted.invites || 0} convite(s) restaurados`, meta: { scope: 'all', inserted }, timestamp: new Date() });
   return { scope: 'all', inserted };
 }
@@ -1421,6 +1545,150 @@ app.delete('/manager/invites/:id/purge', requireManager, requireAdmin, async (re
   });
 });
 
+
+
+app.get('/manager/clients/stats', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const [total, active, paused, unsubscribed, archived, consent, withEmail, campaigns] = await Promise.all([
+    Client.countDocuments({}), Client.countDocuments({ status: 'active' }), Client.countDocuments({ status: 'paused' }),
+    Client.countDocuments({ status: 'unsubscribed' }), Client.countDocuments({ status: 'archived' }),
+    Client.countDocuments({ marketingConsent: true, status: 'active', email: { $ne: '' } }),
+    Client.countDocuments({ email: { $ne: '' } }), MarketingCampaign.countDocuments({})
+  ]);
+  res.json({ status: 'success', data: { total, active, paused, unsubscribed, archived, consent, withEmail, campaigns, resendConfigured: Boolean(process.env.RESEND_API_KEY && (process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM)) } });
+}));
+
+app.get('/manager/clients', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const { q = '', status = 'active', inviteId = '', tag = '', limit = '200' } = req.query;
+  const filter = {};
+  if (status !== 'all') filter.status = status;
+  if (validObjectId(inviteId)) filter.inviteId = new mongoose.Types.ObjectId(inviteId);
+  if (tag) filter.tags = String(tag);
+  if (q) {
+    const rx = new RegExp(escapeRegex(q), 'i');
+    filter.$or = [{ name: rx }, { company: rx }, { contactPerson: rx }, { email: rx }, { phone: rx }, { whatsapp: rx }, { slug: rx }, { notes: rx }, { tags: rx }];
+  }
+  const safeLimit = Math.min(Math.max(Number.parseInt(limit, 10) || 200, 1), 1000);
+  const clients = await Client.find(filter).sort({ updatedAt: -1, name: 1 }).limit(safeLimit);
+  res.json({ status: 'success', data: clients.map(cleanClientDoc) });
+}));
+
+app.post('/manager/clients', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const payload = clientPayloadFromBody(req.body || {});
+  if (!payload.name) return res.status(400).json({ status: 'error', message: 'Informe o nome do cliente.' });
+  if (payload.email && !isValidEmail(payload.email)) return res.status(400).json({ status: 'error', message: 'Email inválido.' });
+  if (payload.inviteId && !payload.slug) {
+    const invite = await Invite.findById(payload.inviteId);
+    if (invite) payload.slug = invite.slug;
+  }
+  const client = await Client.create(payload);
+  await Activity.create({ type: 'clients', title: 'Cliente adicionado', detail: client.name, meta: { clientId: String(client._id), email: client.email }, timestamp: new Date() });
+  res.status(201).json({ status: 'success', message: 'Cliente adicionado com sucesso.', data: cleanClientDoc(client) });
+}));
+
+app.put('/manager/clients/:id', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  if (!validObjectId(req.params.id)) return res.status(400).json({ status: 'error', message: 'Cliente inválido.' });
+  const client = await Client.findById(req.params.id);
+  if (!client) return res.status(404).json({ status: 'error', message: 'Cliente não encontrado.' });
+  const payload = clientPayloadFromBody(req.body || {});
+  if (!payload.name) return res.status(400).json({ status: 'error', message: 'Informe o nome do cliente.' });
+  if (payload.email && !isValidEmail(payload.email)) return res.status(400).json({ status: 'error', message: 'Email inválido.' });
+  Object.assign(client, payload);
+  await client.save();
+  await Activity.create({ type: 'clients', title: 'Cliente actualizado', detail: client.name, meta: { clientId: String(client._id) }, timestamp: new Date() });
+  res.json({ status: 'success', message: 'Cliente actualizado com sucesso.', data: cleanClientDoc(client) });
+}));
+
+app.delete('/manager/clients/:id', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  if (!validObjectId(req.params.id)) return res.status(400).json({ status: 'error', message: 'Cliente inválido.' });
+  const client = await Client.findById(req.params.id);
+  if (!client) return res.status(404).json({ status: 'error', message: 'Cliente não encontrado.' });
+  const confirmation = String(req.body?.confirmation || req.query?.confirmation || '').trim();
+  if (confirmation !== 'ARQUIVAR CLIENTE') return res.status(400).json({ status: 'error', message: 'Para arquivar, escreva exactamente: ARQUIVAR CLIENTE' });
+  client.status = 'archived';
+  await client.save();
+  await Activity.create({ type: 'clients', title: 'Cliente arquivado', detail: client.name, meta: { clientId: String(client._id) }, timestamp: new Date() });
+  res.json({ status: 'success', message: 'Cliente arquivado com sucesso.', data: cleanClientDoc(client) });
+}));
+
+app.post('/manager/clients/import', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const text = String(req.body?.text || '').trim();
+  if (!text) return res.status(400).json({ status: 'error', message: 'Cole uma lista CSV/TXT para importar.' });
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const delimiter = detectDelimiter(lines[0] || ';');
+  let rows = lines.map(line => parseDelimitedLine(line, delimiter));
+  if (looksLikeGuestHeader(rows[0] || [])) rows = rows.slice(1);
+  const created = [];
+  const skipped = [];
+  for (const row of rows) {
+    const name = row[0] || row[2] || '';
+    const email = normalizeEmail(row[1] || '');
+    const phone = row[2] || '';
+    const company = row[3] || '';
+    const tags = parseTags(row[4] || '');
+    const notes = row[5] || '';
+    if (!name && !email) { skipped.push({ raw: row.join(delimiter), reason: 'Sem nome/email' }); continue; }
+    if (email && !isValidEmail(email)) { skipped.push({ raw: row.join(delimiter), reason: 'Email inválido' }); continue; }
+    const existing = email ? await Client.findOne({ normalizedEmail: email, status: { $ne: 'archived' } }) : null;
+    if (existing) { skipped.push({ raw: row.join(delimiter), reason: 'Email já existe' }); continue; }
+    const doc = await Client.create({ name: String(name || email).trim(), normalizedName: normalizeText(name || email), email, normalizedEmail: email, phone, whatsapp: phone, company, tags, notes, source: 'import', status: 'active', marketingConsent: true });
+    created.push(cleanClientDoc(doc));
+  }
+  await Activity.create({ type: 'clients', title: 'Clientes importados', detail: `${created.length} criado(s) · ${skipped.length} ignorado(s)`, meta: { skipped: skipped.slice(0, 30) }, timestamp: new Date() });
+  res.status(201).json({ status: 'success', message: `${created.length} cliente(s) importado(s). ${skipped.length} linha(s) ignorada(s).`, data: { created, skipped } });
+}));
+
+app.get('/manager/marketing/campaigns', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 50, 1), 200);
+  const campaigns = await MarketingCampaign.find({}).sort({ createdAt: -1 }).limit(limit);
+  res.json({ status: 'success', data: campaigns.map(cleanCampaignDoc) });
+}));
+
+app.post('/manager/marketing/send', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const confirmation = String(req.body?.confirmation || '').trim();
+  if (confirmation !== 'ENVIAR EMAILS') return res.status(400).json({ status: 'error', message: 'Para enviar, escreva exactamente: ENVIAR EMAILS' });
+  const subject = String(req.body?.subject || '').trim();
+  const previewText = String(req.body?.previewText || '').trim();
+  const bodyHtml = String(req.body?.bodyHtml || '').trim();
+  const bodyText = String(req.body?.bodyText || '').trim();
+  if (!subject) return res.status(400).json({ status: 'error', message: 'Informe o assunto do email.' });
+  if (!bodyHtml && !bodyText) return res.status(400).json({ status: 'error', message: 'Escreva o conteúdo do email.' });
+  const scope = String(req.body?.scope || 'active');
+  const filter = { status: 'active', marketingConsent: true, email: { $ne: '' } };
+  if (scope === 'selected') {
+    const ids = Array.isArray(req.body?.clientIds) ? req.body.clientIds.filter(validObjectId).map(id => new mongoose.Types.ObjectId(id)) : [];
+    if (!ids.length) return res.status(400).json({ status: 'error', message: 'Seleccione pelo menos um cliente.' });
+    filter._id = { $in: ids };
+  }
+  const recipients = await Client.find(filter).sort({ name: 1 }).limit(1000);
+  const validRecipients = recipients.filter(c => isValidEmail(c.email));
+  if (!validRecipients.length) return res.status(400).json({ status: 'error', message: 'Nenhum cliente activo com email válido e consentimento de marketing.' });
+  const html = marketingEmailHtml({ subject, previewText, bodyHtml, bodyText });
+  const text = bodyText || htmlToPlainText(bodyHtml);
+  const campaign = await MarketingCampaign.create({ subject, previewText, bodyHtml: html, bodyText: text, audience: scope, requestedByRole: req.manager.role, status: 'sending', totals: { requested: validRecipients.length, sent: 0, failed: 0 }, recipients: [] });
+  const results = [];
+  let sent = 0, failed = 0;
+  for (const client of validRecipients) {
+    try {
+      const data = await sendResendEmail({ to: client.email, subject, html, text });
+      sent += 1;
+      client.lastEmailAt = new Date();
+      client.emailsSent = (client.emailsSent || 0) + 1;
+      client.lastCampaignId = campaign._id;
+      await client.save();
+      results.push({ clientId: String(client._id), name: client.name, email: client.email, status: 'sent', resendId: data.id || data.data?.id || '' });
+    } catch (err) {
+      failed += 1;
+      results.push({ clientId: String(client._id), name: client.name, email: client.email, status: 'failed', error: err.message || 'Falha no envio' });
+    }
+  }
+  campaign.status = failed && sent ? 'partial' : failed ? 'failed' : 'sent';
+  campaign.sentAt = new Date();
+  campaign.totals = { requested: validRecipients.length, sent, failed };
+  campaign.recipients = results;
+  await campaign.save();
+  await Activity.create({ type: 'clients', title: 'Campanha de email enviada', detail: `${sent} enviado(s) · ${failed} falha(s)`, meta: { campaignId: String(campaign._id), subject }, timestamp: new Date() });
+  res.json({ status: failed ? 'partial_success' : 'success', message: `Campanha concluída: ${sent} enviado(s), ${failed} falha(s).`, data: cleanCampaignDoc(campaign) });
+}));
 
 app.get('/manager/backups', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const { scope = 'all', q = '', limit = '80' } = req.query;
