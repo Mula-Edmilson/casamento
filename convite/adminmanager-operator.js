@@ -1,8 +1,8 @@
 (function(){
   'use strict';
-  const BOT_VERSION='OMNI-Deterministic-v6.0-SafeActionsBrain';
-  const LS_KEY='lirandzo_operator_history_v6';
-  const SCOPE_KEY='lirandzo_operator_scope_v6';
+  const BOT_VERSION='OMNI-Deterministic-v7.0-BulkSafeActionsBrain';
+  const LS_KEY='lirandzo_operator_history_v7';
+  const SCOPE_KEY='lirandzo_operator_scope_v7';
   const CACHE_TTL=45*1000;
   const MAX_PREVIEW=18;
   const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,history:[],booted:false,loading:false,pendingAction:null,scopeId:localStorage.getItem(SCOPE_KEY)||'__all__',dialog:{inviteId:'',inviteTitle:'',intent:null,criteria:null,action:null,lastQuestion:'',lastListLabel:''}};
@@ -182,8 +182,8 @@
     const wrap=document.createElement('div'); wrap.className='lz-operator'; wrap.id='lzOperator'; wrap.innerHTML=`
       <button class="lz-operator-toggle" id="lzOperatorToggle" type="button" aria-label="Abrir operador Lirandzo"><span class="lz-operator-pulse"></span>${iconSvg('bot')}</button>
       <div class="lz-operator-window" id="lzOperatorWindow" role="dialog" aria-label="Lirandzo Operator">
-        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain v6 · acções seguras · sem IA paga</span></div></div><div class="lz-operator-head-actions"><span id="lzOperatorRole" class="lz-operator-role">Perfil</span><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div></div>
-        <div class="lz-operator-brainbar"><i></i><span>Brain v6: contexto · linguagem natural · acções seguras com confirmação · permissões Admin/Editor</span></div>
+        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain v7 · acções em massa seguras · sem IA paga</span></div></div><div class="lz-operator-head-actions"><span id="lzOperatorRole" class="lz-operator-role">Perfil</span><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div></div>
+        <div class="lz-operator-brainbar"><i></i><span>Brain v7: contexto · linguagem natural · acções em massa seguras · permissões Admin/Editor</span></div>
         <div class="lz-operator-scope"><label for="lzOperatorScopeSelect">Escopo</label><select id="lzOperatorScopeSelect"><option value="__all__">Todos convites · resultados separados</option><option value="__current__">Convite actual do painel</option></select><button id="lzOperatorReload" type="button" title="Recarregar dados">↻</button></div>
         <div class="lz-operator-messages" id="lzOperatorMessages"></div>
         <div class="lz-operator-quick" id="lzOperatorQuick"></div>
@@ -208,8 +208,8 @@
   async function updateStatusLabel(){
     const roleEl=$('lzOperatorRole');
     if(roleEl){roleEl.textContent=roleLabel(); roleEl.className='lz-operator-role '+roleBadgeClass(); roleEl.title=isEditorRole()?'Perfil Editor: edições limitadas; acções críticas bloqueadas.':'Perfil Administrador: acesso total às acções do bot.';}
-    try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${roleLabel()} · ${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${roleLabel()} · ${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:`${roleLabel()} · seleccione um convite`;}catch{$('lzOperatorStatus').textContent=`${roleLabel()} · Brain v6 · acções seguras`;}}
-  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora também preparo acções reais com confirmação obrigatória e respeito ao perfil logado. Está em <b>${esc(roleLabel())}</b>. Exemplos: <b>repor acesso de João no convite rosalina-monteiro</b>, <b>alterar mesa de Ana para 8</b>, <b>adicionar convidado Carlos ao convite minoca-abubacar</b>.`);}}}
+    try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${roleLabel()} · ${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${roleLabel()} · ${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:`${roleLabel()} · seleccione um convite`;}catch{$('lzOperatorStatus').textContent=`${roleLabel()} · Brain v7 · acções em massa seguras`;}}
+  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora também preparo acções reais e em massa com confirmação obrigatória e respeito ao perfil logado. Está em <b>${esc(roleLabel())}</b>. Exemplos: <b>repor acesso de João, Maria no convite rosalina-monteiro</b>, <b>mover João, Maria para mesa 8</b>, <b>adicionar João, Maria ao convite minoca-abubacar</b>.`);}}}
   function renderQuick(){const chips=['Focar convite','Quantos abriram?','Mostra a lista','Plano de acção','Repor acesso','Editar mesa','Adicionar convidado','Eliminar convidado','Perfil convidado','Qual convite precisa de atenção?','Confirmados sem mesa','Relatório','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
   async function renderInviteScopeSelect(force=false){
     const el=$('lzOperatorScopeSelect'); if(!el||!token()) return;
@@ -423,7 +423,7 @@
   function isYes(m){return /^(sim|s|yes|confirmo|confirmar|pode executar|executar|aplicar|ok|certo)$/i.test(txt(m));}
   function isNo(m){return /^(nao|não|n|no|cancelar|cancela|errado|parar)$/i.test(txt(m));}
   function looksLikeBotWriteAction(m){
-    return /\b(repor|resetar|reiniciar|restaurar|adicionar|add|criar|inserir|novo|editar|alterar|mudar|corrigir|actualizar|atualizar|definir|trocar|eliminar|apagar|remover|deletar|delete)\b/.test(m)
+    return /\b(repor|resetar|reiniciar|restaurar|adicionar|add|criar|inserir|novo|editar|alterar|mudar|mover|corrigir|actualizar|atualizar|definir|trocar|eliminar|apagar|remover|deletar|delete)\b/.test(m)
       && /\b(convidado|convidada|pessoa|acesso|link|token|rsvp|confirmacao|confirmação|checkin|check-in|check in|entrada|mesa|telefone|contacto|contato|categoria|acompanhantes|convite|dados)\b/.test(m);
   }
   function actionPayload(obj){return esc(JSON.stringify(obj));}
@@ -446,7 +446,23 @@
       const buttons=(data.candidates||[]).map(inv=>`<button class="lz-op-action" data-op-action="prepare-action" data-op-payload="${actionPayload({message:originalMessage,inviteId:inv.id,actionType:data.actionType})}">${esc(inv.coupleNames||inv.clientName||inv.slug)}</button>`).join('');
       return `<strong>Preciso confirmar o convite exacto.</strong><br>${esc(data.message||'Escolha um convite.')}<div class="lz-op-actions">${buttons}<button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button></div>`;
     }
+    if(data.selectionType==='bulk_guests'){
+      const resolved=(data.resolved||[]).map(x=>`<div class="lz-op-card compact"><strong>OK · ${esc(x.requestedName||'')}</strong><span>${esc(x.guest?.name||'')} · Mesa: ${esc(x.guest?.table||'A definir')} · Estado: ${esc(x.guest?.status||'-')}</span></div>`).join('');
+      const missing=(data.missing||[]).map(x=>`<div class="lz-op-card compact bad"><strong>Não encontrado · ${esc(x.requestedName||'')}</strong><span>Este nome não foi localizado neste convite.</span></div>`).join('');
+      const ambiguous=(data.ambiguous||[]).map(x=>`<div class="lz-op-card compact warn"><strong>Ambíguo · ${esc(x.requestedName||'')}</strong><span>${esc((x.candidates||[]).map(c=>`${c.name} / ${c.table||'sem mesa'}`).join(' · '))}</span></div>`).join('');
+      return `<strong>Acção em massa bloqueada para segurança.</strong><br>${esc(data.message||'Há nomes que precisam de confirmação manual.')}<div class="lz-op-list">${resolved}${missing}${ambiguous}</div><div class="lz-op-warning">Recomendo repetir o comando com nomes mais completos ou executar por partes para evitar afectar o convidado errado.</div><div class="lz-op-actions"><button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button></div>`;
+    }
+    if(data.selectionType==='bulk_conflict'){
+      const conflicts=(data.conflicts||[]).map(x=>`<div class="lz-op-card compact warn"><strong>Já existe · ${esc(x.requestedName||'')}</strong><span>${esc(x.existing?.name||'')} · Mesa: ${esc(x.existing?.table||'A definir')} · Estado: ${esc(x.existing?.status||'-')}</span></div>`).join('');
+      return `<strong>Acção em massa bloqueada.</strong><br>${esc(data.message||'Foram detectados conflitos.')}<div class="lz-op-list">${conflicts}</div><div class="lz-op-warning">Nada foi alterado. Revê estes nomes antes de voltar a adicionar em massa.</div>`;
+    }
     return `<strong>Selecção necessária.</strong>`;
+  }
+
+  function renderBulkPreview(items){
+    const list=items||[];
+    if(!list.length) return '';
+    return `<div class="lz-op-card"><strong>Registos que serão afectados (${list.length})</strong><span>Confirme nome por nome antes de executar.</span></div><div class="lz-op-list">${list.slice(0,14).map((item,i)=>`<div class="lz-op-card compact"><strong>${i+1}. ${esc(item.before?.name||item.after?.name||item.requestedName||'Sem nome')}</strong><span>Mesa: ${esc(item.before?.table||item.after?.table||'A definir')} · Estado: ${esc(item.before?.status||item.after?.status||'Não aberto')} · Contacto: ${esc(item.before?.phone||item.after?.phone||'-')}</span>${item.before&&item.after?diffCard(item.before,item.after):''}</div>`).join('')}${list.length>14?`<div class="lz-op-card compact"><span>+ ${list.length-14} registo(s) fora da prévia.</span></div>`:''}</div>`;
   }
   function renderPreparedAction(data){
     const d=data.data||data;
@@ -455,20 +471,33 @@
     const warnings=(d.warnings||[]).map(w=>`<div class="lz-op-warning">${esc(w)}</div>`).join('');
     const strong=d.confirmationPhrase?`<div class="lz-op-danger"><strong>Confirmação forte obrigatória</strong><span>Para executar, escreva exactamente: <b>${esc(d.confirmationPhrase)}</b></span></div>`:'';
     const confirmButtons=d.confirmationPhrase?`<button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button>`:`<button class="lz-op-action primary" data-op-action="confirm-pending">Sim, executar</button><button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button>`;
-    return `<strong>Acção preparada: ${esc(d.actionLabel||d.actionType)}</strong><br><span class="lz-op-roleline ${roleClass}">Sessão actual: ${esc(d.roleLabel||roleLabel())}</span>${metric('Convite',d.invite?.coupleNames||d.invite?.clientName||d.invite?.slug||'-')}${d.guest?formatGuestMini(d.guest):''}${diffCard(d.before,d.after)}${warnings}${strong}<div class="lz-op-actions">${confirmButtons}</div>`;
+    const bulk=d.bulk?`${metric('Modo','Acção em massa segura')}${metric('Registos afectados',d.bulkCount||d.bulkItems?.length||0)}${renderBulkPreview(d.bulkItems||[])}`:'';
+    return `<strong>Acção preparada: ${esc(d.actionLabel||d.actionType)}</strong><br><span class="lz-op-roleline ${roleClass}">Sessão actual: ${esc(d.roleLabel||roleLabel())}</span>${metric('Convite',d.invite?.coupleNames||d.invite?.clientName||d.invite?.slug||'-')}${d.guest?formatGuestMini(d.guest):''}${bulk}${!d.bulk?diffCard(d.before,d.after):''}${warnings}${strong}<div class="lz-op-actions">${confirmButtons}</div>`;
   }
+
   async function prepareBotAction(message, extra={}){
     const inviteId=(extra&&extra.inviteId) || (getScopeValue()!=='__all__'&&getScopeValue()!=='__current__'?getScopeValue():selectedInviteId());
     const out=await api('/manager/bot/prepare-action',{method:'POST',body:JSON.stringify({message,inviteId,...extra})});
     if(out.status==='selection_required') return renderSelectionRequired(out,message);
     return renderPreparedAction(out);
   }
+  function renderBulkResult(result){
+    if(!result?.bulk) return '';
+    const items=result.items||[];
+    const links=items.map(x=>x.result?.publicLink).filter(Boolean);
+    if(links.length) state.lastMessage=links.join('\n');
+    return `${metric('Sucesso',result.success||0)}${metric('Falhas',result.failed||0)}<div class="lz-op-list">${items.slice(0,18).map((item,i)=>{const g=item.result?.guest; const link=item.result?.publicLink; const deleted=item.result?.deletedGuest; return `<div class="lz-op-card compact ${item.status==='error'?'bad':''}"><strong>${i+1}. ${esc(g?.name||deleted||item.requestedName||'Registo')}</strong><span>${item.status==='error'?`Erro: ${esc(item.error||'falha')}`:`OK · ${g?`Estado: ${esc(g.status||'-')} · Mesa: ${esc(g.table||'-')}`:deleted?'Eliminado':''}${link?' · link novo gerado':''}`}</span></div>`;}).join('')}${items.length>18?`<div class="lz-op-card compact"><span>+ ${items.length-18} resultado(s) fora da prévia.</span></div>`:''}</div>${links.length?`<div class="lz-op-card"><strong>Links gerados</strong><span>${esc(links.slice(0,8).join('\n')).replace(/\n/g,'<br>')}${links.length>8?'<br>...':''}</span></div>`:''}`;
+  }
   async function applyPendingAction(confirmText=''){
     const pending=state.pendingAction;
     if(!pending) return `<strong>Não há acção pendente.</strong><br>Peça primeiro uma operação, por exemplo: <b>repor acesso de João no convite rosalina-monteiro</b>.`;
     const out=await api('/manager/bot/apply-action',{method:'POST',body:JSON.stringify({actionId:pending.actionId,confirmText})});
     state.pendingAction=null; state.inviteCache.clear(); state.invites=null;
-    const d=out.data||{}; const guest=d.result?.guest; const link=d.result?.publicLink; if(link) state.lastMessage=link;
+    const d=out.data||{};
+    if(d.result?.bulk){
+      return `<strong>${esc(out.message||'Acção em massa concluída.')}</strong>${metric('Perfil usado',d.roleLabel||roleLabel())}${metric('Convite',d.invite?.coupleNames||d.invite?.clientName||d.invite?.slug||'-')}${renderBulkResult(d.result)}<div class="lz-op-actions">${state.lastMessage?'<button class="lz-op-action primary" data-op-action="copy-last-link">Copiar links</button>':''}<button class="lz-op-action" data-op-action="refresh">Actualizar mapa</button><button class="lz-op-action" data-op-action="go-guests">Abrir convidados</button></div>`;
+    }
+    const guest=d.result?.guest; const link=d.result?.publicLink; if(link) state.lastMessage=link;
     return `<strong>${esc(out.message||'Acção executada.')}</strong>${metric('Perfil usado',d.roleLabel||roleLabel())}${metric('Convite',d.invite?.coupleNames||d.invite?.clientName||d.invite?.slug||'-')}${d.before?formatGuestMini(d.before):''}${guest?`<div class="lz-op-card"><strong>Resultado actualizado</strong><span>${esc(guest.name||'')} · Estado: ${esc(guest.status||'-')} · Mesa: ${esc(guest.table||guest.mesa||'-')} · Token: ${guest.inviteToken?'actualizado/existente':'em falta'}</span></div>`:''}${link?`<div class="lz-op-card"><strong>Novo link individual</strong><span>${esc(link)}</span></div>`:''}${d.result?.deletedGuest?metric('Convidado eliminado',d.result.deletedGuest):''}${d.result?.rsvpsDeleted!==undefined?metric('RSVP removidos',d.result.rsvpsDeleted):''}${d.result?.checkinsDeleted!==undefined?metric('Check-ins removidos',d.result.checkinsDeleted):''}${d.result?.guestsReset!==undefined?metric('Convidados reiniciados',d.result.guestsReset):''}<div class="lz-op-actions">${link?'<button class="lz-op-action primary" data-op-action="copy-last-link">Copiar link</button>':''}<button class="lz-op-action" data-op-action="refresh">Actualizar mapa</button><button class="lz-op-action" data-op-action="go-guests">Abrir convidados</button></div>`;
   }
 
