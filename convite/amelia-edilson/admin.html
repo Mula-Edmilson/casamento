@@ -1389,9 +1389,17 @@
       }
 
       async function loadGiftRowsSafe() {
-        const inventoryRows = responseArray(await loadGiftInventorySafe());
-        const legacyRows = responseArray(await loadGiftLegacySafe());
-        return { status: 'success', data: inventoryRows.concat(legacyRows) };
+        return trySources([
+          () => adminPost('get_gift_selections_fast'),
+          () => LirandzoAPI.get('list_gift_selections_fast'),
+          () => adminPost('get_gift_selections'),
+          () => LirandzoAPI.get('list_gift_selections'),
+          async () => {
+            const inventoryRows = responseArray(await loadGiftInventorySafe());
+            const legacyRows = responseArray(await loadGiftLegacySafe());
+            return { status: 'success', data: inventoryRows.concat(legacyRows) };
+          }
+        ], { data: [] });
       }
 
       function stableRecordKey(row) {
@@ -1847,19 +1855,9 @@
           renderAll();
           backendNote.innerHTML = 'Dados principais carregados. Presentes e cápsula continuam a sincronizar em segundo plano.';
 
-          loadGiftInventorySafe()
-            .then(inventory => {
-              DATA.gifts = prepareGiftRecords(responseArray(inventory));
-              renderGifts();
-              renderMetrics();
-              renderActivity();
-              renderCharts();
-            })
-            .catch(err => console.warn('[gifts-inventory]', err))
-            .then(() => loadGiftLegacySafe())
-            .then(legacy => {
-              const merged = DATA.gifts.concat(responseArray(legacy));
-              DATA.gifts = prepareGiftRecords(merged);
+          loadGiftRowsSafe()
+            .then(giftRows => {
+              DATA.gifts = prepareGiftRecords(responseArray(giftRows));
               renderGifts();
               renderMetrics();
               renderActivity();
@@ -1867,7 +1865,7 @@
               backendNote.innerHTML = 'Painel sincronizado. Presentes carregados em modo leve, sem PDF, sem imagem e sem pré-visualização.';
             })
             .catch(err => {
-              console.warn('[gifts-legacy]', err);
+              console.warn('[gifts]', err);
               backendNote.innerHTML = 'Dados principais carregados. Presentes não carregaram agora; actualize apenas se precisar rever a lista.';
             });
 
