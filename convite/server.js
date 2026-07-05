@@ -1871,6 +1871,7 @@ app.get('/api', async (req, res) => {
     if (action === 'stats') return getPublicStats(req, res, invite);
     if (action === 'list_guests') return listGuests(req, res, invite);
     if (action === 'list_rsvps') return listRsvps(req, res, invite);
+    if (action === 'list_gift_selections') return listGiftSelections(req, res, invite);
     if (action === 'list_gift_records') return listContributions(req, res, invite);
     if (action === 'list_messages' || action === 'messages' || action === 'get_messages') return listMessages(req, res, invite);
     if (action === 'list_checkins') return listCheckins(req, res, invite);
@@ -2077,6 +2078,9 @@ app.post('/admin-api', async (req, res) => {
 
     if (data.action === 'stats') return getPublicStats(req, res, invite);
     if (data.action === 'get_rsvps') return res.json({ status: 'success', data: await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
+    if (data.action === 'get_gift_selections' || data.action === 'list_gift_selections') {
+      return res.json({ status: 'success', data: await listGiftSelectionsForAdmin(invite) });
+    }
     if (data.action === 'get_gifts' || data.action === 'list_gifts') return res.json({ status: 'success', data: await listGiftRowsForPublic(invite) });
     if (data.action === 'get_comprovativos' || data.action === 'list_gift_records') {
       await ensureLegacyGiftReservations(invite);
@@ -2573,6 +2577,93 @@ async function cleanContributionRowsForPublic(rows, invite) {
     };
   });
 }
+async function cleanGiftSelectionRecordsForAdmin(invite) {
+  await ensureLegacyGiftReservations(invite);
+  const options = await giftOptionNamesForInvite(invite);
+
+  const [reservedGifts, legacyRows] = await Promise.all([
+    GiftItem.find({ inviteId: invite._id, reserved: true }).sort({ reservedAt: -1, updatedAt: -1 }).lean(),
+    Contribution.find({ inviteId: invite._id, canal: /presente escolhido/i }).sort({ timestamp: -1, createdAt: -1 }).select('-fileBase64').lean()
+  ]);
+
+  const records = [];
+  const primaryKeys = new Set();
+  const keyFor = (guestName, giftName) => `${normalizeText(guestName || '')}|${compactGiftKeyServer(giftName || '')}`;
+
+  for (const gift of reservedGifts) {
+    const guestName = String(gift.reservedBy || 'Convidado').trim();
+    const giftName = String(gift.name || '').trim();
+    if (!giftName) continue;
+    primaryKeys.add(keyFor(guestName, giftName));
+    records.push({
+      id: String(gift._id || ''),
+      _id: String(gift._id || ''),
+      source: 'giftitems',
+      canal: 'Presente escolhido',
+      nome: guestName,
+      guestName,
+      reservedBy: guestName,
+      selectedGift: giftName,
+      giftName,
+      giftChoice: giftName,
+      selectedGifts: [giftName],
+      gifts: giftName,
+      timestamp: gift.reservedAt || gift.updatedAt || gift.createdAt || null,
+      reservedAt: gift.reservedAt || null,
+      status: 'Registado',
+      reserved: true
+    });
+  }
+
+  for (const row of legacyRows) {
+    const giftName = inferGiftNameFromContribution(row, options);
+    if (!giftName) continue;
+
+    const guestName = String(row.nome || row.reservedBy || 'Convidado').trim();
+    const d = safeParseObject(row.details);
+    const conflict = Boolean(row.legacyGiftConflict || d.duplicateGift || d.duplicateGuestGift);
+    const key = keyFor(guestName, giftName);
+
+    // Se já existe o registo oficial em GiftItem e não é conflito, não duplicar no admin.
+    if (!conflict && primaryKeys.has(key)) continue;
+
+    const reason = row.legacyGiftConflictReason || d.legacyGiftConflictReason || (d.alreadyReservedBy ? `Presente duplicado: ${giftName} já estava reservado por ${d.alreadyReservedBy}.` : '');
+    records.push({
+      id: String(row._id || ''),
+      _id: String(row._id || ''),
+      source: 'legacy_contributions',
+      canal: 'Presente escolhido',
+      nome: guestName,
+      guestName,
+      reservedBy: guestName,
+      selectedGift: giftName,
+      giftName,
+      giftChoice: giftName,
+      selectedGifts: [giftName],
+      gifts: giftName,
+      timestamp: row.timestamp || row.createdAt || row.updatedAt || null,
+      reservedAt: row.legacyGiftReservedAt || row.timestamp || row.createdAt || null,
+      status: conflict ? 'Duplicado' : 'Registado',
+      reserved: !conflict,
+      legacyGiftConflict: conflict,
+      conflict,
+      legacyGiftConflictReason: reason,
+      conflictReason: reason
+    });
+  }
+
+  records.sort((a, b) => new Date(b.timestamp || b.reservedAt || 0) - new Date(a.timestamp || a.reservedAt || 0));
+  return records;
+}
+
+async function listGiftSelectionsForAdmin(invite) {
+  return cleanGiftSelectionRecordsForAdmin(invite);
+}
+
+async function listGiftSelections(req, res, invite) {
+  sendJson(req, res, { status: 'success', data: await listGiftSelectionsForAdmin(invite) });
+}
+
 async function listGiftRowsForPublic(invite) {
   await ensureLegacyGiftReservations(invite);
   const gifts = await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 });
