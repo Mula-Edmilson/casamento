@@ -2426,27 +2426,35 @@ function giftNamesFromPayload(body = {}) {
 function cleanGiftForPublic(gift) {
   if (!gift) return null;
   const o = gift.toObject ? gift.toObject() : gift;
+  const isReserved = Boolean(o.reserved);
   return {
     id: String(o._id || ''),
     _id: String(o._id || ''),
     inviteId: String(o.inviteId || ''),
     slug: o.slug || '',
+
+    // Nome/label servem apenas para desenhar a lista de presentes.
+    // Nunca devem ser interpretados como “presente escolhido” quando reserved=false.
     name: o.name || '',
     label: o.name || '',
-    giftName: o.name || '',
-    selectedGift: o.name || '',
-    giftChoice: o.name || '',
     category: o.category || 'Geral',
-    reserved: Boolean(o.reserved),
-    isReserved: Boolean(o.reserved),
-    reservedBy: o.reservedBy || '',
-    reserved_by: o.reservedBy || '',
-    reservedByNormalized: o.reservedByNormalized || '',
-    reservedByGuestId: o.reservedByGuestId ? String(o.reservedByGuestId) : '',
-    reservedToken: o.reservedToken || '',
-    token: o.reservedToken || '',
-    reservedAt: o.reservedAt || null,
-    timestamp: o.reservedAt || o.updatedAt || o.createdAt || null,
+
+    reserved: isReserved,
+    isReserved,
+    reservedBy: isReserved ? (o.reservedBy || '') : '',
+    reserved_by: isReserved ? (o.reservedBy || '') : '',
+    reservedByNormalized: isReserved ? (o.reservedByNormalized || '') : '',
+    reservedByGuestId: isReserved && o.reservedByGuestId ? String(o.reservedByGuestId) : '',
+    reservedToken: isReserved ? (o.reservedToken || '') : '',
+    token: isReserved ? (o.reservedToken || '') : '',
+    reservedAt: isReserved ? (o.reservedAt || null) : null,
+
+    // Campos de escolha só existem quando o item está realmente reservado.
+    giftName: isReserved ? (o.name || '') : '',
+    selectedGift: isReserved ? (o.name || '') : '',
+    giftChoice: isReserved ? (o.name || '') : '',
+    timestamp: isReserved ? (o.reservedAt || null) : null,
+
     createdAt: o.createdAt || null,
     updatedAt: o.updatedAt || null
   };
@@ -2463,13 +2471,48 @@ async function handleSaveGifts(req, res, invite) {
   }
 
   if (!giftNames.length) {
-    return res.status(400).json({ status: 'error', message: 'Escolha pelo menos 1 presente disponível.' });
+    return res.status(400).json({ status: 'error', message: 'Escolha 1 presente disponível.' });
+  }
+
+  if (giftNames.length > 1) {
+    return res.status(400).json({ status: 'error', code: 'ONLY_ONE_GIFT_ALLOWED', message: 'Cada convidado só pode escolher 1 presente.' });
   }
 
   const guest = await findGuestByIdentity(invite, { nome: rawName, token: rawToken });
   const reservedBy = String(guest?.name || rawName || 'Convidado').trim();
   const reservedByNormalized = normalizeText(reservedBy);
   const reservedToken = String(rawToken || guest?.inviteToken || '').trim();
+
+  const alreadyReservedByGuest = await GiftItem.findOne({
+    inviteId: invite._id,
+    reserved: true,
+    $or: [
+      ...(guest?._id ? [{ reservedByGuestId: guest._id }] : []),
+      ...(reservedToken ? [{ reservedToken }] : []),
+      ...(reservedByNormalized ? [{ reservedByNormalized }] : [])
+    ]
+  });
+
+  if (alreadyReservedByGuest) {
+    const sameGift = normalizeText(alreadyReservedByGuest.name) === normalizeText(giftNames[0]);
+    if (sameGift) {
+      return res.json({
+        status: 'success',
+        code: 'GIFT_ALREADY_RESERVED_BY_THIS_GUEST',
+        data: { success: [cleanGiftForPublic(alreadyReservedByGuest)], failed: [] },
+        reserved: [cleanGiftForPublic(alreadyReservedByGuest)],
+        message: 'Este presente já estava registado em seu nome.'
+      });
+    }
+
+    return res.status(409).json({
+      status: 'error',
+      code: 'GUEST_ALREADY_SELECTED_GIFT',
+      message: `Já existe um presente registado em seu nome: ${alreadyReservedByGuest.name}. Cada convidado só pode escolher 1 presente.`,
+      data: { reserved: cleanGiftForPublic(alreadyReservedByGuest) }
+    });
+  }
+
   const now = new Date();
   const results = { success: [], failed: [] };
 

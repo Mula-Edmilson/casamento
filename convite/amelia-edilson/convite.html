@@ -724,14 +724,26 @@ function flattenGiftValues(values) {
 }
 
 function giftNameFromRecord(record) {
+  if (!record) return '';
   const details = parseGiftDetails(record && record.details);
+  const reserved = record.reserved === true || record.isReserved === true || Boolean(record.reservedBy || record.reserved_by || record.reservedAt);
+  const contributionLike = Boolean(
+    record.canal || record.filename || record.fileName || record.originalName ||
+    record.viewUrl || record.previewUrl || record.downloadUrl || record.comprovativoFile ||
+    details.comprovativoFile || details.comprovativoFile_filename
+  );
+  const inventoryOnly = (record.reserved !== undefined || record.isReserved !== undefined || record.category !== undefined) && Boolean(record.name || record.label) && !contributionLike;
+
+  // Segurança: uma linha de inventário livre não pode bloquear o presente.
+  if (inventoryOnly && !reserved) return '';
+
   const values = flattenGiftValues([
-    record && record.selectedGift,
-    record && record.giftChoice,
-    record && record.gift,
-    record && record.giftName,
-    record && record.selectedGifts,
-    record && record.gifts,
+    record.selectedGift,
+    record.giftChoice,
+    record.gift,
+    record.giftName,
+    record.selectedGifts,
+    record.gifts,
     details.selectedGift,
     details.giftChoice,
     details.gift,
@@ -739,7 +751,8 @@ function giftNameFromRecord(record) {
     details.selectedGifts,
     details.gifts
   ]);
-  return String(values[0] || '').trim();
+  if (values[0]) return String(values[0] || '').trim();
+  return reserved ? String(record.name || record.label || '').trim() : '';
 }
 
 function giftResponseArray(response) {
@@ -759,7 +772,6 @@ function isReservedGiftRecord(record) {
   if (!record) return false;
   const status = normalizeGiftKey(record.status || record.state || record.reservedStatus || '');
   return Boolean(
-    giftNameFromRecord(record) ||
     record.reserved === true ||
     record.isReserved === true ||
     record.reservedBy ||
@@ -767,7 +779,8 @@ function isReservedGiftRecord(record) {
     record.reservedAt ||
     status.includes('reserv') ||
     status.includes('escolh') ||
-    status.includes('indispon')
+    status.includes('indispon') ||
+    giftNameFromRecord(record)
   );
 }
 

@@ -1570,11 +1570,23 @@
       }
 
       function giftChosenName(g) {
+        if (!g) return '';
         const d = parseGiftDetails(g || {});
+        const reserved = g?.reserved === true || g?.isReserved === true || Boolean(g?.reservedBy || g?.reserved_by || g?.reservedAt);
+        const contributionLike = Boolean(
+          g?.canal || g?.filename || g?.fileName || g?.originalName ||
+          g?.viewUrl || g?.previewUrl || g?.downloadUrl || g?.comprovativoFile ||
+          d.comprovativoFile || d.comprovativoFile_filename
+        );
+        const inventoryOnly = (g?.reserved !== undefined || g?.isReserved !== undefined || g?.category !== undefined) && Boolean(g?.name || g?.label) && !contributionLike;
+
+        // Segurança: inventário de presentes com reserved=false NÃO é contribuição nem escolha.
+        if (inventoryOnly && !reserved) return '';
+
         let value = g?.selectedGift || g?.giftChoice || g?.gift || g?.giftName || g?.selectedGifts || g?.gifts || d.selectedGift || d.giftChoice || d.gift || d.giftName || d.selectedGifts || d.gifts || '';
         if (Array.isArray(value)) value = value[0] || '';
         if (typeof value === 'string' && value.includes(',')) value = value.split(',')[0];
-        if (!value && (g?.reserved === true || g?.reservedBy || g?.reserved_by || g?.reservedAt)) value = g?.name || g?.label || '';
+        if (!value && reserved) value = g?.name || g?.label || '';
         return text(value);
       }
 
@@ -1582,21 +1594,18 @@
         if (!g) return false;
         const d = parseGiftDetails(g);
         const status = text(g.status || g.state || d.status).toLowerCase();
+        const reserved = g?.reserved === true || g?.isReserved === true || Boolean(g?.reservedBy || g?.reserved_by || g?.reservedAt);
+        const contributionLike = Boolean(
+          g.canal || g.filename || g.fileName || g.originalName ||
+          g.viewUrl || g.previewUrl || g.downloadUrl || g.comprovativoFile ||
+          d.comprovativoFile || d.comprovativoFile_filename
+        );
         return Boolean(
-          giftChosenName(g) ||
-          g.canal ||
-          g.filename ||
-          g.viewUrl ||
-          g.previewUrl ||
-          g.downloadUrl ||
-          g.comprovativoFile ||
-          d.comprovativoFile ||
-          g.reserved === true ||
-          g.reservedBy ||
-          g.reserved_by ||
-          g.reservedAt ||
+          contributionLike ||
+          reserved ||
           status.includes('reserv') ||
-          status.includes('escolh')
+          status.includes('escolh') ||
+          giftChosenName(g)
         );
       }
 
