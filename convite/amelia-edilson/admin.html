@@ -2014,7 +2014,6 @@
           const giftsPromise = collectSources([
             () => adminPost('get_gifts'),
             () => adminPost('get_comprovativos'),
-            () => adminPost('list_gift_records'),
             () => LirandzoAPI.get('list_gift_records'),
             () => LirandzoAPI.get('list_gifts')
           ]);
@@ -2330,6 +2329,7 @@
       function giftPreviewMarkup(g) {
         const media = giftMedia(g);
         const detail = giftDetail(g);
+        const d = parseGiftDetails(g);
         const fileLabel = media.fileName || detail;
         const imgUrl = media.imgUrl;
         const openUrl = media.openUrl || media.download || imgUrl;

@@ -2077,8 +2077,8 @@ app.post('/admin-api', async (req, res) => {
 
     if (data.action === 'stats') return getPublicStats(req, res, invite);
     if (data.action === 'get_rsvps') return res.json({ status: 'success', data: await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
-    if (data.action === 'get_gifts') return res.json({ status: 'success', data: await listGiftRowsForPublic(invite) });
-    if (data.action === 'get_comprovativos') {
+    if (data.action === 'get_gifts' || data.action === 'list_gifts') return res.json({ status: 'success', data: await listGiftRowsForPublic(invite) });
+    if (data.action === 'get_comprovativos' || data.action === 'list_gift_records') {
       await ensureLegacyGiftReservations(invite);
       const rows = await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64');
       return res.json({ status: 'success', data: await cleanContributionRowsForPublic(rows, invite) });
