@@ -1873,6 +1873,7 @@ app.get('/api', async (req, res) => {
     if (action === 'stats') return getPublicStats(req, res, invite);
     if (action === 'list_guests') return listGuests(req, res, invite);
     if (action === 'list_rsvps') return listRsvps(req, res, invite);
+    if (action === 'list_gift_selections_fast') return listGiftSelectionsFast(req, res, invite);
     if (action === 'list_gift_selections') return listGiftSelections(req, res, invite);
     if (action === 'list_gift_records') return listContributions(req, res, invite);
     if (action === 'list_messages' || action === 'messages' || action === 'get_messages') return listMessages(req, res, invite);
@@ -2080,6 +2081,9 @@ app.post('/admin-api', async (req, res) => {
 
     if (data.action === 'stats') return getPublicStats(req, res, invite);
     if (data.action === 'get_rsvps') return res.json({ status: 'success', data: await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
+    if (data.action === 'get_gift_selections_fast' || data.action === 'list_gift_selections_fast') {
+      return res.json({ status: 'success', data: await listGiftSelectionsFastForAdmin(invite) });
+    }
     if (data.action === 'get_gift_selections' || data.action === 'list_gift_selections') {
       return res.json({ status: 'success', data: await listGiftSelectionsForAdmin(invite) });
     }
@@ -2321,6 +2325,13 @@ async function giftOptionNamesForInvite(invite) {
   await seedDefaultGifts(invite);
   const rows = await GiftItem.find({ inviteId: invite._id }).select('name').lean();
   return rows.map(row => row.name).filter(Boolean);
+}
+async function giftOptionNamesFastForInvite(invite) {
+  const rows = await GiftItem.find({ inviteId: invite._id }).select('name').lean();
+  return Array.from(new Set([
+    ...giftSeedListForInvite(invite),
+    ...rows.map(row => row.name).filter(Boolean)
+  ]));
 }
 function matchGiftNameFromSlugOrText(rawValue, options = []) {
   const raw = String(rawValue || '').trim();
@@ -2607,6 +2618,116 @@ async function cleanContributionRowsForPublic(rows, invite) {
     };
   });
 }
+async function cleanGiftSelectionRecordsFastForAdmin(invite) {
+  const options = await giftOptionNamesFastForInvite(invite);
+
+  const [reservedGifts, legacyRows] = await Promise.all([
+    GiftItem.find({ inviteId: invite._id, reserved: true })
+      .select('name reservedBy reservedAt updatedAt createdAt reservedToken legacyGiftConflict legacyGiftConflictReason')
+      .sort({ reservedAt: -1, updatedAt: -1 })
+      .lean(),
+    Contribution.find({ inviteId: invite._id, canal: /presente escolhido/i })
+      .sort({ timestamp: -1, createdAt: -1 })
+      .select('-fileBase64')
+      .lean()
+  ]);
+
+  const records = [];
+  const primaryKeys = new Set();
+  const giftOwners = new Map();
+  const keyFor = (guestName, giftName) => `${normalizeText(guestName || '')}|${compactGiftKeyServer(giftName || '')}`;
+  const timeValue = row => row.timestamp || row.reservedAt || row.createdAt || row.updatedAt || null;
+
+  for (const gift of reservedGifts) {
+    const guestName = String(gift.reservedBy || 'Convidado').trim();
+    const giftName = String(gift.name || '').trim();
+    if (!giftName) continue;
+    const key = keyFor(guestName, giftName);
+    const giftKey = compactGiftKeyServer(giftName);
+    primaryKeys.add(key);
+    if (!giftOwners.has(giftKey)) giftOwners.set(giftKey, { guestName, giftName, at: gift.reservedAt || gift.createdAt || null });
+    records.push({
+      id: String(gift._id || ''),
+      _id: String(gift._id || ''),
+      source: 'giftitems_fast',
+      canal: 'Presente escolhido',
+      nome: guestName,
+      guestName,
+      reservedBy: guestName,
+      selectedGift: giftName,
+      giftName,
+      giftChoice: giftName,
+      selectedGifts: [giftName],
+      gifts: giftName,
+      timestamp: gift.reservedAt || gift.updatedAt || gift.createdAt || null,
+      reservedAt: gift.reservedAt || null,
+      status: 'Registado',
+      reserved: true
+    });
+  }
+
+  const chronologicalLegacy = legacyRows.slice().sort((a, b) => new Date(timeValue(a) || 0) - new Date(timeValue(b) || 0));
+  const duplicateMetaById = new Map();
+  for (const row of chronologicalLegacy) {
+    const giftName = inferGiftNameFromContribution(row, options);
+    if (!giftName) continue;
+    const guestName = String(row.nome || row.reservedBy || 'Convidado').trim();
+    const giftKey = compactGiftKeyServer(giftName);
+    const owner = giftOwners.get(giftKey);
+    const sameOwner = owner && normalizeText(owner.guestName || '') === normalizeText(guestName || '');
+    const details = safeParseObject(row.details);
+    let conflict = Boolean(row.legacyGiftConflict || details.duplicateGift || details.duplicateGuestGift);
+    let reason = row.legacyGiftConflictReason || details.legacyGiftConflictReason || '';
+    if (owner && !sameOwner) {
+      conflict = true;
+      reason = reason || `Presente duplicado: ${giftName} já estava reservado por ${owner.guestName || 'outro convidado'}.`;
+    } else if (!owner) {
+      giftOwners.set(giftKey, { guestName, giftName, at: timeValue(row) });
+    }
+    duplicateMetaById.set(String(row._id || ''), { conflict, reason, giftName, guestName });
+  }
+
+  for (const row of legacyRows) {
+    const meta = duplicateMetaById.get(String(row._id || ''));
+    const giftName = meta?.giftName || inferGiftNameFromContribution(row, options);
+    if (!giftName) continue;
+
+    const guestName = meta?.guestName || String(row.nome || row.reservedBy || 'Convidado').trim();
+    const details = safeParseObject(row.details);
+    const conflict = Boolean(meta?.conflict || row.legacyGiftConflict || details.duplicateGift || details.duplicateGuestGift);
+    const key = keyFor(guestName, giftName);
+
+    if (!conflict && primaryKeys.has(key)) continue;
+
+    const reason = meta?.reason || row.legacyGiftConflictReason || details.legacyGiftConflictReason || (details.alreadyReservedBy ? `Presente duplicado: ${giftName} já estava reservado por ${details.alreadyReservedBy}.` : '');
+    records.push({
+      id: String(row._id || ''),
+      _id: String(row._id || ''),
+      source: 'legacy_contributions_fast',
+      canal: 'Presente escolhido',
+      nome: guestName,
+      guestName,
+      reservedBy: guestName,
+      selectedGift: giftName,
+      giftName,
+      giftChoice: giftName,
+      selectedGifts: [giftName],
+      gifts: giftName,
+      timestamp: row.timestamp || row.createdAt || row.updatedAt || null,
+      reservedAt: row.legacyGiftReservedAt || row.timestamp || row.createdAt || null,
+      status: conflict ? 'Duplicado' : 'Registado',
+      reserved: !conflict,
+      legacyGiftConflict: conflict,
+      conflict,
+      legacyGiftConflictReason: reason,
+      conflictReason: reason
+    });
+  }
+
+  records.sort((a, b) => new Date(b.timestamp || b.reservedAt || 0) - new Date(a.timestamp || a.reservedAt || 0));
+  return records;
+}
+
 async function cleanGiftSelectionRecordsForAdmin(invite) {
   await ensureLegacyGiftReservations(invite);
   const options = await giftOptionNamesForInvite(invite);
@@ -2686,8 +2807,16 @@ async function cleanGiftSelectionRecordsForAdmin(invite) {
   return records;
 }
 
+async function listGiftSelectionsFastForAdmin(invite) {
+  return cleanGiftSelectionRecordsFastForAdmin(invite);
+}
+
 async function listGiftSelectionsForAdmin(invite) {
   return cleanGiftSelectionRecordsForAdmin(invite);
+}
+
+async function listGiftSelectionsFast(req, res, invite) {
+  sendJson(req, res, { status: 'success', data: await listGiftSelectionsFastForAdmin(invite) });
 }
 
 async function listGiftSelections(req, res, invite) {
