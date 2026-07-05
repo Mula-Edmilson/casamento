@@ -939,14 +939,47 @@ async function copyPackageTemplateToClient({ invite, allowOverwrite = false }) {
 }
 
 const DEFAULT_GIFTS = ['Geleira', 'Fogão', 'Congelador', 'TV', 'Batedeira', 'Mesa', 'Cadeira', 'Panela', 'Ar Condicionado', 'Micro-ondas', 'Ferro a vapor', 'Mesa de centro', 'Vaso', 'Pratos', 'Colcha', 'Cobertor', 'Colchão', 'Forno eléctrico', 'Jogo de facas', 'Máquina de lavar', 'Tapete', 'Saladeira', 'Panela de pressão', 'Porta-temperos', 'Copos', 'Fritadeira eléctrica', 'Bandeja', 'Torradeira', 'Frigideira eléctrica'];
+
+// Lista exacta do convite Amélia & Edilson. Mantém o backend alinhado com
+// event-data.js para que todos os presentes visíveis no convite possam ser
+// reservados no MongoDB e bloqueados correctamente.
+const INVITE_SPECIFIC_GIFTS = {
+  'amelia-edilson': [
+    'Microondas',
+    'Taças de cristal',
+    'Jogo de banho Maria',
+    'Máquina de café',
+    'Máquina de sumo',
+    'Jogo de chávenas',
+    'Tigelas organizadoras de geleira',
+    'Ferro de engomar',
+    'Jogo de talheres',
+    'Tábuas de madeira',
+    'Edredon casal',
+    'Organizador de gavetas',
+    'Tapete para sala (cinza)',
+    'Batedeira',
+    'Airfryer',
+    'Máquina de lavar',
+    'Panelas anti aderentes',
+    'Fogão a gás e forno elétrico'
+  ]
+};
+
+function giftSeedListForInvite(invite) {
+  const slug = String(invite?.slug || '').trim().toLowerCase();
+  const custom = INVITE_SPECIFIC_GIFTS[slug] || [];
+  return Array.from(new Set([...(custom.length ? custom : DEFAULT_GIFTS), ...DEFAULT_GIFTS]));
+}
+
 async function seedDefaultGifts(invite) {
   if (!invite || !invite._id) return;
 
-  for (const name of DEFAULT_GIFTS) {
+  for (const name of giftSeedListForInvite(invite)) {
     try {
       await GiftItem.updateOne(
         { inviteId: invite._id, name },
-        { $setOnInsert: { inviteId: invite._id, slug: invite.slug, name, category: 'Geral', reserved: false } },
+        { $setOnInsert: { inviteId: invite._id, slug: invite.slug, name, category: 'Lista de presentes', reserved: false } },
         { upsert: true }
       );
     } catch (err) {
@@ -2805,6 +2838,8 @@ function cleanGiftForPublic(gift) {
 }
 
 async function handleSaveGifts(req, res, invite) {
+  await seedDefaultGifts(invite);
+
   const body = req.body || {};
   const giftNames = giftNamesFromPayload(body);
   const rawName = String(body.nome || body.guestName || body.convidado || body.reservedBy || body.reserved_by || '').trim();
