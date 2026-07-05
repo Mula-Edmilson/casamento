@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
   <title>Painel do Cliente · Amélia & Edilson</title>
+  <!-- LIRANDZO_ADMIN_FORM_FIX_V15 -->
   <meta name="robots" content="noindex,nofollow">
   <link rel="icon" type="image/svg+xml" href="assets/media/lirandzo-logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1126,6 +1127,132 @@
       }
     }
 
+
+
+    /* FIX v15 DEFINITIVO: força o layout do formulário por ID, mesmo que regras anteriores falhem */
+    #addGuestForm.admin-form-grid,
+    form#addGuestForm {
+      display: grid !important;
+      grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+      gap: 10px !important;
+      align-items: end !important;
+      width: 100% !important;
+    }
+
+    #addGuestForm .admin-field {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 6px !important;
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+
+    #addGuestForm .admin-field label {
+      display: block !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      color: var(--accent-2) !important;
+      font-size: 10px !important;
+      font-weight: 900 !important;
+      letter-spacing: .08em !important;
+      text-transform: uppercase !important;
+      line-height: 1.1 !important;
+    }
+
+    #addGuestForm .admin-field input,
+    #addGuestForm .admin-field select,
+    #addGuestForm .admin-field textarea {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      min-height: 40px !important;
+      height: 40px !important;
+      margin: 0 !important;
+      border: 1px solid var(--line-strong) !important;
+      border-radius: 13px !important;
+      outline: none !important;
+      background: rgba(33, 28, 25, .82) !important;
+      color: var(--text) !important;
+      padding: 0 12px !important;
+      font-family: var(--font-body) !important;
+      font-size: 13px !important;
+      font-weight: 650 !important;
+      line-height: 40px !important;
+      box-shadow: none !important;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    #addGuestForm .admin-field select {
+      background-image: linear-gradient(45deg, transparent 50%, var(--accent-2) 50%), linear-gradient(135deg, var(--accent-2) 50%, transparent 50%) !important;
+      background-position: calc(100% - 16px) 17px, calc(100% - 11px) 17px !important;
+      background-size: 5px 5px, 5px 5px !important;
+      background-repeat: no-repeat !important;
+      padding-right: 30px !important;
+    }
+
+    #addGuestForm .admin-field textarea {
+      height: 40px !important;
+      min-height: 40px !important;
+      resize: vertical !important;
+      padding-top: 10px !important;
+      line-height: 1.25 !important;
+    }
+
+    #addGuestForm .admin-form-actions {
+      display: flex !important;
+      align-items: end !important;
+      justify-content: stretch !important;
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+
+    #addGuestForm .admin-form-actions .btn,
+    #addGuestBtn {
+      width: 100% !important;
+      min-height: 40px !important;
+      white-space: nowrap !important;
+    }
+
+    .admin-form-card .action-note {
+      display: block !important;
+      margin: 10px 0 0 !important;
+      color: var(--muted) !important;
+      font-size: 12px !important;
+      line-height: 1.45 !important;
+    }
+
+    html[data-theme="light"] #addGuestForm .admin-field input,
+    html[data-theme="light"] #addGuestForm .admin-field select,
+    html[data-theme="light"] #addGuestForm .admin-field textarea {
+      background: rgba(255,255,255,.86) !important;
+      color: var(--text) !important;
+    }
+
+    @media (max-width: 980px) {
+      #addGuestForm.admin-form-grid,
+      form#addGuestForm {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      #addGuestForm .admin-field:has(textarea) {
+        grid-column: 1 / -1 !important;
+      }
+      #addGuestForm .admin-form-actions {
+        grid-column: 1 / -1 !important;
+      }
+    }
+
+    @media (max-width: 620px) {
+      #addGuestForm.admin-form-grid,
+      form#addGuestForm {
+        grid-template-columns: 1fr !important;
+      }
+      #addGuestForm .admin-form-actions {
+        grid-column: auto !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1253,7 +1380,7 @@
         <section class="panel-card admin-form-card">
           <div class="panel-head"><h2><i data-feather="user-plus"></i> Adicionar convidado</h2><span class="status-badge blue">Novo registo</span></div>
           <div class="panel-body">
-            <form id="addGuestForm" class="admin-form-grid">
+            <form id="addGuestForm" class="admin-form-grid" data-form-fix="v15">
               <div class="admin-field"><label for="newGuestName">Nome</label><input id="newGuestName" name="name" type="text" placeholder="Ex.: Armindo & Esposa" required></div>
               <div class="admin-field"><label for="newGuestCategory">Categoria</label><select id="newGuestCategory" name="category"><option value="Individual">Individual</option><option value="Couple">Casal</option><option value="Família">Família</option><option value="VIP">VIP</option></select></div>
               <div class="admin-field"><label for="newGuestTable">Mesa</label><input id="newGuestTable" name="table" type="text" placeholder="A definir"></div>
