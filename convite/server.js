@@ -376,8 +376,11 @@ const GiftItemSchema = new mongoose.Schema({
   slug: { type: String, required: true, index: true },
   name: { type: String, required: true },
   category: { type: String, default: 'Geral' },
-  reserved: { type: Boolean, default: false },
+  reserved: { type: Boolean, default: false, index: true },
   reservedBy: { type: String, default: '' },
+  reservedByNormalized: { type: String, default: '', index: true },
+  reservedByGuestId: { type: mongoose.Schema.Types.ObjectId, ref: 'Guest', index: true },
+  reservedToken: { type: String, default: '', index: true },
   reservedAt: { type: Date }
 }, { timestamps: true });
 GiftItemSchema.index({ inviteId: 1, name: 1 }, { unique: true });
@@ -1406,7 +1409,10 @@ app.post('/manager/invites/:id/gifts/reset-reservations', requireManager, requir
 
   const result = await GiftItem.updateMany(
     { inviteId: invite._id },
-    { $set: { reserved: false, reservedBy: '', reservedAt: null } }
+    {
+      $set: { reserved: false, reservedBy: '', reservedByNormalized: '', reservedToken: '', reservedAt: null },
+      $unset: { reservedByGuestId: '' }
+    }
   );
 
   await logActivity({
@@ -1820,7 +1826,7 @@ app.post('/api', upload.any(), async (req, res) => {
     if (action === 'rsvp' || action === 'submit_rsvp') return handleRsvp(req, res, invite);
     if (action === 'rsvp_choice') return handleRsvpChoice(req, res, invite);
     if (action === 'post_message') return handlePostMessage(req, res, invite);
-    if (action === 'save_gifts') return handleSaveGifts(req, res, invite);
+    if (action === 'save_gifts' || action === 'reserve_gift' || action === 'reserve_gifts' || action === 'choose_gift') return handleSaveGifts(req, res, invite);
     if (action === 'upload_comprovativo' || action === 'submit_contribution') return handleUploadComprovativo(req, res, invite);
     if (action === 'checkin_guest') return handleCheckinGuest(req, res, invite);
     if (action === 'save_capsule_photo' || action === 'upload_capsule_photo') return handleSaveCapsulePhoto(req, res, invite);
@@ -1977,6 +1983,7 @@ function envSlugKey(value) {
 function adminApiPasswordsFor(invite) {
   const slugKey = envSlugKey(invite?.slug || '');
   const values = [
+    process.env.MANAGER_ADMIN_PASSWORD || '',
     process.env.MANAGER_PASSWORD || '',
     slugKey ? process.env[`CLIENT_ADMIN_PASSWORD_${slugKey}`] || '' : '',
     slugKey ? process.env[`INVITE_ADMIN_PASSWORD_${slugKey}`] || '' : '',
@@ -1989,7 +1996,7 @@ function adminApiAuthorized(req, data = {}, invite = null) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : '';
   const payload = verifyToken(token);
-  if (payload && payload.role === 'manager') return true;
+  if (payload && normalizeManagerRole(payload)) return true;
 
   const suppliedPassword = String(data.password || data.admin_password || '').trim();
   if (!suppliedPassword) return false;
@@ -2003,8 +2010,9 @@ app.post('/admin-api', async (req, res) => {
     if (!invite) return res.status(400).json({ status: 'error', message: 'Slug do convite não enviado.' });
     if (!adminApiAuthorized(req, data, invite)) return res.status(401).json({ status: 'error', message: 'Sessão inválida, expirada ou senha de admin incorrecta.' });
 
+    if (data.action === 'stats') return getPublicStats(req, res, invite);
     if (data.action === 'get_rsvps') return res.json({ status: 'success', data: await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
-    if (data.action === 'get_gifts') return res.json({ status: 'success', data: await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 }) });
+    if (data.action === 'get_gifts') return res.json({ status: 'success', data: (await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 })).map(cleanGiftForPublic) });
     if (data.action === 'get_comprovativos') return res.json({ status: 'success', data: await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64') });
     if (data.action === 'get_messages') return res.json({ status: 'success', data: await Message.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
     if (data.action === 'get_guests') return res.json({ status: 'success', data: (await Guest.find({ inviteId: invite._id }).sort({ number: 1, name: 1 })).map(cleanGuestForPublic) });
@@ -2146,18 +2154,40 @@ async function findGuestByIdentity(invite, { nome, name, token } = {}) {
   return guest;
 }
 async function getPublicStats(req, res, invite) {
-  const [guests, rsvps, contributions, messages, checkins, photos] = await Promise.all([
-    Guest.find({ inviteId: invite._id }).select('maxGuests companions checkedIn'),
+  const [guests, rsvps, contributions, messages, checkins, photos, gifts] = await Promise.all([
+    Guest.find({ inviteId: invite._id }).select('maxGuests companions checkedIn status'),
     Rsvp.find({ inviteId: invite._id }).select('guests'),
     Contribution.countDocuments({ inviteId: invite._id }),
     Message.countDocuments({ inviteId: invite._id, hidden: { $ne: true } }),
     CheckIn.find({ inviteId: invite._id }).select('guests'),
-    CapsulePhoto.countDocuments({ inviteId: invite._id })
+    CapsulePhoto.countDocuments({ inviteId: invite._id }),
+    GiftItem.countDocuments({ inviteId: invite._id, reserved: true })
   ]);
   const totalPeople = guests.reduce((sum, g) => sum + (Number(g.maxGuests) || (1 + (Number(g.companions) || 0))), 0);
   const confirmed = rsvps.reduce((sum, r) => sum + (Number(r.guests) || 1), 0);
   const checkedPeople = checkins.reduce((sum, c) => sum + (Number(c.guests) || 1), 0);
-  sendJson(req, res, { status: 'success', data: { guestsCount: guests.length, totalPeople, confirmed, confirmedRows: rsvps.length, checkedPeople, checkedIn: checkins.length, contributions, messages, photos } });
+  const openedRows = guests.filter(g => {
+    const status = normalizeText(g.status || '');
+    return status.includes('abert') || status.includes('confirm') || status.includes('check') || Boolean(g.checkedIn);
+  }).length;
+  const confirmedRows = rsvps.length;
+  sendJson(req, res, {
+    status: 'success',
+    data: {
+      guestsCount: guests.length,
+      totalPeople,
+      openedRows,
+      notOpenedRows: Math.max(guests.length - openedRows, 0),
+      confirmed,
+      confirmedRows,
+      checkedPeople,
+      checkedIn: checkins.length,
+      gifts,
+      contributions,
+      messages,
+      photos
+    }
+  });
 }
 async function listGuests(req, res, invite) {
   const guests = await Guest.find({ inviteId: invite._id }).sort({ number: 1, name: 1 });
@@ -2190,11 +2220,24 @@ async function listCapsulePhotos(req, res, invite) {
   sendJson(req, res, { status: 'success', data });
 }
 async function listMessages(req, res, invite) { const messages = await Message.find({ inviteId: invite._id, hidden: { $ne: true } }).sort({ timestamp: -1 }).limit(200); sendJson(req, res, { status: 'success', data: messages }); }
-async function listGifts(req, res, invite) { await seedDefaultGifts(invite); const gifts = await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 }); sendJson(req, res, { status: 'success', data: gifts }); }
+async function listGifts(req, res, invite) {
+  await seedDefaultGifts(invite);
+  const gifts = await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 });
+  sendJson(req, res, { status: 'success', data: gifts.map(cleanGiftForPublic) });
+}
 async function getGuestDetails(req, res, invite) {
   const guest = await findGuestByIdentity(invite, { nome: req.body?.nome || req.query?.nome || req.query?.name, name: req.query?.name, token: req.body?.token || req.query?.token });
   if (!guest) return sendJson(req, res, { status: 'error', message: 'Convidado não encontrado.' }, 404);
   await ensureGuestInviteToken(invite, guest);
+
+  const currentStatus = normalizeText(guest.status || '');
+  const alreadyConfirmedOrChecked = currentStatus.includes('confirm') || currentStatus.includes('check') || currentStatus.includes('entrou') || Boolean(guest.checkedIn);
+  if (!alreadyConfirmedOrChecked && !currentStatus.includes('abert')) {
+    guest.status = 'Convite Aberto';
+    await guest.save();
+    await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name, meta: { source: 'get_guest_details' } });
+  }
+
   const data = cleanGuestForPublic(guest);
   sendJson(req, res, { status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
 }
@@ -2353,17 +2396,141 @@ async function handlePostMessage(req, res, invite) {
   await logActivity({ invite, type: 'message', title: 'Nova mensagem', detail: nome });
   res.json({ status: 'success', data: msg });
 }
-async function handleSaveGifts(req, res, invite) {
-  const { nome, selectedGifts } = req.body || {};
-  if (!nome || !Array.isArray(selectedGifts)) return res.status(400).json({ status: 'error', message: 'Dados incompletos.' });
-  const results = { success: [], failed: [] };
-  for (const giftName of selectedGifts) {
-    const updated = await GiftItem.findOneAndUpdate({ inviteId: invite._id, name: giftName, reserved: false }, { reserved: true, reservedBy: nome, reservedAt: new Date() }, { new: true });
-    if (updated) results.success.push(giftName); else results.failed.push({ gift: giftName, reason: 'Já reservado ou inexistente.' });
+function giftNamesFromPayload(body = {}) {
+  const candidates = [
+    body.selectedGifts,
+    body.selectedGift,
+    body.giftName,
+    body.giftChoice,
+    body.gift,
+    body.gifts,
+    body.name
+  ];
+
+  let values = [];
+  for (const value of candidates) {
+    if (!value) continue;
+    if (Array.isArray(value)) values.push(...value);
+    else if (typeof value === 'string' && value.includes(',')) values.push(...value.split(','));
+    else values.push(value);
+    if (values.length) break;
   }
-  await logActivity({ invite, type: 'gift', title: 'Reserva de presente', detail: `${nome} · ${results.success.join(', ')}` });
-  if (results.success.length) return res.json({ status: 'success', data: results, message: 'Presentes reservados com sucesso.' });
-  res.status(409).json({ status: 'error', data: results, message: 'Nenhum presente pôde ser reservado.' });
+
+  return Array.from(new Set(
+    values
+      .map(value => String(value || '').trim())
+      .filter(Boolean)
+  ));
+}
+
+function cleanGiftForPublic(gift) {
+  if (!gift) return null;
+  const o = gift.toObject ? gift.toObject() : gift;
+  return {
+    id: String(o._id || ''),
+    _id: String(o._id || ''),
+    inviteId: String(o.inviteId || ''),
+    slug: o.slug || '',
+    name: o.name || '',
+    label: o.name || '',
+    giftName: o.name || '',
+    selectedGift: o.name || '',
+    giftChoice: o.name || '',
+    category: o.category || 'Geral',
+    reserved: Boolean(o.reserved),
+    isReserved: Boolean(o.reserved),
+    reservedBy: o.reservedBy || '',
+    reserved_by: o.reservedBy || '',
+    reservedByNormalized: o.reservedByNormalized || '',
+    reservedByGuestId: o.reservedByGuestId ? String(o.reservedByGuestId) : '',
+    reservedToken: o.reservedToken || '',
+    token: o.reservedToken || '',
+    reservedAt: o.reservedAt || null,
+    timestamp: o.reservedAt || o.updatedAt || o.createdAt || null,
+    createdAt: o.createdAt || null,
+    updatedAt: o.updatedAt || null
+  };
+}
+
+async function handleSaveGifts(req, res, invite) {
+  const body = req.body || {};
+  const giftNames = giftNamesFromPayload(body);
+  const rawName = String(body.nome || body.guestName || body.convidado || body.reservedBy || body.reserved_by || '').trim();
+  const rawToken = String(body.token || body.guestToken || body.inviteToken || '').trim();
+
+  if (!rawName && !rawToken) {
+    return res.status(400).json({ status: 'error', message: 'Nome ou token do convidado é obrigatório.' });
+  }
+
+  if (!giftNames.length) {
+    return res.status(400).json({ status: 'error', message: 'Escolha pelo menos 1 presente disponível.' });
+  }
+
+  const guest = await findGuestByIdentity(invite, { nome: rawName, token: rawToken });
+  const reservedBy = String(guest?.name || rawName || 'Convidado').trim();
+  const reservedByNormalized = normalizeText(reservedBy);
+  const reservedToken = String(rawToken || guest?.inviteToken || '').trim();
+  const now = new Date();
+  const results = { success: [], failed: [] };
+
+  for (const giftName of giftNames) {
+    const updated = await GiftItem.findOneAndUpdate(
+      {
+        inviteId: invite._id,
+        name: exactRegex(giftName),
+        reserved: { $ne: true }
+      },
+      {
+        $set: {
+          reserved: true,
+          reservedBy,
+          reservedByNormalized,
+          reservedByGuestId: guest?._id,
+          reservedToken,
+          reservedAt: now
+        }
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (updated) {
+      results.success.push(cleanGiftForPublic(updated));
+      continue;
+    }
+
+    const existing = await GiftItem.findOne({ inviteId: invite._id, name: exactRegex(giftName) });
+    results.failed.push({
+      gift: giftName,
+      reason: existing?.reserved ? 'Este presente já foi escolhido por outro convidado.' : 'Presente inexistente.',
+      reserved: Boolean(existing?.reserved),
+      reservedBy: existing?.reservedBy || '',
+      reservedAt: existing?.reservedAt || null
+    });
+  }
+
+  if (results.success.length) {
+    await logActivity({
+      invite,
+      type: 'gift',
+      title: 'Reserva de presente',
+      detail: `${reservedBy} · ${results.success.map(g => g.name).join(', ')}`,
+      meta: { reservedBy, reservedToken, gifts: results.success.map(g => g.name), failed: results.failed }
+    });
+
+    return res.json({
+      status: 'success',
+      data: results,
+      reserved: results.success,
+      message: results.failed.length ? 'Alguns presentes foram reservados. Outros já estavam indisponíveis.' : 'Presente reservado com sucesso.'
+    });
+  }
+
+  return res.status(409).json({
+    status: 'error',
+    code: 'GIFT_ALREADY_RESERVED',
+    data: results,
+    message: results.failed[0]?.reason || 'Este presente já foi escolhido por outro convidado.'
+  });
 }
 async function handleCheckinGuest(req, res, invite) {
   const { token = '', nome = '', guests = 1, mesa = '', operator = '' } = req.body || {};

@@ -1320,7 +1320,7 @@
       </section>
 
       <section id="guestsPanel" class="page-panel">
-        <div class="section-title"><div><h1>Convidados</h1><p>Lista geral com mesa, acompanhantes, token e estado de entrada.</p></div><span id="guestBadge" class="event-chip">0 registos</span></div>
+        <div class="section-title"><div><h1>Convidados</h1><p>Lista geral com mesa, acompanhantes, token e estado: não aberto, aberto, confirmado ou check-in.</p></div><span id="guestBadge" class="event-chip">0 registos</span></div>
         <section class="panel-card admin-form-card">
           <div class="panel-head"><h2><i data-feather="user-plus"></i> Adicionar convidado</h2><span class="status-badge blue">Novo registo</span></div>
           <div class="panel-body">
@@ -1499,6 +1499,107 @@
         }
         return data;
       }
+      function responseArray(response) {
+        if (Array.isArray(response)) return response;
+        const data = response && response.data;
+        if (Array.isArray(data)) return data;
+        if (data && Array.isArray(data.guests)) return data.guests;
+        if (data && Array.isArray(data.rsvps)) return data.rsvps;
+        if (data && Array.isArray(data.gifts)) return data.gifts;
+        if (data && Array.isArray(data.records)) return data.records;
+        if (data && Array.isArray(data.messages)) return data.messages;
+        if (data && Array.isArray(data.checkins)) return data.checkins;
+        if (data && Array.isArray(data.photos)) return data.photos;
+        if (response && Array.isArray(response.guests)) return response.guests;
+        if (response && Array.isArray(response.rsvps)) return response.rsvps;
+        if (response && Array.isArray(response.gifts)) return response.gifts;
+        if (response && Array.isArray(response.records)) return response.records;
+        if (response && Array.isArray(response.messages)) return response.messages;
+        if (response && Array.isArray(response.checkins)) return response.checkins;
+        if (response && Array.isArray(response.photos)) return response.photos;
+        if (response && Array.isArray(response.items)) return response.items;
+        return [];
+      }
+
+      function responseObject(response) {
+        if (!response) return {};
+        if (response.data && !Array.isArray(response.data)) return response.data;
+        return Array.isArray(response) ? {} : response;
+      }
+
+      async function trySources(sources, fallback) {
+        let lastError = null;
+        for (const source of sources) {
+          try {
+            const value = await source();
+            return value;
+          } catch (err) {
+            lastError = err;
+          }
+        }
+        if (fallback !== undefined) return fallback;
+        if (lastError) throw lastError;
+        return null;
+      }
+
+      async function collectSources(sources) {
+        const settled = await Promise.allSettled(sources.map(source => source()));
+        return settled.flatMap(result => result.status === 'fulfilled' ? responseArray(result.value) : []);
+      }
+
+      function stableRecordKey(row) {
+        const id = idOf(row);
+        if (id) return `id:${id}`;
+        const tokenValue = text(row && (row.token || row.guestToken || row.inviteToken));
+        const nameValue = nameOf(row);
+        const giftValue = giftChosenName(row) || giftDetail(row);
+        const timeValue = text(row && (row.timestamp || row.createdAt || row.updatedAt || row.reservedAt));
+        return [tokenValue, nameValue, giftValue, timeValue].map(value => text(value).toLowerCase()).join('|') || JSON.stringify(row || {});
+      }
+
+      function uniqueRecords(rows) {
+        const seen = new Set();
+        const list = [];
+        rows.forEach(row => {
+          const key = stableRecordKey(row);
+          if (seen.has(key)) return;
+          seen.add(key);
+          list.push(row);
+        });
+        return list;
+      }
+
+      function giftChosenName(g) {
+        const d = parseGiftDetails(g || {});
+        let value = g?.selectedGift || g?.giftChoice || g?.gift || g?.giftName || g?.selectedGifts || g?.gifts || d.selectedGift || d.giftChoice || d.gift || d.giftName || d.selectedGifts || d.gifts || '';
+        if (Array.isArray(value)) value = value[0] || '';
+        if (typeof value === 'string' && value.includes(',')) value = value.split(',')[0];
+        if (!value && (g?.reserved === true || g?.reservedBy || g?.reserved_by || g?.reservedAt)) value = g?.name || g?.label || '';
+        return text(value);
+      }
+
+      function isGiftSelectionRecord(g) {
+        if (!g) return false;
+        const d = parseGiftDetails(g);
+        const status = text(g.status || g.state || d.status).toLowerCase();
+        return Boolean(
+          giftChosenName(g) ||
+          g.canal ||
+          g.filename ||
+          g.viewUrl ||
+          g.previewUrl ||
+          g.downloadUrl ||
+          g.comprovativoFile ||
+          d.comprovativoFile ||
+          g.reserved === true ||
+          g.reservedBy ||
+          g.reserved_by ||
+          g.reservedAt ||
+          status.includes('reserv') ||
+          status.includes('escolh')
+        );
+      }
+
       function setButtonBusy(button, busy, label) {
         if (!button) return;
         if (busy) {
@@ -1788,23 +1889,60 @@
         app.classList.add('is-loading');
         renderSkeletons();
         try {
-          const adminMessagesPromise = adminPost('get_messages').catch(() => LirandzoAPI.get('list_messages'));
-          const [stats, guests, rsvps, gifts, messages, checkins, photos] = await Promise.all([
-            LirandzoAPI.get('stats'),
-            LirandzoAPI.get('list_guests'),
-            LirandzoAPI.get('list_rsvps'),
-            LirandzoAPI.get('list_gift_records'),
-            adminMessagesPromise,
-            LirandzoAPI.get('list_checkins'),
-            LirandzoAPI.get('list_capsule_photos')
+          const statsPromise = trySources([
+            () => adminPost('stats'),
+            () => LirandzoAPI.get('stats')
+          ], { data: {} });
+          const guestsPromise = trySources([
+            () => adminPost('get_guests'),
+            () => adminPost('list_guests'),
+            () => LirandzoAPI.get('list_guests')
+          ], { data: [] });
+          const rsvpsPromise = trySources([
+            () => adminPost('get_rsvps'),
+            () => adminPost('list_rsvps'),
+            () => LirandzoAPI.get('list_rsvps')
+          ], { data: [] });
+          const messagesPromise = trySources([
+            () => adminPost('get_messages'),
+            () => adminPost('list_messages'),
+            () => LirandzoAPI.get('list_messages')
+          ], { data: [] });
+          const checkinsPromise = trySources([
+            () => adminPost('get_checkins'),
+            () => adminPost('list_checkins'),
+            () => LirandzoAPI.get('list_checkins')
+          ], { data: [] });
+          const photosPromise = trySources([
+            () => adminPost('get_capsule_photos'),
+            () => adminPost('list_capsule_photos'),
+            () => LirandzoAPI.get('list_capsule_photos')
+          ], { data: [] });
+          const giftsPromise = collectSources([
+            () => adminPost('get_gifts'),
+            () => adminPost('get_comprovativos'),
+            () => adminPost('list_gift_records'),
+            () => LirandzoAPI.get('list_gift_records'),
+            () => LirandzoAPI.get('list_gifts')
           ]);
-          DATA.stats = stats.data || {};
-          DATA.guests = guests.data || [];
-          DATA.rsvps = rsvps.data || [];
-          DATA.gifts = gifts.data || [];
-          DATA.messages = messages.data || [];
-          DATA.checkins = checkins.data || [];
-          DATA.photos = photos.data || [];
+
+          const [stats, guests, rsvps, gifts, messages, checkins, photos] = await Promise.all([
+            statsPromise,
+            guestsPromise,
+            rsvpsPromise,
+            giftsPromise,
+            messagesPromise,
+            checkinsPromise,
+            photosPromise
+          ]);
+
+          DATA.stats = responseObject(stats);
+          DATA.guests = responseArray(guests);
+          DATA.rsvps = responseArray(rsvps);
+          DATA.gifts = uniqueRecords(gifts).filter(isGiftSelectionRecord);
+          DATA.messages = responseArray(messages);
+          DATA.checkins = responseArray(checkins);
+          DATA.photos = responseArray(photos);
           renderAll();
         } catch (error) {
           console.error(error);
@@ -1819,19 +1957,24 @@
 
       function summary() {
         const guestsCount = num(DATA.stats.guestsCount) || DATA.guests.length || num(EVENT.guestRows) || 0;
-        const totalPeople = num(DATA.stats.totalPeople) || DATA.guests.reduce((sum, g) => sum + (num(g.maxGuests) || 1), 0) || num(EVENT.estimatedGuests) || 0;
-        const confirmedPeople = num(DATA.stats.confirmed) || DATA.rsvps.reduce((sum, r) => sum + peopleFromRsvp(r), 0);
+        const totalPeople = num(DATA.stats.totalPeople) || DATA.guests.reduce((sum, g) => sum + (num(g.maxGuests || g.maxGuestsTotal || g.guests) || 1), 0) || num(EVENT.estimatedGuests) || 0;
+        const confirmedRows = DATA.guests.length ? DATA.guests.filter(guestConfirmed).length : (num(DATA.stats.confirmedRows) || DATA.rsvps.length);
+        const confirmedPeople = DATA.rsvps.length ? DATA.rsvps.reduce((sum, r) => sum + peopleFromRsvp(r), 0) : (num(DATA.stats.confirmed) || confirmedRows);
+        const openedRows = DATA.guests.filter(guestOpened).length || num(DATA.stats.openedRows || DATA.stats.opened || DATA.stats.views) || 0;
+        const notOpenedRows = Math.max(guestsCount - openedRows, 0);
         const checkedPeople = num(DATA.stats.checkedPeople) || DATA.checkins.reduce((sum, c) => sum + (num(c.guests || c.maxGuests) || 1), 0);
-        const confirmedRows = num(DATA.stats.confirmedRows) || DATA.rsvps.length;
-        const checkedRows = num(DATA.stats.checkedIn) || DATA.checkins.length;
+        const checkedRows = DATA.guests.length ? DATA.guests.filter(guestCheckedIn).length : (num(DATA.stats.checkedIn) || DATA.checkins.length);
         return {
           guestsCount,
           totalPeople,
+          openedRows,
+          notOpenedRows,
           confirmedPeople,
           pendingPeople: Math.max(totalPeople - confirmedPeople, 0),
+          confirmedRows,
+          pendingRows: Math.max(guestsCount - confirmedRows, 0),
           checkedPeople,
           pendingCheckin: Math.max(totalPeople - checkedPeople, 0),
-          confirmedRows,
           checkedRows,
           gifts: DATA.gifts.length,
           messages: DATA.messages.length,
@@ -1850,11 +1993,11 @@
         const s = summary();
         const metrics = [
           ['Convidados', s.guestsCount, 'registos'],
-          ['Pessoas', s.totalPeople, 'previstas'],
-          ['RSVP', s.confirmedPeople, `${percent(s.confirmedPeople, s.totalPeople)}% confirmado`],
-          ['Check-in', s.checkedPeople, `${percent(s.checkedPeople, s.totalPeople)}% no salão`],
-          ['Contribuições', s.gifts, 'registos'],
-          ['Cápsula', s.photos, 'fotos']
+          ['Abertos', s.openedRows, `${percent(s.openedRows, s.guestsCount)}% abriram`],
+          ['Não abertos', s.notOpenedRows, 'ainda pendentes'],
+          ['Confirmados', s.confirmedRows, `${percent(s.confirmedRows, s.guestsCount)}% RSVP`],
+          ['Check-in', s.checkedRows, `${percent(s.checkedPeople, s.totalPeople)}% no salão`],
+          ['Presentes', s.gifts, 'escolhidos/contribuições']
         ];
         $('metricsGrid').innerHTML = metrics.map(item => `<article class="metric-card"><span>${esc(item[0])}</span><strong>${esc(item[1])}</strong><small>${esc(item[2])}</small></article>`).join('');
       }
@@ -1886,9 +2029,9 @@
       function renderCharts() {
         const s = summary();
         const empty = cssVar('--chart-empty') || '#4c4540';
-        makeChart('rsvpChart', ['Confirmados', 'Pendentes'], [s.confirmedPeople, s.pendingPeople], [cssVar('--accent') || '#b08968', empty]);
+        makeChart('rsvpChart', ['Confirmados', 'Pendentes'], [s.confirmedRows, s.pendingRows], [cssVar('--accent') || '#b08968', empty]);
         makeChart('checkinChart', ['Entraram', 'Por entrar'], [s.checkedPeople, s.pendingCheckin], [cssVar('--green') || '#18b783', empty]);
-        makeChart('interactionChart', ['RSVP', 'Contrib.', 'Msgs', 'Fotos'], [s.confirmedRows, s.gifts, s.messages, s.photos], [cssVar('--accent-2') || '#d0ad8f', cssVar('--orange') || '#f2a84a', cssVar('--blue') || '#6aa5ff', cssVar('--green') || '#18b783']);
+        makeChart('interactionChart', ['Abertos', 'Não abertos', 'Presentes', 'Msgs'], [s.openedRows, s.notOpenedRows, s.gifts, s.messages], [cssVar('--accent-2') || '#d0ad8f', empty, cssVar('--orange') || '#f2a84a', cssVar('--blue') || '#6aa5ff']);
       }
 
       function renderActivity() {
@@ -1920,8 +2063,86 @@
         feather.replace();
       }
 
-      function guestChecked(token) {
-        return DATA.checkins.some(c => String(c.token) === String(token)) || DATA.guests.find(g => String(g.token) === String(token) && (g.checkedIn === true || String(g.status).toLowerCase() === 'entrou'));
+      function normalizeKey(value) {
+        return text(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+      }
+
+      function guestToken(g) {
+        return text(g && (g.token || g.inviteToken || g.publicToken || g.guestToken));
+      }
+
+      function recordMatchesGuest(record, guest) {
+        const tokenA = guestToken(guest);
+        const tokenB = text(record && (record.token || record.inviteToken || record.publicToken || record.guestToken));
+        if (tokenA && tokenB && tokenA === tokenB) return true;
+        const nameA = normalizeKey(nameOf(guest));
+        const nameB = normalizeKey(nameOf(record));
+        return Boolean(nameA && nameB && nameA === nameB);
+      }
+
+      function guestCheckedIn(g) {
+        const status = normalizeKey(g && (g.status || g.guestStatus || g.checkinStatus));
+        return Boolean(
+          DATA.checkins.some(c => recordMatchesGuest(c, g)) ||
+          g?.checkedIn === true ||
+          g?.checked_in === true ||
+          g?.checkin === true ||
+          status.includes('entrou') ||
+          status.includes('checkin') ||
+          status.includes('checked')
+        );
+      }
+
+      function guestConfirmed(g) {
+        const status = normalizeKey(g && (g.status || g.guestStatus || g.rsvpStatus || g.confirmationStatus));
+        return Boolean(
+          DATA.rsvps.some(r => recordMatchesGuest(r, g)) ||
+          g?.confirmed === true ||
+          g?.isConfirmed === true ||
+          g?.rsvp === true ||
+          status.includes('confirm') ||
+          status.includes('sim')
+        );
+      }
+
+      function guestOpened(g) {
+        const status = normalizeKey(g && (g.status || g.guestStatus || g.accessStatus || g.openStatus));
+        const accessCount = num(g?.openCount || g?.openedCount || g?.views || g?.viewCount || g?.accessCount || g?.loginCount || g?.opens);
+        return Boolean(
+          guestConfirmed(g) ||
+          guestCheckedIn(g) ||
+          g?.opened === true ||
+          g?.isOpened === true ||
+          g?.hasOpened === true ||
+          g?.viewed === true ||
+          g?.accessed === true ||
+          accessCount > 0 ||
+          g?.openedAt ||
+          g?.firstOpenedAt ||
+          g?.lastOpenedAt ||
+          g?.viewedAt ||
+          g?.lastViewAt ||
+          g?.lastAccessAt ||
+          g?.lastLoginAt ||
+          g?.loginAt ||
+          status.includes('abert') ||
+          status.includes('opened') ||
+          status.includes('visualiz') ||
+          status.includes('view') ||
+          status.includes('access')
+        );
+      }
+
+      function guestState(g) {
+        if (guestCheckedIn(g)) return { label: 'Entrou', cls: 'ok' };
+        if (guestConfirmed(g)) return { label: 'Confirmado', cls: 'ok' };
+        if (guestOpened(g)) return { label: 'Aberto', cls: 'blue' };
+        return { label: 'Não aberto', cls: 'warn' };
+      }
+
+      function guestStatusBadge(g) {
+        const state = guestState(g);
+        return `<span class="status-badge ${state.cls}">${esc(state.label)}</span>`;
       }
 
       function filtered(list, inputId) {
@@ -1937,12 +2158,12 @@
             <td>${esc(g.number || '')}</td>
             <td><strong>${esc(nameOf(g))}</strong></td>
             <td>${esc(String(g.category).toLowerCase() === 'couple' ? 'Casal' : 'Individual')}</td>
-            <td>${esc(g.mesa || 'A definir')}</td>
-            <td>${esc(g.maxGuests || g.guests || 1)}</td>
+            <td>${esc(g.mesa || g.table || 'A definir')}</td>
+            <td>${esc(g.maxGuests || g.maxGuestsTotal || g.guests || 1)}</td>
             <td><small>${esc(g.token || '')}</small></td>
-            <td>${guestChecked(g.token) ? '<span class="status-badge ok">Entrou</span>' : '<span class="status-badge warn">Pendente</span>'}</td>
+            <td>${guestStatusBadge(g)}</td>
           </tr>`).join('') : '<tr><td colspan="7" class="empty">Sem convidados para mostrar.</td></tr>';
-        $('guestMobile').innerHTML = mobileCards(list, g => `${esc(String(g.category).toLowerCase() === 'couple' ? 'Casal' : 'Individual')} · ${esc(g.maxGuests || 1)} pessoa(s) · Mesa: ${esc(g.mesa || 'A definir')}`, g => guestChecked(g.token) ? '<span class="status-badge ok">Entrou</span>' : '<span class="status-badge warn">Pendente</span>');
+        $('guestMobile').innerHTML = mobileCards(list, g => `${esc(String(g.category).toLowerCase() === 'couple' ? 'Casal' : 'Individual')} · ${esc(g.maxGuests || g.maxGuestsTotal || g.guests || 1)} pessoa(s) · Mesa: ${esc(g.mesa || g.table || 'A definir')}`, g => guestStatusBadge(g));
       }
 
       function renderRsvps() {
@@ -1983,9 +2204,29 @@
         return { fileName, imgUrl: thumb, openUrl, download, fileId };
       }
 
+      function giftGuestName(g) {
+        const d = parseGiftDetails(g);
+        const giftName = giftChosenName(g);
+        const inventoryName = normalizeKey(g?.name || g?.label) === normalizeKey(giftName);
+        return text(
+          g?.reservedBy ||
+          g?.reserved_by ||
+          g?.guestName ||
+          g?.convidado ||
+          g?.nome ||
+          (!inventoryName ? g?.name : '') ||
+          d.reservedBy ||
+          d.reserved_by ||
+          d.guestName ||
+          d.convidado ||
+          d.nome ||
+          'Convidado'
+        );
+      }
+
       function giftDetail(g) {
         const d = parseGiftDetails(g);
-        let value = g.selectedGifts || g.gifts || d.selectedGifts || d.gifts || g.filename || d.comprovativoFile_filename || g.canal || '';
+        let value = giftChosenName(g) || g.selectedGifts || g.gifts || d.selectedGifts || d.gifts || g.filename || d.comprovativoFile_filename || g.canal || '';
         if (Array.isArray(value)) value = value.join(', ');
         if (typeof value === 'object' && value !== null) value = JSON.stringify(value);
         return text(value) || 'Contribuição registada';
@@ -2009,8 +2250,8 @@
       function renderGifts() {
         const list = filtered(DATA.gifts, 'giftSearch');
         $('giftBadge').textContent = `${list.length} registos`;
-        $('giftRows').innerHTML = list.length ? list.map(g => `<tr><td>${esc(dateFmt(g.timestamp))}</td><td><strong>${esc(nameOf(g))}</strong></td><td>${esc(g.canal || 'Contribuição')}</td><td>${giftPreviewMarkup(g)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">Ainda não há contribuições.</td></tr>';
-        $('giftMobile').innerHTML = list.length ? list.map(g => `<article class="mobile-card"><strong>${esc(nameOf(g))}</strong><span>${esc(g.canal || 'Contribuição')} · ${esc(dateFmt(g.timestamp))}</span><div class="contribution-mobile">${giftPreviewMarkup(g)}</div><span class="status-badge">Registado</span></article>`).join('') : '<div class="empty">Sem dados para mostrar.</div>';
+        $('giftRows').innerHTML = list.length ? list.map(g => `<tr><td>${esc(dateFmt(g.timestamp || g.createdAt || g.reservedAt))}</td><td><strong>${esc(giftGuestName(g))}</strong></td><td>${esc(g.canal || (giftChosenName(g) ? 'Presente escolhido' : 'Contribuição'))}</td><td>${giftPreviewMarkup(g)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">Ainda não há contribuições.</td></tr>';
+        $('giftMobile').innerHTML = list.length ? list.map(g => `<article class="mobile-card"><strong>${esc(giftGuestName(g))}</strong><span>${esc(g.canal || (giftChosenName(g) ? 'Presente escolhido' : 'Contribuição'))} · ${esc(dateFmt(g.timestamp || g.createdAt || g.reservedAt))}</span><div class="contribution-mobile">${giftPreviewMarkup(g)}</div><span class="status-badge">Registado</span></article>`).join('') : '<div class="empty">Sem dados para mostrar.</div>';
         feather.replace();
       }
 

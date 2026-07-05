@@ -139,6 +139,21 @@
       height: 18px;
       cursor: pointer;
     }
+    .gift-item.locked,
+    .gift-item.reserved {
+      pointer-events: none;
+    }
+    .gift-badge {
+      margin-left: auto;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #e9e1dc;
+      color: #7a6255;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body class="loading">
@@ -684,6 +699,173 @@ function saveDemoMessages(messages) {
   localStorage.setItem(DEMO_MESSAGES_KEY, JSON.stringify(messages));
 }
 
+function normalizeGiftKey(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
+function parseGiftDetails(value) {
+  if (!value) return {};
+  if (typeof value === 'object') return value;
+  try { return JSON.parse(value); } catch (error) { return {}; }
+}
+
+function flattenGiftValues(values) {
+  const output = [];
+  values.forEach(value => {
+    if (Array.isArray(value)) output.push(...value);
+    else if (typeof value === 'string' && value.includes(',')) output.push(...value.split(','));
+    else if (value !== undefined && value !== null) output.push(value);
+  });
+  return output.map(value => String(value || '').trim()).filter(Boolean);
+}
+
+function giftNameFromRecord(record) {
+  const details = parseGiftDetails(record && record.details);
+  const values = flattenGiftValues([
+    record && record.selectedGift,
+    record && record.giftChoice,
+    record && record.gift,
+    record && record.giftName,
+    record && record.selectedGifts,
+    record && record.gifts,
+    details.selectedGift,
+    details.giftChoice,
+    details.gift,
+    details.giftName,
+    details.selectedGifts,
+    details.gifts
+  ]);
+  return String(values[0] || '').trim();
+}
+
+function giftResponseArray(response) {
+  if (Array.isArray(response)) return response;
+  const data = response && response.data;
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.gifts)) return data.gifts;
+  if (data && Array.isArray(data.records)) return data.records;
+  if (data && Array.isArray(data.items)) return data.items;
+  if (response && Array.isArray(response.gifts)) return response.gifts;
+  if (response && Array.isArray(response.records)) return response.records;
+  if (response && Array.isArray(response.items)) return response.items;
+  return [];
+}
+
+function isReservedGiftRecord(record) {
+  if (!record) return false;
+  const status = normalizeGiftKey(record.status || record.state || record.reservedStatus || '');
+  return Boolean(
+    giftNameFromRecord(record) ||
+    record.reserved === true ||
+    record.isReserved === true ||
+    record.reservedBy ||
+    record.reserved_by ||
+    record.reservedAt ||
+    status.includes('reserv') ||
+    status.includes('escolh') ||
+    status.includes('indispon')
+  );
+}
+
+function reservationOwner(record, giftName) {
+  const details = parseGiftDetails(record && record.details);
+  const inventoryName = normalizeGiftKey(record && (record.name || record.label)) === normalizeGiftKey(giftName);
+  return String(
+    record?.reserved_by ||
+    record?.reservedBy ||
+    record?.guestName ||
+    record?.convidado ||
+    record?.nome ||
+    (!inventoryName ? record?.name : '') ||
+    details.reserved_by ||
+    details.reservedBy ||
+    details.guestName ||
+    details.convidado ||
+    details.nome ||
+    'Convidado'
+  ).trim();
+}
+
+function reservationToken(record) {
+  const details = parseGiftDetails(record && record.details);
+  return String(record?.token || record?.guestToken || record?.inviteToken || details.token || details.guestToken || details.inviteToken || '').trim();
+}
+
+async function fetchGiftRecords() {
+  if (!window.LirandzoAPI || typeof window.LirandzoAPI.get !== 'function') return [];
+  const actions = ['list_gift_records', 'get_gifts', 'list_gifts'];
+  const settled = await Promise.allSettled(actions.map(action => window.LirandzoAPI.get(action, {})));
+  const records = [];
+  const seen = new Set();
+  settled.forEach(result => {
+    if (result.status !== 'fulfilled') return;
+    giftResponseArray(result.value).forEach(item => {
+      const key = JSON.stringify(item || {});
+      if (seen.has(key)) return;
+      seen.add(key);
+      records.push(item);
+    });
+  });
+  return records;
+}
+
+async function getGiftState() {
+  const options = (window.LIRANDZO_GIFT_OPTIONS || [])
+    .map(item => item.name || item.label || String(item || '').trim())
+    .filter(Boolean);
+  const records = await fetchGiftRecords();
+  const tokenNow = String(token || '').trim();
+  const nameNow = normalizeGiftKey(guestName || localStorage.getItem('guestName') || '');
+  const taken = new Map();
+
+  records.forEach(record => {
+    const explicitGift = giftNameFromRecord(record);
+    const inventoryGift = isReservedGiftRecord(record) ? (record.name || record.label || record.giftName || '') : '';
+    const gift = String(explicitGift || inventoryGift || '').trim();
+    if (!gift) return;
+
+    const key = normalizeGiftKey(gift);
+    if (!key) return;
+
+    const who = reservationOwner(record, gift);
+    const recordToken = reservationToken(record);
+    const mine = Boolean(
+      (tokenNow && recordToken && tokenNow === recordToken) ||
+      (nameNow && normalizeGiftKey(who) === nameNow)
+    );
+
+    if (!taken.has(key) || mine) {
+      taken.set(key, { gift, who, mine, record });
+    }
+  });
+
+  const mine = Array.from(taken.values()).find(item => item.mine) || null;
+  return { options, records, taken, mine };
+}
+
+function isGiftConflictError(error) {
+  const msg = normalizeGiftKey(error && (error.message || error.msg || error.toString && error.toString()));
+  return msg.includes('ja foi escolhido') || msg.includes('ja escolhido') || msg.includes('presente escolhido') || msg.includes('indisponivel') || msg.includes('reserved') || msg.includes('duplicate') || msg.includes('duplicado');
+}
+
+function assertGiftCanBeChosen(giftName, state) {
+  const key = normalizeGiftKey(giftName);
+  const selected = state.taken.get(key);
+  if (state.mine && (!selected || !selected.mine)) {
+    throw new Error(`Já registou um presente: ${state.mine.gift}. Cada convite só pode escolher 1 presente.`);
+  }
+  if (selected && !selected.mine) {
+    throw new Error('Este presente já foi escolhido por outro convidado. Escolha outro presente disponível.');
+  }
+  if (selected && selected.mine) {
+    throw new Error('Este presente já está registado em seu nome.');
+  }
+}
+
 // MODO LOCAL: grava localmente enquanto o convite é testado no navegador.
 async function postRequest(data) {
   if (!window.LirandzoAPI || typeof window.LirandzoAPI.post !== 'function') {
@@ -694,6 +876,48 @@ async function postRequest(data) {
   if (payload.action === 'save_gifts') {
     const giftName = Array.isArray(payload.selectedGifts) ? payload.selectedGifts[0] : payload.selectedGifts;
     if (!giftName) throw new Error('Escolha 1 presente disponível.');
+
+    const beforeState = await getGiftState();
+    assertGiftCanBeChosen(giftName, beforeState);
+
+    const officialPayload = {
+      action: 'save_gifts',
+      nome: payload.nome || guestName,
+      token: payload.token || token,
+      selectedGift: giftName,
+      giftChoice: giftName,
+      selectedGifts: [giftName],
+      gifts: giftName,
+      details: JSON.stringify({ selectedGift: giftName, selectedGifts: [giftName], giftChoice: giftName, nome: payload.nome || guestName, token: payload.token || token })
+    };
+
+    try {
+      const result = await window.LirandzoAPI.post(officialPayload);
+      const checkState = await getGiftState().catch(() => null);
+      if (!checkState || checkState.taken.has(normalizeGiftKey(giftName))) return result;
+    } catch (err) {
+      if (isGiftConflictError(err)) throw new Error('Este presente acabou de ser escolhido por outro convidado. Escolha outro presente disponível.');
+    }
+
+    try {
+      const result = await window.LirandzoAPI.post({
+        ...officialPayload,
+        action: 'reserve_gift',
+        giftName,
+        gift: giftName,
+        name: giftName,
+        reservedBy: payload.nome || guestName,
+        reserved_by: payload.nome || guestName
+      });
+      const checkState = await getGiftState().catch(() => null);
+      if (!checkState || checkState.taken.has(normalizeGiftKey(giftName))) return result;
+    } catch (err) {
+      if (isGiftConflictError(err)) throw new Error('Este presente acabou de ser escolhido por outro convidado. Escolha outro presente disponível.');
+    }
+
+    const latestState = await getGiftState();
+    assertGiftCanBeChosen(giftName, latestState);
+
     const clean = String(giftName).replace(/[()\\]/g, '');
     const pdf = `%PDF-1.4
 % Lirandzo gift choice
@@ -771,6 +995,11 @@ startxref
           localStorage.setItem('guestName', guestName);
           localStorage.setItem('guestMesa', guestMesa);
           localStorage.setItem('guestMax', String(maxGuests));
+          if (window.LirandzoAPI && typeof window.LirandzoAPI.post === 'function') {
+            window.LirandzoAPI.post({ action: 'open_invite', token, nome: guestName }).catch(err => {
+              console.warn('Não foi possível marcar convite como aberto:', err);
+            });
+          }
           return true;
         } catch (err) {
           console.error('Erro ao validar convidado:', err);
@@ -1056,75 +1285,76 @@ startxref
         });
       });
 
-      // Função para carregar a lista de presentes (usando JSONP)
+      // Função para carregar a lista de presentes com bloqueio de itens já escolhidos
       async function loadGiftList() {
         const giftLoading = document.getElementById('giftLoading');
         const giftError = document.getElementById('giftError');
         const giftList = document.getElementById('giftList');
+        const giftStatus = document.getElementById('giftStatus');
+        const submitButton = document.getElementById('submitGiftsBtn');
 
         try {
-          const options = (window.LIRANDZO_GIFT_OPTIONS || []).map(item => item.name || item.label || String(item)).filter(Boolean);
-          let records = [];
-          try {
-            const result = await window.LirandzoAPI.get('list_gift_records', {});
-            records = Array.isArray(result?.data) ? result.data : [];
-          } catch (_) { records = []; }
+          if (giftLoading) giftLoading.style.display = 'block';
+          if (giftError) giftError.style.display = 'none';
+          if (giftList) giftList.style.display = 'none';
 
-          const normalise = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
-          const parseDetails = (value) => { try { return typeof value === 'string' ? JSON.parse(value) : (value || {}); } catch { return {}; } };
-          const giftFromRecord = (record) => {
-            const details = parseDetails(record.details);
-            const values = [record.selectedGift, record.giftChoice, record.gift, record.selectedGifts, record.gifts, details.selectedGift, details.giftChoice, details.gift, details.selectedGifts, details.gifts].flat().filter(Boolean);
-            return String(values[0] || '').split(',')[0].trim();
-          };
-          const tokenNow = String(token || '').trim();
-          const nameNow = String(guestName || '').trim().toLowerCase();
-          const taken = new Map();
-          records.forEach(record => {
-            const gift = giftFromRecord(record);
-            if (!gift) return;
-            const key = normalise(gift);
-            if (!taken.has(key)) {
-              const who = record.nome || record.name || record.guestName || 'Convidado';
-              const recordToken = String(record.token || parseDetails(record.details).token || '').trim();
-              taken.set(key, { gift, who, mine: Boolean((tokenNow && recordToken && tokenNow === recordToken) || (nameNow && String(who).trim().toLowerCase() === nameNow)) });
-            }
-          });
-          const mine = Array.from(taken.values()).find(item => item.mine);
+          const state = await getGiftState();
+          const options = state.options.length ? state.options : DEMO_DEFAULT_GIFTS.map(item => item.name);
+          const mine = state.mine;
 
-          giftLoading.style.display = 'none';
-          giftError.style.display = 'none';
-          giftList.style.display = 'grid';
-          giftList.innerHTML = '';
+          if (giftLoading) giftLoading.style.display = 'none';
+          if (giftError) giftError.style.display = 'none';
+          if (giftList) {
+            giftList.style.display = 'grid';
+            giftList.innerHTML = '';
+          }
+
+          if (giftStatus && mine) {
+            giftStatus.style.color = 'green';
+            giftStatus.textContent = `Presente já registado em seu nome: ${mine.gift}.`;
+          } else if (giftStatus) {
+            giftStatus.textContent = '';
+          }
+          if (submitButton) {
+            submitButton.disabled = Boolean(mine);
+            submitButton.textContent = mine ? 'Presente já registado' : 'Registar Presente Escolhido';
+          }
 
           options.forEach(giftName => {
-            const key = normalise(giftName);
-            const selected = taken.get(key);
+            const key = normalizeGiftKey(giftName);
+            const selected = state.taken.get(key);
             const locked = Boolean((selected && !selected.mine) || (mine && !selected?.mine));
             const item = document.createElement('label');
-            item.className = `gift-item ${selected ? 'reserved' : ''}`;
+            item.className = `gift-item ${selected ? 'reserved' : ''} ${locked ? 'locked' : ''}`.trim();
+
             const checkbox = document.createElement('input');
             checkbox.type = 'radio';
             checkbox.name = 'gift';
             checkbox.value = giftName;
-            checkbox.disabled = locked || Boolean(selected?.mine);
+            checkbox.disabled = locked || Boolean(selected?.mine) || Boolean(mine);
+
             const giftLabel = document.createElement('span');
             giftLabel.className = 'gift-name';
             giftLabel.textContent = giftName;
+
             item.appendChild(checkbox);
             item.appendChild(giftLabel);
+
             if (selected) {
               const reservedSpan = document.createElement('span');
               reservedSpan.className = 'gift-badge';
               reservedSpan.textContent = selected.mine ? 'escolhido por si' : 'indisponível';
               item.appendChild(reservedSpan);
             }
+
             giftList.appendChild(item);
           });
         } catch (error) {
-          giftLoading.style.display = 'none';
-          giftError.style.display = 'block';
-          giftError.textContent = 'Erro ao carregar lista de presentes.';
+          if (giftLoading) giftLoading.style.display = 'none';
+          if (giftError) {
+            giftError.style.display = 'block';
+            giftError.textContent = 'Erro ao carregar lista de presentes.';
+          }
           console.error('Erro ao carregar presentes:', error);
         }
       }
@@ -1187,6 +1417,9 @@ startxref
           };
 
           try {
+            const latestState = await getGiftState();
+            assertGiftCanBeChosen(selectedGifts[0], latestState);
+
             await postRequest(data);
             
             giftStatus.style.color = "green";
@@ -1195,17 +1428,10 @@ startxref
             
             await loadGiftList();
             
-            setTimeout(() => {
-              submitButton.disabled = false;
-              submitButton.textContent = "Registar Presente Escolhido";
-              giftStatus.textContent = "";
-            }, 2500);
-            
           } catch (err) {
             giftStatus.style.color = "#D93025";
-            giftStatus.textContent = "Erro ao registar presentes. Tente novamente.";
-            submitButton.disabled = false;
-            submitButton.textContent = "Registar Presente Escolhido";
+            giftStatus.textContent = err.message || "Erro ao registar presente. Tente novamente.";
+            await loadGiftList();
           }
         });
       }
