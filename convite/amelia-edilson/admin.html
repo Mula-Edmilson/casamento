@@ -299,6 +299,59 @@
     .page-panel { display: none; }
     .page-panel.active { display: block; animation: fadeUp .22s ease both; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @keyframes skeletonShimmer { 0% { background-position: 220% 0; } 100% { background-position: -220% 0; } }
+
+    .skeleton-line,
+    .skeleton-card,
+    .skeleton-cell {
+      display: block;
+      width: 100%;
+      min-height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(224,203,184,.08), rgba(224,203,184,.20), rgba(224,203,184,.08));
+      background-size: 220% 100%;
+      animation: skeletonShimmer 1.15s ease-in-out infinite;
+    }
+    .skeleton-card { border-radius: 14px; min-height: 48px; }
+    .skeleton-cell { height: 14px; }
+
+    .mobile-tabs {
+      display: none;
+      gap: 8px;
+      align-items: stretch;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: rgba(51, 45, 41, .94);
+      border: 1px solid var(--line);
+      border-left: 0;
+      border-right: 0;
+    }
+    .mobile-tab {
+      flex: 0 0 auto;
+      min-width: 82px;
+      min-height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: 14px;
+      background: rgba(33, 28, 25, .72);
+      color: var(--text-2);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1.1;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+    .mobile-tab .feather { width: 16px; height: 16px; }
+    .mobile-tab.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(176,137,104,.96), rgba(145,104,72,.96));
+      border-color: rgba(208,173,143,.62);
+    }
 
     .section-title {
       display: flex;
@@ -1289,11 +1342,23 @@
         return Array.isArray(response) ? {} : response;
       }
 
+      async function withTimeout(promise, ms, label = 'pedido') {
+        let timeoutId = null;
+        const timeout = new Promise((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error(`${label}: tempo limite excedido`)), ms);
+        });
+        try {
+          return await Promise.race([promise, timeout]);
+        } finally {
+          if (timeoutId) clearTimeout(timeoutId);
+        }
+      }
+
       async function trySources(sources, fallback) {
         let lastError = null;
         for (const source of sources) {
           try {
-            const value = await source();
+            const value = await withTimeout(source(), 12000, 'carregamento');
             return value;
           } catch (err) {
             lastError = err;
@@ -1305,25 +1370,28 @@
       }
 
       async function collectSources(sources) {
-        const settled = await Promise.allSettled(sources.map(source => source()));
+        const settled = await Promise.allSettled(sources.map(source => withTimeout(source(), 12000, 'carregamento')));
         return settled.flatMap(result => result.status === 'fulfilled' ? responseArray(result.value) : []);
       }
 
-      async function loadGiftRowsSafe() {
-        // 1) Primeiro tenta o /admin-api com acções antigas e estáveis.
-        // get_gifts = inventário/reservas; get_comprovativos = histórico antigo com nomes no ficheiro.
-        const adminRows = await collectSources([
+      async function loadGiftInventorySafe() {
+        return trySources([
           () => adminPost('get_gifts'),
-          () => adminPost('get_comprovativos')
-        ]);
-        if (adminRows.length) return { status: 'success', data: adminRows };
+          () => LirandzoAPI.get('list_gifts')
+        ], { data: [] });
+      }
 
-        // 2) Fallback público, também usando acções antigas.
-        const publicRows = await collectSources([
-          () => LirandzoAPI.get('list_gifts'),
+      async function loadGiftLegacySafe() {
+        return trySources([
+          () => adminPost('get_comprovativos'),
           () => LirandzoAPI.get('list_gift_records')
-        ]);
-        return { status: 'success', data: publicRows };
+        ], { data: [] });
+      }
+
+      async function loadGiftRowsSafe() {
+        const inventoryRows = responseArray(await loadGiftInventorySafe());
+        const legacyRows = responseArray(await loadGiftLegacySafe());
+        return { status: 'success', data: inventoryRows.concat(legacyRows) };
       }
 
       function stableRecordKey(row) {
@@ -1728,6 +1796,13 @@
         refreshBtn.style.opacity = '.7';
         app.classList.add('is-loading');
         renderSkeletons();
+        backendNote.innerHTML = 'A carregar dados principais. Presentes e cápsula carregam em segundo plano para não bloquear o admin.';
+
+        const safe = async (promise, fallback) => {
+          try { return await promise; }
+          catch (err) { console.warn('[admin-load]', err); return fallback; }
+        };
+
         try {
           const statsPromise = trySources([
             () => adminPost('stats'),
@@ -1753,37 +1828,63 @@
             () => adminPost('list_checkins'),
             () => LirandzoAPI.get('list_checkins')
           ], { data: [] });
-          const photosPromise = trySources([
-            () => adminPost('get_capsule_photos'),
-            () => adminPost('list_capsule_photos'),
-            () => LirandzoAPI.get('list_capsule_photos')
-          ], { data: [] });
-          // Presentes: usar apenas rotas já existentes e leves.
-          // Não chamar rotas novas de selecção de presentes para evitar 400 em servidores antigos.
-          // Não carregar PDFs, imagens, thumbnails ou fileBase64.
-          const giftsPromise = loadGiftRowsSafe();
 
-          const [stats, guests, rsvps, gifts, messages, checkins, photos] = await Promise.all([
-            statsPromise,
-            guestsPromise,
-            rsvpsPromise,
-            giftsPromise,
-            messagesPromise,
-            checkinsPromise,
-            photosPromise
+          const [stats, guests, rsvps, messages, checkins] = await Promise.all([
+            safe(statsPromise, { data: {} }),
+            safe(guestsPromise, { data: [] }),
+            safe(rsvpsPromise, { data: [] }),
+            safe(messagesPromise, { data: [] }),
+            safe(checkinsPromise, { data: [] })
           ]);
 
           DATA.stats = responseObject(stats);
           DATA.guests = responseArray(guests);
           DATA.rsvps = responseArray(rsvps);
-          DATA.gifts = prepareGiftRecords(responseArray(gifts));
           DATA.messages = responseArray(messages);
           DATA.checkins = responseArray(checkins);
-          DATA.photos = responseArray(photos);
+          DATA.gifts = [];
+          DATA.photos = [];
           renderAll();
+          backendNote.innerHTML = 'Dados principais carregados. Presentes e cápsula continuam a sincronizar em segundo plano.';
+
+          loadGiftInventorySafe()
+            .then(inventory => {
+              DATA.gifts = prepareGiftRecords(responseArray(inventory));
+              renderGifts();
+              renderMetrics();
+              renderActivity();
+              renderCharts();
+            })
+            .catch(err => console.warn('[gifts-inventory]', err))
+            .then(() => loadGiftLegacySafe())
+            .then(legacy => {
+              const merged = DATA.gifts.concat(responseArray(legacy));
+              DATA.gifts = prepareGiftRecords(merged);
+              renderGifts();
+              renderMetrics();
+              renderActivity();
+              renderCharts();
+              backendNote.innerHTML = 'Painel sincronizado. Presentes carregados em modo leve, sem PDF, sem imagem e sem pré-visualização.';
+            })
+            .catch(err => {
+              console.warn('[gifts-legacy]', err);
+              backendNote.innerHTML = 'Dados principais carregados. Presentes não carregaram agora; actualize apenas se precisar rever a lista.';
+            });
+
+          trySources([
+            () => adminPost('get_capsule_photos'),
+            () => adminPost('list_capsule_photos'),
+            () => LirandzoAPI.get('list_capsule_photos')
+          ], { data: [] })
+            .then(photos => {
+              DATA.photos = responseArray(photos);
+              renderCapsule();
+              renderMetrics();
+            })
+            .catch(err => console.warn('[capsule]', err));
         } catch (error) {
           console.error(error);
-          backendNote.innerHTML = 'Não foi possível carregar os dados neste momento. Verifique a ligação e tente actualizar novamente.';
+          backendNote.innerHTML = 'Não foi possível carregar os dados principais neste momento. Verifique a ligação e tente actualizar novamente.';
         } finally {
           refreshBtn.disabled = false;
           refreshBtn.style.opacity = '1';

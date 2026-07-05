@@ -1126,6 +1126,8 @@ app.post('/manager/invites/:id/github-sync', requireManager, requireAdmin, async
       meta: github
     });
 
+    invalidateLegacyGiftRepairCache(invite);
+
     return res.json({
       status: 'success',
       message: allowOverwrite ? 'Pasta actualizada no GitHub com sucesso.' : 'Pasta criada no GitHub com sucesso.',
@@ -1503,7 +1505,7 @@ app.delete('/manager/invites/:id/gifts', requireManager, requireAdmin, async (re
 app.post('/manager/invites/:id/gifts/repair-legacy', requireManager, requireAdmin, asyncRoute(async (req, res) => {
   const invite = await Invite.findById(req.params.id);
   if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
-  const result = await ensureLegacyGiftReservations(invite);
+  const result = await ensureLegacyGiftReservations(invite, { force: true });
   await logActivity({
     invite,
     type: 'gift',
@@ -2295,6 +2297,26 @@ function valuesFromMaybeList(value) {
 function giftContributionTime(row) {
   return row?.timestamp || row?.createdAt || row?.updatedAt || new Date();
 }
+
+const LEGACY_GIFT_REPAIR_CACHE = new Map();
+const LEGACY_GIFT_REPAIR_CACHE_MS = Number(process.env.LEGACY_GIFT_REPAIR_CACHE_MS || 5 * 60 * 1000);
+function invalidateLegacyGiftRepairCache(invite) {
+  const key = String(invite?._id || invite || '');
+  if (key) LEGACY_GIFT_REPAIR_CACHE.delete(key);
+}
+async function legacyGiftRowsNeedRepair(invite) {
+  const needs = await Contribution.exists({
+    inviteId: invite._id,
+    canal: /presente escolhido/i,
+    $or: [
+      { legacyGiftMigrated: { $ne: true } },
+      { selectedGift: { $in: [null, ''] } },
+      { giftChoice: { $in: [null, ''] } }
+    ]
+  });
+  return Boolean(needs);
+}
+
 async function giftOptionNamesForInvite(invite) {
   await seedDefaultGifts(invite);
   const rows = await GiftItem.find({ inviteId: invite._id }).select('name').lean();
@@ -2418,8 +2440,15 @@ async function createOrUpdateGiftAuditContribution({ invite, guest, reservedBy, 
     { upsert: true, new: true }
   );
 }
-async function ensureLegacyGiftReservations(invite) {
+async function ensureLegacyGiftReservations(invite, optionsArg = {}) {
   if (!invite || !invite._id) return { scanned: 0, migrated: 0, reserved: 0, conflicts: 0, unresolved: 0 };
+
+  const cacheKey = String(invite._id);
+  const cached = LEGACY_GIFT_REPAIR_CACHE.get(cacheKey);
+  if (!optionsArg.force && cached && (Date.now() - cached.at) < LEGACY_GIFT_REPAIR_CACHE_MS) {
+    const needsRepair = await legacyGiftRowsNeedRepair(invite);
+    if (!needsRepair) return cached.result;
+  }
 
   await seedDefaultGifts(invite);
   const options = await giftOptionNamesForInvite(invite);
@@ -2543,6 +2572,7 @@ async function ensureLegacyGiftReservations(invite) {
     result.migrated += 1;
   }
 
+  LEGACY_GIFT_REPAIR_CACHE.set(cacheKey, { at: Date.now(), result });
   return result;
 }
 async function cleanContributionRowsForPublic(rows, invite) {
@@ -3117,6 +3147,7 @@ async function handleUploadComprovativo(req, res, invite) {
   });
   doc.fileUrl = `${PUBLIC_API_BASE_URL}/api/contributions/${doc._id}/file`;
   await doc.save();
+  invalidateLegacyGiftRepairCache(invite);
   await logActivity({ invite, type: 'contribution', title: 'Comprovativo recebido', detail: `${nome} · ${canal}${selectedGift ? ' · ' + selectedGift : ''}` });
   return res.json({ status: 'success', message: 'Comprovativo enviado.', data: { id: doc._id, fileUrl: doc.fileUrl, selectedGift } });
 }
