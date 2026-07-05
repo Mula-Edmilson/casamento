@@ -381,6 +381,8 @@ const GiftItemSchema = new mongoose.Schema({
   reservedByNormalized: { type: String, default: '', index: true },
   reservedByGuestId: { type: mongoose.Schema.Types.ObjectId, ref: 'Guest', index: true },
   reservedToken: { type: String, default: '', index: true },
+  reservedSource: { type: String, default: '' },
+  reservedContributionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Contribution', index: true },
   reservedAt: { type: Date }
 }, { timestamps: true });
 GiftItemSchema.index({ inviteId: 1, name: 1 }, { unique: true });
@@ -396,6 +398,21 @@ const ContributionSchema = new mongoose.Schema({
   size: { type: Number, default: 0 },
   fileBase64: { type: String, default: '' },
   fileUrl: { type: String, default: '' },
+  // Compatibilidade: guarda metadados quando um comprovativo antigo/externo
+  // representa escolha de presente. Sem estes campos, o admin não consegue
+  // saber qual item foi realmente escolhido.
+  selectedGift: { type: String, default: '' },
+  giftChoice: { type: String, default: '' },
+  selectedGifts: { type: [String], default: [] },
+  gifts: { type: String, default: '' },
+  details: { type: mongoose.Schema.Types.Mixed, default: {} },
+  token: { type: String, default: '' },
+  legacyGiftMigrated: { type: Boolean, default: false, index: true },
+  legacyGiftConflict: { type: Boolean, default: false, index: true },
+  legacyGiftConflictReason: { type: String, default: '' },
+  legacyGiftReservedInGiftItem: { type: Boolean, default: false },
+  legacyGiftReservedBy: { type: String, default: '' },
+  legacyGiftReservedAt: { type: Date },
   timestamp: { type: Date, default: Date.now }
 }, { timestamps: true });
 
@@ -1410,7 +1427,7 @@ app.post('/manager/invites/:id/gifts/reset-reservations', requireManager, requir
   const result = await GiftItem.updateMany(
     { inviteId: invite._id },
     {
-      $set: { reserved: false, reservedBy: '', reservedByNormalized: '', reservedToken: '', reservedAt: null },
+      $set: { reserved: false, reservedBy: '', reservedByNormalized: '', reservedToken: '', reservedSource: '', reservedContributionId: null, reservedAt: null },
       $unset: { reservedByGuestId: '' }
     }
   );
@@ -1448,6 +1465,21 @@ app.delete('/manager/invites/:id/gifts', requireManager, requireAdmin, async (re
     data: { deleted: result.deletedCount || 0 }
   });
 });
+
+
+app.post('/manager/invites/:id/gifts/repair-legacy', requireManager, requireAdmin, asyncRoute(async (req, res) => {
+  const invite = await Invite.findById(req.params.id);
+  if (!invite) return res.status(404).json({ status: 'error', message: 'Convite não encontrado.' });
+  const result = await ensureLegacyGiftReservations(invite);
+  await logActivity({
+    invite,
+    type: 'gift',
+    title: 'Registos antigos de presentes reparados',
+    detail: `${result.reserved} reservado(s) · ${result.conflicts} conflito(s) · ${result.unresolved} sem identificação`,
+    meta: result
+  });
+  res.json({ status: 'success', message: 'Registos antigos de presentes verificados e sincronizados.', data: result });
+}));
 
 app.post('/manager/invites/:id/gifts/seed-defaults', requireManager, requireAdmin, async (req, res) => {
   const invite = await Invite.findById(req.params.id);
@@ -2012,8 +2044,12 @@ app.post('/admin-api', async (req, res) => {
 
     if (data.action === 'stats') return getPublicStats(req, res, invite);
     if (data.action === 'get_rsvps') return res.json({ status: 'success', data: await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
-    if (data.action === 'get_gifts') return res.json({ status: 'success', data: (await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 })).map(cleanGiftForPublic) });
-    if (data.action === 'get_comprovativos') return res.json({ status: 'success', data: await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64') });
+    if (data.action === 'get_gifts') return res.json({ status: 'success', data: await listGiftRowsForPublic(invite) });
+    if (data.action === 'get_comprovativos') {
+      await ensureLegacyGiftReservations(invite);
+      const rows = await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64');
+      return res.json({ status: 'success', data: await cleanContributionRowsForPublic(rows, invite) });
+    }
     if (data.action === 'get_messages') return res.json({ status: 'success', data: await Message.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
     if (data.action === 'get_guests') return res.json({ status: 'success', data: (await Guest.find({ inviteId: invite._id }).sort({ number: 1, name: 1 })).map(cleanGuestForPublic) });
     if (data.action === 'get_checkins') return res.json({ status: 'success', data: await CheckIn.find({ inviteId: invite._id }).sort({ timestamp: -1 }) });
@@ -2197,13 +2233,322 @@ async function listRsvps(req, res, invite) {
   const rows = await Rsvp.find({ inviteId: invite._id }).sort({ timestamp: -1 });
   sendJson(req, res, { status: 'success', data: rows });
 }
-async function listContributions(req, res, invite) {
-  const rows = await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64');
-  const data = rows.map(doc => {
+
+
+function safeParseObject(value) {
+  if (!value) return {};
+  if (typeof value === 'object') return value;
+  try { return JSON.parse(value); } catch { return {}; }
+}
+function normalizeGiftKeyServer(value) {
+  return normalizeText(value).replace(/[^a-z0-9]+/g, ' ').trim();
+}
+function compactGiftKeyServer(value) {
+  return normalizeGiftKeyServer(value).replace(/\s+/g, '');
+}
+function isGenericGiftSelectionText(value) {
+  const v = normalizeGiftKeyServer(value);
+  return !v || ['presente escolhido', 'presentes escolhidos', 'presente', 'contribuicao registada', 'contribuicao registrada', 'registo antigo sem item identificado'].includes(v);
+}
+function valuesFromMaybeList(value) {
+  if (Array.isArray(value)) return value.flatMap(valuesFromMaybeList);
+  if (typeof value === 'string' && value.includes(',')) return value.split(',').map(v => v.trim());
+  return value === undefined || value === null ? [] : [value];
+}
+function giftContributionTime(row) {
+  return row?.timestamp || row?.createdAt || row?.updatedAt || new Date();
+}
+async function giftOptionNamesForInvite(invite) {
+  await seedDefaultGifts(invite);
+  const rows = await GiftItem.find({ inviteId: invite._id }).select('name').lean();
+  return rows.map(row => row.name).filter(Boolean);
+}
+function matchGiftNameFromSlugOrText(rawValue, options = []) {
+  const raw = String(rawValue || '').trim();
+  if (!raw) return '';
+  const normalizedRaw = normalizeGiftKeyServer(raw);
+  if (!normalizedRaw || isGenericGiftSelectionText(normalizedRaw)) return '';
+
+  const exact = options.find(name => normalizeGiftKeyServer(name) === normalizedRaw);
+  if (exact) return exact;
+
+  const compactRaw = normalizedRaw.replace(/\s+/g, '');
+  const compactMatch = options.find(name => normalizeGiftKeyServer(name).replace(/\s+/g, '') === compactRaw);
+  if (compactMatch) return compactMatch;
+
+  return raw;
+}
+function inferGiftNameFromFilenameLike(value, options = []) {
+  const filename = String(value || '').trim();
+  if (!filename) return '';
+  const match = filename.match(/presente[-_\s]*escolhido[-_\s]*(.+?)(?:\.[a-z0-9]+)?$/i);
+  if (!match || !match[1]) return '';
+  const candidate = match[1]
+    .replace(/^\d+[-_\s]*/, '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return matchGiftNameFromSlugOrText(candidate, options);
+}
+function inferGiftNameFromContribution(row, options = []) {
+  const d = safeParseObject(row.details);
+  const directValues = [
+    row.selectedGift,
+    row.giftChoice,
+    row.giftName,
+    row.gift,
+    row.selectedGifts,
+    row.gifts,
+    d.selectedGift,
+    d.giftChoice,
+    d.giftName,
+    d.gift,
+    d.selectedGifts,
+    d.gifts
+  ].flatMap(valuesFromMaybeList).map(v => String(v || '').trim()).filter(Boolean);
+
+  for (const value of directValues) {
+    const matched = matchGiftNameFromSlugOrText(value, options);
+    if (matched) return matched;
+  }
+
+  const fromFileName = inferGiftNameFromFilenameLike(row.originalName || row.fileName || row.filename || '', options);
+  if (fromFileName) return fromFileName;
+
+  return '';
+}
+function isGiftContributionChannel(row) {
+  return normalizeGiftKeyServer(row?.canal || '').includes('presente escolhido');
+}
+function isSameGiftName(a, b) {
+  return compactGiftKeyServer(a) === compactGiftKeyServer(b);
+}
+async function findGiftItemByName(invite, giftName) {
+  let item = await GiftItem.findOne({ inviteId: invite._id, name: exactRegex(giftName) });
+  if (item) return item;
+  const all = await GiftItem.find({ inviteId: invite._id });
+  return all.find(row => isSameGiftName(row.name, giftName)) || null;
+}
+async function markContributionGiftMeta(row, patch = {}) {
+  const currentDetails = safeParseObject(row.details);
+  const nextDetails = { ...currentDetails, ...(patch.details || {}) };
+  const update = { ...patch, details: nextDetails };
+  delete update._id;
+  await Contribution.updateOne({ _id: row._id }, { $set: update });
+}
+async function createOrUpdateGiftAuditContribution({ invite, guest, reservedBy, reservedToken, gift, reservedAt }) {
+  const selectedGift = gift?.name || '';
+  if (!selectedGift) return;
+  const nome = String(reservedBy || guest?.name || 'Convidado').trim();
+  const tokenValue = String(reservedToken || guest?.inviteToken || '').trim();
+  const baseFilter = {
+    inviteId: invite._id,
+    canal: 'Presente escolhido',
+    selectedGift,
+    nome
+  };
+  await Contribution.findOneAndUpdate(
+    baseFilter,
+    {
+      $setOnInsert: {
+        inviteId: invite._id,
+        slug: invite.slug,
+        nome,
+        canal: 'Presente escolhido',
+        fileName: '',
+        originalName: '',
+        mimeType: '',
+        size: 0,
+        fileBase64: '',
+        fileUrl: '',
+        timestamp: reservedAt || new Date()
+      },
+      $set: {
+        selectedGift,
+        giftChoice: selectedGift,
+        selectedGifts: [selectedGift],
+        gifts: selectedGift,
+        token: tokenValue,
+        legacyGiftMigrated: true,
+        legacyGiftConflict: false,
+        legacyGiftConflictReason: '',
+        legacyGiftReservedInGiftItem: true,
+        legacyGiftReservedBy: nome,
+        legacyGiftReservedAt: reservedAt || new Date(),
+        details: { selectedGift, selectedGifts: [selectedGift], giftChoice: selectedGift, nome, token: tokenValue, source: 'save_gifts' }
+      }
+    },
+    { upsert: true, new: true }
+  );
+}
+async function ensureLegacyGiftReservations(invite) {
+  if (!invite || !invite._id) return { scanned: 0, migrated: 0, reserved: 0, conflicts: 0, unresolved: 0 };
+
+  await seedDefaultGifts(invite);
+  const options = await giftOptionNamesForInvite(invite);
+  const rows = await Contribution.find({ inviteId: invite._id, canal: /presente escolhido/i })
+    .sort({ timestamp: 1, createdAt: 1, _id: 1 });
+
+  const result = { scanned: rows.length, migrated: 0, reserved: 0, conflicts: 0, unresolved: 0 };
+
+  for (const row of rows) {
+    const giftName = inferGiftNameFromContribution(row, options);
+    const guestName = String(row.nome || 'Convidado').trim();
+    const guestKey = normalizeText(guestName);
+    const tokenValue = String(row.token || '').trim();
+    const pickedAt = giftContributionTime(row);
+
+    if (!giftName) {
+      result.unresolved += 1;
+      await markContributionGiftMeta(row, {
+        legacyGiftMigrated: true,
+        legacyGiftConflict: true,
+        legacyGiftConflictReason: 'Não foi possível identificar o nome real do presente neste registo antigo.',
+        details: { legacyGiftUnresolved: true, migratedAt: new Date().toISOString() }
+      });
+      continue;
+    }
+
+    let gift = await findGiftItemByName(invite, giftName);
+    if (!gift) {
+      gift = await GiftItem.create({ inviteId: invite._id, slug: invite.slug, name: giftName, category: 'Lista de presentes', reserved: false });
+    }
+
+    const previousGiftForSameGuest = guestKey
+      ? await GiftItem.findOne({ inviteId: invite._id, reserved: true, reservedByNormalized: guestKey })
+      : null;
+
+    const baseMeta = {
+      selectedGift: gift.name,
+      giftChoice: gift.name,
+      selectedGifts: [gift.name],
+      gifts: gift.name,
+      token: tokenValue,
+      legacyGiftMigrated: true,
+      legacyGiftReservedBy: gift.reservedBy || guestName,
+      legacyGiftReservedAt: gift.reservedAt || pickedAt,
+      details: {
+        selectedGift: gift.name,
+        selectedGifts: [gift.name],
+        giftChoice: gift.name,
+        nome: guestName,
+        token: tokenValue,
+        migratedAt: new Date().toISOString(),
+        source: 'legacy_contribution_filename'
+      }
+    };
+
+    if (previousGiftForSameGuest && !isSameGiftName(previousGiftForSameGuest.name, gift.name)) {
+      result.conflicts += 1;
+      await markContributionGiftMeta(row, {
+        ...baseMeta,
+        legacyGiftConflict: true,
+        legacyGiftReservedInGiftItem: false,
+        legacyGiftConflictReason: `Este convidado já tinha outro presente reservado: ${previousGiftForSameGuest.name}.`,
+        details: { ...baseMeta.details, duplicateGuestGift: true, existingGift: previousGiftForSameGuest.name }
+      });
+      continue;
+    }
+
+    if (!gift.reserved) {
+      gift.reserved = true;
+      gift.reservedBy = guestName;
+      gift.reservedByNormalized = guestKey;
+      gift.reservedToken = tokenValue;
+      gift.reservedAt = pickedAt;
+      gift.reservedSource = 'legacy_contribution';
+      gift.reservedContributionId = row._id;
+      await gift.save();
+      result.reserved += 1;
+      await markContributionGiftMeta(row, {
+        ...baseMeta,
+        legacyGiftConflict: false,
+        legacyGiftConflictReason: '',
+        legacyGiftReservedInGiftItem: true,
+        legacyGiftReservedBy: guestName,
+        legacyGiftReservedAt: pickedAt,
+        details: { ...baseMeta.details, giftItemReserved: true }
+      });
+      result.migrated += 1;
+      continue;
+    }
+
+    const sameOwner = guestKey && normalizeText(gift.reservedBy || '') === guestKey;
+    if (sameOwner) {
+      await markContributionGiftMeta(row, {
+        ...baseMeta,
+        legacyGiftConflict: false,
+        legacyGiftConflictReason: '',
+        legacyGiftReservedInGiftItem: true,
+        legacyGiftReservedBy: gift.reservedBy || guestName,
+        legacyGiftReservedAt: gift.reservedAt || pickedAt,
+        details: { ...baseMeta.details, giftItemAlreadyReservedBySameGuest: true }
+      });
+      result.migrated += 1;
+      continue;
+    }
+
+    result.conflicts += 1;
+    await markContributionGiftMeta(row, {
+      ...baseMeta,
+      legacyGiftConflict: true,
+      legacyGiftReservedInGiftItem: false,
+      legacyGiftReservedBy: gift.reservedBy || '',
+      legacyGiftReservedAt: gift.reservedAt || null,
+      legacyGiftConflictReason: `Presente duplicado: ${gift.name} já estava reservado por ${gift.reservedBy || 'outro convidado'}.`,
+      details: {
+        ...baseMeta.details,
+        duplicateGift: true,
+        alreadyReservedBy: gift.reservedBy || '',
+        alreadyReservedAt: gift.reservedAt || null
+      }
+    });
+    result.migrated += 1;
+  }
+
+  return result;
+}
+async function cleanContributionRowsForPublic(rows, invite) {
+  const options = await giftOptionNamesForInvite(invite);
+  return rows.map(doc => {
     const o = doc.toObject ? doc.toObject() : doc;
     const fileUrl = o.fileUrl || (o._id ? `${PUBLIC_API_BASE_URL}/api/contributions/${o._id}/file` : '');
-    return { ...o, filename: o.originalName || o.fileName || '', viewUrl: fileUrl, previewUrl: fileUrl, downloadUrl: fileUrl, thumbnailUrl: fileUrl };
+    const selectedGift = inferGiftNameFromContribution(o, options);
+    const giftChannel = isGiftContributionChannel(o);
+    const details = safeParseObject(o.details);
+    const conflict = Boolean(o.legacyGiftConflict || details.duplicateGift || details.duplicateGuestGift);
+    return {
+      ...o,
+      filename: o.originalName || o.fileName || '',
+      viewUrl: fileUrl,
+      previewUrl: fileUrl,
+      downloadUrl: fileUrl,
+      thumbnailUrl: fileUrl,
+      selectedGift,
+      giftName: selectedGift,
+      giftChoice: selectedGift,
+      selectedGifts: selectedGift ? [selectedGift] : [],
+      gifts: selectedGift,
+      isGiftSelection: giftChannel && Boolean(selectedGift),
+      unverifiedGiftSelection: giftChannel && !selectedGift,
+      legacyGiftConflict: conflict,
+      legacyGiftConflictReason: o.legacyGiftConflictReason || details.legacyGiftConflictReason || '',
+      legacyGiftReservedInGiftItem: Boolean(o.legacyGiftReservedInGiftItem || details.giftItemReserved || details.giftItemAlreadyReservedBySameGuest),
+      reserved: Boolean(o.legacyGiftReservedInGiftItem),
+      reservedBy: o.legacyGiftReservedBy || o.nome || '',
+      reservedAt: o.legacyGiftReservedAt || o.timestamp || o.createdAt || null
+    };
   });
+}
+async function listGiftRowsForPublic(invite) {
+  await ensureLegacyGiftReservations(invite);
+  const gifts = await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 });
+  return gifts.map(cleanGiftForPublic);
+}
+async function listContributions(req, res, invite) {
+  await ensureLegacyGiftReservations(invite);
+  const rows = await Contribution.find({ inviteId: invite._id }).sort({ timestamp: -1 }).select('-fileBase64');
+  const data = await cleanContributionRowsForPublic(rows, invite);
   sendJson(req, res, { status: 'success', data });
 }
 async function listCheckins(req, res, invite) {
@@ -2221,9 +2566,8 @@ async function listCapsulePhotos(req, res, invite) {
 }
 async function listMessages(req, res, invite) { const messages = await Message.find({ inviteId: invite._id, hidden: { $ne: true } }).sort({ timestamp: -1 }).limit(200); sendJson(req, res, { status: 'success', data: messages }); }
 async function listGifts(req, res, invite) {
-  await seedDefaultGifts(invite);
-  const gifts = await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 });
-  sendJson(req, res, { status: 'success', data: gifts.map(cleanGiftForPublic) });
+  const data = await listGiftRowsForPublic(invite);
+  sendJson(req, res, { status: 'success', data });
 }
 async function getGuestDetails(req, res, invite) {
   const guest = await findGuestByIdentity(invite, { nome: req.body?.nome || req.query?.nome || req.query?.name, name: req.query?.name, token: req.body?.token || req.query?.token });
@@ -2560,6 +2904,17 @@ async function handleSaveGifts(req, res, invite) {
       meta: { reservedBy, reservedToken, gifts: results.success.map(g => g.name), failed: results.failed }
     });
 
+    for (const reservedGift of results.success) {
+      await createOrUpdateGiftAuditContribution({
+        invite,
+        guest,
+        reservedBy,
+        reservedToken,
+        gift: reservedGift,
+        reservedAt: now
+      });
+    }
+
     return res.json({
       status: 'success',
       data: results,
@@ -2609,6 +2964,13 @@ async function handleUploadComprovativo(req, res, invite) {
   if (!nome) return res.status(400).json({ status: 'error', message: 'Nome não enviado.' });
   const file = req.file || (Array.isArray(req.files) ? req.files.find(f => f.fieldname === 'comprovativoFile') || req.files[0] : null);
   if (!file) return res.status(400).json({ status: 'error', message: 'Ficheiro não recebido.' });
+
+  const selectedGifts = valuesFromMaybeList(req.body?.selectedGifts || req.body?.selectedGift || req.body?.giftChoice || req.body?.gift || req.body?.gifts)
+    .map(v => String(v || '').trim())
+    .filter(v => v && !isGenericGiftSelectionText(v));
+  const selectedGift = selectedGifts[0] || '';
+  const details = safeParseObject(req.body?.details);
+
   const doc = await Contribution.create({
     inviteId: invite._id,
     slug: invite.slug,
@@ -2619,12 +2981,18 @@ async function handleUploadComprovativo(req, res, invite) {
     mimeType: file.mimetype,
     size: file.size,
     fileBase64: file.buffer.toString('base64'),
+    selectedGift,
+    giftChoice: selectedGift,
+    selectedGifts: selectedGift ? [selectedGift] : [],
+    gifts: selectedGift,
+    details,
+    token: String(req.body?.token || req.body?.guestToken || req.body?.inviteToken || '').trim(),
     timestamp: new Date()
   });
   doc.fileUrl = `${PUBLIC_API_BASE_URL}/api/contributions/${doc._id}/file`;
   await doc.save();
-  await logActivity({ invite, type: 'contribution', title: 'Comprovativo recebido', detail: `${nome} · ${canal}` });
-  return res.json({ status: 'success', message: 'Comprovativo enviado.', data: { id: doc._id, fileUrl: doc.fileUrl } });
+  await logActivity({ invite, type: 'contribution', title: 'Comprovativo recebido', detail: `${nome} · ${canal}${selectedGift ? ' · ' + selectedGift : ''}` });
+  return res.json({ status: 'success', message: 'Comprovativo enviado.', data: { id: doc._id, fileUrl: doc.fileUrl, selectedGift } });
 }
 
 

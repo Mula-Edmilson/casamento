@@ -1569,6 +1569,75 @@
         return list;
       }
 
+
+      function isInventoryGiftRow(row) {
+        if (!row) return false;
+        const hasInventoryFields = row.reserved !== undefined || row.isReserved !== undefined || row.reservedBy !== undefined || row.reservedAt !== undefined;
+        const hasContributionFields = Boolean(row.canal || row.fileName || row.originalName || row.filename || row.viewUrl || row.previewUrl || row.downloadUrl);
+        return hasInventoryFields && Boolean(row.name || row.label) && !hasContributionFields;
+      }
+
+      function giftSelectionDedupKey(row) {
+        const gift = normalizeKey(giftChosenName(row));
+        const guest = normalizeKey(giftGuestName(row));
+        return `${guest}|${gift}`;
+      }
+
+      function prepareGiftRecords(rows) {
+        const list = uniqueRecords(rows).filter(isGiftSelectionRecord);
+        const contributionKeys = new Set(
+          list
+            .filter(row => !isInventoryGiftRow(row))
+            .map(giftSelectionDedupKey)
+            .filter(key => key !== '|')
+        );
+        return list.filter(row => {
+          if (!isInventoryGiftRow(row)) return true;
+          const key = giftSelectionDedupKey(row);
+          return !contributionKeys.has(key);
+        });
+      }
+
+      function isGenericGiftText(value) {
+        const v = normalizeKey(value).replace(/[^a-z0-9]+/g, ' ').trim();
+        return !v || ['presente escolhido', 'presentes escolhidos', 'presente', 'contribuicao registada', 'contribuicao registrada'].includes(v);
+      }
+
+      function giftOptionNames() {
+        return (window.LIRANDZO_GIFT_OPTIONS || [])
+          .map(item => item?.name || item?.label || String(item || '').trim())
+          .filter(Boolean);
+      }
+
+      function resolveGiftOptionName(value) {
+        const raw = text(value);
+        if (!raw || isGenericGiftText(raw)) return '';
+        const options = giftOptionNames();
+        const normalized = normalizeKey(raw).replace(/[^a-z0-9]+/g, ' ').trim();
+        const compact = normalized.replace(/\s+/g, '');
+        const exact = options.find(name => normalizeKey(name).replace(/[^a-z0-9]+/g, ' ').trim() === normalized);
+        if (exact) return exact;
+        const compactMatch = options.find(name => normalizeKey(name).replace(/[^a-z0-9]+/g, '').trim() === compact);
+        return compactMatch || raw;
+      }
+
+      function valuesFromMixedGift(value) {
+        if (Array.isArray(value)) return value.flatMap(valuesFromMixedGift);
+        if (typeof value === 'string' && value.includes(',')) return value.split(',').map(v => v.trim());
+        return value === undefined || value === null ? [] : [value];
+      }
+
+      function giftFromFilename(g) {
+        const filename = text(g?.originalName || g?.fileName || g?.filename || '');
+        const match = filename.match(/presente[-_\s]*escolhido[-_\s]*(.+?)(?:\.[a-z0-9]+)?$/i);
+        if (!match || !match[1]) return '';
+        return resolveGiftOptionName(match[1].replace(/^\d+[-_\s]*/, '').replace(/[-_]+/g, ' ').trim());
+      }
+
+      function isGiftChannel(g) {
+        return normalizeKey(g?.canal || '').includes('presente escolhido');
+      }
+
       function giftChosenName(g) {
         if (!g) return '';
         const d = parseGiftDetails(g || {});
@@ -1583,11 +1652,20 @@
         // Segurança: inventário de presentes com reserved=false NÃO é contribuição nem escolha.
         if (inventoryOnly && !reserved) return '';
 
-        let value = g?.selectedGift || g?.giftChoice || g?.gift || g?.giftName || g?.selectedGifts || g?.gifts || d.selectedGift || d.giftChoice || d.gift || d.giftName || d.selectedGifts || d.gifts || '';
-        if (Array.isArray(value)) value = value[0] || '';
-        if (typeof value === 'string' && value.includes(',')) value = value.split(',')[0];
-        if (!value && reserved) value = g?.name || g?.label || '';
-        return text(value);
+        const values = [
+          g?.selectedGift, g?.giftChoice, g?.gift, g?.giftName, g?.selectedGifts, g?.gifts,
+          d.selectedGift, d.giftChoice, d.gift, d.giftName, d.selectedGifts, d.gifts
+        ].flatMap(valuesFromMixedGift);
+
+        for (const value of values) {
+          const resolved = resolveGiftOptionName(value);
+          if (resolved) return resolved;
+        }
+
+        const filenameGift = giftFromFilename(g);
+        if (filenameGift) return filenameGift;
+
+        return reserved ? resolveGiftOptionName(g?.name || g?.label || '') : '';
       }
 
       function isGiftSelectionRecord(g) {
@@ -1595,17 +1673,23 @@
         const d = parseGiftDetails(g);
         const status = text(g.status || g.state || d.status).toLowerCase();
         const reserved = g?.reserved === true || g?.isReserved === true || Boolean(g?.reservedBy || g?.reserved_by || g?.reservedAt);
+        const giftName = giftChosenName(g);
+
+        // Registos antigos com canal “Presente escolhido” mas sem nome do item
+        // não são prova de escolha. Não entram na lista nem bloqueiam o convite.
+        if (isGiftChannel(g) && !giftName) return false;
+
         const contributionLike = Boolean(
           g.canal || g.filename || g.fileName || g.originalName ||
           g.viewUrl || g.previewUrl || g.downloadUrl || g.comprovativoFile ||
           d.comprovativoFile || d.comprovativoFile_filename
         );
         return Boolean(
-          contributionLike ||
           reserved ||
+          giftName ||
+          (!isGiftChannel(g) && contributionLike) ||
           status.includes('reserv') ||
-          status.includes('escolh') ||
-          giftChosenName(g)
+          (status.includes('escolh') && giftName)
         );
       }
 
@@ -1948,7 +2032,7 @@
           DATA.stats = responseObject(stats);
           DATA.guests = responseArray(guests);
           DATA.rsvps = responseArray(rsvps);
-          DATA.gifts = uniqueRecords(gifts).filter(isGiftSelectionRecord);
+          DATA.gifts = prepareGiftRecords(gifts);
           DATA.messages = responseArray(messages);
           DATA.checkins = responseArray(checkins);
           DATA.photos = responseArray(photos);
@@ -2235,10 +2319,12 @@
 
       function giftDetail(g) {
         const d = parseGiftDetails(g);
-        let value = giftChosenName(g) || g.selectedGifts || g.gifts || d.selectedGifts || d.gifts || g.filename || d.comprovativoFile_filename || g.canal || '';
+        let value = giftChosenName(g) || g.selectedGifts || g.gifts || d.selectedGifts || d.gifts || g.filename || d.comprovativoFile_filename || '';
         if (Array.isArray(value)) value = value.join(', ');
         if (typeof value === 'object' && value !== null) value = JSON.stringify(value);
-        return text(value) || 'Contribuição registada';
+        value = text(value);
+        if (!value && isGiftChannel(g)) return 'Registo antigo sem item identificado';
+        return value || text(g.canal) || 'Contribuição registada';
       }
 
       function giftPreviewMarkup(g) {
@@ -2253,7 +2339,10 @@
         const link = openUrl
           ? `<a class="contribution-link" href="${esc(openUrl)}" target="_blank" rel="noopener"><i data-feather="external-link"></i> Abrir ficheiro</a>`
           : '';
-        return `<div class="contribution-cell">${preview}<div class="contribution-info"><strong>${esc(fileLabel)}</strong><small>${esc(detail)}</small>${link}</div></div>`;
+        const conflict = Boolean(g.legacyGiftConflict || d.duplicateGift || d.duplicateGuestGift);
+        const conflictText = g.legacyGiftConflictReason || d.legacyGiftConflictReason || d.alreadyReservedBy ? `Conflito: ${g.legacyGiftConflictReason || 'presente duplicado'}` : 'Conflito: presente duplicado';
+        const conflictMarkup = conflict ? `<small style="color:#ffb3a7;font-weight:800">${esc(conflictText)}</small>` : '';
+        return `<div class="contribution-cell">${preview}<div class="contribution-info"><strong>${esc(fileLabel)}</strong><small>${esc(detail)}</small>${conflictMarkup}${link}</div></div>`;
       }
 
       function renderGifts() {

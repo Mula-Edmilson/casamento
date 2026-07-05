@@ -723,6 +723,32 @@ function flattenGiftValues(values) {
   return output.map(value => String(value || '').trim()).filter(Boolean);
 }
 
+function isGenericGiftText(value) {
+  const v = normalizeGiftKey(value).replace(/[^a-z0-9]+/g, ' ').trim();
+  return !v || ['presente escolhido', 'presentes escolhidos', 'presente', 'contribuicao registada', 'contribuicao registrada'].includes(v);
+}
+
+function resolveGiftOptionName(value) {
+  const raw = String(value || '').trim();
+  if (!raw || isGenericGiftText(raw)) return '';
+  const options = (window.LIRANDZO_GIFT_OPTIONS || [])
+    .map(item => item.name || item.label || String(item || '').trim())
+    .filter(Boolean);
+  const normalized = normalizeGiftKey(raw).replace(/[^a-z0-9]+/g, ' ').trim();
+  const compact = normalized.replace(/\s+/g, '');
+  const exact = options.find(name => normalizeGiftKey(name).replace(/[^a-z0-9]+/g, ' ').trim() === normalized);
+  if (exact) return exact;
+  const compactMatch = options.find(name => normalizeGiftKey(name).replace(/[^a-z0-9]+/g, '').trim() === compact);
+  return compactMatch || raw;
+}
+
+function inferGiftFromFilename(record) {
+  const filename = String(record?.originalName || record?.fileName || record?.filename || '').trim();
+  const match = filename.match(/presente[-_\s]*escolhido[-_\s]*(.+?)(?:\.[a-z0-9]+)?$/i);
+  if (!match || !match[1]) return '';
+  return resolveGiftOptionName(match[1].replace(/^\d+[-_\s]*/, '').replace(/[-_]+/g, ' ').trim());
+}
+
 function giftNameFromRecord(record) {
   if (!record) return '';
   const details = parseGiftDetails(record && record.details);
@@ -751,8 +777,16 @@ function giftNameFromRecord(record) {
     details.selectedGifts,
     details.gifts
   ]);
-  if (values[0]) return String(values[0] || '').trim();
-  return reserved ? String(record.name || record.label || '').trim() : '';
+
+  for (const value of values) {
+    const resolved = resolveGiftOptionName(value);
+    if (resolved) return resolved;
+  }
+
+  const filenameGift = inferGiftFromFilename(record);
+  if (filenameGift) return filenameGift;
+
+  return reserved ? resolveGiftOptionName(record.name || record.label || '') : '';
 }
 
 function giftResponseArray(response) {
@@ -810,7 +844,7 @@ function reservationToken(record) {
 
 async function fetchGiftRecords() {
   if (!window.LirandzoAPI || typeof window.LirandzoAPI.get !== 'function') return [];
-  const actions = ['list_gift_records', 'get_gifts', 'list_gifts'];
+  const actions = ['get_gifts', 'list_gifts'];
   const settled = await Promise.allSettled(actions.map(action => window.LirandzoAPI.get(action, {})));
   const records = [];
   const seen = new Set();
@@ -893,77 +927,23 @@ async function postRequest(data) {
     const beforeState = await getGiftState();
     assertGiftCanBeChosen(giftName, beforeState);
 
-    const officialPayload = {
-      action: 'save_gifts',
-      nome: payload.nome || guestName,
-      token: payload.token || token,
-      selectedGift: giftName,
-      giftChoice: giftName,
-      selectedGifts: [giftName],
-      gifts: giftName,
-      details: JSON.stringify({ selectedGift: giftName, selectedGifts: [giftName], giftChoice: giftName, nome: payload.nome || guestName, token: payload.token || token })
-    };
-
     try {
-      const result = await window.LirandzoAPI.post(officialPayload);
-      const checkState = await getGiftState().catch(() => null);
-      if (!checkState || checkState.taken.has(normalizeGiftKey(giftName))) return result;
-    } catch (err) {
-      if (isGiftConflictError(err)) throw new Error('Este presente acabou de ser escolhido por outro convidado. Escolha outro presente disponível.');
-    }
-
-    try {
-      const result = await window.LirandzoAPI.post({
-        ...officialPayload,
-        action: 'reserve_gift',
-        giftName,
-        gift: giftName,
-        name: giftName,
-        reservedBy: payload.nome || guestName,
-        reserved_by: payload.nome || guestName
+      return await window.LirandzoAPI.post({
+        action: 'save_gifts',
+        nome: payload.nome || guestName,
+        token: payload.token || token,
+        selectedGift: giftName,
+        giftChoice: giftName,
+        selectedGifts: [giftName],
+        gifts: giftName,
+        details: JSON.stringify({ selectedGift: giftName, selectedGifts: [giftName], giftChoice: giftName, nome: payload.nome || guestName, token: payload.token || token })
       });
-      const checkState = await getGiftState().catch(() => null);
-      if (!checkState || checkState.taken.has(normalizeGiftKey(giftName))) return result;
     } catch (err) {
-      if (isGiftConflictError(err)) throw new Error('Este presente acabou de ser escolhido por outro convidado. Escolha outro presente disponível.');
+      if (isGiftConflictError(err)) {
+        throw new Error('Este presente já foi escolhido por outro convidado. Escolha outro presente disponível.');
+      }
+      throw err;
     }
-
-    const latestState = await getGiftState();
-    assertGiftCanBeChosen(giftName, latestState);
-
-    const clean = String(giftName).replace(/[()\\]/g, '');
-    const pdf = `%PDF-1.4
-% Lirandzo gift choice
-1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
-2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj
-3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj
-4 0 obj<</Length 170>>stream
-BT /F1 16 Tf 60 760 Td (Presente escolhido: ${clean}) Tj 0 -28 Td (Convidado: ${String(guestName).replace(/[()\\]/g, '')}) Tj ET
-endstream
-endobj
-5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj
-xref
-0 6
-0000000000 65535 f 
-trailer<</Root 1 0 R/Size 6>>
-startxref
-520
-%%EOF`;
-    const base64 = btoa(unescape(encodeURIComponent(pdf)));
-    return window.LirandzoAPI.post({
-      action: 'upload_comprovativo',
-      nome: payload.nome || guestName,
-      token: payload.token || token,
-      canal: 'Presente escolhido',
-      selectedGift: giftName,
-      giftChoice: giftName,
-      selectedGifts: [giftName],
-      gifts: giftName,
-      details: JSON.stringify({ selectedGift: giftName, selectedGifts: [giftName], giftChoice: giftName, nome: payload.nome || guestName, token: payload.token || token }),
-      comprovativoFile: base64,
-      comprovativoFile_filename: `presente-escolhido-${String(giftName).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-')}.pdf`,
-      comprovativoFile_type: 'application/pdf'
-    });
   }
 
   if (payload.action === 'upload_comprovativo') return window.LirandzoAPI.post(payload);
