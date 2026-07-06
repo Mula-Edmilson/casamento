@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/feather-icons/dist/feather.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="event-data.js"></script>
   <script src="client-config.js"></script>
   <script src="lirandzo-api.js"></script>
@@ -45,8 +45,7 @@
       --font-heading: 'Cormorant Garamond', serif;
       --font-body: 'Inter', sans-serif;
       --sidebar: 236px;
-      --topbar: 54px;
-      --bottomnav: 60px;
+      --topbar: 62px;
       --safe-top: env(safe-area-inset-top);
       --safe-bottom: env(safe-area-inset-bottom);
     }
@@ -257,46 +256,45 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      background: rgba(36, 31, 28, .92);
+      background: rgba(51, 45, 41, .88);
       border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(16px);
       z-index: 800;
     }
-    .topbar-left { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .topbar-title { min-width: 0; }
     .topbar-title strong {
       display: block;
       color: var(--text);
       font-family: var(--font-heading);
-      font-size: 20px;
+      font-size: 22px;
       line-height: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .topbar-title span { color: var(--muted); font-size: 11px; display: block; margin-top: 2px; white-space: nowrap; }
-    .topbar-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .topbar-title span { color: var(--muted); font-size: 11px; display: block; margin-top: 3px; white-space: nowrap; }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .sync-pill {
-      min-height: 32px;
+      min-height: 36px;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 0 10px;
+      padding: 0 11px;
       color: var(--muted);
       font-weight: 800;
       font-size: 11px;
       background: rgba(33, 28, 25, .42);
       white-space: nowrap;
     }
-    .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 3px rgba(242,168,74,.15); }
-    .sync-dot.ok { background: var(--green); box-shadow: 0 0 0 3px rgba(24,183,131,.15); }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 0 4px rgba(242,168,74,.12); }
+    .sync-dot.ok { background: var(--green); box-shadow: 0 0 0 4px rgba(24,183,131,.12); }
 
     .main {
       width: 100%;
-      padding: calc(var(--topbar) + var(--safe-top) + 14px) 14px calc(22px + var(--safe-bottom));
+      padding: calc(var(--topbar) + var(--safe-top) + 16px) 14px calc(22px + var(--safe-bottom));
     }
 
     .page-panel { display: none; }
@@ -318,85 +316,70 @@
     .skeleton-card { border-radius: 14px; min-height: 48px; }
     .skeleton-cell { height: 14px; }
 
-    .mobile-tabs { display: none; }
-
-    /* Bottom navigation bar — mobile only */
-    .bottom-nav {
+    .mobile-tabs {
       display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 900;
-      background: rgba(30, 26, 23, .96);
-      border-top: 1px solid var(--line);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      padding-bottom: var(--safe-bottom);
-    }
-    .bottom-nav-inner {
-      display: flex;
+      gap: 8px;
       align-items: stretch;
-      height: var(--bottomnav);
-      overflow-x: auto;
-      overflow-y: hidden;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      overscroll-behavior-x: contain;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: rgba(51, 45, 41, .94);
+      border: 1px solid var(--line);
+      border-left: 0;
+      border-right: 0;
     }
-    .bottom-nav-inner::-webkit-scrollbar { display: none; }
-    .bottom-nav-btn {
-      flex: 1 0 auto;
-      min-width: 56px;
-      max-width: 80px;
-      border: 0;
-      background: transparent;
-      color: var(--muted);
-      display: flex;
+    .mobile-tab {
+      flex: 0 0 auto;
+      min-width: 82px;
+      min-height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: 14px;
+      background: rgba(33, 28, 25, .72);
+      color: var(--text-2);
+      display: inline-flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 3px;
-      padding: 6px 4px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .01em;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 850;
       line-height: 1.1;
-      transition: color .15s ease;
       white-space: nowrap;
-      cursor: pointer;
+      box-shadow: none;
     }
-    .bottom-nav-btn .feather { width: 20px; height: 20px; stroke-width: 1.8; transition: transform .15s ease; }
-    .bottom-nav-btn.active { color: var(--accent-2); }
-    .bottom-nav-btn.active .feather { transform: translateY(-1px); }
-    .bottom-nav-btn:active .feather { transform: scale(.88); }
+    .mobile-tab .feather { width: 16px; height: 16px; }
+    .mobile-tab.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(176,137,104,.96), rgba(145,104,72,.96));
+      border-color: rgba(208,173,143,.62);
+    }
 
     .section-title {
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 14px;
+      margin-bottom: 12px;
     }
     .section-title h1 {
       color: var(--text);
       font-family: var(--font-heading);
-      font-size: clamp(22px, 4vw, 32px);
+      font-size: clamp(26px, 4vw, 36px);
       line-height: .98;
       letter-spacing: -.02em;
     }
-    .section-title p { color: var(--muted); font-size: 11px; margin-top: 4px; line-height: 1.4; }
+    .section-title p { color: var(--muted); font-size: 12px; margin-top: 5px; }
     .event-chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      min-height: 30px;
+      gap: 7px;
+      min-height: 36px;
       border: 1px solid var(--line);
-      background: rgba(176, 137, 104, .08);
+      background: rgba(176, 137, 104, .10);
       color: var(--accent-2);
       border-radius: 999px;
-      padding: 0 10px;
-      font-size: 10px;
+      padding: 0 12px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: .03em;
       white-space: nowrap;
@@ -409,24 +392,12 @@
       margin-bottom: 10px;
     }
     .metric-card {
-      min-height: 72px;
+      min-height: 74px;
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 17px;
       background: rgba(51, 45, 41, .92);
-      padding: 10px 11px 10px 14px;
+      padding: 10px 11px;
       overflow: hidden;
-      position: relative;
-    }
-    .metric-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      border-radius: 16px 0 0 16px;
-      background: var(--metric-color, var(--accent));
-      opacity: .7;
     }
     .metric-card span {
       display: block;
@@ -443,11 +414,11 @@
       display: block;
       color: var(--text);
       font-family: var(--font-heading);
-      font-size: 28px;
+      font-size: 29px;
       line-height: .95;
-      margin-top: 5px;
+      margin-top: 7px;
     }
-    .metric-card small { display:block; color: var(--muted); font-size: 10px; margin-top: 4px; font-weight: 700; }
+    .metric-card small { display:block; color: var(--accent-2); font-size: 11px; margin-top: 5px; font-weight: 800; }
 
     .dashboard-grid {
       display: grid;
@@ -458,32 +429,32 @@
     .panel-card {
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
-      background: rgba(44, 38, 34, .96);
+      background: rgba(51, 45, 41, .94);
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, .10);
-      margin-bottom: 8px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, .12);
+      margin-bottom: 10px;
     }
     .panel-head {
-      min-height: 44px;
+      min-height: 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding: 9px 12px;
+      gap: 12px;
+      padding: 11px 13px;
       border-bottom: 1px solid var(--line);
-      background: rgba(51, 45, 41, .5);
+      background: rgba(58, 51, 47, .48);
     }
     .panel-head h2 {
       color: var(--text);
       font-family: var(--font-heading);
-      font-size: 19px;
+      font-size: 21px;
       line-height: 1;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
     }
-    .panel-head h2 .feather { color: var(--accent-2); width: 16px; height: 16px; }
-    .panel-body { padding: 10px; }
+    .panel-head h2 .feather { color: var(--accent-2); width: 18px; height: 18px; }
+    .panel-body { padding: 12px; }
 
     .chart-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
     .chart-box {
@@ -506,26 +477,26 @@
     .activity-list { display: grid; gap: 8px; max-height: 330px; overflow: auto; padding-right: 2px; }
     .activity-item {
       display: grid;
-      grid-template-columns: 32px minmax(0,1fr) auto;
-      gap: 8px;
+      grid-template-columns: 34px minmax(0,1fr) auto;
+      gap: 9px;
       align-items: start;
       border: 1px solid var(--line);
-      border-radius: 13px;
+      border-radius: 15px;
       background: rgba(33, 28, 25, .36);
-      padding: 8px;
+      padding: 9px;
     }
     .activity-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
       background: var(--accent-soft);
       color: var(--accent-2);
     }
-    .activity-icon .feather { width: 15px; height: 15px; }
+    .activity-icon .feather { width: 17px; height: 17px; }
     .activity-item strong { display: block; color: var(--text); font-size: 12px; line-height: 1.25; }
-    .activity-item p { color: var(--muted); font-size: 11px; margin-top: 2px; line-height: 1.3; }
+    .activity-item p { color: var(--muted); font-size: 11px; margin-top: 3px; line-height: 1.35; }
 
     .compact-info { display: grid; gap: 8px; }
     .info-row {
@@ -604,13 +575,13 @@
     .mobile-list { display: none; gap: 8px; }
     .mobile-card {
       border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(33, 28, 25, .5);
-      padding: 10px 11px;
+      border-radius: 16px;
+      background: rgba(33, 28, 25, .34);
+      padding: 10px;
     }
-    .mobile-card strong { display:block; color: var(--text); font-size: 13px; margin-bottom: 2px; }
-    .mobile-card span { display:block; color: var(--muted); font-size: 11px; line-height: 1.4; }
-    .mobile-card .status-badge { margin-top: 7px; }
+    .mobile-card strong { display:block; color: var(--text); font-size: 13px; margin-bottom: 3px; }
+    .mobile-card span { display:block; color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .mobile-card .status-badge { margin-top: 8px; }
 
     .capsule-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(152px, 1fr)); gap: 10px; }
     .photo-card {
@@ -697,45 +668,39 @@
 
     @media (max-width: 760px) {
       .main { padding-left: 12px; padding-right: 12px; }
-      .mobile-tabs { display: none; }
-      .bottom-nav { display: block; }
+      .mobile-tabs { display: flex; margin-left: -12px; margin-right: -12px; padding-left: 12px; padding-right: 12px; }
       .sync-pill { display: none; }
-      .topbar-title strong { font-size: 18px; }
-      .topbar-title span { display: none; }
-      .section-title { align-items: flex-start; flex-direction: column; gap: 6px; }
-      .section-title h1 { font-size: 22px; }
-      .event-chip { min-height: 28px; font-size: 10px; }
-      .metrics-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-      .metric-card { min-height: 64px; padding: 8px 9px 8px 13px; border-radius: 13px; }
-      .metric-card strong { font-size: 22px; }
-      .metric-card small { font-size: 9px; }
-      .chart-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-      .chart-box { min-height: 130px; padding: 8px; }
-      .chart-canvas { height: 96px; }
-      .panel-head { min-height: 42px; padding: 8px 10px; }
-      .panel-head h2 { font-size: 17px; }
-      .panel-body { padding: 8px; }
+      .topbar-title strong { font-size: 20px; }
+      .topbar-title span { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+      .section-title { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .event-chip { min-height: 32px; }
+      .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+      .metric-card { min-height: 69px; padding: 9px; border-radius: 15px; }
+      .metric-card strong { font-size: 26px; }
+      .chart-grid { grid-template-columns: 1fr; }
+      .chart-box { min-height: 156px; }
+      .chart-canvas { height: 112px; }
+      .panel-head { min-height: 46px; padding: 10px 11px; }
+      .panel-head h2 { font-size: 19px; }
+      .panel-body { padding: 10px; }
       .desktop-table { display: none; }
       .mobile-list { display: grid; }
       .toolbar { align-items: stretch; }
       .toolbar-left, .toolbar-right, .search-input, .filter-select { width: 100%; }
       .toolbar-right .btn { flex: 1; }
-      .info-row { grid-template-columns: 1fr; gap: 2px; }
+      .info-row { grid-template-columns: 1fr; gap: 3px; }
       .activity-list { max-height: none; }
-      .activity-item { grid-template-columns: 30px minmax(0,1fr); }
+      .activity-item { grid-template-columns: 32px minmax(0,1fr); }
       .activity-item .status-badge { grid-column: 2; width: max-content; }
       .capsule-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .main { padding-bottom: calc(var(--bottomnav) + var(--safe-bottom) + 12px) !important; }
     }
 
     @media (max-width: 420px) {
       .topbar { padding-left: 10px; padding-right: 10px; }
-      .topbar-actions { gap: 5px; }
-      .btn.icon-only { width: 36px; min-height: 36px; }
-      .metrics-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
-      .metric-card { padding: 7px 8px 7px 11px; }
-      .metric-card strong { font-size: 20px; }
-      .login-card { padding: 22px 18px; border-radius: 22px; }
+      .topbar-actions { gap: 6px; }
+      .btn.icon-only { width: 38px; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+      .login-card { padding: 24px 20px; border-radius: 24px; }
       .capsule-grid { grid-template-columns: 1fr; }
     }
 
@@ -938,9 +903,8 @@
     }
 
     html[data-theme="light"] .sidebar,
-    html[data-theme="light"] .topbar,
-    html[data-theme="light"] .bottom-nav {
-      background: rgba(255, 250, 245, .94);
+    html[data-theme="light"] .topbar {
+      background: rgba(255, 250, 245, .92);
       border-color: var(--line);
     }
 
@@ -993,10 +957,9 @@
     @media (max-width: 760px) {
       .mobile-tabs {
         margin-top: 0 !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        padding-top: 8px !important;
+        padding-bottom: 8px !important;
         border-top: 0 !important;
-        display: none !important;
       }
       .main { overscroll-behavior-x: none; }
     }
@@ -1007,11 +970,12 @@
     @media (max-width: 760px) {
       .main {
         padding-top: calc(var(--topbar) + var(--safe-top)) !important;
-        padding-bottom: calc(var(--bottomnav) + var(--safe-bottom) + 12px) !important;
       }
 
       .mobile-tabs {
-        display: none !important;
+        position: relative !important;
+        top: auto !important;
+        margin-top: 0 !important;
       }
     }
 
@@ -1340,12 +1304,8 @@
       </div>
     </header>
 
-    <nav id="bottomNav" class="bottom-nav" aria-label="Navegação principal">
-      <div class="bottom-nav-inner" id="bottomNavInner"></div>
-    </nav>
-
     <main class="main">
-      <div id="mobileTabs" style="display:none"></div>
+      <div id="mobileTabs" class="mobile-tabs" aria-label="Navegação rápida"></div>
 
       <section id="dashboardPanel" class="page-panel active">
         <div class="section-title">
@@ -1573,10 +1533,7 @@
           if (res.status === 401) {
             sessionStorage.removeItem(adminStorageKey('logged'));
             sessionStorage.removeItem(adminStorageKey('token'));
-            sessionStorage.removeItem(adminStorageKey('password'));
-            showToast('Sessão expirada. Por favor entre novamente.', 'warn');
-            setTimeout(() => location.reload(), 1800);
-            throw new Error('Sessão expirada ou senha inválida.');
+            throw new Error('Sessão expirada ou senha inválida. Saia e entre novamente com a senha configurada no Render.');
           }
           throw new Error(data.message || `Erro HTTP ${res.status}`);
         }
@@ -1900,8 +1857,8 @@
                 token = await validateAdminPasswordFallback(password);
               }
             } else {
-              if (!window.LIRANDZO_ADMIN_PASSWORD) throw new Error('API não configurada e senha local não definida. Configure LIRANDZO_API_BASE_URL ou LIRANDZO_ADMIN_PASSWORD.');
-              if (password !== window.LIRANDZO_ADMIN_PASSWORD) throw new Error('Senha incorrecta. Verifique a senha e tente novamente.');
+              const expected = window.LIRANDZO_ADMIN_PASSWORD || 'fw2026';
+              if (password !== expected) throw new Error('Senha incorrecta. Verifique a senha e tente novamente.');
             }
             sessionStorage.setItem(adminStorageKey('logged'), '1');
             sessionStorage.setItem(adminStorageKey('password'), password);
@@ -1950,11 +1907,11 @@
           form.reset();
           const maxInput = $('newGuestMax');
           if (maxInput) maxInput.value = '1';
-          showToast('Convidado adicionado com sucesso.', 'ok');
+          alert('Convidado adicionado com sucesso.');
           await loadAll();
           showPanel('guests');
         } catch (err) {
-          showToast(err.message || 'Não foi possível adicionar o convidado.', 'error');
+          alert(err.message || 'Não foi possível adicionar o convidado.');
         } finally {
           setButtonBusy(addGuestBtn, false);
         }
@@ -1967,48 +1924,46 @@
         const action = button.dataset.adminAction;
         const id = button.dataset.id;
         const name = button.dataset.name || 'este registo';
-        if (!id) { showToast('ID do registo não encontrado.', 'error'); return; }
+        if (!id) { alert('ID do registo não encontrado.'); return; }
 
         let confirmText = '';
-        let confirmWord = '';
         let busyText = 'A processar';
         let successText = 'Operação concluída.';
         let payload = { id };
 
         if (action === 'hide_message') {
-          confirmText = `Ocultar a mensagem de "${name}"? Ela deixa de aparecer no mural público.`;
+          confirmText = `Ocultar a mensagem de ${name}? Ela deixa de aparecer no mural público.`;
           busyText = 'A ocultar';
           successText = 'Mensagem ocultada com sucesso.';
         } else if (action === 'restore_message') {
-          confirmText = `Restaurar a mensagem de "${name}"? Ela volta a aparecer no mural público.`;
+          confirmText = `Restaurar a mensagem de ${name}? Ela volta a aparecer no mural público.`;
           busyText = 'A restaurar';
           successText = 'Mensagem restaurada com sucesso.';
         } else if (action === 'restore_rsvp') {
-          confirmText = `Restaurar a confirmação de presença de "${name}"? O convidado poderá confirmar novamente.`;
+          confirmText = `Restaurar a confirmação de presença de ${name}? O convidado poderá confirmar novamente.`;
           busyText = 'A restaurar';
           successText = 'Confirmação restaurada com sucesso.';
         } else if (action === 'restore_checkin') {
-          confirmText = `Restaurar o check-in de "${name}"? A entrada volta a ficar pendente.`;
+          confirmText = `Restaurar o check-in de ${name}? A entrada volta a ficar pendente.`;
           busyText = 'A restaurar';
           successText = 'Check-in restaurado com sucesso.';
         } else if (action === 'delete_message') {
-          confirmText = `Eliminar definitivamente a mensagem de "${name}"? Esta acção não pode ser desfeita.`;
-          confirmWord = 'ELIMINAR';
+          const typed = prompt(`Para eliminar definitivamente a mensagem de ${name}, escreva ELIMINAR.`);
+          if (typed !== 'ELIMINAR') return;
           busyText = 'A eliminar';
           successText = 'Mensagem eliminada definitivamente.';
         } else {
           return;
         }
 
-        const confirmed = await showConfirm(confirmText, confirmWord);
-        if (!confirmed) return;
+        if (confirmText && !confirm(confirmText)) return;
         setButtonBusy(button, true, busyText);
         try {
           await adminPost(action, payload);
-          showToast(successText, 'ok');
+          alert(successText);
           await loadAll();
         } catch (err) {
-          showToast(err.message || 'A operação falhou.', 'error');
+          alert(err.message || 'A operação falhou.');
         } finally {
           setButtonBusy(button, false);
         }
@@ -2016,10 +1971,9 @@
 
       function buildNavigation() {
         const navMarkup = panels.map(p => `<button type="button" class="nav-item ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
-        const bottomMarkup = panels.map(p => `<button type="button" class="bottom-nav-btn ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
+        const mobileMarkup = panels.map(p => `<button type="button" class="mobile-tab ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
         sideNav.innerHTML = navMarkup;
-        const bottomNavInner = $('bottomNavInner');
-        if (bottomNavInner) bottomNavInner.innerHTML = bottomMarkup;
+        mobileTabs.innerHTML = mobileMarkup;
         document.querySelectorAll('[data-panel]').forEach(button => button.addEventListener('click', () => showPanel(button.dataset.panel)));
         feather.replace();
       }
@@ -2057,9 +2011,6 @@
         topbarTitle.textContent = panel ? panel.label : 'Dashboard';
         toggleSidebar(false);
         feather.replace();
-        // scroll bottom nav ao item activo
-        const activeBtn = document.querySelector('.bottom-nav-btn.active');
-        if (activeBtn) activeBtn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
       }
 
       function renderSkeletons() {
@@ -2202,14 +2153,14 @@
       function renderMetrics() {
         const s = summary();
         const metrics = [
-          ['Convidados', s.guestsCount, `${s.totalPeople} pessoas no total`, 'var(--accent)'],
-          ['Abertos', s.openedRows, `${percent(s.openedRows, s.guestsCount)}% abriram`, 'var(--blue)'],
-          ['N\u00e3o abertos', s.notOpenedRows, 'ainda pendentes', 'var(--orange)'],
-          ['Confirmados', s.confirmedRows, `${percent(s.confirmedRows, s.guestsCount)}% RSVP`, 'var(--green)'],
-          ['Check-in', s.checkedRows, `${percent(s.checkedPeople, s.totalPeople)}% no sal\u00e3o`, 'var(--green)'],
-          ['Presentes', s.gifts, 'escolhidos/contribui\u00e7\u00f5es', 'var(--orange)']
+          ['Convidados', s.guestsCount, `${s.totalPeople} pessoas no total`],
+          ['Abertos', s.openedRows, `${percent(s.openedRows, s.guestsCount)}% abriram`],
+          ['Não abertos', s.notOpenedRows, 'ainda pendentes'],
+          ['Confirmados', s.confirmedRows, `${percent(s.confirmedRows, s.guestsCount)}% RSVP`],
+          ['Check-in', s.checkedRows, `${percent(s.checkedPeople, s.totalPeople)}% no salão`],
+          ['Presentes', s.gifts, 'escolhidos/contribuições']
         ];
-        $('metricsGrid').innerHTML = metrics.map(item => `<article class="metric-card" style="--metric-color:${item[3]}"><span>${esc(item[0])}</span><strong>${esc(item[1])}</strong><small>${esc(item[2])}</small></article>`).join('');
+        $('metricsGrid').innerHTML = metrics.map(item => `<article class="metric-card"><span>${esc(item[0])}</span><strong>${esc(item[1])}</strong><small>${esc(item[2])}</small></article>`).join('');
       }
 
       function percent(value, total) {
@@ -2239,9 +2190,8 @@
       function renderCharts() {
         const s = summary();
         const empty = cssVar('--chart-empty') || '#4c4540';
-        // RSVP e check-in usam a mesma unidade: registos (convidados), não pessoas
         makeChart('rsvpChart', ['Confirmados', 'Pendentes'], [s.confirmedRows, s.pendingRows], [cssVar('--accent') || '#b08968', empty]);
-        makeChart('checkinChart', ['Entraram', 'Por entrar'], [s.checkedRows, Math.max(s.guestsCount - s.checkedRows, 0)], [cssVar('--green') || '#18b783', empty]);
+        makeChart('checkinChart', ['Entraram', 'Por entrar'], [s.checkedPeople, s.pendingCheckin], [cssVar('--green') || '#18b783', empty]);
         makeChart('interactionChart', ['Abertos', 'Não abertos', 'Presentes', 'Msgs'], [s.openedRows, s.notOpenedRows, s.gifts, s.messages], [cssVar('--accent-2') || '#d0ad8f', empty, cssVar('--orange') || '#f2a84a', cssVar('--blue') || '#6aa5ff']);
       }
 
@@ -2513,95 +2463,15 @@
       function exportCSV(type) {
         const map = { guests: DATA.guests, rsvps: DATA.rsvps, gifts: DATA.gifts, messages: DATA.messages, checkins: DATA.checkins, photos: DATA.photos };
         const rows = map[type] || [];
-        if (!rows.length) { showToast('Sem dados para exportar.', 'warn'); return; }
+        if (!rows.length) { alert('Sem dados para exportar.'); return; }
         const keys = [...new Set(rows.flatMap(row => Object.keys(row || {})))];
         const csv = [keys.join(','), ...rows.map(row => keys.map(key => '"' + String(row[key] ?? '').replace(/"/g, '""') + '"').join(','))].join('\n');
-        // BOM UTF-8 \uFEFF garante que o Excel abre correctamente caracteres especiais (ã, ç, é)
-        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `${inviteSlug() || 'convite'}-${type}.csv`;
         a.click();
         setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-      }
-
-      // --- Toast & Modal (substitui alert/confirm/prompt nativos) ---
-
-      function showToast(message, type = 'ok') {
-        let container = $('toastContainer');
-        if (!container) {
-          container = document.createElement('div');
-          container.id = 'toastContainer';
-          container.style.cssText = 'position:fixed;bottom:24px;right:20px;z-index:9999;display:grid;gap:8px;pointer-events:none;';
-          document.body.appendChild(container);
-        }
-        const colors = { ok: 'var(--green)', error: 'var(--red)', warn: 'var(--orange)', info: 'var(--blue)' };
-        const toast = document.createElement('div');
-        toast.style.cssText = `min-width:240px;max-width:340px;background:var(--surface);border:1px solid ${colors[type] || colors.info};border-radius:14px;padding:11px 14px;color:var(--text);font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.28);pointer-events:auto;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease;`;
-        toast.textContent = message;
-        container.appendChild(toast);
-        requestAnimationFrame(() => { toast.style.opacity = '1'; toast.style.transform = 'none'; });
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          toast.style.transform = 'translateY(8px)';
-          setTimeout(() => toast.remove(), 260);
-        }, 3800);
-      }
-
-      function showConfirm(message, confirmWord = '') {
-        return new Promise(resolve => {
-          let modal = $('confirmModal');
-          if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'confirmModal';
-            modal.style.cssText = 'position:fixed;inset:0;z-index:8000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);';
-            modal.innerHTML = `
-              <div style="width:min(420px,96vw);background:var(--surface);border:1px solid var(--line-strong);border-radius:22px;padding:22px;box-shadow:var(--shadow);">
-                <p id="confirmModalMsg" style="color:var(--text);font-size:14px;line-height:1.55;margin-bottom:16px;"></p>
-                <div id="confirmModalWordWrap" style="display:none;margin-bottom:14px;">
-                  <label style="display:block;color:var(--accent-2);font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Escreva <strong id="confirmModalWordLabel"></strong> para confirmar</label>
-                  <input id="confirmModalInput" type="text" style="width:100%;min-height:40px;border:1px solid var(--line-strong);border-radius:12px;background:rgba(33,28,25,.9);color:var(--text);padding:0 12px;font-size:13px;outline:none;">
-                </div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;">
-                  <button id="confirmModalCancel" class="btn secondary small" type="button">Cancelar</button>
-                  <button id="confirmModalOk" class="btn small" type="button" style="background:linear-gradient(135deg,var(--red),#c73e3e);">Confirmar</button>
-                </div>
-              </div>`;
-            document.body.appendChild(modal);
-          }
-          const msg = $('confirmModalMsg');
-          const wordWrap = $('confirmModalWordWrap');
-          const wordLabel = $('confirmModalWordLabel');
-          const wordInput = $('confirmModalInput');
-          const cancelBtn = $('confirmModalCancel');
-          const okBtn = $('confirmModalOk');
-          msg.textContent = message;
-          if (confirmWord) {
-            wordWrap.style.display = 'block';
-            wordLabel.textContent = confirmWord;
-            wordInput.value = '';
-          } else {
-            wordWrap.style.display = 'none';
-          }
-          modal.style.display = 'flex';
-          if (confirmWord) wordInput.focus();
-          const cleanup = (result) => {
-            modal.style.display = 'none';
-            cancelBtn.replaceWith(cancelBtn.cloneNode(true));
-            okBtn.replaceWith(okBtn.cloneNode(true));
-            resolve(result);
-          };
-          $('confirmModalCancel').addEventListener('click', () => cleanup(false), { once: true });
-          $('confirmModalOk').addEventListener('click', () => {
-            if (confirmWord && $('confirmModalInput').value.trim() !== confirmWord) {
-              $('confirmModalInput').style.borderColor = 'var(--red)';
-              showToast(`Escreva exactamente: ${confirmWord}`, 'error');
-              return;
-            }
-            cleanup(true);
-          }, { once: true });
-          modal.addEventListener('keydown', (e) => { if (e.key === 'Escape') cleanup(false); }, { once: true });
-        });
       }
 
       init();
