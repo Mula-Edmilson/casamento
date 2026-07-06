@@ -2153,7 +2153,7 @@
       function renderMetrics() {
         const s = summary();
         const metrics = [
-          ['Convidados', s.guestsCount, 'registos'],
+          ['Convidados', s.guestsCount, `${s.totalPeople} pessoas no total`],
           ['Abertos', s.openedRows, `${percent(s.openedRows, s.guestsCount)}% abriram`],
           ['Não abertos', s.notOpenedRows, 'ainda pendentes'],
           ['Confirmados', s.confirmedRows, `${percent(s.confirmedRows, s.guestsCount)}% RSVP`],
