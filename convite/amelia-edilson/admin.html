@@ -445,52 +445,51 @@
     }
     .bottom-nav-inner {
       display: flex;
-      align-items: stretch;
+      align-items: center;
+      justify-content: space-around;
       height: var(--bottomnav);
       overflow-x: auto;
       overflow-y: hidden;
       scrollbar-width: none;
       -ms-overflow-style: none;
       overscroll-behavior-x: contain;
+      padding: 0 6px;
     }
     .bottom-nav-inner::-webkit-scrollbar { display: none; }
     .bottom-nav-btn {
       flex: 1 0 auto;
-      min-width: 54px;
-      max-width: 80px;
+      min-width: 44px;
+      max-width: 64px;
       background: transparent;
       color: var(--muted);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      padding: 6px 4px;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      line-height: 1;
-      transition: color .15s;
-      white-space: nowrap;
+      padding: 0;
       cursor: pointer;
       position: relative;
+      transition: color .15s;
     }
-    .bottom-nav-btn::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 50%;
-      transform: translateX(-50%) scaleX(0);
-      width: 28px; height: 2px;
-      border-radius: 0 0 3px 3px;
-      background: var(--accent);
-      transition: transform .2s cubic-bezier(.4,0,.2,1);
+    .bottom-nav-btn span { display: none; }
+    .bottom-nav-btn .nav-icon-wrap {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: 1px solid transparent;
+      transition: background .18s, border-color .18s, transform .18s cubic-bezier(.4,0,.2,1);
     }
     .bottom-nav-btn .feather { width: 20px; height: 20px; stroke-width: 1.7; transition: transform .18s cubic-bezier(.4,0,.2,1); }
     .bottom-nav-btn.active { color: var(--accent-2); }
-    .bottom-nav-btn.active::before { transform: translateX(-50%) scaleX(1); }
-    .bottom-nav-btn.active .feather { transform: translateY(-1px); }
-    .bottom-nav-btn:active .feather { transform: scale(.84); }
+    .bottom-nav-btn.active .nav-icon-wrap {
+      background: linear-gradient(145deg, rgba(176,137,104,.22), rgba(145,104,72,.12));
+      border-color: rgba(176,137,104,.28);
+      box-shadow: 0 2px 12px rgba(176,137,104,.18);
+    }
+    .bottom-nav-btn.active .feather { transform: scale(1.08); }
+    .bottom-nav-btn:active .nav-icon-wrap { transform: scale(.88); }
 
     /* ── SECTION TITLE ─────────────────────────────────────── */
     .section-title {
@@ -633,7 +632,7 @@
       border-radius: var(--r-lg);
       background: rgba(18,14,11,.50);
       padding: 12px;
-      min-height: 200px;
+      height: 190px;
       display: flex;
       flex-direction: column;
     }
@@ -643,10 +642,10 @@
       letter-spacing: .10em;
       text-transform: uppercase;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       flex-shrink: 0;
     }
-    .chart-canvas { flex: 1; min-height: 140px; position: relative; }
+    .chart-canvas { flex: 1; min-height: 0; position: relative; }
 
     /* ── ACTIVITY ───────────────────────────────────────────── */
     .activity-list { display: grid; gap: 6px; max-height: 340px; overflow: auto; padding-right: 2px; }
@@ -843,8 +842,8 @@
       .metric-card strong { font-size: 24px; }
       .metric-card small  { font-size: 9px; }
       .chart-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
-      .chart-box  { min-height: 160px; padding: 9px; }
-      .chart-canvas { min-height: 110px; }
+      .chart-box  { height: 160px; padding: 9px; }
+      .chart-canvas { min-height: 0; }
       .panel-head { padding: 9px 12px; }
       .panel-head h2 { font-size: 18px; }
       .panel-body { padding: 9px; }
@@ -1829,7 +1828,7 @@
 
       function buildNavigation() {
         const navMarkup = panels.map(p => `<button type="button" class="nav-item ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
-        const bottomMarkup = panels.map(p => `<button type="button" class="bottom-nav-btn ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
+        const bottomMarkup = panels.map(p => `<button type="button" class="bottom-nav-btn ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}" title="${p.label}"><div class="nav-icon-wrap"><i data-feather="${p.icon}"></i></div></button>`).join('');
         sideNav.innerHTML = navMarkup;
         const bottomNavInner = $('bottomNavInner');
         if (bottomNavInner) bottomNavInner.innerHTML = bottomMarkup;
@@ -2020,7 +2019,7 @@
           ['N\u00e3o abertos', s.notOpenedRows, 'ainda pendentes', 'var(--orange)'],
           ['Confirmados', s.confirmedRows, `${percent(s.confirmedRows, s.guestsCount)}% RSVP`, 'var(--green)'],
           ['Check-in', s.checkedRows, `${percent(s.checkedPeople, s.totalPeople)}% no sal\u00e3o`, 'var(--green)'],
-          ['Presentes', s.gifts, 'escolhidos/contribui\u00e7\u00f5es', 'var(--orange)']
+          ['Presentes', s.gifts, 'escolhidos', 'var(--orange)']
         ];
         $('metricsGrid').innerHTML = metrics.map(item => `<article class="metric-card" style="--metric-color:${item[3]}"><span>${esc(item[0])}</span><strong>${esc(item[1])}</strong><small>${esc(item[2])}</small></article>`).join('');
       }
