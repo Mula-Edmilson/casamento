@@ -569,9 +569,9 @@
       text-transform: uppercase;
       letter-spacing: .10em;
       font-weight: 800;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      overflow-wrap: break-word;
+      line-height: 1.3;
     }
     .metric-card strong {
       display: block;
@@ -633,7 +633,9 @@
       border-radius: var(--r-lg);
       background: rgba(18,14,11,.50);
       padding: 12px;
-      min-height: 180px;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
     }
     .chart-box h3 {
       color: var(--muted);
@@ -642,8 +644,9 @@
       text-transform: uppercase;
       font-weight: 800;
       margin-bottom: 8px;
+      flex-shrink: 0;
     }
-    .chart-canvas { height: 130px; position: relative; }
+    .chart-canvas { flex: 1; min-height: 140px; position: relative; }
 
     /* ── ACTIVITY ───────────────────────────────────────────── */
     .activity-list { display: grid; gap: 6px; max-height: 340px; overflow: auto; padding-right: 2px; }
@@ -840,8 +843,8 @@
       .metric-card strong { font-size: 24px; }
       .metric-card small  { font-size: 9px; }
       .chart-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
-      .chart-box  { min-height: 130px; padding: 9px; }
-      .chart-canvas { height: 96px; }
+      .chart-box  { min-height: 160px; padding: 9px; }
+      .chart-canvas { min-height: 110px; }
       .panel-head { padding: 9px 12px; }
       .panel-head h2 { font-size: 18px; }
       .panel-body { padding: 9px; }
