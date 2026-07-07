@@ -1490,3 +1490,174 @@ tr:hover td {
     font-size: 8px !important;
   }
 }
+
+/* =========================================================
+   LIRANDZO ADMINMANAGER · MOBILE BOTTOM NAV POLISH
+   Safe visual layer: keeps existing IDs/functions and adds real icon bottom nav.
+   ========================================================= */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 920;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  padding-bottom: var(--safe-bottom);
+}
+
+.bottom-nav-inner {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 2px;
+  padding: 0 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.bottom-nav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.bottom-nav-btn {
+  flex: 1 0 auto;
+  min-width: 48px;
+  max-width: 68px;
+  height: 54px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  position: relative;
+}
+
+.bottom-nav-btn span:last-child {
+  display: none;
+}
+
+.bottom-nav-btn .nav-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease, color .16s ease;
+}
+
+.bottom-nav-btn .feather {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.85;
+}
+
+.bottom-nav-btn.active {
+  color: var(--accent);
+}
+
+.bottom-nav-btn.active .nav-icon-wrap {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+  box-shadow: 0 8px 18px rgba(0,0,0,.10);
+}
+
+.bottom-nav-btn:active .nav-icon-wrap {
+  transform: scale(.90);
+}
+
+.topbar-logout {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  body.mobile-app .main {
+    padding-bottom: calc(88px + var(--safe-bottom)) !important;
+  }
+
+  body.mobile-app .bottom-nav {
+    display: block !important;
+  }
+
+  body.mobile-app .mobile-tabs {
+    display: none !important;
+  }
+
+  body.mobile-app .topbar-logout {
+    display: inline-flex !important;
+  }
+
+  body.mobile-app .topbar-actions {
+    gap: 5px !important;
+  }
+
+  body.mobile-app .topbar-actions > a.btn.icon-only {
+    display: none !important;
+  }
+
+  body.mobile-app .section-title {
+    margin-bottom: 12px !important;
+  }
+
+  body.mobile-app .section-title h1 {
+    font-size: clamp(21px, 7vw, 27px) !important;
+  }
+
+  body.mobile-app .panel-card {
+    border-radius: 14px !important;
+  }
+
+  body.mobile-app .panel-head {
+    min-height: 46px !important;
+  }
+
+  body.mobile-app .table-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  body.mobile-app .table-actions .btn {
+    width: 100% !important;
+  }
+
+  body.mobile-app .toast-stack {
+    bottom: calc(82px + var(--safe-bottom)) !important;
+  }
+
+  body.mobile-app .lz-operator {
+    bottom: calc(84px + var(--safe-bottom, 0px)) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  body.mobile-app .bottom-nav-inner {
+    height: 60px;
+    padding: 0 4px;
+  }
+
+  body.mobile-app .bottom-nav-btn {
+    min-width: 44px;
+    max-width: 60px;
+  }
+
+  body.mobile-app .bottom-nav-btn .nav-icon-wrap {
+    width: 39px;
+    height: 39px;
+    border-radius: 13px;
+  }
+
+  body.mobile-app .bottom-nav-btn .feather {
+    width: 18px;
+    height: 18px;
+  }
+}

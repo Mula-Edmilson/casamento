@@ -54,3 +54,8 @@ html[data-theme="light"] .lz-operator-scope select,html[data-theme="light"] .lz-
 .lz-op-card.bad{background:rgba(239,91,91,.10);border-color:rgba(239,91,91,.24)}
 .lz-op-card.warn{background:rgba(242,168,74,.10);border-color:rgba(242,168,74,.24)}
 .lz-op-list .lz-op-card.compact .lz-op-card{margin-top:6px;background:rgba(255,255,255,.035)}
+
+/* Bottom nav coexistence */
+@media(max-width:760px){
+  body.mobile-app .lz-operator{bottom:calc(84px + var(--safe-bottom,0px))!important}
+}
