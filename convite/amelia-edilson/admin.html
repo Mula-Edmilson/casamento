@@ -353,8 +353,8 @@
       -webkit-backdrop-filter: blur(28px) saturate(1.4);
       z-index: 800;
     }
-    .topbar-left  { display: flex; align-items: center; gap: 10px; min-width: 0; }
-    .topbar-title { min-width: 0; }
+    .topbar-left  { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .topbar-title { min-width: 0; flex: 1; }
     .topbar-title strong {
       display: block;
       color: var(--text);
@@ -377,6 +377,19 @@
       text-overflow: ellipsis;
     }
     .topbar-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    /* botão de logout na topbar (mobile) */
+    .topbar-logout {
+      width: 40px; height: 40px;
+      border-radius: var(--r-sm);
+      background: transparent;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .topbar-logout:hover { background: rgba(240,82,82,.10); color: var(--red); border-color: rgba(240,82,82,.22); }
+    .topbar-logout .feather { width: 17px; height: 17px; }
 
     .sync-pill {
       height: 30px;
@@ -409,7 +422,7 @@
     /* ── MAIN / PANELS ─────────────────────────────────────── */
     .main {
       width: 100%;
-      padding: calc(var(--topbar) + var(--safe-top) + 18px) 18px calc(28px + var(--safe-bottom));
+      padding: calc(var(--topbar) + var(--safe-top) + 22px) 22px calc(28px + var(--safe-bottom));
     }
 
     .page-panel { display: none; }
@@ -497,17 +510,19 @@
       align-items: flex-end;
       justify-content: space-between;
       gap: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
     }
     .section-title h1 {
       color: var(--text);
       font-family: var(--font-heading);
-      font-size: clamp(24px, 4vw, 36px);
+      font-size: clamp(26px, 4vw, 38px);
       line-height: .95;
       letter-spacing: -.02em;
       font-weight: 600;
     }
-    .section-title p { color: var(--muted); font-size: 12px; margin-top: 5px; line-height: 1.45; }
+    .section-title p { color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.5; }
     .event-chip {
       display: inline-flex;
       align-items: center;
@@ -819,8 +834,9 @@
     @media (min-width: 1050px) {
       .sidebar { transform: none; box-shadow: none; }
       .topbar  { left: var(--sidebar); }
-      .main    { margin-left: var(--sidebar); padding-left: 22px; padding-right: 22px; }
+      .main    { margin-left: var(--sidebar); padding-left: 28px; padding-right: 28px; }
       .menu-trigger { display: none; }
+      .topbar-logout { display: none; }
       .overlay { display: none; }
     }
     @media (max-width: 1180px) {
@@ -829,14 +845,16 @@
       .chart-grid     { grid-template-columns: repeat(3,minmax(0,1fr)); }
     }
     @media (max-width: 760px) {
-      .main { padding-left: 12px; padding-right: 12px; }
+      .main { padding-left: 16px; padding-right: 16px; }
       .mobile-tabs { display: none; }
       .bottom-nav  { display: block; }
       .sync-pill   { display: none; }
+      .menu-trigger { display: none; }
+      .topbar-logout { display: grid; }
       .topbar-title strong { font-size: 19px; }
       .topbar-title span   { display: none; }
       .section-title { align-items: flex-start; flex-direction: column; gap: 6px; }
-      .section-title h1 { font-size: 24px; }
+      .section-title h1 { font-size: 26px; }
       .metrics-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
       .metric-card  { padding: 10px 10px 10px 13px; }
       .metric-card strong { font-size: 24px; }
@@ -1140,6 +1158,7 @@
     <header class="topbar">
       <div class="topbar-left">
         <button id="menuBtn" class="btn secondary icon-only menu-trigger" type="button" aria-label="Abrir menu"><i data-feather="menu"></i></button>
+        <button id="topbarLogoutBtn" class="topbar-logout" type="button" aria-label="Sair" title="Sair"><i data-feather="log-out"></i></button>
         <div class="topbar-title">
           <strong id="topbarTitle">Dashboard</strong>
           <span id="topbarSubtitle">Amélia & Edilson · 26/09/2026</span>
@@ -1734,6 +1753,12 @@
         }
         menuBtn.addEventListener('click', () => toggleSidebar(true));
         overlay.addEventListener('click', () => toggleSidebar(false));
+        $('topbarLogoutBtn')?.addEventListener('click', () => {
+          sessionStorage.removeItem(adminStorageKey('logged'));
+          sessionStorage.removeItem(adminStorageKey('password'));
+          sessionStorage.removeItem(adminStorageKey('token'));
+          location.reload();
+        });
         logoutBtn.addEventListener('click', () => {
           sessionStorage.removeItem(adminStorageKey('logged'));
           sessionStorage.removeItem(adminStorageKey('password'));
