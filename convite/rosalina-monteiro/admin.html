@@ -1735,8 +1735,11 @@
       function buildNavigation() {
         const navMarkup = panels.map(p => `<button type="button" class="nav-item ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
         const mobileMarkup = panels.map(p => `<button type="button" class="mobile-tab ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
+        const bottomMarkup = panels.map(p => `<button type="button" class="bottom-nav-btn ${p.id === 'dashboard' ? 'active' : ''}" data-panel="${p.id}" aria-label="${p.label}" title="${p.label}"><span class="nav-icon-wrap"><i data-feather="${p.icon}"></i></span><span>${p.label}</span></button>`).join('');
         sideNav.innerHTML = navMarkup;
         mobileTabs.innerHTML = mobileMarkup;
+        const bottomNavInner = $('bottomNavInner');
+        if (bottomNavInner) bottomNavInner.innerHTML = bottomMarkup;
         document.querySelectorAll('[data-panel]').forEach(button => button.addEventListener('click', () => showPanel(button.dataset.panel)));
         feather.replace();
       }
@@ -2171,67 +2174,6 @@
     })();
   </script>
 
-  <script>
-    (function () {
-      'use strict';
-      window.LIRANDZO_ADMIN_FIX_VERSION = 'V16_VISUAL_RESPONSIVE_SAFE_BOTTOM_NAV';
-      const ready = (fn) => document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', fn, { once: true }) : fn();
-      ready(function () {
-        const topbarLogoutBtn = document.getElementById('topbarLogoutBtn');
-        if (topbarLogoutBtn) {
-          topbarLogoutBtn.addEventListener('click', function () {
-            sessionStorage.removeItem('rm_admin_logged');
-            sessionStorage.removeItem('rm_admin_password');
-            sessionStorage.removeItem('rm_admin_token');
-            location.reload();
-          });
-        }
-
-        const mobileTabs = document.getElementById('mobileTabs');
-        const bottomNav = document.getElementById('bottomNav');
-        const bottomNavInner = document.getElementById('bottomNavInner');
-        if (!mobileTabs || !bottomNav || !bottomNavInner) return;
-
-        function iconName(button) {
-          const icon = button.querySelector('[data-feather]');
-          return icon ? icon.getAttribute('data-feather') : 'circle';
-        }
-
-        function syncBottomNav() {
-          const tabs = Array.from(mobileTabs.querySelectorAll('[data-panel]'));
-          if (!tabs.length) return;
-          bottomNavInner.innerHTML = tabs.map(function (tab) {
-            const panel = tab.getAttribute('data-panel');
-            const label = (tab.textContent || '').trim();
-            const active = tab.classList.contains('active') ? ' active' : '';
-            return '<button type="button" class="bottom-nav-btn' + active + '" data-panel="' + panel + '" aria-label="' + label + '"><span class="nav-icon-wrap"><i data-feather="' + iconName(tab) + '"></i></span><span>' + label + '</span></button>';
-          }).join('');
-          bottomNavInner.querySelectorAll('[data-panel]').forEach(function (button) {
-            button.addEventListener('click', function () {
-              const panel = button.getAttribute('data-panel');
-              const source = mobileTabs.querySelector('[data-panel="' + panel + '"]') || document.querySelector('#sideNav [data-panel="' + panel + '"]');
-              if (source) source.click();
-              requestAnimationFrame(updateActiveState);
-            });
-          });
-          if (window.feather && window.feather.replace) window.feather.replace();
-          updateActiveState();
-        }
-
-        function updateActiveState() {
-          const active = (mobileTabs.querySelector('[data-panel].active') || document.querySelector('#sideNav [data-panel].active'))?.getAttribute('data-panel') || 'dashboard';
-          bottomNavInner.querySelectorAll('[data-panel]').forEach(function (button) {
-            button.classList.toggle('active', button.getAttribute('data-panel') === active);
-          });
-        }
-
-        syncBottomNav();
-        new MutationObserver(function () { syncBottomNav(); }).observe(mobileTabs, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-        document.addEventListener('click', function (event) {
-          if (event.target.closest('[data-panel]')) requestAnimationFrame(updateActiveState);
-        });
-      });
-    })();
-  </script>
+  <script>window.LIRANDZO_ADMIN_FIX_VERSION = 'V17_BOTTOM_NAV_ICONS_FIXED';</script>
 </body>
 </html>
