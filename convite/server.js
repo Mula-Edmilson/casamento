@@ -962,7 +962,9 @@ const INVITE_SPECIFIC_GIFTS = {
     'Airfryer',
     'Máquina de lavar',
     'Panelas anti aderentes',
-    'Fogão a gás e forno elétrico'
+    'Fogão a gás e forno elétrico',
+    'Ar condicionado',
+    'Televisor LG'
   ]
 };
 
