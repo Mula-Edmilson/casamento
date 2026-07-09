@@ -144,5 +144,13 @@ window.LIRANDZO_GIFT_OPTIONS = [
   {
     "name": "Fogão a gás e forno elétrico",
     "category": "Lista de presentes"
-  }
+  },
+  {
+  "name": "Ar condicionado",
+  "category": "Lista de presentes"
+},
+{
+  "name": "Televisor LG",
+  "category": "Lista de presentes"
+}
 ];
