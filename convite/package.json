@@ -1,12 +1,14 @@
 {
   "name": "lirandzo-adminmanager-backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Backend central Render + MongoDB para gestão multi-cliente de convites Lirandzo.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "check": "node --check server.js"
+    "check": "node --check server.js && node --check adminmanager-operator.js && node --check adminmanager-script.js && node --check adminmanager-inline-check.js && node --check adminmanager_script_check.js",
+    "test:bot": "node tests/operator-v8.test.js",
+    "verify": "npm run check && npm run test:bot"
   },
   "engines": {
     "node": ">=18"

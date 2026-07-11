@@ -59,3 +59,75 @@ html[data-theme="light"] .lz-operator-scope select,html[data-theme="light"] .lz-
 @media(max-width:760px){
   body.mobile-app .lz-operator{bottom:calc(84px + var(--safe-bottom,0px))!important}
 }
+
+/* Ultra v8 · Context Command Center */
+.lz-operator-window{
+  grid-template-rows:auto auto auto minmax(0,1fr) auto auto auto!important;
+}
+.lz-operator-icon-btn{
+  width:34px;
+  height:34px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+  color:var(--text-2);
+  font-size:16px;
+  line-height:1;
+  display:grid;
+  place-items:center;
+}
+.lz-operator-icon-btn:hover,.lz-operator-close:hover{
+  border-color:var(--accent);
+  color:var(--text);
+  background:var(--accent-soft);
+}
+.lz-operator-suggestions{
+  display:none;
+  max-height:186px;
+  overflow:auto;
+  padding:7px 10px;
+  border-top:1px solid var(--line);
+  background:color-mix(in srgb,var(--surface) 98%,transparent);
+  gap:5px;
+}
+.lz-operator-suggestions.active{display:grid}
+.lz-operator-suggestions button{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  min-height:38px;
+  padding:7px 9px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:rgba(255,255,255,.035);
+  color:var(--text-2);
+  text-align:left;
+}
+.lz-operator-suggestions button:hover{
+  border-color:var(--accent);
+  background:var(--accent-soft);
+}
+.lz-operator-suggestions strong{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-size:10.7px;
+}
+.lz-operator-suggestions span{
+  color:var(--muted);
+  font-size:9px;
+  white-space:nowrap;
+}
+.lz-operator.loading .lz-operator-pulse{background:var(--orange);animation:none}
+.lz-operator-form input:disabled,.lz-operator-send:disabled{opacity:.62;cursor:wait}
+.lz-operator-send:disabled{filter:saturate(.45)}
+.lz-op-context{overflow-wrap:anywhere}
+@media(max-width:760px){
+  .lz-operator-window{grid-template-rows:auto auto auto minmax(0,1fr) auto auto auto!important}
+  .lz-operator-suggestions{max-height:150px;padding:6px 8px}
+  .lz-operator-suggestions button{grid-template-columns:1fr;gap:2px}
+  .lz-operator-suggestions span{white-space:normal}
+}

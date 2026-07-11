@@ -3285,9 +3285,9 @@ async function handleUploadComprovativo(req, res, invite) {
 
 
 // -----------------------------------------------------------------------------
-// Lirandzo Operator Bot v7 · Acções em Massa Seguras
-// Operações via bot com confirmação obrigatória, lote controlado e as mesmas
-// permissões Admin/Editor do AdminManager.
+// Lirandzo Operator Bot v8 · Context Command Center + Acções em Massa Seguras
+// Operações via bot com confirmação obrigatória, lote controlado, vínculo à sessão
+// que preparou a acção e as mesmas permissões Admin/Editor do AdminManager.
 // -----------------------------------------------------------------------------
 const BOT_PENDING_ACTIONS = new Map();
 const BOT_ACTION_TTL_MS = 5 * 60 * 1000;
@@ -3298,6 +3298,16 @@ const BOT_ADMIN_ONLY_ACTIONS = new Set([
 const BOT_EDITOR_ALLOWED_ACTIONS = new Set(['edit_guest']);
 const BOT_EDITOR_ALLOWED_FIELDS = ['name', 'table', 'mesa', 'companions', 'phone', 'number', 'category', 'notes', 'status'];
 const BOT_BULK_SAFE_LIMIT = Number(process.env.BOT_BULK_SAFE_LIMIT || 60);
+
+function botManagerSessionKey(manager = {}) {
+  return `${manager.role || ''}:${manager.iat || ''}:${manager.exp || ''}`;
+}
+function pruneBotPendingActions() {
+  const now = Date.now();
+  for (const [actionId, pending] of BOT_PENDING_ACTIONS.entries()) {
+    if (!pending || now > pending.expiresAt) BOT_PENDING_ACTIONS.delete(actionId);
+  }
+}
 
 function botRoleLabel(role) { return role === 'editor' ? 'Editor' : 'Administrador'; }
 function botCleanGuestSummary(guest) {
@@ -3565,6 +3575,7 @@ async function botCountGuestRelations(invite, guestIds = []) {
 }
 
 app.post('/manager/bot/prepare-action', requireManager, asyncRoute(async (req, res) => {
+  pruneBotPendingActions();
   const raw = String(req.body?.message || '').trim();
   const explicitInviteId = String(req.body?.inviteId || '').trim();
   const explicitGuestId = String(req.body?.guestId || '').trim();
@@ -3631,7 +3642,7 @@ app.post('/manager/bot/prepare-action', requireManager, asyncRoute(async (req, r
     const relationCounts = await botCountGuestRelations(invite, guestIds);
     const meta = botPrepareSummary({ actionType, role: req.manager.role, invite, payload, bulk: true, bulkCount: bulkItems.length, ...relationCounts });
     const actionId = crypto.randomBytes(16).toString('hex');
-    BOT_PENDING_ACTIONS.set(actionId, { actionId, actionType, role: req.manager.role, inviteId: String(invite._id), guestIds, payload, bulk: true, bulkItems: bulkItems.map(x => ({ requestedName: x.requestedName, guestId: x.guestId || '', payload: x.payload || payload })), createdAt: Date.now(), expiresAt: Date.now() + BOT_ACTION_TTL_MS, confirmationPhrase: meta.confirmationPhrase });
+    BOT_PENDING_ACTIONS.set(actionId, { actionId, actionType, role: req.manager.role, managerSessionKey: botManagerSessionKey(req.manager), inviteId: String(invite._id), guestIds, payload, bulk: true, bulkItems: bulkItems.map(x => ({ requestedName: x.requestedName, guestId: x.guestId || '', payload: x.payload || payload })), createdAt: Date.now(), expiresAt: Date.now() + BOT_ACTION_TTL_MS, confirmationPhrase: meta.confirmationPhrase });
 
     return res.json({
       status: 'success',
@@ -3673,7 +3684,7 @@ app.post('/manager/bot/prepare-action', requireManager, asyncRoute(async (req, r
   ]) : [0, 0];
   const meta = botPrepareSummary({ actionType, role: req.manager.role, invite, guest, payload, before, after, rsvpsCount, checkinsCount });
   const actionId = crypto.randomBytes(16).toString('hex');
-  BOT_PENDING_ACTIONS.set(actionId, { actionId, actionType, role: req.manager.role, inviteId: String(invite._id), guestId: guest ? String(guest._id) : '', payload, createdAt: Date.now(), expiresAt: Date.now() + BOT_ACTION_TTL_MS, confirmationPhrase: meta.confirmationPhrase });
+  BOT_PENDING_ACTIONS.set(actionId, { actionId, actionType, role: req.manager.role, managerSessionKey: botManagerSessionKey(req.manager), inviteId: String(invite._id), guestId: guest ? String(guest._id) : '', payload, createdAt: Date.now(), expiresAt: Date.now() + BOT_ACTION_TTL_MS, confirmationPhrase: meta.confirmationPhrase });
 
   return res.json({
     status: 'success',
@@ -3748,10 +3759,14 @@ async function botApplySingleAction({ actionType, invite, guest, payload, role, 
 }
 
 app.post('/manager/bot/apply-action', requireManager, asyncRoute(async (req, res) => {
+  pruneBotPendingActions();
   const actionId = String(req.body?.actionId || '').trim();
   const confirmText = String(req.body?.confirmText || '').trim();
   const pending = BOT_PENDING_ACTIONS.get(actionId);
-  if (!pending) return res.status(404).json({ status: 'error', message: 'Acção pendente não encontrada ou já executada.' });
+  if (!pending) return res.status(404).json({ status: 'error', message: 'Acção pendente não encontrada, expirada ou já executada.' });
+  if (pending.managerSessionKey && pending.managerSessionKey !== botManagerSessionKey(req.manager)) {
+    return res.status(403).json({ status: 'error', message: 'Esta acção foi preparada noutra sessão. Prepare o comando novamente nesta sessão.' });
+  }
   if (Date.now() > pending.expiresAt) { BOT_PENDING_ACTIONS.delete(actionId); return res.status(410).json({ status: 'error', message: 'A confirmação expirou. Prepare a acção novamente.' }); }
   const permission = botPermissionCheck(req.manager.role, pending.actionType);
   if (!permission.ok) return res.status(403).json({ status: 'error', code: 'BOT_PERMISSION_DENIED', role: req.manager.role, message: permission.message });

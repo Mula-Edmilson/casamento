@@ -1,11 +1,18 @@
 (function(){
   'use strict';
-  const BOT_VERSION='OMNI-Deterministic-v7.0-BulkSafeActionsBrain';
-  const LS_KEY='lirandzo_operator_history_v7';
-  const SCOPE_KEY='lirandzo_operator_scope_v7';
+  const BOT_VERSION='OMNI-Deterministic-v8.0-ContextCommandCenter';
+  const LS_KEY='lirandzo_operator_history_v8';
+  const LEGACY_LS_KEY='lirandzo_operator_history_v7';
+  const MEMORY_KEY='lirandzo_operator_memory_v8';
+  const COMMANDS_KEY='lirandzo_operator_commands_v8';
+  const SCOPE_KEY='lirandzo_operator_scope_v8';
+  const LEGACY_SCOPE_KEY='lirandzo_operator_scope_v7';
   const CACHE_TTL=45*1000;
   const MAX_PREVIEW=18;
-  const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,history:[],booted:false,loading:false,pendingAction:null,scopeId:localStorage.getItem(SCOPE_KEY)||'__all__',dialog:{inviteId:'',inviteTitle:'',intent:null,criteria:null,action:null,lastQuestion:'',lastListLabel:''}};
+  const MAX_HISTORY=40;
+  const MAX_COMMAND_HISTORY=30;
+  const MAX_SUGGESTIONS=6;
+  const state={open:false,invites:null,inviteCache:new Map(),lastContext:null,lastList:[],lastReport:'',lastMessage:'',lastCsv:'',lastSegments:null,lastResultMeta:null,history:[],recentCommands:[],commandCursor:-1,booted:false,loading:false,pendingAction:null,scopeId:localStorage.getItem(SCOPE_KEY)||localStorage.getItem(LEGACY_SCOPE_KEY)||'__all__',dialog:{inviteId:'',inviteTitle:'',intent:null,criteria:null,action:null,lastQuestion:'',lastListLabel:'',updatedAt:0}};
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const txt=v=>String(v??'').trim();
@@ -15,6 +22,50 @@
   const fmtDateTime=v=>{ if(!v) return '-'; const d=new Date(v); return Number.isNaN(d.getTime())?String(v):d.toLocaleString('pt-PT',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); };
   const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9\s&+\-@.]/g,' ').replace(/\s+/g,' ').trim();
   const cap=v=>txt(v).replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
+  const BOT_VOCAB=['ajuda','mapa','funil','confirmados','confirmaram','pendentes','abriram','aberto','nao','recusaram','checkin','convidados','convidado','mesa','mesas','categoria','categorias','contacto','telefone','token','duplicados','qualidade','recepcao','relatorio','perfil','pesquisar','procurar','comparar','convites','mensagem','lembrete','repor','acesso','eliminar','adicionar','editar','alterar','mover','acompanhantes','familia','familias','lista','mostrar','quantos','quantas','separar','ordenar','limpar','contexto','actualizar'];
+  const COMMAND_LIBRARY=[
+    ['Mapa geral','Visão operacional de todos convites'],
+    ['Mapa','Visão completa do convite focado'],
+    ['Quantos confirmaram?','Contagem e taxa de confirmação'],
+    ['Quem ainda não abriu?','Lista de não abertos'],
+    ['Abriram sem confirmar','Melhor segmento para lembrete'],
+    ['Confirmados sem mesa','Pendência operacional'],
+    ['VIP pendentes','Prioridade de contacto'],
+    ['Separar lista por mesa','Usa último resultado'],
+    ['Ordenar lista por nome','Organiza último resultado'],
+    ['Mensagem para esta lista','Cria texto para último segmento'],
+    ['Perfil convidado Ana','Perfil 360º'],
+    ['Pesquisar João em todos convites','Pesquisa multi-convite'],
+    ['Qual convite precisa de atenção?','Ranking de risco'],
+    ['Plano de acção por convite','Prioridades separadas'],
+    ['Relatório','Resumo executivo'],
+    ['Recepção','Briefing de check-in'],
+    ['Repor acesso destes','Acção segura sobre último resultado'],
+    ['Limpar conversa','Remove histórico e contexto local']
+  ];
+  function safeJsonParse(raw,fallback){try{return JSON.parse(raw);}catch{return fallback;}}
+  function canonicalMessage(value){
+    const m=norm(value);
+    if(!m) return '';
+    return m.split(' ').map(token=>{
+      if(token.length<5||BOT_VOCAB.includes(token)||/\d/.test(token)) return token;
+      let best=token,bestDistance=2;
+      for(const word of BOT_VOCAB){
+        if(Math.abs(word.length-token.length)>1) continue;
+        const distance=levenshtein(token,word);
+        if(distance<bestDistance){best=word;bestDistance=distance;if(distance===0)break;}
+      }
+      return bestDistance<=1?best:token;
+    }).join(' ');
+  }
+  function commandScore(query,command,hint=''){
+    const q=norm(query), hay=norm(`${command} ${hint}`);
+    if(!q) return 0;
+    if(hay.startsWith(q)) return 120;
+    if(hay.includes(q)) return 90;
+    const tokens=q.split(' ').filter(Boolean);
+    return tokens.reduce((score,t)=>score+(hay.includes(t)?18:0),0);
+  }
   const apiBase=()=>String(window.LIRANDZO_MANAGER_API_BASE||localStorage.getItem('lirandzo_manager_api')||'').replace(/\/+$/,'');
   const token=()=>sessionStorage.getItem('lirandzo_manager_token')||'';
   const currentRole=()=>sessionStorage.getItem('lirandzo_manager_role')||'admin';
@@ -32,10 +83,22 @@
     const el=$('lzOperatorScopeSelect');
     return el ? (el.value||'__all__') : (state.scopeId||localStorage.getItem(SCOPE_KEY)||'__all__');
   }
-  function setScopeValue(value){
+  function persistMemory(){
+    const memory={
+      version:8,
+      scopeId:state.scopeId,
+      dialog:{...state.dialog,criteria:state.dialog.criteria||null,intent:state.dialog.intent||null},
+      lastResultMeta:state.lastResultMeta||null,
+      savedAt:Date.now()
+    };
+    try{localStorage.setItem(MEMORY_KEY,JSON.stringify(memory));}catch{/* armazenamento indisponível */}
+  }
+  function setScopeValue(value,{resetList=false}={}){
     state.scopeId=value||'__all__';
     localStorage.setItem(SCOPE_KEY,state.scopeId);
+    if(resetList){state.lastList=[];state.lastResultMeta=null;}
     const el=$('lzOperatorScopeSelect'); if(el&&el.value!==state.scopeId) el.value=state.scopeId;
+    persistMemory();
   }
   function selectedInviteId(){
     const scope=getScopeValue();
@@ -182,35 +245,89 @@
     const wrap=document.createElement('div'); wrap.className='lz-operator'; wrap.id='lzOperator'; wrap.innerHTML=`
       <button class="lz-operator-toggle" id="lzOperatorToggle" type="button" aria-label="Abrir operador Lirandzo"><span class="lz-operator-pulse"></span>${iconSvg('bot')}</button>
       <div class="lz-operator-window" id="lzOperatorWindow" role="dialog" aria-label="Lirandzo Operator">
-        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Ultra</strong><span id="lzOperatorStatus">Brain v7 · acções em massa seguras · sem IA paga</span></div></div><div class="lz-operator-head-actions"><span id="lzOperatorRole" class="lz-operator-role">Perfil</span><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div></div>
-        <div class="lz-operator-brainbar"><i></i><span>Brain v7: contexto · linguagem natural · acções em massa seguras · permissões Admin/Editor</span></div>
+        <div class="lz-operator-head"><div class="lz-operator-brand"><div class="lz-operator-avatar">L</div><div class="lz-operator-title"><strong>Lirandzo Operator Command</strong><span id="lzOperatorStatus">Brain v8 · contexto persistente · sem IA paga</span></div></div><div class="lz-operator-head-actions"><span id="lzOperatorRole" class="lz-operator-role">Perfil</span><button class="lz-operator-icon-btn" id="lzOperatorClear" type="button" title="Limpar conversa e contexto" aria-label="Limpar conversa">⌫</button><button class="lz-operator-close" id="lzOperatorClose" type="button" aria-label="Fechar">×</button></div></div>
+        <div class="lz-operator-brainbar"><i></i><span>Brain v8: memória persistente · seguimentos · listas activas · acções seguras · Ctrl+K</span></div>
         <div class="lz-operator-scope"><label for="lzOperatorScopeSelect">Escopo</label><select id="lzOperatorScopeSelect"><option value="__all__">Todos convites · resultados separados</option><option value="__current__">Convite actual do painel</option></select><button id="lzOperatorReload" type="button" title="Recarregar dados">↻</button></div>
         <div class="lz-operator-messages" id="lzOperatorMessages"></div>
         <div class="lz-operator-quick" id="lzOperatorQuick"></div>
-        <form class="lz-operator-form" id="lzOperatorForm"><input id="lzOperatorInput" type="text" placeholder="Ex: quantos convidados abriram o convite rosalina-monteiro?" autocomplete="off"><button class="lz-operator-send" type="submit">${iconSvg('send')}</button></form>
+        <div class="lz-operator-suggestions" id="lzOperatorSuggestions"></div>
+        <form class="lz-operator-form" id="lzOperatorForm"><input id="lzOperatorInput" type="text" placeholder="Pergunte, filtre ou execute comando seguro…" autocomplete="off" aria-autocomplete="list"><button class="lz-operator-send" id="lzOperatorSend" type="submit">${iconSvg('send')}</button></form>
       </div>`;
     document.body.appendChild(wrap);
     bind(); state.booted=true; restore(); renderQuick(); updateVisibility();
   }
   function bind(){
+    const input=$('lzOperatorInput');
     $('lzOperatorToggle').addEventListener('click',()=>toggle(true));
     $('lzOperatorClose').addEventListener('click',()=>toggle(false));
-    $('lzOperatorForm').addEventListener('submit',e=>{e.preventDefault(); const input=$('lzOperatorInput'); const msg=txt(input.value); if(!msg)return; input.value=''; handle(msg);});
-    $('lzOperatorQuick').addEventListener('click',e=>{const b=e.target.closest('[data-op-chip]'); if(b) handle(b.dataset.opChip);});
-    $('lzOperatorScopeSelect')?.addEventListener('change',e=>{setScopeValue(e.target.value); state.inviteCache.clear(); updateStatusLabel(); handle('Mapa');});
+    $('lzOperatorClear')?.addEventListener('click',clearConversation);
+    $('lzOperatorForm').addEventListener('submit',e=>{e.preventDefault(); const msg=txt(input?.value); if(!msg||state.loading)return; input.value=''; renderSuggestions(''); handle(msg);});
+    $('lzOperatorQuick').addEventListener('click',e=>{const b=e.target.closest('[data-op-chip]'); if(b&&!state.loading) handle(b.dataset.opChip);});
+    $('lzOperatorSuggestions')?.addEventListener('click',e=>{const b=e.target.closest('[data-op-suggestion]'); if(!b)return; const command=b.dataset.opSuggestion||''; if(input) input.value=''; renderSuggestions(''); handle(command);});
+    $('lzOperatorScopeSelect')?.addEventListener('change',e=>{setScopeValue(e.target.value,{resetList:true}); state.inviteCache.clear(); updateStatusLabel(); handle('Mapa');});
     $('lzOperatorReload')?.addEventListener('click',()=>{state.inviteCache.clear(); state.invites=null; renderInviteScopeSelect(true); handle('Mapa');});
-    $('lzOperatorMessages').addEventListener('click',e=>{const b=e.target.closest('[data-op-action]'); if(b) runAction(b.dataset.opAction,b.dataset.opPayload||'');});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.open)toggle(false);});
+    $('lzOperatorMessages').addEventListener('click',e=>{const b=e.target.closest('[data-op-action]'); if(b&&!state.loading) runAction(b.dataset.opAction,b.dataset.opPayload||'');});
+    input?.addEventListener('input',e=>renderSuggestions(e.target.value));
+    input?.addEventListener('keydown',handleInputKeydown);
+    document.addEventListener('keydown',e=>{
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();toggle(true);setTimeout(()=>input?.focus(),30);return;}
+      if(e.key==='Escape'&&state.open){renderSuggestions('');toggle(false);}
+    });
     ['commandInviteSelect','manageInviteSelect','guestInviteSelect','guestCrudInviteSelect'].forEach(id=>$(id)?.addEventListener('change',()=>{state.inviteCache.clear(); updateStatusLabel();}));
     const obs=new MutationObserver(updateVisibility); const app=$('app'); if(app) obs.observe(app,{attributes:true,attributeFilter:['class']});
+  }
+  function handleInputKeydown(e){
+    const input=e.currentTarget;
+    if(e.key==='ArrowUp'){
+      if(!state.recentCommands.length)return;
+      e.preventDefault();
+      state.commandCursor=Math.min(state.recentCommands.length-1,state.commandCursor+1);
+      input.value=state.recentCommands[state.commandCursor]||'';
+      input.setSelectionRange(input.value.length,input.value.length);
+      renderSuggestions(input.value);
+    }else if(e.key==='ArrowDown'){
+      if(state.commandCursor<0)return;
+      e.preventDefault();
+      state.commandCursor-=1;
+      input.value=state.commandCursor>=0?(state.recentCommands[state.commandCursor]||''):'';
+      renderSuggestions(input.value);
+    }else if(e.key==='Tab'){
+      const first=$('lzOperatorSuggestions')?.querySelector('[data-op-suggestion]');
+      if(first){e.preventDefault();input.value=first.dataset.opSuggestion||'';renderSuggestions('');}
+    }
+  }
+  function registerCommand(message){
+    const command=txt(message); if(!command)return;
+    state.recentCommands=[command,...state.recentCommands.filter(x=>x!==command)].slice(0,MAX_COMMAND_HISTORY);
+    state.commandCursor=-1;
+    try{localStorage.setItem(COMMANDS_KEY,JSON.stringify(state.recentCommands));}catch{/* ignore */}
+  }
+  function renderSuggestions(query=''){
+    const box=$('lzOperatorSuggestions'); if(!box)return;
+    const q=txt(query);
+    if(!q){box.innerHTML='';box.classList.remove('active');return;}
+    const recent=state.recentCommands.map(command=>[command,'Comando recente']);
+    const unique=new Map([...recent,...COMMAND_LIBRARY].map(item=>[item[0],item]));
+    const ranked=[...unique.values()].map(([command,hint])=>({command,hint,score:commandScore(q,command,hint)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.command.localeCompare(b.command,'pt')).slice(0,MAX_SUGGESTIONS);
+    if(!ranked.length){box.innerHTML='';box.classList.remove('active');return;}
+    box.innerHTML=ranked.map(x=>`<button type="button" data-op-suggestion="${esc(x.command)}"><strong>${esc(x.command)}</strong><span>${esc(x.hint)}</span></button>`).join('');
+    box.classList.add('active');
+  }
+  function clearConversation({announce=true}={}){
+    if(state.loading)return;
+    state.history=[];state.lastList=[];state.lastReport='';state.lastMessage='';state.lastCsv='';state.lastSegments=null;state.lastResultMeta=null;state.pendingAction=null;state.dialog={inviteId:'',inviteTitle:'',intent:null,criteria:null,action:null,lastQuestion:'',lastListLabel:'',updatedAt:Date.now()};
+    try{localStorage.removeItem(LS_KEY);localStorage.removeItem(LEGACY_LS_KEY);localStorage.removeItem(MEMORY_KEY);}catch{/* ignore */}
+    const box=$('lzOperatorMessages');if(box)box.innerHTML='';
+    if(announce) bot('<strong>Conversa e contexto limpos.</strong><br>Dados dos convites não foram alterados. Pode começar novo pedido.');
+    persistMemory();
   }
   function updateVisibility(){const el=$('lzOperator'); if(!el)return; el.classList.toggle('ready',Boolean($('app')?.classList.contains('active')&&token()));}
   async function updateStatusLabel(){
     const roleEl=$('lzOperatorRole');
     if(roleEl){roleEl.textContent=roleLabel(); roleEl.className='lz-operator-role '+roleBadgeClass(); roleEl.title=isEditorRole()?'Perfil Editor: edições limitadas; acções críticas bloqueadas.':'Perfil Administrador: acesso total às acções do bot.';}
-    try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${roleLabel()} · ${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${roleLabel()} · ${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:`${roleLabel()} · seleccione um convite`;}catch{$('lzOperatorStatus').textContent=`${roleLabel()} · Brain v7 · acções em massa seguras`;}}
-  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); if(!state.history.length){bot(`<strong>Estou pronto.</strong><br>Agora também preparo acções reais e em massa com confirmação obrigatória e respeito ao perfil logado. Está em <b>${esc(roleLabel())}</b>. Exemplos: <b>repor acesso de João, Maria no convite rosalina-monteiro</b>, <b>mover João, Maria para mesa 8</b>, <b>adicionar João, Maria ao convite minoca-abubacar</b>.`);}}}
-  function renderQuick(){const chips=['Focar convite','Quantos abriram?','Mostra a lista','Plano de acção','Repor acesso','Editar mesa','Adicionar convidado','Eliminar convidado','Perfil convidado','Qual convite precisa de atenção?','Confirmados sem mesa','Relatório','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
+    try{await renderInviteScopeSelect(false); if(getScopeValue()==='__all__'){const contexts=await getAllContexts(12); const valid=contexts.filter(c=>c.analysis); const totals=valid.reduce((a,c)=>{a.g+=c.analysis.guests.length;a.p+=c.analysis.pending.length;return a;},{g:0,p:0}); $('lzOperatorStatus').textContent=`${roleLabel()} · ${valid.length} convites · ${totals.g} convidados · ${totals.p} pendentes`; return;} const ctx=await getContext(false); $('lzOperatorStatus').textContent=ctx.invite?`${roleLabel()} · ${shortInvite(ctx)} · saúde ${ctx.analysis.score}% · ${ctx.analysis.pending.length} pendentes`:`${roleLabel()} · seleccione um convite`;}catch{$('lzOperatorStatus').textContent=`${roleLabel()} · Brain v8 · contexto persistente`;}}
+  function toggle(open){state.open=Boolean(open); $('lzOperator')?.classList.toggle('open',state.open); if(state.open){renderInviteScopeSelect(false); updateStatusLabel(); setTimeout(()=>$('lzOperatorInput')?.focus(),40); if(!state.history.length){bot(`<strong>Operator Command pronto.</strong><br>Entendo seguimentos, guardo contexto local e consigo aplicar acções seguras sobre último resultado. Está em <b>${esc(roleLabel())}</b>.<br><small>Atalho: Ctrl+K. Use ↑ e ↓ para comandos recentes.</small><div class="lz-op-actions">${actionAsk('Mapa geral','Mapa geral',true)}${actionAsk('Ajuda','Ajuda')}${actionAsk('Plano','Plano de acção por convite')}</div>`);}}}
+  function renderQuick(){const chips=['Mapa geral','Quantos abriram?','Quem ainda não abriu?','Plano de acção','Confirmados sem mesa','Separar lista por mesa','Mensagem para esta lista','Perfil convidado','Qual convite precisa de atenção?','Relatório','Ajuda']; $('lzOperatorQuick').innerHTML=chips.map(c=>`<button type="button" data-op-chip="${esc(c)}">${esc(c)}</button>`).join('');}
   async function renderInviteScopeSelect(force=false){
     const el=$('lzOperatorScopeSelect'); if(!el||!token()) return;
     const current=getScopeValue();
@@ -222,11 +339,28 @@
       setScopeValue(el.value);
     }catch(err){/* mantém opções básicas */}
   }
-  function restore(){try{state.history=JSON.parse(localStorage.getItem(LS_KEY)||'[]').slice(-10); state.history.forEach(m=>addMsg(m.html,m.user,false));}catch{state.history=[];}}
-  function persist(html,user){state.history.push({html,user}); state.history=state.history.slice(-24); localStorage.setItem(LS_KEY,JSON.stringify(state.history));}
+  function restore(){
+    const legacyHistory=safeJsonParse(localStorage.getItem(LEGACY_LS_KEY)||'[]',[]);
+    state.history=safeJsonParse(localStorage.getItem(LS_KEY)||JSON.stringify(legacyHistory),[]).slice(-MAX_HISTORY);
+    state.recentCommands=safeJsonParse(localStorage.getItem(COMMANDS_KEY)||'[]',[]).slice(0,MAX_COMMAND_HISTORY);
+    const memory=safeJsonParse(localStorage.getItem(MEMORY_KEY)||'{}',{});
+    if(memory&&memory.dialog) state.dialog={...state.dialog,...memory.dialog};
+    if(memory&&memory.scopeId&&!localStorage.getItem(SCOPE_KEY)) state.scopeId=memory.scopeId;
+    state.lastResultMeta=memory?.lastResultMeta||null;
+    state.history.forEach(m=>addMsg(m.html,m.user,false));
+  }
+  function persist(html,user){state.history.push({html,user,at:Date.now()}); state.history=state.history.slice(-MAX_HISTORY); try{localStorage.setItem(LS_KEY,JSON.stringify(state.history));}catch{/* ignore */}}
   function addMsg(html,user=false,save=true){const box=$('lzOperatorMessages'); if(!box)return; const div=document.createElement('div'); div.className=`lz-op-msg ${user?'user':'bot'}`; div.innerHTML=html; box.appendChild(div); box.scrollTop=box.scrollHeight; if(save)persist(html,user);}
   function user(html){addMsg(esc(html),true);} function bot(html){addMsg(html,false);} function typing(on=true){const box=$('lzOperatorMessages'); if(!box)return; let el=$('lzOpTyping'); if(on){if(el)return; el=document.createElement('div');el.id='lzOpTyping';el.className='lz-operator-typing';el.innerHTML='<span></span><span></span><span></span>';box.appendChild(el);box.scrollTop=box.scrollHeight;}else el?.remove();}
-  async function handle(message){user(message); typing(true); try{await new Promise(r=>setTimeout(r,120+Math.random()*180)); const reply=await route(message); typing(false); bot(reply); updateStatusLabel();}catch(err){typing(false); bot(`<strong>Não consegui executar.</strong><br>${esc(err.message||err)}<div class="lz-op-actions"><button class="lz-op-action" data-op-action="refresh">Tentar novamente</button></div>`);} }
+  function setLoading(value){state.loading=Boolean(value);const input=$('lzOperatorInput'),send=$('lzOperatorSend');if(input)input.disabled=state.loading;if(send)send.disabled=state.loading;$('lzOperator')?.classList.toggle('loading',state.loading);}
+  async function handle(message){
+    if(state.loading)return;
+    const command=txt(message);if(!command)return;
+    registerCommand(command);user(command);typing(true);setLoading(true);
+    try{await new Promise(r=>setTimeout(r,80+Math.random()*120)); const reply=await route(command); typing(false); bot(reply); updateStatusLabel().catch(()=>{});}
+    catch(err){typing(false); bot(`<strong>Não consegui executar.</strong><br>${esc(err.message||err)}<div class="lz-op-actions"><button class="lz-op-action" data-op-action="refresh">Tentar novamente</button></div>`);}
+    finally{setLoading(false);persistMemory();setTimeout(()=>$('lzOperatorInput')?.focus(),20);}
+  }
 
   function normLoose(v){return norm(v).replace(/[&+\-_.]+/g,' ').replace(/\b(convite|casamento|cliente|slug|admin)\b/g,' ').replace(/\s+/g,' ').trim();}
   function inviteSearchText(inv){return [inv?.slug,inv?.coupleNames,inv?.clientName,inv?.name,inv?.title].map(normLoose).filter(Boolean).join(' | ');}
@@ -347,7 +481,8 @@
   function rememberContext(ctx,intent=null,criteria=null,action=null,listLabel=''){
     if(!ctx||!ctx.invite) return;
     state.lastContext=ctx;
-    state.dialog={inviteId:inviteIdOf(ctx),inviteTitle:shortInvite(ctx),intent,criteria,action,lastQuestion:state.dialog.lastQuestion||'',lastListLabel:listLabel||state.dialog.lastListLabel||''};
+    state.dialog={inviteId:inviteIdOf(ctx),inviteTitle:shortInvite(ctx),intent:intent||state.dialog.intent,criteria:criteria??state.dialog.criteria,action:action||state.dialog.action,lastQuestion:state.dialog.lastQuestion||'',lastListLabel:listLabel||state.dialog.lastListLabel||'',updatedAt:Date.now()};
+    persistMemory();
   }
   function isExplicitMulti(m){return /\b(todos|todas|geral|global|multi|por convite|separado|separar por convite|cada convite|todos os convites|todos convites)\b/.test(m);}
   function looksLikeFollowup(m){return Boolean(state.dialog.inviteId)&&!/\b(convite|casamento|cliente)\s+/.test(m)&&!isExplicitMulti(m)&&/^(e\s+|agora\s+|entao\s+|então\s+|depois\s+|tambem\s+|também\s+|lista\b|mostra\b|separa\b|gera\b|gerar\b|exporta\b|copia\b|copiar\b|quantos\b|quantas\b|quem\b|quais\b|qual\b|o que\b|plano\b|perfil\b)/.test(m);}
@@ -374,7 +509,7 @@
   async function naturalMultiAnswer(message,m,intent,criteria,action){
     const contexts=await getValidContexts(); let flat=[];
     const blocks=contexts.map(ctx=>{let list=getMetricList(ctx,intent.type); if(criteria) list=applyNaturalFilters(ctx,list,criteria); const value=(['duplicated','badNames','messages','contributions','reservedGifts','totalPeople'].includes(intent.type) && !criteriaHasFilters(criteria)) ? getMetricValue(ctx,intent.type) : list.length; flat=flat.concat(attachInvite(list,ctx)); return {ctx,list,value};});
-    state.lastList=flat; state.dialog.intent=intent; state.dialog.criteria=criteria; state.dialog.action=action; state.dialog.inviteId=''; state.dialog.inviteTitle='Todos convites';
+    state.lastList=flat; state.dialog.intent=intent; state.dialog.criteria=criteria; state.dialog.action=action; state.dialog.inviteId=''; state.dialog.inviteTitle='Todos convites'; state.dialog.updatedAt=Date.now(); persistMemory();
     const filterText=criteriaLabel(criteria);
     if(action==='count'||action==='rate'){
       const total=blocks.reduce((s,b)=>s+Number(b.value||0),0);
@@ -384,10 +519,12 @@
   }
   async function routeNatural(message,m){
     let action=naturalAction(m); let intent=maybeInheritIntent(m,detectMetricIntent(m));
-    if(!action&&intent) action='count';
+    const followup=looksLikeFollowup(m);
+    if(!action&&intent) action=followup&&state.dialog.action==='list'?'list':'count';
     if(!action||!intent) return '';
     let criteria=parseNaturalCriteria(message,m);
-    if(looksLikeFollowup(m)) criteria=mergeCriteria(state.dialog.criteria,criteria);
+    if(/sem filtro|limpar filtro|remove filtro|remover filtro|todos deste segmento|todos dessa lista/.test(m)) criteria={raw:message};
+    else if(followup) criteria=mergeCriteria(state.dialog.criteria,criteria);
     const resolved=await resolveInviteFromMessage(message);
     if(resolved.ambiguous.length){return `<strong>Encontrei mais de um convite possível.</strong><br>Escolha qual quer analisar:<div class="lz-op-actions">${resolved.ambiguous.map(x=>`<button class="lz-op-action" data-op-action="select-invite" data-op-payload="${esc(x.inv.id||x.inv._id||x.inv.slug)}">${esc(inviteTitle(x.inv))}</button>`).join('')}</div>`;}
     if(resolved.match){const ctx=await getContext(false,resolved.match.id||resolved.match._id||resolved.match.slug); return action==='list'?naturalListAnswer(ctx,intent,criteria):naturalCountAnswer(ctx,intent,criteria);}
@@ -412,19 +549,115 @@
     return `<strong>Mensagem gerada para a lista actual</strong><br>Segmento em memória: <b>${esc(target)}</b> · ${list.length} convidado(s).<div class="lz-op-card"><span>${esc(text).replace(/\n/g,'<br>')}</span></div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-message">Copiar mensagem</button><button class="lz-op-action" data-op-action="copy-list">Copiar segmento</button></div>`;
   }
 
+  function refersToLastList(m){return /\b(destes|desses|dessas|destas|estes|estas|eles|elas|essa lista|esta lista|lista actual|lista atual|ultimo resultado|último resultado|segmento actual|segmento atual|os encontrados|as encontradas)\b/.test(m);}
+  function listInviteIds(list=state.lastList){
+    return [...new Set((list||[]).map(g=>String(g.__inviteId||'')).filter(Boolean))];
+  }
+  function pushListSnapshot(list,label='Lista anterior'){
+    if(!Array.isArray(list)||!list.length)return;
+    const snapshots=Array.isArray(state.lastSegments)?state.lastSegments:[];
+    state.lastSegments=[{label,list:list.slice(),at:Date.now()},...snapshots].slice(0,5);
+  }
+  function restorePreviousList(){
+    const snapshots=Array.isArray(state.lastSegments)?state.lastSegments:[];
+    const previous=snapshots.shift();
+    if(!previous)return `<strong>Sem lista anterior guardada.</strong><br>Crie primeiro uma lista ou filtro.`;
+    state.lastSegments=snapshots;state.lastList=previous.list||[];
+    state.dialog.lastListLabel=previous.label||'lista anterior';
+    return renderLastListResult(`Lista restaurada · ${previous.label||'resultado anterior'}`,state.lastList,state.lastList.length,'list');
+  }
+  function directStatusFilter(list,m){
+    let out=list.slice();
+    if(/abriu.*sem|abriram.*sem|sem confirmar/.test(m)) out=out.filter(g=>isOpened(g));
+    else if(/nao abrir|não abrir|nao aberto|não aberto|por abrir/.test(m)) out=out.filter(isNotOpened);
+    else if(/confirmad|confirmaram/.test(m)) out=out.filter(g=>/confirm/.test(statusNorm(g))&&!isDeclined(g));
+    else if(/recus|declin|nao vai|não vai/.test(m)) out=out.filter(isDeclined);
+    else if(/check.?in|entraram|entrou/.test(m)) out=out.filter(g=>g.checkedIn||/check.?in|entrou|presente/.test(statusNorm(g)));
+    else if(/pendente|por confirmar/.test(m)) out=out.filter(g=>!isDeclined(g)&&!/confirm/.test(statusNorm(g)));
+    return out;
+  }
+  function filterLastListDirect(list,message,m){
+    let out=directStatusFilter(list,m);
+    const table=message.match(/mesa\s+([a-z0-9\-\/]+)/i);
+    const category=message.match(/(?:categoria|grupo)\s+([^,.;?]+?)(?=\s+(?:e|sem|com|excepto|exceto|menos|ordena|ordenar)\b|$)/i);
+    if(table&&!/sem\s+mesa/i.test(message)) out=out.filter(g=>norm(displayTable(g)).includes(norm(table[1])));
+    if(category) out=out.filter(g=>norm(getCategory(g)).includes(norm(category[1]))||norm(getNotes(g)).includes(norm(category[1])));
+    if((/\bvip\b|padrinho|madrinha|honra/.test(m))&&!/excepto vip|exceto vip|menos vip|sem vip/.test(m)) out=out.filter(isVip);
+    if(/sem mesa|mesa em falta/.test(m)) out=out.filter(isTableMissing);
+    if(/com mesa|mesa definida/.test(m)&&!/sem mesa/.test(m)) out=out.filter(g=>!isTableMissing(g));
+    if(/sem contacto|sem contato|sem telefone/.test(m)) out=out.filter(g=>!getPhone(g));
+    if(/com contacto|com contato|com telefone/.test(m)&&!/sem contacto|sem contato|sem telefone/.test(m)) out=out.filter(g=>Boolean(getPhone(g)));
+    if(/sem token|sem link individual/.test(m)) out=out.filter(g=>!hasToken(g));
+    if(/com token|com link individual/.test(m)&&!/sem token/.test(m)) out=out.filter(hasToken);
+    if(/com acompanhantes|com acompanhante|mais de uma pessoa/.test(m)) out=out.filter(g=>peopleCount(g)>1);
+    if(/sem acompanhantes|sem acompanhante|sozinho|sozinha/.test(m)) out=out.filter(g=>peopleCount(g)<=1);
+    const name=message.match(/(?:nome|chamad[oa])\s+([^,.;?]+)/i);if(name)out=out.filter(g=>norm(getName(g)).includes(norm(name[1])));
+    if(/excepto vip|exceto vip|menos vip|sem vip/.test(m)) out=out.filter(g=>!isVip(g));
+    const exceptTable=message.match(/(?:excepto|exceto|menos|tirando)\s+(?:a\s+)?mesa\s+([a-z0-9\-\/]+)/i);if(exceptTable)out=out.filter(g=>!norm(displayTable(g)).includes(norm(exceptTable[1])));
+    const exceptCategory=message.match(/(?:excepto|exceto|menos|tirando)\s+(?:a\s+)?(?:categoria|grupo)\s+([^,.;?]+)/i);if(exceptCategory)out=out.filter(g=>!norm(getCategory(g)).includes(norm(exceptCategory[1])));
+    if(/ordena|ordenar|organiza|organizar/.test(m)){
+      const by=/mesa/.test(m)?'table':/estado|status/.test(m)?'status':/numero|número|ordem/.test(m)?'number':'name';
+      out.sort((a,b)=>{
+        const av=by==='table'?displayTable(a):by==='status'?(a.status||a.guestStatus||''):by==='number'?Number(getNumber(a)||0):getName(a);
+        const bv=by==='table'?displayTable(b):by==='status'?(b.status||b.guestStatus||''):by==='number'?Number(getNumber(b)||0):getName(b);
+        return typeof av==='number'?av-bv:String(av).localeCompare(String(bv),'pt',{numeric:true,sensitivity:'base'});
+      });
+    }
+    const limit=message.match(/(?:primeiros?|primeiras?|limita(?:r)?\s+a|apenas)\s+(\d+)/i);if(limit)out=out.slice(0,Math.max(1,Math.min(100,Number(limit[1]))));
+    return out;
+  }
+  function renderLastListResult(title,list,originalCount,action='list'){
+    const rate=originalCount?fmtPct(list.length,originalCount):0;
+    state.lastResultMeta={source:'last-list',title,count:list.length,originalCount,updatedAt:Date.now()};
+    state.dialog.lastListLabel=title;state.dialog.action=action;state.dialog.updatedAt=Date.now();persistMemory();
+    if(action==='count'||action==='rate') return `<strong>${esc(title)}</strong><br>No segmento activo, encontrei <b>${list.length}</b> de <b>${originalCount}</b> registo(s)${originalCount?` · <b>${rate}%</b>`:''}.<div class="lz-op-context">Contexto: último resultado activo</div><div class="lz-op-actions">${actionAsk('Mostrar lista','mostra esta lista',true)}${actionAsk('Separar por mesa','separa esta lista por mesa')}${actionAsk('Gerar mensagem','mensagem para esta lista')}</div>`;
+    const rows=list.slice(0,MAX_PREVIEW).map(g=>guestRowWithInvite(g)).join('');
+    return `<strong>${esc(title)}</strong><br>Resultado refinado a partir da lista anterior: <b>${list.length}</b> de <b>${originalCount}</b> registo(s).${list.length?`<div class="lz-op-list">${rows}${list.length>MAX_PREVIEW?`<div class="lz-op-card"><span>+ ${list.length-MAX_PREVIEW} registo(s) fora da prévia.</span></div>`:''}</div>`:'<div class="lz-op-card"><strong>Sem resultados</strong><span>Nenhum registo passou por este refinamento.</span></div>'}<div class="lz-op-context">Esta lista passa a ser novo segmento activo.</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-list">Copiar lista</button><button class="lz-op-action" data-op-action="copy-csv">Copiar CSV</button>${actionAsk('Voltar','voltar lista anterior')}${actionAsk('Mensagem','mensagem para esta lista')}</div>`;
+  }
+  function routeLastListContext(message,m){
+    if(!state.lastList?.length)return '';
+    if(/voltar.*lista|lista anterior|resultado anterior|desfazer filtro/.test(m))return restorePreviousList();
+    if((/separa|separar|agrupa|agrupar/.test(m))&&/mesa/.test(m))return groupLastList('table');
+    if((/separa|separar|agrupa|agrupar/.test(m))&&/categoria|grupo/.test(m))return groupLastList('category');
+    if((/separa|separar|agrupa|agrupar/.test(m))&&/convite/.test(m))return groupLastList('invite');
+    const original=state.lastList.slice();
+    const filtered=filterLastListDirect(original,message,m);
+    const hasRefinement=filtered.length!==original.length||/ordena|ordenar|organiza|organizar|primeiros|primeiras|limita|apenas\s+\d+/.test(m);
+    const action=naturalAction(m)||(/percent|taxa/.test(m)?'rate':/quantos|quantas|total|conta/.test(m)?'count':'list');
+    if(!hasRefinement&&!refersToLastList(m))return '';
+    if(action==='list'&&hasRefinement){pushListSnapshot(original,state.dialog.lastListLabel||'resultado anterior');state.lastList=filtered;}
+    const title=hasRefinement?'Lista refinada':'Último resultado';
+    return renderLastListResult(title,filtered,original.length,action);
+  }
+  async function prepareBotActionFromLastList(message){
+    const command=canonicalMessage(message);
+    if(/\b(adicionar|add|criar|inserir|novo)\b/.test(command)) return `<strong>Acção bloqueada.</strong><br>Último resultado contém convidados existentes. Para adicionar novos convidados, indique nomes novos directamente.`;
+    const list=state.lastList||[];
+    if(!list.length)return `<strong>Sem segmento activo.</strong><br>Peça primeiro uma lista e depois execute acção sobre <b>estes</b> ou <b>esta lista</b>.`;
+    const ids=list.map(g=>String(g.id||g._id||g.guestId||'')).filter(id=>/^[a-f\d]{24}$/i.test(id));
+    if(!ids.length)return `<strong>Não consegui identificar IDs seguros.</strong><br>Abra lista de convidados e repita pedido.`;
+    const inviteIds=listInviteIds(list);
+    const fallbackInvite=state.dialog.inviteId||selectedInviteId();
+    if(inviteIds.length>1)return `<strong>Acção bloqueada.</strong><br>Último resultado contém vários convites. Foque um convite e gere lista desse convite antes de executar acção em massa.`;
+    const inviteId=inviteIds[0]||fallbackInvite;
+    if(!inviteId)return `<strong>Convite não identificado.</strong><br>Foque convite antes de executar acção.`;
+    return prepareBotAction(message,{inviteId,...(ids.length===1?{guestId:ids[0]}:{guestIds:ids})});
+  }
+
   async function focusInviteFromMessage(message,m){
     const resolved=await resolveInviteFromMessage(message);
     if(resolved.ambiguous.length){return `<strong>Encontrei mais de um convite possível para focar.</strong><br>Escolha abaixo:<div class="lz-op-actions">${resolved.ambiguous.map(x=>`<button class="lz-op-action" data-op-action="select-invite" data-op-payload="${esc(x.inv.id||x.inv._id||x.inv.slug)}">${esc(inviteTitle(x.inv))}</button>`).join('')}</div>`;}
     if(!resolved.match) return `<strong>Não encontrei esse convite.</strong><br>Escreva o slug ou parte do nome do casal. Exemplo: <b>focar convite rosalina-monteiro</b>.`;
     const id=resolved.match.id||resolved.match._id||resolved.match.slug;
-    setScopeValue(id); const ctx=await getContext(false,id); rememberContext(ctx,null,null,'focus');
+    setScopeValue(id,{resetList:true}); const ctx=await getContext(false,id); rememberContext(ctx,null,null,'focus');
     return `<strong>Convite focado</strong><br>Agora estou focado em <b>${esc(shortInvite(ctx))}</b>. Pode continuar com perguntas curtas como <b>quantos pendentes?</b>, <b>mostra a lista</b>, <b>separa por mesa</b> ou <b>gera mensagem</b>.<div class="lz-op-actions">${actionAsk('Mapa','Mapa',true)}${actionAsk('Plano de acção','O que devo fazer agora?')}${actionAsk('Funil','Funil')}</div>`;
   }
   function isYes(m){return /^(sim|s|yes|confirmo|confirmar|pode executar|executar|aplicar|ok|certo)$/i.test(txt(m));}
   function isNo(m){return /^(nao|não|n|no|cancelar|cancela|errado|parar)$/i.test(txt(m));}
   function looksLikeBotWriteAction(m){
-    return /\b(repor|resetar|reiniciar|restaurar|adicionar|add|criar|inserir|novo|editar|alterar|mudar|mover|corrigir|actualizar|atualizar|definir|trocar|eliminar|apagar|remover|deletar|delete)\b/.test(m)
-      && /\b(convidado|convidada|pessoa|acesso|link|token|rsvp|confirmacao|confirmação|checkin|check-in|check in|entrada|mesa|telefone|contacto|contato|categoria|acompanhantes|convite|dados)\b/.test(m);
+    const hasVerb=/\b(repor|resetar|reiniciar|restaurar|adicionar|add|criar|inserir|novo|editar|alterar|mudar|mover|corrigir|actualizar|atualizar|definir|trocar|eliminar|apagar|remover|deletar|delete)\b/.test(m);
+    const hasTarget=/\b(convidado|convidada|pessoa|acesso|link|token|rsvp|confirmacao|confirmação|checkin|check-in|check in|entrada|mesa|telefone|contacto|contato|categoria|acompanhantes|convite|dados)\b/.test(m)||refersToLastList(m);
+    return hasVerb&&hasTarget;
   }
   function actionPayload(obj){return esc(JSON.stringify(obj));}
   function formatGuestMini(g){
@@ -472,7 +705,7 @@
     const strong=d.confirmationPhrase?`<div class="lz-op-danger"><strong>Confirmação forte obrigatória</strong><span>Para executar, escreva exactamente: <b>${esc(d.confirmationPhrase)}</b></span></div>`:'';
     const confirmButtons=d.confirmationPhrase?`<button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button>`:`<button class="lz-op-action primary" data-op-action="confirm-pending">Sim, executar</button><button class="lz-op-action" data-op-action="cancel-pending">Cancelar</button>`;
     const bulk=d.bulk?`${metric('Modo','Acção em massa segura')}${metric('Registos afectados',d.bulkCount||d.bulkItems?.length||0)}${renderBulkPreview(d.bulkItems||[])}`:'';
-    return `<strong>Acção preparada: ${esc(d.actionLabel||d.actionType)}</strong><br><span class="lz-op-roleline ${roleClass}">Sessão actual: ${esc(d.roleLabel||roleLabel())}</span>${metric('Convite',d.invite?.coupleNames||d.invite?.clientName||d.invite?.slug||'-')}${d.guest?formatGuestMini(d.guest):''}${bulk}${!d.bulk?diffCard(d.before,d.after):''}${warnings}${strong}<div class="lz-op-actions">${confirmButtons}</div>`;
+    return `<strong>Acção preparada: ${esc(d.actionLabel||d.actionType)}</strong><br><span class="lz-op-roleline ${roleClass}">Sessão actual: ${esc(d.roleLabel||roleLabel())}</span>${metric('Convite',d.invite?.coupleNames||d.invite?.clientName||d.invite?.slug||'-')}${metric('Validade da confirmação',`${d.expiresInSeconds||300} segundos`)}${d.guest?formatGuestMini(d.guest):''}${bulk}${!d.bulk?diffCard(d.before,d.after):''}${warnings}${strong}<div class="lz-op-actions">${confirmButtons}</div>`;
   }
 
   async function prepareBotAction(message, extra={}){
@@ -502,20 +735,33 @@
   }
 
   async function route(message){
-    const m=norm(message); state.dialog.lastQuestion=message;
+    const m=canonicalMessage(message); state.dialog.lastQuestion=message;state.dialog.updatedAt=Date.now();
+    if(/^(\/)?(limpar conversa|nova conversa|reiniciar conversa)$/.test(m)){clearConversation({announce:false});return `<strong>Conversa e contexto limpos.</strong><br>Dados dos convites não foram alterados.`;}
+    if(/^(\/)?status$/.test(m)) return `<strong>Estado do Operator</strong>${metric('Versão',BOT_VERSION)}${metric('Perfil',roleLabel())}${metric('Escopo',getScopeValue()==='__all__'?'Todos convites':state.dialog.inviteTitle||'Convite actual')}${metric('Lista activa',state.lastList?.length||0)}${metric('Acção pendente',state.pendingAction?'Sim':'Não')}<div class="lz-op-actions">${actionAsk('Mapa','Mapa',true)}${actionAsk('Ajuda','Ajuda')}</div>`;
     if(state.pendingAction){
       if(isNo(message)){state.pendingAction=null; return `<strong>Acção cancelada.</strong><br>Nada foi alterado.`;}
       if(isYes(message)) return applyPendingAction('');
       if(state.pendingAction.confirmationPhrase && txt(message)===state.pendingAction.confirmationPhrase) return applyPendingAction(txt(message));
       if(state.pendingAction.confirmationPhrase) return `<strong>Confirmação forte necessária.</strong><br>Para executar, escreva exactamente: <b>${esc(state.pendingAction.confirmationPhrase)}</b>. Para cancelar, escreva <b>não</b>.`;
     }
-    if(looksLikeBotWriteAction(m)) return prepareBotAction(message);
+    if(looksLikeBotWriteAction(m)){
+      if(refersToLastList(m)) return prepareBotActionFromLastList(message);
+      return prepareBotAction(message);
+    }
+    if(/mensagem|lembrete|whats/.test(m)&&refersToLastList(m)&&state.lastList?.length){const out=generateMessageFromLastList(m); if(out) return out;}
+    if(state.lastList?.length&&(refersToLastList(m)||/voltar.*lista|lista anterior|resultado anterior|desfazer filtro|ordena|ordenar|organiza|organizar|primeiros|primeiras/.test(m))){const out=routeLastListContext(message,m);if(out)return out;}
     if((/separa|separar|agrupa|agrupar/.test(m))&&/mesa/.test(m)&&state.lastList?.length) return groupLastList('table');
     if((/separa|separar|agrupa|agrupar/.test(m))&&/categoria|grupo/.test(m)&&state.lastList?.length) return groupLastList('category');
     if((/separa|separar|agrupa|agrupar/.test(m))&&/convite/.test(m)&&state.lastList?.length) return groupLastList('invite');
-    if(/mensagem|lembrete|whats/.test(m)&&/(esses|estas|essa lista|este segmento|segmento|lista actual|lista atual)/.test(m)&&state.lastList?.length){const out=generateMessageFromLastList(m); if(out) return out;}
     if(/^(foca|focar|seleciona|seleccionar|selecionar|usar|trabalhar no|trabalha no)\b/.test(m)&&/convite|casamento|cliente/.test(m)) return focusInviteFromMessage(message,m);
     if(/qual convite|mais pendente|mais pendentes|pior taxa|melhor taxa|precisa de atencao|precisa de atenção|mais critico|mais crítico|menos confirm/.test(m)) return compareInvitesSmart(message,m);
+
+    if(state.dialog.intent&&/\b(convite|casamento|cliente)\b/.test(m)&&/^(e\s+|agora\s+)?(no|na|do|da|para|convite|casamento|cliente)\b/.test(m)&&!detectMetricIntent(m)&&!isExplicitMulti(m)){
+      const switched=await resolveInviteFromMessage(message);
+      if(switched.ambiguous.length)return `<strong>Qual convite quer usar?</strong><div class="lz-op-actions">${switched.ambiguous.map(x=>`<button class="lz-op-action" data-op-action="select-invite" data-op-payload="${esc(x.inv.id||x.inv._id||x.inv.slug)}">${esc(inviteTitle(x.inv))}</button>`).join('')}</div>`;
+      if(switched.match){const ctx=await getContext(false,switched.match.id||switched.match._id||switched.match.slug);const action=state.dialog.action==='list'?'list':'count';return action==='list'?naturalListAnswer(ctx,state.dialog.intent,state.dialog.criteria):naturalCountAnswer(ctx,state.dialog.intent,state.dialog.criteria);}
+    }
+
     const natural=await routeNatural(message,m); if(natural) return natural;
     if(isMultiScope(message)) return routeMulti(message,m);
     if(/todos.*convite|comparar|ranking|geral multi|todos os clientes/.test(m)) return compareInvitesSmart(message,m);
@@ -529,27 +775,29 @@
     if(/qualidade|higiene|auditoria de dados|dados ruins|inconsisten/.test(m)) return viewQuality(ctx);
     if(/recepcao|recepção|entrada|briefing recepção|briefing recepcao|dia do evento/.test(m)) return viewReception(ctx);
     if(/checklist|pre evento|pré evento|antes do casamento|preparar entrega/.test(m)) return viewRunbook(ctx);
+
+    const profile=message.match(/(?:perfil|detalhes|ver convidado|convidado)\s+(.+)/i); if(profile) return viewGuestProfile(ctx,profile[1]);
+    const search=message.match(/(?:procura|procurar|buscar|pesquisar|encontra|encontrar)\s+(.+)/i); if(search) return searchGuest(ctx,search[1]);
+    const table=message.match(/mesa\s+([\w\-\/]+)/i); if(table) return viewFiltered(ctx,{table:table[1]},`Mesa ${table[1]}`);
+    const cat=message.match(/categoria\s+(.+)/i); if(cat) return viewFiltered(ctx,{category:cat[1]},`Categoria ${cat[1]}`);
+
     if(/mesa|mesas|seating|lugares|lotacao|lotação/.test(m) && !/sem mesa|mesa\s+\w+/.test(m)) return viewTables(ctx);
     if(/categoria|categorias|grupo|grupos|familia da noiva|familia do noivo/.test(m) && !/categoria\s+/.test(m)) return viewCategories(ctx);
     if(/familias|famílias|apelido|agrupa por familia|agrupar familias/.test(m)) return viewFamilies(ctx);
     if(/whats|mensagem|lembrete|texto|enviar|copy|copiar texto/.test(m)) return generateMessage(ctx,m);
-    if(/relatorio|relatório|report|resumo executivo|cliente/.test(m)) return generateReport(ctx);
-    if(/estat|numero|número|quantos|indicadores|kpi/.test(m)) return viewStats(ctx);
+    if(/relatorio|relatório|report|resumo executivo/.test(m)) return generateReport(ctx);
+    if(/estatisticas|estatísticas|indicadores|kpi|numeros do convite|números do convite|resumo de numeros|resumo de números/.test(m)) return viewStats(ctx);
     if(/duplicad|repetid|nomes iguais|mesma pessoa/.test(m)) return viewDuplicates(ctx);
-    if(/nome.*err|limpar|corrigir nomes|nomes estranhos|bad names|reparar nomes/.test(m)) return viewBadNames(ctx);
+    if(/nome.*err|limpar nomes|corrigir nomes|nomes estranhos|bad names|reparar nomes/.test(m)) return viewBadNames(ctx);
     if(/token|acesso individual|link individual/.test(m)) return viewList(ctx,'missingTokens');
     if(/sem mesa|confirmados sem mesa/.test(m)) return viewList(ctx,'missingTables');
     if(/telefone|contacto|contato|sem contacto|sem telefone/.test(m)) return viewList(ctx,'missingPhones');
-    if(/abriu.*nao|abriu.*não|sem confirmar|abriram/.test(m)) return viewList(ctx,'openedNoConfirm');
+    if(/abriu.*nao|abriu.*não|sem confirmar|abriram.*sem/.test(m)) return viewList(ctx,'openedNoConfirm');
     if(/nao abrir|não abrir|nao aberto|não aberto|por abrir|nunca abriu/.test(m)) return viewList(ctx,'notOpened');
     if(/pendente|pendentes|por confirmar|falta confirmar|ainda nao confirm|ainda não confirm/.test(m)) return viewList(ctx,'pending');
     if(/confirmad|confirmaram|rsvp/.test(m)) return viewList(ctx,'confirmed');
     if(/recus|declin|nao vai|não vai/.test(m)) return viewList(ctx,'declined');
     if(/check.?in|ja entrou|já entrou/.test(m)) return viewList(ctx,'checkedIn');
-    const profile=message.match(/(?:perfil|detalhes|ver convidado|convidado)\s+(.+)/i); if(profile) return viewGuestProfile(ctx,profile[1]);
-    const table=message.match(/mesa\s+([\w\-\/]+)/i); if(table) return viewFiltered(ctx,{table:table[1]},`Mesa ${table[1]}`);
-    const cat=message.match(/categoria\s+(.+)/i); if(cat) return viewFiltered(ctx,{category:cat[1]},`Categoria ${cat[1]}`);
-    const search=message.match(/(?:procura|procurar|buscar|pesquisar|encontra|encontrar)\s+(.+)/i); if(search) return searchGuest(ctx,search[1]);
     if(/filtra|filtrar|separa|separar|segmenta|segmentar|lista|listar|mostra|mostrar|ver /.test(m)) return viewCustomFilter(ctx,message);
     return smartFallback(ctx,message);
   }
@@ -586,7 +834,7 @@
     if(/mesa|mesas|seating|lugares|lotacao|lotação/.test(m)&&!/sem mesa|mesa\s+\w+/.test(m)) return viewMultiGroups('table');
     if(/categoria|categorias|grupo|grupos/.test(m)&&!/categoria\s+/.test(m)) return viewMultiGroups('category');
     if(/whats|mensagem|lembrete|texto|enviar|copy|copiar texto/.test(m)) return generateMultiMessage(message,m);
-    if(/relatorio|relatório|report|resumo executivo|cliente/.test(m)) return generateMultiReport();
+    if(/relatorio|relatório|report|resumo executivo/.test(m)) return generateMultiReport();
     if(/duplicad|repetid|nomes iguais|mesma pessoa/.test(m)) return viewMultiDuplicates();
     if(/nome.*err|limpar|corrigir nomes|nomes estranhos|bad names|reparar nomes/.test(m)) return viewMultiBadNames();
     const profile=message.match(/(?:perfil|detalhes|ver convidado|convidado)\s+(.+)/i); if(profile) return searchAllGuests(profile[1]);
@@ -613,7 +861,7 @@
   async function generateMultiMessage(message,m){const type=classifyListType(m); const contexts=await getValidContexts(); const blocks=[]; let flat=[]; contexts.forEach(c=>{const [target,list]=listMap(c,type); flat=flat.concat(attachInvite(list,c)); const deadline=c.invite?.rsvpDeadline?fmtDate(c.invite.rsvpDeadline):'a data indicada'; const link=c.invite?.publicUrl||'[link do convite]'; const text=`Olá, [Nome]. Esperamos que esteja bem. Lembramos com carinho sobre a confirmação de presença no casamento de ${shortInvite(c)}. Por favor, confirme até ${deadline}: ${link}`; blocks.push(`### ${shortInvite(c)}\nSegmento: ${target} · ${list.length} convidado(s)\n${text}`);}); const out=blocks.join('\n\n'); state.lastMessage=out; state.lastList=flat; return `<strong>Mensagens por convite</strong><br>Gerei mensagens separadas por convite, com nome/link/prazo de cada evento quando disponível.<div class="lz-op-card"><span>${esc(out).replace(/\n/g,'<br>')}</span></div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-message">Copiar mensagens</button><button class="lz-op-action" data-op-action="copy-list">Copiar segmentos</button></div>`;}
   async function generateMultiReport(){const contexts=await getValidContexts(); const report=contexts.map(c=>{const a=c.analysis; return `RELATÓRIO — ${shortInvite(c)}\n- Saúde: ${a.score}%\n- Convidados: ${a.guests.length}\n- Confirmados: ${a.confirmed.length} (${a.rsvpRate}%)\n- Pendentes: ${a.pending.length}\n- Não abriram: ${a.notOpened.length}\n- Abriram sem confirmar: ${a.openedNoConfirm.length}\n- Duplicados prováveis: ${a.duplicated.length}\n- Confirmados sem mesa: ${a.missingTables.length}`;}).join('\n\n'); state.lastReport=report; return `<strong>Relatório geral separado por convite</strong><br>Preparei um bloco para cada convite, sem consolidar indevidamente os dados.<div class="lz-op-card"><span>${esc(report).replace(/\n/g,'<br>')}</span></div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-report">Copiar relatório</button></div>`;}
 
-  function help(ctx){return `<strong>Comandos Ultra disponíveis</strong><br>Estou focado no convite <b>${esc(shortInvite(ctx))}</b>.<ul><li><b>Mapa</b> — central operacional do convite.</li><li><b>Funil RSVP</b> — não abriu → abriu → confirmou → check-in.</li><li><b>Pendentes mesa 5</b>, <b>não abriram categoria família</b>, <b>confirmados sem mesa</b>.</li><li><b>Mesas</b>, <b>Categorias</b>, <b>Famílias</b>, <b>Riscos</b>, <b>Qualidade</b>.</li><li><b>Recepção</b> — briefing para equipa de entrada.</li><li><b>Perfil Ana</b> — visão 360º de um convidado.</li><li><b>Comparar convites</b> — ranking multi-cliente.</li></ul><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="ask" data-op-payload="Mapa">Mapa</button><button class="lz-op-action" data-op-action="ask" data-op-payload="Funil RSVP">Funil</button><button class="lz-op-action" data-op-action="ask" data-op-payload="Riscos">Riscos</button></div>`;}
+  function help(ctx){return `<strong>Brain v8 · comandos disponíveis</strong><br>Foco actual: <b>${esc(shortInvite(ctx))}</b>.<ul><li><b>Seguimentos:</b> “e os confirmados?”, “mostra a lista”, “agora só sem contacto”.</li><li><b>Lista activa:</b> “destes sem mesa”, “ordena esta lista por nome”, “separa por mesa”, “voltar lista anterior”.</li><li><b>Operação segura:</b> “repor acesso destes”, “mover esta lista para mesa 8”.</li><li><b>Análise:</b> mapa, funil, riscos, qualidade, recepção, relatório e plano de acção.</li><li><b>Pesquisa:</b> “perfil Ana” ou “pesquisar João em todos convites”.</li><li><b>Atalhos:</b> Ctrl+K abre bot; ↑/↓ recupera comandos; Tab completa sugestão.</li></ul><div class="lz-op-actions">${actionAsk('Mapa','Mapa',true)}${actionAsk('Último resultado','mostra esta lista')}${actionAsk('Status','status')}${actionAsk('Riscos','Riscos')}</div>`;}
   function scoreClass(score){return score>=80?'ok':score>=58?'warn':'bad';}
   function metric(label,value){return `<div class="metric-row"><span>${esc(label)}</span><b>${esc(value)}</b></div>`;}
   function badges(items){return `<div class="lz-op-badges">${items.map(x=>`<span class="lz-op-badge ${x[2]||''}">${esc(x[0])}: <b>${esc(x[1])}</b></span>`).join('')}</div>`;}
@@ -699,7 +947,7 @@
   async function multiActionPlan(){const contexts=await getValidContexts(30); const ranked=rankedContexts(contexts,'attention'); return `<strong>Plano de acção por convite</strong><br>Priorizei os convites com maior risco operacional primeiro.<div class="lz-op-list multi">${ranked.map((r,i)=>{const first=buildActionItems(r.ctx)[0]; return `<div class="lz-op-invite-block">${inviteHeaderRow(r.ctx,r.score,`${first[0]} · ${first[1]}`,'Plano de acção')}</div>`;}).join('')}</div><div class="lz-op-actions">${actionAsk('Ranking de atenção','Qual convite precisa de atenção?',true)}${actionAsk('Riscos por convite','Riscos por convite')}</div>`;}
 
   async function compareInvites(){const contexts=await getAllContexts(20); const valid=contexts.filter(c=>c.analysis); if(!valid.length) return `<strong>Comparação geral</strong><br>Não consegui carregar convites para comparação.`; const rows=valid.sort((a,b)=>b.analysis.score-a.analysis.score).map(c=>`<div class="lz-op-list-row"><div><strong>${esc(shortInvite(c))}</strong><small>${c.analysis.guests.length} convidados · ${c.analysis.confirmed.length} confirmados · ${c.analysis.pending.length} pendentes · ${c.analysis.notOpened.length} não abriram</small></div><b>${c.analysis.score}%</b></div>`).join(''); const totals=valid.reduce((acc,c)=>{acc.guests+=c.analysis.guests.length;acc.confirmed+=c.analysis.confirmed.length;acc.pending+=c.analysis.pending.length;acc.notOpened+=c.analysis.notOpened.length;return acc;},{guests:0,confirmed:0,pending:0,notOpened:0}); return `<strong>Ranking geral dos convites</strong><br>Comparação operacional dos convites carregados.${metric('Convites analisados',valid.length)}${metric('Convidados totais',totals.guests)}${metric('Confirmados totais',`${totals.confirmed} (${fmtPct(totals.confirmed,totals.guests)}%)`)}${metric('Pendentes totais',totals.pending)}<div class="lz-op-list">${rows}</div><div class="lz-op-actions"><button class="lz-op-action primary" data-op-action="copy-comparison">Copiar ranking</button></div>`;}
-  function smartFallback(ctx,message){const a=ctx.analysis; return `<strong>Posso fazer isso, mas preciso de um comando mais objectivo.</strong><br>O meu cérebro funciona por operações determinísticas. Para este convite vejo ${a.pending.length} pendentes, ${a.notOpened.length} não abertos, ${a.openedNoConfirm.length} abriram sem confirmar e ${a.duplicated.length} possíveis duplicados.<br><br>Use exemplos como: <b>pendentes mesa 5</b>, <b>não abriram categoria família</b>, <b>perfil Ana</b>, <b>funil</b>, <b>recepção</b> ou <b>comparar convites</b>.<div class="lz-op-actions">${actionAsk('Mapa','Mapa',true)}${actionAsk('Ajuda','Ajuda')}</div>`;}
+  function smartFallback(ctx,message){const a=ctx.analysis; const suggestions=[]; const m=canonicalMessage(message); if(/nome|pessoa|convidado/.test(m))suggestions.push(actionAsk('Pesquisar convidado',`pesquisar ${txt(message).replace(/^(procura|buscar|perfil)\s+/i,'')}`,true)); if(/mesa/.test(m))suggestions.push(actionAsk('Ver mesas','Mesas',true)); if(/confirm|pendente|abriu/.test(m))suggestions.push(actionAsk('Ver funil','Funil',true)); if(!suggestions.length)suggestions.push(actionAsk('Mapa','Mapa',true),actionAsk('Ajuda','Ajuda')); return `<strong>Não consegui fechar interpretação com segurança.</strong><br>Não executei nenhuma alteração. Neste convite vejo <b>${a.pending.length}</b> pendentes, <b>${a.notOpened.length}</b> não abertos, <b>${a.openedNoConfirm.length}</b> abriram sem confirmar e <b>${a.duplicated.length}</b> possíveis duplicados.<br><br>Tente comando directo: <b>quem ainda não abriu?</b>, <b>perfil Ana</b>, <b>confirmados sem mesa</b> ou <b>mover João para mesa 8</b>.<div class="lz-op-actions">${suggestions.join('')}</div>`;}
   async function copy(text){try{await navigator.clipboard.writeText(text); return true;}catch{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();return true;}}
   function listToText(list){return list.map((g,i)=>`${i+1}. ${g.__inviteTitle?`[${g.__inviteTitle}] `:''}${getName(g)} | Mesa: ${displayTable(g)} | Categoria: ${getCategory(g)} | Estado: ${g.status||g.guestStatus||'-'} | Pessoas: ${peopleCount(g)} | Contacto: ${getPhone(g)||'-'} | Nº: ${getNumber(g)||'-'}`).join('\n');}
   function listToCsv(list){const header=['Convite','Nome','Mesa','Categoria','Estado','Pessoas','Contacto','Numero','Token','Notas']; const rows=list.map(g=>[g.__inviteTitle||'',getName(g),displayTable(g),getCategory(g),g.status||g.guestStatus||'',peopleCount(g),getPhone(g),getNumber(g),hasToken(g)?'sim':'não',getNotes(g)].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')); return [header.join(';'),...rows].join('\n');}
@@ -710,7 +958,7 @@
     if(action==='cancel-pending'){state.pendingAction=null; bot('<strong>Acção cancelada.</strong><br>Nada foi alterado.'); return;}
     if(action==='copy-last-link'){const link=state.lastMessage||''; if(link){await copy(link); bot('Link copiado.');} return;}
     if(action==='refresh'){state.inviteCache.clear();state.invites=null;await renderInviteScopeSelect(true);return handle('Mapa');}
-    if(action==='select-invite'){setScopeValue(payload); await renderInviteScopeSelect(false); return handle('Mapa');}
+    if(action==='select-invite'){setScopeValue(payload,{resetList:true}); await renderInviteScopeSelect(false); return handle('Mapa');}
     if(action==='go-guests'){if(window.showPanel) window.showPanel('guests'); else document.querySelector('[data-panel="guests"]')?.click(); return;}
     if(action==='copy-list'){await copy(listToText(state.lastList||[])); bot('Lista copiada para a área de transferência.'); return;}
     if(action==='copy-csv'){await copy(listToCsv(state.lastList||[])); bot('CSV copiado. Pode colar no Excel/Sheets.'); return;}
