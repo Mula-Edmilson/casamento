@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Check-in · Binigna & Leonel</title>
+  <script src="./client-config.js"></script><script src="./event-data.js"></script><link rel="stylesheet" href="./style.css">
+</head>
+<body data-page="checkin">
+  <main class="admin-shell">
+    <section class="card">
+      <p class="eyebrow">Check-in</p><h1 data-field="coupleNames">Binigna & Leonel</h1>
+      <form id="checkinAuthForm" class="form-block"><label>Senha de admin/check-in<input name="password" type="password" required></label><button class="btn primary" type="submit">Entrar</button></form>
+      <form id="checkinForm" class="form-block hidden"><input name="nome" placeholder="Nome ou token do convidado" required><button class="btn primary" type="submit">Confirmar entrada</button></form>
+      <div id="checkinFeedback" class="feedback hidden"></div>
+      <div id="checkinGuestList" class="mini-list"></div>
+    </section>
+  </main>
+  <script src="./lirandzo-api.js"></script>
+</body>
+</html>
