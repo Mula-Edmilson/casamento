@@ -30,6 +30,9 @@
     var p = d.parents || {};
     var payments = Array.isArray(d.payments) ? d.payments : [];
     var program = Array.isArray(e.scheduleItems) ? e.scheduleItems : (Array.isArray(d.program) ? d.program : []);
+    var religiousItem = program.find(function(item){ return /relig|igreja/i.test(String(item && item.title || '')); }) || program[0] || {};
+    var civilItem = program.find(function(item){ return /civil/i.test(String(item && item.title || '')); }) || {};
+    var receptionItem = program.find(function(item){ return /copo|recep|salao|salão/i.test(String(item && item.title || '')); }) || program[program.length - 1] || {};
     var bankAccounts = Array.isArray(d.bankAccounts) ? d.bankAccounts : payments.filter(function(x){ return /bim|bci|banco|bank|standard|moza/i.test(String(x.type || x.bank || '')); }).map(function(x){ return { bank:x.type || x.bank || 'Banco', holder:x.holder || '', account:x.number || x.account || '' }; });
     var mobilePayments = Array.isArray(d.mobilePayments) ? d.mobilePayments : payments.filter(function(x){ return /m-pesa|mpesa|e-mola|emola|mkesh|mobile/i.test(String(x.type || x.bank || '')); }).map(function(x){ return { type:x.type || 'Pagamento móvel', holder:x.holder || '', number:x.number || x.account || '' }; });
     var couple = pick(d.coupleNames, e.title, 'Os Noivos');
@@ -51,18 +54,18 @@
       verseReference: pick(e.verseReference, d.verseReference),
       brideParents: brideParents,
       groomParents: groomParents,
-      religiousTitle: program[0]?.title || d.ceremonyTitle || 'Igreja',
-      religiousTime: pick(e.religiousTime, d.ceremonyTime, program[0]?.time),
-      religiousVenue: pick(e.religiousVenue, d.ceremonyPlace, program[0]?.venue, program[0]?.place),
-      religiousMapUrl: pick(e.religiousMapUrl, d.ceremonyMap, program[0]?.mapUrl),
-      civilTitle: program[1]?.title || d.additionalTitle || 'Cerimónia Civil',
-      civilTime: pick(e.civilTime, d.additionalTime, program[1]?.time),
-      civilVenue: pick(e.civilVenue, d.additionalPlace, program[1]?.venue, program[1]?.place),
-      civilMapUrl: pick(e.civilMapUrl, d.additionalMap, program[1]?.mapUrl),
-      receptionTitle: program[2]?.title || d.receptionTitle || 'Copo de Água',
-      receptionTime: pick(e.receptionTime, d.receptionTime, program[2]?.time),
-      receptionVenue: pick(e.receptionVenue, d.receptionPlace, program[2]?.venue, program[2]?.place),
-      receptionMapUrl: pick(e.receptionMapUrl, d.receptionMap, program[2]?.mapUrl),
+      religiousTitle: religiousItem.title || d.ceremonyTitle || 'Igreja',
+      religiousTime: pick(e.religiousTime, d.ceremonyTime, religiousItem.time),
+      religiousVenue: pick(e.religiousVenue, d.ceremonyPlace, religiousItem.venue, religiousItem.place),
+      religiousMapUrl: pick(e.religiousMapUrl, d.ceremonyMap, religiousItem.mapUrl),
+      civilTitle: pick(civilItem.title, d.additionalTitle),
+      civilTime: pick(e.civilTime, d.additionalTime, civilItem.time),
+      civilVenue: pick(e.civilVenue, d.additionalPlace, civilItem.venue, civilItem.place),
+      civilMapUrl: pick(e.civilMapUrl, d.additionalMap, civilItem.mapUrl),
+      receptionTitle: receptionItem.title || d.receptionTitle || 'Copo de Água',
+      receptionTime: pick(e.receptionTime, d.receptionTime, receptionItem.time),
+      receptionVenue: pick(e.receptionVenue, d.receptionPlace, receptionItem.venue, receptionItem.place),
+      receptionMapUrl: pick(e.receptionMapUrl, d.receptionMap, receptionItem.mapUrl),
       contactPhone: pick(e.contactPhone, d.supportContacts),
       whatsapp: pick(e.whatsapp, d.supportWhatsapp),
       invitationNote: pick(e.invitationNote, 'Celebre connosco o nosso casamento'),
@@ -81,6 +84,7 @@
       dressImage: pick(dc.image),
       bankAccounts: bankAccounts,
       mobilePayments: mobilePayments,
+      hasCivil: Boolean(pick(e.civilTime, d.additionalTime, civilItem.time, e.civilVenue, d.additionalPlace, civilItem.venue, civilItem.place)),
       sections: d.sections || {}
     };
   }
@@ -91,10 +95,10 @@
   function applyEventCards(cfg){
     var cards = document.querySelectorAll('#agenda-evento .agenda-event');
     var data = [
-      { title:cfg.religiousTitle, time:cfg.religiousTime, venue:cfg.religiousVenue, map:cfg.religiousMapUrl },
-      { title:cfg.civilTitle, time:cfg.civilTime, venue:cfg.civilVenue, map:cfg.civilMapUrl },
-      { title:cfg.receptionTitle, time:cfg.receptionTime, venue:cfg.receptionVenue, map:cfg.receptionMapUrl }
+      { title:cfg.religiousTitle, time:cfg.religiousTime, venue:cfg.religiousVenue, map:cfg.religiousMapUrl }
     ];
+    if(cfg.hasCivil && cards.length >= 3) data.push({ title:cfg.civilTitle, time:cfg.civilTime, venue:cfg.civilVenue, map:cfg.civilMapUrl });
+    data.push({ title:cfg.receptionTitle, time:cfg.receptionTime, venue:cfg.receptionVenue, map:cfg.receptionMapUrl });
     cards.forEach(function(card, i){
       var item = data[i] || {};
       if(item.title) { var a = card.querySelector('.event-title'); if(a) a.textContent = item.title; }

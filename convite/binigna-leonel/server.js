@@ -61,6 +61,24 @@ function stripTrailingSlash(value) { return String(value || '').replace(/\/+$/, 
 function normalizeText(value) {
   return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase();
 }
+function guestStatusIsExplicitlyNotOpened(value) {
+  const status = normalizeText(value);
+  return status === 'nao aberto' ||
+    status.includes('nao aberto') ||
+    status.includes('nao foi aberto') ||
+    status.includes('not opened') ||
+    status.includes('unopened');
+}
+function guestStatusIndicatesOpened(value) {
+  const status = normalizeText(value);
+  if (!status || guestStatusIsExplicitlyNotOpened(status)) return false;
+  return status === 'aberto' ||
+    status.includes('convite aberto') ||
+    status.includes('opened') ||
+    status.includes('visualiz') ||
+    status.includes('view') ||
+    status.includes('access');
+}
 function slugify(value) {
   return normalizeText(value)
     .replace(/&/g, ' e ')
@@ -2186,7 +2204,7 @@ function buildGuestPayloadForManager(invite, body = {}, existing = null) {
     slug: invite.slug,
     name,
     normalizedName: normalizeText(name),
-    status: String(body.status ?? existing?.status ?? 'Não aberto').trim() || 'Não aberto',
+    status: existing ? (String(body.status ?? existing.status ?? 'Não aberto').trim() || 'Não aberto') : 'Não aberto',
     deviceToken: String(body.deviceToken ?? existing?.deviceToken ?? '').trim(),
     table: String(body.table ?? body.mesa ?? existing?.table ?? '').trim(),
     companions,
@@ -2247,7 +2265,7 @@ async function getPublicStats(req, res, invite) {
   const checkedPeople = checkins.reduce((sum, c) => sum + (Number(c.guests) || 1), 0);
   const openedRows = guests.filter(g => {
     const status = normalizeText(g.status || '');
-    return status.includes('abert') || status.includes('confirm') || status.includes('check') || Boolean(g.checkedIn);
+    return guestStatusIndicatesOpened(status) || status.includes('confirm') || status.includes('check') || Boolean(g.checkedIn);
   }).length;
   const confirmedRows = rsvps.length;
   sendJson(req, res, {
@@ -2859,7 +2877,7 @@ async function getGuestDetails(req, res, invite) {
 
   const currentStatus = normalizeText(guest.status || '');
   const alreadyConfirmedOrChecked = currentStatus.includes('confirm') || currentStatus.includes('check') || currentStatus.includes('entrou') || Boolean(guest.checkedIn);
-  if (!alreadyConfirmedOrChecked && !currentStatus.includes('abert')) {
+  if (!alreadyConfirmedOrChecked && !guestStatusIndicatesOpened(currentStatus)) {
     guest.status = 'Convite Aberto';
     await guest.save();
     await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name, meta: { source: 'get_guest_details' } });

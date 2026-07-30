@@ -678,6 +678,84 @@ p:last-child {
   transform: scale(1); 
 }
 
+.map-choice-card {
+  max-width: 460px;
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.28);
+}
+
+.map-choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.map-choice-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 92px;
+  padding: 16px;
+  color: var(--text-dark);
+  background: #fff !important;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-align: left;
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.map-choice-option:hover,
+.map-choice-option:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: #faf8f4;
+  outline: none;
+}
+
+.map-choice-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+}
+
+.map-choice-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.map-choice-option span:last-child {
+  display: grid;
+  gap: 4px;
+}
+
+.map-choice-option strong {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+}
+
+.map-choice-option small {
+  color: var(--text-light);
+  line-height: 1.35;
+}
+
+@media (max-width: 520px) {
+  .map-choice-grid { grid-template-columns: 1fr; }
+  .map-choice-option { min-height: 78px; }
+}
+
 #lightboxModal .modal-card { 
   background: transparent; 
   max-width: 90vw; 

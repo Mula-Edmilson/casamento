@@ -22,13 +22,9 @@
     "ceremonyPlace": "Igreja Universal do Jardim",
     "ceremonyTime": "10:00",
     "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Igreja+Universal+do+Jardim+Maputo+Mo%C3%A7ambique",
-    "additionalTitle": "Cerimónia Civil",
-    "additionalPlace": "Por definir",
-    "additionalTime": "Por definir",
-    "additionalMap": "",
     "receptionTitle": "Copo de Água",
     "receptionPlace": "Alexandria Eventos — Terminal do CMC, perto do Bar dos Amigos",
-    "receptionTime": "Por definir",
+    "receptionTime": "14:00",
     "receptionMap": "https://www.google.com/maps/search/?api=1&query=Alexandria+Eventos+Terminal+do+CMC+perto+do+Bar+dos+Amigos+Mo%C3%A7ambique",
     "supportContacts": "+258 87 043 4701 / +258 86 559 8947",
     "supportWhatsapp": "+258870434701",
@@ -73,14 +69,9 @@
         "time": "10:00"
       },
       {
-        "title": "Cerimónia Civil",
-        "place": "Por definir",
-        "time": "Por definir"
-      },
-      {
         "title": "Copo de Água",
         "place": "Alexandria Eventos — Terminal do CMC, perto do Bar dos Amigos",
-        "time": "Por definir"
+        "time": "14:00"
       }
     ],
     "guestListVersion": "Aguardando lista oficial de convidados",

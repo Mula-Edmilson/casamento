@@ -1209,7 +1209,7 @@
                   <div class="info-row"><span>Data</span><strong id="eventDate">19 de setembro de 2026</strong></div>
                   <div class="info-row"><span>RSVP até</span><strong id="rsvpDate">Não definido</strong></div>
                   <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">10:00 · Igreja Universal do Jardim</strong></div>
-                  <div class="info-row"><span>Recepção</span><strong id="receptionInfo">Por definir · Alexandria Eventos</strong></div>
+                  <div class="info-row"><span>Recepção</span><strong id="receptionInfo">14:00 · Alexandria Eventos</strong></div>
                   <div class="info-row"><span>Apoio</span><strong id="supportInfo">+258 87 043 4701 / +258 86 559 8947</strong></div>
                 </div>
               </div>
@@ -1268,10 +1268,10 @@
         displayNames: RAW_EVENT.displayNames || RAW_EVENT.event.title || RAW_EVENT.coupleNames,
         dateISO: RAW_EVENT.dateISO || RAW_EVENT.eventDateISO || RAW_EVENT.event.dateISO,
         eventDateLong: RAW_EVENT.eventDateLong || RAW_EVENT.event.dateLabel,
-        ceremonyPlace: RAW_EVENT.ceremonyPlace || RAW_EVENT.event.religiousVenue || RAW_EVENT.event.civilVenue,
-        ceremonyTime: RAW_EVENT.ceremonyTime || RAW_EVENT.event.religiousTime || RAW_EVENT.event.civilTime,
-        receptionPlace: RAW_EVENT.receptionPlace || RAW_EVENT.event.receptionVenue || RAW_EVENT.event.civilVenue,
-        receptionTime: RAW_EVENT.receptionTime || RAW_EVENT.event.receptionTime || RAW_EVENT.event.civilTime,
+        ceremonyPlace: RAW_EVENT.ceremonyPlace || RAW_EVENT.event.religiousVenue,
+        ceremonyTime: RAW_EVENT.ceremonyTime || RAW_EVENT.event.religiousTime,
+        receptionPlace: RAW_EVENT.receptionPlace || RAW_EVENT.event.receptionVenue,
+        receptionTime: RAW_EVENT.receptionTime || RAW_EVENT.event.receptionTime,
         supportContacts: RAW_EVENT.supportContacts || RAW_EVENT.event.contactPhone || RAW_EVENT.event.whatsapp
       }) : RAW_EVENT;
       const configured = !!(window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured());
@@ -1621,7 +1621,7 @@
         event.preventDefault();
         const form = event.currentTarget;
         const formData = new FormData(form);
-        const payload = Object.fromEntries(formData.entries());
+        const payload = { ...Object.fromEntries(formData.entries()), status: 'Não aberto' };
         setButtonBusy(addGuestBtn, true, 'A adicionar');
         try {
           await adminPost('add_guest', payload);
@@ -1704,8 +1704,8 @@
         $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Binigna & Leonel'}`;
         $('eventDate').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
         $('rsvpDate').textContent = EVENT.rsvpDeadline || 'Não definido';
-        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || 'Por definir'} · ${EVENT.ceremonyPlace || 'Local da cerimónia'}`;
-        $('receptionInfo').textContent = `${EVENT.receptionTime || 'Por definir'} · ${EVENT.receptionPlace || 'Local da recepção'}`;
+        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '10:00'} · ${EVENT.ceremonyPlace || 'Igreja Universal do Jardim'}`;
+        $('receptionInfo').textContent = `${EVENT.receptionTime || '14:00'} · ${EVENT.receptionPlace || 'Local da recepção'}`;
         $('supportInfo').textContent = EVENT.supportContacts || 'Apoio no dia do evento';
       }
 
@@ -1790,7 +1790,7 @@
         const totalPeople = num(DATA.stats.totalPeople) || DATA.guests.reduce((sum, g) => sum + (num(g.maxGuests || g.maxGuestsTotal || g.guests) || 1), 0) || num(EVENT.estimatedGuests) || 0;
         const confirmedRows = DATA.guests.length ? DATA.guests.filter(guestConfirmed).length : (num(DATA.stats.confirmedRows) || DATA.rsvps.length);
         const confirmedPeople = DATA.rsvps.length ? DATA.rsvps.reduce((sum, r) => sum + peopleFromRsvp(r), 0) : (num(DATA.stats.confirmed) || confirmedRows);
-        const openedRows = DATA.guests.filter(guestOpened).length || num(DATA.stats.openedRows || DATA.stats.opened || DATA.stats.views) || 0;
+        const openedRows = DATA.guests.length ? DATA.guests.filter(guestOpened).length : (num(DATA.stats.openedRows || DATA.stats.opened || DATA.stats.views) || 0);
         const notOpenedRows = Math.max(guestsCount - openedRows, 0);
         return {
           guestsCount,
@@ -1913,9 +1913,17 @@
 
       function guestOpened(g) {
         const status = normalizeKey(g && (g.status || g.guestStatus || g.accessStatus || g.openStatus));
+        if (guestConfirmed(g)) return true;
+        const explicitlyNotOpened =
+          status === 'nao aberto' ||
+          status.includes('nao aberto') ||
+          status.includes('nao foi aberto') ||
+          status.includes('not opened') ||
+          status.includes('unopened');
+        if (explicitlyNotOpened) return false;
+
         const accessCount = num(g?.openCount || g?.openedCount || g?.views || g?.viewCount || g?.accessCount || g?.loginCount || g?.opens);
         return Boolean(
-          guestConfirmed(g) ||
           g?.opened === true ||
           g?.isOpened === true ||
           g?.hasOpened === true ||
@@ -1930,7 +1938,8 @@
           g?.lastAccessAt ||
           g?.lastLoginAt ||
           g?.loginAt ||
-          status.includes('abert') ||
+          status === 'aberto' ||
+          status.includes('convite aberto') ||
           status.includes('opened') ||
           status.includes('visualiz') ||
           status.includes('view') ||

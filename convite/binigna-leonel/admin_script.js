@@ -8,10 +8,10 @@
         displayNames: RAW_EVENT.displayNames || RAW_EVENT.event.title || RAW_EVENT.coupleNames,
         dateISO: RAW_EVENT.dateISO || RAW_EVENT.eventDateISO || RAW_EVENT.event.dateISO,
         eventDateLong: RAW_EVENT.eventDateLong || RAW_EVENT.event.dateLabel,
-        ceremonyPlace: RAW_EVENT.ceremonyPlace || RAW_EVENT.event.religiousVenue || RAW_EVENT.event.civilVenue,
-        ceremonyTime: RAW_EVENT.ceremonyTime || RAW_EVENT.event.religiousTime || RAW_EVENT.event.civilTime,
-        receptionPlace: RAW_EVENT.receptionPlace || RAW_EVENT.event.receptionVenue || RAW_EVENT.event.civilVenue,
-        receptionTime: RAW_EVENT.receptionTime || RAW_EVENT.event.receptionTime || RAW_EVENT.event.civilTime,
+        ceremonyPlace: RAW_EVENT.ceremonyPlace || RAW_EVENT.event.religiousVenue,
+        ceremonyTime: RAW_EVENT.ceremonyTime || RAW_EVENT.event.religiousTime,
+        receptionPlace: RAW_EVENT.receptionPlace || RAW_EVENT.event.receptionVenue,
+        receptionTime: RAW_EVENT.receptionTime || RAW_EVENT.event.receptionTime,
         supportContacts: RAW_EVENT.supportContacts || RAW_EVENT.event.contactPhone || RAW_EVENT.event.whatsapp
       }) : RAW_EVENT;
       const configured = !!(window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured());
@@ -641,7 +641,7 @@
         const totalPeople = num(DATA.stats.totalPeople) || DATA.guests.reduce((sum, g) => sum + (num(g.maxGuests || g.maxGuestsTotal || g.guests) || 1), 0) || num(EVENT.estimatedGuests) || 0;
         const confirmedRows = DATA.guests.length ? DATA.guests.filter(guestConfirmed).length : (num(DATA.stats.confirmedRows) || DATA.rsvps.length);
         const confirmedPeople = DATA.rsvps.length ? DATA.rsvps.reduce((sum, r) => sum + peopleFromRsvp(r), 0) : (num(DATA.stats.confirmed) || confirmedRows);
-        const openedRows = DATA.guests.filter(guestOpened).length || num(DATA.stats.openedRows || DATA.stats.opened || DATA.stats.views) || 0;
+        const openedRows = DATA.guests.length ? DATA.guests.filter(guestOpened).length : (num(DATA.stats.openedRows || DATA.stats.opened || DATA.stats.views) || 0);
         const notOpenedRows = Math.max(guestsCount - openedRows, 0);
         const checkedPeople = num(DATA.stats.checkedPeople) || DATA.checkins.reduce((sum, c) => sum + (num(c.guests || c.maxGuests) || 1), 0);
         const checkedRows = DATA.guests.length ? DATA.guests.filter(guestCheckedIn).length : (num(DATA.stats.checkedIn) || DATA.checkins.length);
@@ -789,9 +789,11 @@
 
       function guestOpened(g) {
         const status = normalizeKey(g && (g.status || g.guestStatus || g.accessStatus || g.openStatus));
+        if (guestConfirmed(g)) return true;
+        const explicitlyNotOpened = status === 'nao aberto' || status.includes('nao aberto') || status.includes('nao foi aberto') || status.includes('not opened') || status.includes('unopened');
+        if (explicitlyNotOpened) return false;
         const accessCount = num(g?.openCount || g?.openedCount || g?.views || g?.viewCount || g?.accessCount || g?.loginCount || g?.opens);
         return Boolean(
-          guestConfirmed(g) ||
           guestCheckedIn(g) ||
           g?.opened === true ||
           g?.isOpened === true ||
@@ -807,7 +809,8 @@
           g?.lastAccessAt ||
           g?.lastLoginAt ||
           g?.loginAt ||
-          status.includes('abert') ||
+          status === 'aberto' ||
+          status.includes('convite aberto') ||
           status.includes('opened') ||
           status.includes('visualiz') ||
           status.includes('view') ||
