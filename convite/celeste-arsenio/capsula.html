@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cápsula · Celeste & Arsenio</title>
+  <script src="./client-config.js"></script><script src="./event-data.js"></script><link rel="stylesheet" href="./style.css">
+</head>
+<body data-page="capsule">
+  <main class="admin-shell">
+    <section class="card">
+      <p class="eyebrow">Cápsula do tempo</p><h1 data-field="coupleNames">Celeste & Arsenio</h1>
+      <form id="capsuleForm" class="form-block"><input name="nome" placeholder="O seu nome" required><textarea name="caption" placeholder="Legenda ou mensagem"></textarea><input name="photo" type="file" accept="image/*" required><button class="btn primary" type="submit">Enviar fotografia</button></form>
+      <div id="capsuleFeedback" class="feedback hidden"></div>
+    </section>
+  </main>
+  <script src="./lirandzo-api.js"></script>
+</body>
+</html>
