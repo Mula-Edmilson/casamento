@@ -1,0 +1,151 @@
+{
+  "event": {
+    "slug": "celeste-arsenio",
+    "coupleNames": "Aplonia & Vander",
+    "displayNames": "Aplonia e Vander",
+    "clientName": "Celeste Aplónia Langa",
+    "bride": "Celeste Aplónia Langa",
+    "groom": "Arsenio Vander Lifaniça",
+    "monogram": "AV",
+    "eventType": "Casamento",
+    "language": "Português",
+    "visualStyle": "Elegante e romântico",
+    "colors": "Tons da terra, branco e dourado",
+    "dateISO": "2026-11-21T09:00:00+02:00",
+    "eventDateLong": "21 de novembro de 2026",
+    "rsvpDeadline": "21 de novembro de 2026",
+    "timezone": "Africa/Maputo",
+    "verse": "O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha. Não maltrata, não procura seus interesses, não se ira facilmente, não guarda rancor. O amor não se alegra com a injustiça, mas se alegra com a verdade. Tudo sofre, tudo crê, tudo espera, tudo suporta.",
+    "verseReference": "1 Coríntios 13:4–7",
+    "brideParents": "Joazinho Langa e Rosaria da Conceião",
+    "groomParents": "Crimildo Lifaniça e Amelia Gulele",
+    "ceremonyTitle": "Cerimónia Religiosa",
+    "ceremonyPlace": "Igreja Católica Sagrada Família da Machava",
+    "ceremonyTime": "09:00",
+    "ceremonyMap": "https://www.google.com/maps/dir//Igreja+Cat%C3%B3lica+-+Par%C3%B3quia+Sagrada+Familia+da+Machava,+3FQV%2BHH4,+Matola/@-25.9683225,32.5938274,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x1ee68fa7bbadaa37:0x5aa05a830fa92926!2m2!1d32.4938713!2d-25.911064?entry=ttu&g_ep=EgoyMDI2MDcwNi4wIKXMDSoASAFQAw%3D%3D",
+    "additionalTitle": "Cerimónia Civil",
+    "additionalPlace": "Quinta Santa Carolina",
+    "additionalTime": "14:00",
+    "additionalMap": "https://www.google.com/maps/place/Quinta+Santa+Carolina/@-25.8720322,32.4486771,17z/data=!4m6!3m5!1s0x1ee68fa7e133b26b:0xc587a7d571b4545d!8m2!3d-25.8720351!4d32.4486754!16s%2Fg%2F11lfh64cxv?hl=pt-PT&entry=ttu&g_ep=EgoyMDI2MDcwNS4wIKXMDSoASAFQAw%3D%3D",
+    "receptionTitle": "Recepção dos Convidados",
+    "receptionPlace": "Quinta Santa Carolina",
+    "receptionTime": "13:30",
+    "receptionMap": "https://www.google.com/maps/place/Quinta+Santa+Carolina/@-25.8720322,32.4486771,17z/data=!4m6!3m5!1s0x1ee68fa7e133b26b:0xc587a7d571b4545d!8m2!3d-25.8720351!4d32.4486754!16s%2Fg%2F11lfh64cxv?hl=pt-PT&entry=ttu&g_ep=EgoyMDI2MDcwNS4wIKXMDSoASAFQAw%3D%3D",
+    "supportContacts": "+258 84 415 2342",
+    "supportWhatsapp": "+258844152342",
+    "clientEmail": "aplonialanga@gmail.com",
+    "estimatedGuests": 0,
+    "guestRows": 0,
+    "giftSectionType": "Lista de presentes",
+    "contributionsEnabled": false,
+    "bankAccounts": [],
+    "mobilePayments": [],
+    "program": [
+      {
+        "title": "Cerimónia Religiosa",
+        "place": "Igreja Católica Sagrada Família da Machava",
+        "time": "09:00",
+        "map": "https://www.google.com/maps/dir//Igreja+Cat%C3%B3lica+-+Par%C3%B3quia+Sagrada+Familia+da+Machava,+3FQV%2BHH4,+Matola/@-25.9683225,32.5938274,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x1ee68fa7bbadaa37:0x5aa05a830fa92926!2m2!1d32.4938713!2d-25.911064?entry=ttu&g_ep=EgoyMDI2MDcwNi4wIKXMDSoASAFQAw%3D%3D"
+      },
+      {
+        "title": "Recepção dos Convidados",
+        "place": "Quinta Santa Carolina",
+        "time": "13:30",
+        "map": "https://www.google.com/maps/place/Quinta+Santa+Carolina/@-25.8720322,32.4486771,17z/data=!4m6!3m5!1s0x1ee68fa7e133b26b:0xc587a7d571b4545d!8m2!3d-25.8720351!4d32.4486754!16s%2Fg%2F11lfh64cxv?hl=pt-PT&entry=ttu&g_ep=EgoyMDI2MDcwNS4wIKXMDSoASAFQAw%3D%3D"
+      },
+      {
+        "title": "Cerimónia Civil",
+        "place": "Quinta Santa Carolina",
+        "time": "14:00",
+        "map": "https://www.google.com/maps/place/Quinta+Santa+Carolina/@-25.8720322,32.4486771,17z/data=!4m6!3m5!1s0x1ee68fa7e133b26b:0xc587a7d571b4545d!8m2!3d-25.8720351!4d32.4486754!16s%2Fg%2F11lfh64cxv?hl=pt-PT&entry=ttu&g_ep=EgoyMDI2MDcwNS4wIKXMDSoASAFQAw%3D%3D"
+      },
+      {
+        "title": "Copo de Água",
+        "place": "Quinta Santa Carolina",
+        "time": "15:00",
+        "map": "https://www.google.com/maps/place/Quinta+Santa+Carolina/@-25.8720322,32.4486771,17z/data=!4m6!3m5!1s0x1ee68fa7e133b26b:0xc587a7d571b4545d!8m2!3d-25.8720351!4d32.4486754!16s%2Fg%2F11lfh64cxv?hl=pt-PT&entry=ttu&g_ep=EgoyMDI2MDcwNS4wIKXMDSoASAFQAw%3D%3D"
+      }
+    ],
+    "guestListVersion": "Aguardando lista oficial de convidados",
+    "guestListUpdatedAt": "2026-08-01",
+    "celebrationTitle": "Copo de Água",
+    "celebrationPlace": "Quinta Santa Carolina",
+    "celebrationTime": "15:00",
+    "celebrationMap": "https://www.google.com/maps/place/Quinta+Santa+Carolina/@-25.8720322,32.4486771,17z/data=!4m6!3m5!1s0x1ee68fa7e133b26b:0xc587a7d571b4545d!8m2!3d-25.8720351!4d32.4486754!16s%2Fg%2F11lfh64cxv?hl=pt-PT&entry=ttu&g_ep=EgoyMDI2MDcwNS4wIKXMDSoASAFQAw%3D%3D"
+  },
+  "guests": [],
+  "giftOptions": [
+    {
+      "name": "Microondas",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Taças de cristal",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Jogo de banho Maria",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Máquina de café",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Máquina de sumo",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Jogo de chávenas",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Tigelas organizadoras de geleira",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Ferro de engomar",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Jogo de talheres",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Tábuas de madeira",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Edredon casal",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Organizador de gavetas",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Tapete para sala (cinza)",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Batedeira",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Airfryer",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Máquina de lavar",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Panelas anti aderentes",
+      "category": "Lista de presentes"
+    },
+    {
+      "name": "Fogão a gás e forno elétrico",
+      "category": "Lista de presentes"
+    }
+  ]
+}

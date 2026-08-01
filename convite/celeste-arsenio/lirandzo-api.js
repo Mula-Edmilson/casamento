@@ -1,132 +1,305 @@
-(() => {
-  const $ = (id) => document.getElementById(id);
-  const eventData = window.LIRANDZO_EVENT_DATA || {};
-  const slug = window.LIRANDZO_INVITE_SLUG || eventData.slug || 'celeste-arsenio';
-  const apiBase = (window.LIRANDZO_API_BASE_URL || eventData.apiBaseUrl || 'https://api-casamento-mj.onrender.com').replace(/\/+$/, '');
-  const apiUrl = window.LIRANDZO_API_URL || `${apiBase}/api`;
-  let currentGuest = null;
-  let adminPassword = sessionStorage.getItem(`lirandzo_admin_${slug}`) || '';
+// lirandzo-api.js — Cliente oficial Render/MongoDB para convites Lirandzo
+// Convite: Aplonia & Vander | slug: celeste-arsenio
+(function () {
+  'use strict';
 
-  function esc(v){ return String(v ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-  function show(el, msg, error=false){ if(!el) return; el.classList.remove('hidden'); el.classList.toggle('error', !!error); el.innerHTML = msg; }
-  function hide(el){ if(el) el.classList.add('hidden'); }
-  async function get(action, params={}){
-    const qs = new URLSearchParams({ slug, action, ...params });
-    const r = await fetch(`${apiUrl}?${qs.toString()}`);
-    const j = await r.json(); if(!r.ok || j.status === 'error') throw new Error(j.message || 'Erro na API.'); return j;
+  function stripSlash(value) { return String(value || '').replace(/\/+$/, ''); }
+  function apiBase() { return stripSlash(window.LIRANDZO_API_BASE_URL || ''); }
+  function slug() { return String(window.LIRANDZO_INVITE_SLUG || '').trim(); }
+  function isConfigured() { return Boolean(apiBase() && slug()); }
+  function cleanName(value) {
+    return String(value || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
   }
-  async function post(data){
-    const r = await fetch(apiUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ slug, ...data }) });
-    const j = await r.json(); if(!r.ok || j.status === 'error') throw new Error(j.message || 'Erro na API.'); return j;
+  function getClientLoginToken() {
+    try {
+      const key = 'lirandzoClientLoginToken';
+      let token = localStorage.getItem(key);
+      if (!token) {
+        const randomPart = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+        token = 'web-' + randomPart;
+        localStorage.setItem(key, token);
+      }
+      return token;
+    } catch (e) {
+      return 'web-' + String(Date.now()) + '-' + Math.random().toString(36).slice(2);
+    }
   }
-  async function adminPost(action, data={}){
-    const r = await fetch(`${apiBase}/admin-api`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ slug, action, password: adminPassword, ...data }) });
-    const j = await r.json(); if(!r.ok || j.status === 'error') throw new Error(j.message || 'Erro no admin.'); return j;
-  }
-  function field(path, fallback=''){
-    return path.split('.').reduce((o,k)=>o && o[k] !== undefined ? o[k] : undefined, eventData) ?? fallback;
-  }
-  function formatDate(){
-    const label = field('event.dateLabel') || eventData.eventDateISO || field('event.dateISO');
-    if(field('event.dateLabel')) return label;
-    try { return label ? new Date(label).toLocaleString('pt-PT', { dateStyle:'full', timeStyle:'short' }) : 'Data a confirmar'; } catch { return 'Data a confirmar'; }
-  }
-  function renderBase(){
-    document.querySelectorAll('[data-field="coupleNames"]').forEach(el => el.textContent = eventData.coupleNames || 'Celeste & Arsenio');
-    document.querySelectorAll('[data-field="dateLabel"]').forEach(el => el.textContent = formatDate());
-    document.querySelectorAll('[data-field="invitationNote"]').forEach(el => el.textContent = field('event.invitationNote', 'Temos a honra de convidá-lo para celebrar connosco este momento especial.'));
-    document.body.dataset.package = eventData.packageKey || 'perola';
-    const sections = eventData.sections || {};
-    document.querySelectorAll('[data-section]').forEach(el => {
-      const key = el.dataset.section;
-      if (sections[key] === false) el.classList.add('hidden');
+  function safeJson(res) {
+    return res.text().then(function (text) {
+      try { return text ? JSON.parse(text) : {}; }
+      catch (e) { return { status: 'error', message: text || 'Resposta inválida do servidor.' }; }
     });
   }
-  function renderCountdown(){
-    const el = $('countdown'); if(!el) return;
-    const iso = eventData.eventDateISO || field('event.dateISO'); if(!iso){ el.innerHTML = '<span>Data a confirmar</span>'; return; }
-    const target = new Date(iso).getTime();
-    const tick = () => {
-      const d = Math.max(0, target - Date.now());
-      const days = Math.floor(d/86400000), hours = Math.floor(d%86400000/3600000), mins = Math.floor(d%3600000/60000);
-      el.innerHTML = `<strong>${days}</strong><span>dias</span><strong>${hours}</strong><span>h</span><strong>${mins}</strong><span>min</span>`;
-    }; tick(); setInterval(tick, 60000);
+  async function request(path, options) {
+    if (!isConfigured()) throw new Error('API Lirandzo não configurada.');
+    const res = await fetch(apiBase() + path, Object.assign({ mode: 'cors' }, options || {}));
+    const data = await safeJson(res);
+    if (!res.ok || data.status === 'error') throw new Error(data.message || ('Erro HTTP ' + res.status));
+    return data;
   }
-  function renderSchedule(){
-    const el = $('scheduleList'); if(!el) return;
-    const items = [
-      ['Cerimónia religiosa', field('event.religiousTime'), field('event.religiousVenue'), field('event.religiousMapUrl')],
-      ['Cerimónia civil', field('event.civilTime'), field('event.civilVenue'), field('event.civilMapUrl')],
-      ['Copo de água', field('event.receptionTime'), field('event.receptionVenue'), field('event.receptionMapUrl')]
-    ].filter(i => i[1] || i[2]);
-    el.innerHTML = items.length ? items.map(([title,time,venue,map]) => `<article><strong>${esc(time || '--')}</strong><div><b>${esc(title)}</b><span>${esc(venue || 'Local a confirmar')}</span>${map ? `<a href="${esc(map)}" target="_blank" rel="noopener">Abrir mapa</a>`:''}</div></article>`).join('') : '<p class="muted">Agenda por configurar.</p>';
+  async function getApi(action, params) {
+    const qs = new URLSearchParams(Object.assign({}, params || {}, { action: action, slug: slug() }));
+    return request('/api?' + qs.toString(), {
+      method: 'GET',
+      headers: { 'X-Invite-Slug': slug() }
+    });
   }
-  function renderLocations(){
-    const el = $('locationsList'); if(!el) return;
-    const items = [
-      ['Igreja', field('event.religiousVenue'), field('event.religiousMapUrl')],
-      ['Civil', field('event.civilVenue'), field('event.civilMapUrl')],
-      ['Copo de água', field('event.receptionVenue'), field('event.receptionMapUrl')]
-    ].filter(i => i[1] || i[2]);
-    el.innerHTML = items.length ? items.map(([title,venue,map]) => `<article><b>${esc(title)}</b><span>${esc(venue || 'Local a confirmar')}</span>${map ? `<a class="btn small" href="${esc(map)}" target="_blank" rel="noopener">Abrir no mapa</a>`:''}</article>`).join('') : '<p class="muted">Localização por configurar.</p>';
+  async function postApi(payload) {
+    const body = Object.assign({}, payload || {}, { slug: slug() });
+    return request('/api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Invite-Slug': slug() },
+      body: JSON.stringify(body)
+    });
   }
-  function renderPayments(){
-    const el = $('paymentsList'); if(!el) return;
-    const payments = eventData.payments || [];
-    el.innerHTML = payments.length ? payments.map(p => `<article><b>${esc(p.method || 'Conta')}</b><span>${esc(p.holder || '')}</span><strong>${esc(p.number || '')}</strong></article>`).join('') : '<p class="muted">Dados de contribuição por configurar.</p>';
+  function normalizeGuestResponse(data, fallbackName) {
+    const d = data && (data.data || data) || {};
+    const total = Number(d.maxGuests || d.maxGuestsTotal || d.guests || 1) || 1;
+    const token = d.token || d.inviteToken || d.publicToken || d.id || d._id || localStorage.getItem('guestToken') || '';
+    return Object.assign({}, d, {
+      name: d.name || d.nome || d.guestName || fallbackName || '',
+      nome: d.nome || d.name || d.guestName || fallbackName || '',
+      token: token,
+      mesa: d.mesa || d.Mesa || d.table || 'A definir',
+      maxGuests: total,
+      maxGuestsTotal: total,
+      companions: Number.isFinite(Number(d.companions)) ? Number(d.companions) : Math.max(total - 1, 0),
+      status: d.status || d.guestStatus || '',
+      category: d.category || '',
+      number: d.number || ''
+    });
   }
-  function calendarText(){
-    const start = new Date(eventData.eventDateISO || field('event.dateISO') || Date.now());
-    const end = new Date(start.getTime() + 4*3600000);
-    const fmt = d => d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
-    return ['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT',`SUMMARY:Casamento ${eventData.coupleNames || ''}`,`DTSTART:${fmt(start)}`,`DTEND:${fmt(end)}`,`LOCATION:${field('event.receptionVenue') || field('event.civilVenue') || field('event.religiousVenue') || ''}`,'END:VEVENT','END:VCALENDAR'].join('\n');
+  function findLocalGuestByToken(token) {
+    return (window.LIRANDZO_GUESTS || []).find(function (g) { return String(g.token) === String(token); });
+  }
+  function findLocalGuestByName(name) {
+    const n = cleanName(name);
+    if (!n) return null;
+    const guests = window.LIRANDZO_GUESTS || [];
+    return guests.find(function (g) { return cleanName(g.name) === n; }) || guests.find(function (g) { return cleanName(g.name).includes(n); });
+  }
+  function base64ToBlob(base64, mime) {
+    const raw = String(base64 || '').replace(/^data:[^,]+,/, '');
+    const bin = atob(raw);
+    const len = bin.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+    return new Blob([bytes], { type: mime || 'application/octet-stream' });
+  }
+  function qrUrl(token) {
+    const url = new URL('checkin.html', window.location.href).href + '?t=' + encodeURIComponent(token || '');
+    return 'https://quickchart.io/qr?size=260&margin=1&text=' + encodeURIComponent(url);
   }
 
-  function initMusic(){
-    const url = field('theme.musicUrl','');
-    if(!url) return;
-    const audio = new Audio(url); audio.loop = true; audio.volume = 0.42;
-    const start = () => audio.play().catch(()=>{});
-    document.addEventListener('click', start, { once:true });
-  }
+  const Local = {
+    get: function (action, params) {
+      const p = params || {};
+      if (action === 'find_guest') {
+        const g = findLocalGuestByName(p.name);
+        return Promise.resolve(g ? { status: 'success', data: g, nome: g.name, token: g.token, mesa: g.mesa, maxGuests: g.maxGuests, companions: g.companions } : { status: 'error', message: 'Convidado não encontrado' });
+      }
+      if (action === 'get_guest') {
+        const g = findLocalGuestByToken(p.token);
+        return Promise.resolve(g ? { status: 'success', data: g, nome: g.name, token: g.token, mesa: g.mesa, maxGuests: g.maxGuests, companions: g.companions, number: g.number, checkedIn: g.checkedIn } : { status: 'error', message: 'Convite inválido' });
+      }
+      if (action === 'list_guests') return Promise.resolve({ status: 'success', data: window.LIRANDZO_GUESTS || [] });
+      if (action === 'gifts' || action === 'list_gifts') return Promise.resolve({ status: 'success', data: window.LIRANDZO_GIFT_OPTIONS || [] });
+      return Promise.resolve({ status: 'success', data: [] });
+    },
+    post: function () { return Promise.resolve({ status: 'success', local: true }); }
+  };
 
-  function bindCalendar(){ document.querySelectorAll('[data-calendar]').forEach(btn => btn.addEventListener('click', () => { const blob = new Blob([calendarText()], {type:'text/calendar'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${slug}-lembrete.ics`; a.click(); URL.revokeObjectURL(a.href); })); }
+  const API = {
+    isConfigured: isConfigured,
+    local: Local,
+    findLocalGuestByToken: findLocalGuestByToken,
+    findLocalGuestByName: findLocalGuestByName,
+    qrUrl: qrUrl,
+    async get(action, params) {
+      const p = params || {};
+      if (!isConfigured()) return Local.get(action, p);
 
-  async function loadMessages(){ const el=$('messagesList'); if(!el) return; try{ const out=await get('list_messages'); const rows=out.data||[]; el.innerHTML = rows.length ? rows.slice(0,8).map(m=>`<article><b>${esc(m.nome)}</b><span>${esc(m.message)}</span></article>`).join('') : '<p class="muted">Ainda não há mensagens.</p>'; }catch(e){ el.innerHTML=`<p class="muted">${esc(e.message)}</p>`; } }
-  async function loadGifts(){ const el=$('giftsList'); if(!el) return; try{ const out=await get('list_gifts'); const rows=(out.data||[]).filter(g=>!g.reserved); el.innerHTML = rows.length ? rows.map(g=>`<label class="check-item"><input type="checkbox" name="gift" value="${esc(g.name)}"><span>${esc(g.name)}</span></label>`).join('') : '<p class="muted">Todos os presentes já foram reservados ou a lista está vazia.</p>'; }catch(e){ el.innerHTML=`<p class="muted">${esc(e.message)}</p>`; } }
-  function initInvite(){
-    renderSchedule(); renderLocations(); renderPayments(); loadMessages(); loadGifts();
-    const mode = field('rsvp.mode','guest-list'); const note=$('rsvpModeNote'); const login=$('loginForm'); const form=$('rsvpForm');
-    if(mode === 'public' || mode === 'open'){ note.textContent='Confirmação pública: escreva o nome e confirme directamente.'; login.classList.add('hidden'); form.classList.remove('hidden'); }
-    else { note.textContent='Confirmação por lista: valide primeiro o nome do convidado.'; }
-    login?.addEventListener('submit', async e => { e.preventDefault(); hide($('rsvpFeedback')); try{ const name=new FormData(login).get('name'); const out=await post({action:'login', name}); currentGuest=out.data; form.nome.value=currentGuest.name; form.guests.value=currentGuest.maxGuestsTotal || 1; form.classList.remove('hidden'); show($('rsvpFeedback'), `Nome validado: <b>${esc(currentGuest.name)}</b>. Mesa: <b>${esc(currentGuest.mesa || 'A definir')}</b>.`); }catch(err){ show($('rsvpFeedback'), err.message, true); } });
-    form?.addEventListener('submit', async e => { e.preventDefault(); hide($('rsvpFeedback')); const fd=new FormData(form); try{ const out=await post({action:'rsvp', nome:fd.get('nome'), phone:fd.get('phone'), message:fd.get('message'), guests:fd.get('guests'), token: currentGuest?.token || ''}); show($('rsvpFeedback'), out.message || 'Presença confirmada com sucesso.'); form.reset(); }catch(err){ show($('rsvpFeedback'), err.message, true); } });
-    $('messageForm')?.addEventListener('submit', async e => { e.preventDefault(); const fd=new FormData(e.currentTarget); try{ await post({action:'post_message', nome:fd.get('nome'), message:fd.get('message')}); e.currentTarget.reset(); loadMessages(); }catch(err){ alert(err.message); } });
-    $('giftForm')?.addEventListener('submit', async e => { e.preventDefault(); const fd=new FormData(e.currentTarget); const selected=[...document.querySelectorAll('input[name="gift"]:checked')].map(i=>i.value); try{ await post({action:'save_gifts', nome:fd.get('nome'), selectedGifts:selected}); alert('Presentes reservados.'); loadGifts(); }catch(err){ alert(err.message); } });
-    $('contributionForm')?.addEventListener('submit', async e => { e.preventDefault(); const fd=new FormData(e.currentTarget); fd.append('slug', slug); fd.append('action','upload_comprovativo'); try{ const r=await fetch(apiUrl,{method:'POST',body:fd}); const j=await r.json(); if(!r.ok || j.status==='error') throw new Error(j.message); show($('contributionFeedback'), j.message || 'Comprovativo enviado.'); e.currentTarget.reset(); }catch(err){ show($('contributionFeedback'), err.message, true); } });
+      if (action === 'find_guest') {
+        const localGuest = findLocalGuestByName(p.name);
+        try {
+          const result = await postApi({ action: 'login', name: p.name, loginToken: getClientLoginToken() });
+          let guest = normalizeGuestResponse(result, p.name);
+          if (localGuest) {
+            const localData = normalizeGuestResponse(localGuest, p.name);
+            guest = Object.assign({}, localData, guest, {
+              name: guest.name || localData.name,
+              nome: guest.nome || localData.nome,
+              token: guest.token || localData.token,
+              mesa: guest.mesa || localData.mesa,
+              maxGuests: guest.maxGuests || localData.maxGuests,
+              maxGuestsTotal: guest.maxGuestsTotal || localData.maxGuestsTotal,
+              companions: Number.isFinite(Number(guest.companions)) ? guest.companions : localData.companions,
+              number: guest.number || localData.number,
+              category: guest.category || localData.category
+            });
+          }
+          return { status: 'success', data: guest, nome: guest.name, token: guest.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+        } catch (err) {
+          if (localGuest) {
+            const guest = normalizeGuestResponse(localGuest, p.name);
+            return { status: 'success', data: guest, nome: guest.name, token: guest.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+          }
+          throw err;
+        }
+      }
+
+      if (action === 'get_guest') {
+        try {
+          const result = await getApi('get_guest', { token: p.token || '', nome: p.nome || p.name || '' });
+          const guest = normalizeGuestResponse(result, 'Convidado');
+          return { status: 'success', data: guest, nome: guest.name, token: guest.token || p.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+        } catch (err) {
+          const localGuest = findLocalGuestByToken(p.token);
+          if (localGuest) {
+            const guest = normalizeGuestResponse(localGuest, 'Convidado');
+            return { status: 'success', data: guest, nome: guest.name, token: guest.token || p.token, mesa: guest.mesa, maxGuests: guest.maxGuests, companions: guest.companions };
+          }
+          throw err;
+        }
+      }
+
+      if (action === 'get_rsvp_status') return getApi('get_rsvp_status', { token: p.token || '', nome: p.nome || p.name || '' });
+      if (action === 'messages' || action === 'list_messages') return getApi('list_messages', p);
+      if (action === 'gifts' || action === 'list_gifts') return getApi('list_gifts', p);
+
+      return getApi(action, p);
+    },
+    async post(payload) {
+      const data = Object.assign({}, payload || {});
+      if (!isConfigured()) return Local.post(data);
+
+      if (data.action === 'submit_rsvp') data.action = 'rsvp';
+      if (data.action === 'submit_contribution') data.action = 'upload_comprovativo';
+
+      if (data.action === 'upload_comprovativo' && data.comprovativoFile) {
+        const fd = new FormData();
+        fd.append('slug', slug());
+        fd.append('nome', data.nome || data.name || 'Convidado');
+        fd.append('token', data.token || '');
+        fd.append('canal', data.canal || '');
+        ['selectedGift','giftChoice','selectedGifts','gifts','details'].forEach(function(key){ if (data[key]) fd.append(key, Array.isArray(data[key]) ? data[key].join(', ') : data[key]); });
+        const mime = data.comprovativoFile_type || data.mimeType || 'image/jpeg';
+        const filename = data.comprovativoFile_filename || data.filename || 'comprovativo.jpg';
+        fd.append('comprovativoFile', base64ToBlob(data.comprovativoFile, mime), filename);
+        const res = await fetch(apiBase() + '/api/upload_comprovativo', {
+          method: 'POST',
+          mode: 'cors',
+          body: fd,
+          headers: { 'X-Invite-Slug': slug() }
+        });
+        const result = await safeJson(res);
+        if (!res.ok || result.status === 'error') throw new Error(result.message || 'Erro ao enviar comprovativo.');
+        return result;
+      }
+
+      return postApi(data);
+    }
+  };
+
+  window.LirandzoAPI = API;
+})();
+
+
+// Compatibilidade com o modelo Pérola antigo: expõe LIRANDZO_API sobre o cliente Render/MongoDB.
+(function () {
+  function apiBase() { return String(window.LIRANDZO_API_BASE_URL || '').replace(/\/+$/, ''); }
+  function slug() { return String(window.LIRANDZO_INVITE_SLUG || '').trim(); }
+  async function safeJson(res) {
+    const raw = await res.text();
+    try { return raw ? JSON.parse(raw) : {}; }
+    catch { return { status: 'error', message: raw || 'Resposta inválida do servidor.' }; }
   }
-  async function loadAdmin(){
-    const [guests,rsvps,msgs,contribs] = await Promise.all([adminPost('get_guests'),adminPost('get_rsvps'),adminPost('get_messages'),adminPost('get_comprovativos')]);
-    $('adminStats').innerHTML = `<article><strong>${guests.data.length}</strong><span>Convidados</span></article><article><strong>${rsvps.data.length}</strong><span>RSVP</span></article><article><strong>${msgs.data.length}</strong><span>Mensagens</span></article><article><strong>${contribs.data.length}</strong><span>Contribuições</span></article>`;
-    $('adminGuestsRows').innerHTML = guests.data.map(g=>`<tr><td>${esc(g.name)}</td><td>${esc(g.mesa)}</td><td>${esc(g.maxGuestsTotal)}</td><td>${esc(g.status)}</td><td><small>${esc(g.token)}</small></td></tr>`).join('') || '<tr><td colspan="5">Sem convidados.</td></tr>';
-    $('adminRsvpRows').innerHTML = rsvps.data.map(r=>`<tr><td>${esc(r.nome)}</td><td>${esc(r.guests)}</td><td>${esc(r.phone||'')}</td><td>${new Date(r.timestamp).toLocaleString('pt-PT')}</td></tr>`).join('') || '<tr><td colspan="4">Sem confirmações.</td></tr>';
-    $('adminMessagesList').innerHTML = msgs.data.map(m=>`<article><b>${esc(m.nome)}</b><span>${esc(m.message)}</span></article>`).join('') || '<p class="muted">Sem mensagens.</p>';
-    $('adminContribList').innerHTML = contribs.data.map(c=>`<article><b>${esc(c.nome)}</b><span>${esc(c.canal||'')}</span>${c.viewUrl?`<a href="${esc(c.viewUrl)}" target="_blank">Abrir comprovativo</a>`:''}</article>`).join('') || '<p class="muted">Sem contribuições.</p>';
+  async function managerLogin(password) {
+    const res = await fetch(apiBase() + '/manager/login', {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    const data = await safeJson(res);
+    if (!res.ok || data.status === 'error') throw new Error(data.message || 'Senha incorrecta.');
+    return data.token || '';
   }
-  function initAdmin(){
-    const loginCard=$('adminLoginCard'), panel=$('adminPanel');
-    async function enter(){ loginCard.classList.add('hidden'); panel.classList.remove('hidden'); await loadAdmin(); }
-    if(adminPassword) enter().catch(()=>{ adminPassword=''; sessionStorage.removeItem(`lirandzo_admin_${slug}`); loginCard.classList.remove('hidden'); panel.classList.add('hidden'); });
-    $('adminLoginForm')?.addEventListener('submit', async e => { e.preventDefault(); adminPassword=new FormData(e.currentTarget).get('password'); try{ await adminPost('get_guests'); sessionStorage.setItem(`lirandzo_admin_${slug}`, adminPassword); enter(); }catch(err){ show($('adminLoginFeedback'), err.message, true); } });
-    $('adminRefreshBtn')?.addEventListener('click', loadAdmin);
-    $('adminAddGuestForm')?.addEventListener('submit', async e => { e.preventDefault(); const fd=new FormData(e.currentTarget); try{ await adminPost('add_guest', {name:fd.get('name'), table:fd.get('table'), companions:fd.get('companions')}); e.currentTarget.reset(); loadAdmin(); }catch(err){ alert(err.message); } });
+  async function adminPost(action, payload) {
+    const body = Object.assign({}, payload || {}, {
+      action,
+      slug: slug(),
+      password: sessionStorage.getItem('perola_admin_password') || '',
+      admin_password: sessionStorage.getItem('perola_admin_password') || ''
+    });
+    const headers = { 'Content-Type': 'application/json', 'X-Invite-Slug': slug() };
+    const token = sessionStorage.getItem('perola_admin_token') || '';
+    if (token) headers.Authorization = 'Bearer ' + token;
+    const res = await fetch(apiBase() + '/admin-api', { method: 'POST', mode: 'cors', headers, body: JSON.stringify(body) });
+    const data = await safeJson(res);
+    if (!res.ok || data.status === 'error') throw new Error(data.message || 'Erro no admin.');
+    return data;
   }
-  function initCheckin(){
-    const auth=$('checkinAuthForm'), form=$('checkinForm');
-    auth?.addEventListener('submit', async e => { e.preventDefault(); adminPassword=new FormData(auth).get('password'); try{ const guests=await adminPost('get_guests'); sessionStorage.setItem(`lirandzo_admin_${slug}`,adminPassword); auth.classList.add('hidden'); form.classList.remove('hidden'); $('checkinGuestList').innerHTML=(guests.data||[]).slice(0,60).map(g=>`<article><b>${esc(g.name)}</b><span>${esc(g.mesa)} · ${esc(g.status)}</span></article>`).join(''); }catch(err){ show($('checkinFeedback'),err.message,true); } });
-    form?.addEventListener('submit', async e => { e.preventDefault(); const nome=new FormData(form).get('nome'); try{ const out=await post({action:'checkin_guest', nome, operator:'Recepção'}); show($('checkinFeedback'), out.message || 'Entrada confirmada.'); form.reset(); }catch(err){ show($('checkinFeedback'),err.message,true); } });
+  function giftNameFromRecord(record) {
+    const details = (() => { try { return typeof record?.details === 'string' ? JSON.parse(record.details) : (record?.details || {}); } catch { return {}; } })();
+    const values = [record?.selectedGift, record?.giftChoice, record?.gift, record?.selectedGifts, record?.gifts, details.selectedGift, details.giftChoice, details.gift, details.selectedGifts, details.gifts].flat().filter(Boolean);
+    return String(values[0] || '').split(',')[0].trim();
   }
-  function initCapsule(){ $('capsuleForm')?.addEventListener('submit', async e => { e.preventDefault(); const fd=new FormData(e.currentTarget); const file=fd.get('photo'); if(!file) return; const reader=new FileReader(); reader.onload=async()=>{ try{ const out=await post({action:'save_capsule_photo', nome:fd.get('nome'), caption:fd.get('caption'), photoBase64:reader.result, mimeType:file.type, originalName:file.name}); show($('capsuleFeedback'), out.message || 'Fotografia enviada.'); e.currentTarget.reset(); }catch(err){ show($('capsuleFeedback'),err.message,true); } }; reader.readAsDataURL(file); }); }
-  renderBase(); renderCountdown(); bindCalendar(); initMusic();
-  const page=document.body.dataset.page; if(page==='invite') initInvite(); if(page==='admin') initAdmin(); if(page==='checkin') initCheckin(); if(page==='capsule') initCapsule();
+  function normaliseRecordToGift(record) {
+    const name = giftNameFromRecord(record) || record.name || '';
+    return {
+      name,
+      reserved: !!name,
+      reserved_by: record.nome || record.name || record.guestName || 'Convidado',
+      reservedBy: record.nome || record.name || record.guestName || 'Convidado',
+      timestamp: record.timestamp || record.createdAt || record.reservedAt || ''
+    };
+  }
+  window.LIRANDZO_API = {
+    ADMIN_TOKEN: null,
+    async authenticateAdmin(password) {
+      // 1) Tenta autenticar como Admin Manager global (MANAGER_PASSWORD + MANAGER_SECRET).
+      // 2) Se falhar, mantém compatibilidade com o admin do convite: valida em /admin-api
+      //    usando a senha do convite/cliente (CLIENT_ADMIN_PASSWORD, INVITE_ADMIN_PASSWORD
+      //    ou variáveis por slug como INVITE_ADMIN_PASSWORD_CELESTE_ARSENIO).
+      const cleanPassword = String(password || '').trim();
+      let token = '';
+      sessionStorage.setItem('perola_admin_password', cleanPassword);
+      sessionStorage.removeItem('perola_admin_token');
+      try {
+        token = await managerLogin(cleanPassword);
+        this.ADMIN_TOKEN = token;
+        if (token) sessionStorage.setItem('perola_admin_token', token);
+        return { status: 'success', token };
+      } catch (loginErr) {
+        // Fallback idêntico ao modelo Flícia & Walter: valida a senha no admin-api do convite.
+        await adminPost('get_guests', {});
+        this.ADMIN_TOKEN = null;
+        return { status: 'success', token: '' };
+      }
+    },
+    async getRSVPs() { return adminPost('get_rsvps'); },
+    async getComprovativos() { return adminPost('get_comprovativos'); },
+    async getMessages() { return adminPost('get_messages').catch(() => adminPost('list_messages')); },
+    async getGuests() { return adminPost('get_guests'); },
+    async getGifts() {
+      return adminPost('get_gifts');
+    },
+    async getGiftInventory() {
+      const options = (window.LIRANDZO_GIFT_OPTIONS || []).map(item => ({ name: item.name || item.label || String(item), reserved: false, reserved_by: '' }));
+      const records = await adminPost('get_gifts').catch(() => ({ data: [] }));
+      const taken = new Map((records.data || []).map(normaliseRecordToGift).filter(item => item.name).map(item => [String(item.name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(), item]));
+      return { status: 'success', data: options.map(item => {
+        const key = String(item.name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+        const t = taken.get(key);
+        return t ? Object.assign({}, item, { reserved: true, reserved_by: t.reserved_by, reservedBy: t.reservedBy, timestamp: t.timestamp }) : item;
+      }) };
+    },
+    async updateGuestTable(token, mesa) { return adminPost('update_guest_table', { token, mesa }); },
+    async getStats() { return adminPost('stats'); }
+  };
 })();

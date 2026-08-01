@@ -1,0 +1,50 @@
+AUDITORIA FINAL — CELESTE-ARSENIO
+Data: 01 de agosto de 2026
+Modelo de origem: convite-modelo fornecido
+Slug final: celeste-arsenio
+
+1. DADOS E IDENTIDADE
+[OK] Nomes completos, nomes exibidos e monograma AV actualizados.
+[OK] Data do evento: 21 de novembro de 2026.
+[OK] Cerimónia religiosa: 09:00 — Igreja Católica Sagrada Família da Machava.
+[OK] Recepção: 13:30 — Quinta Santa Carolina.
+[OK] Cerimónia civil: 14:00 — Quinta Santa Carolina.
+[OK] Copo de Água: 15:00 — Quinta Santa Carolina.
+[OK] Versículo, pais dos noivos, contacto, email e fuso horário actualizados.
+[OK] Slug uniformizado em frontend, admin, API, seed, importador e backend.
+[OK] Removidas referências residuais do casal-modelo; “Amelia Gulele” permanece por ser o nome fornecido para a mãe do noivo.
+
+2. CONVITE
+[OK] Capa, história e galeria usam as três fotografias fornecidas.
+[OK] Contagem decrescente aponta para 2026-11-21 09:00 no fuso de Maputo.
+[OK] Quatro eventos e respectivos horários são apresentados na ordem correcta.
+[OK] Todos os botões de mapa usam os links fornecidos.
+[OK] Botão flutuante de mapa abre escolha entre igreja e Quinta Santa Carolina.
+[OK] RSVP nominal, informação de mesa, mural, galeria/lightbox e música mantidos.
+[OK] Lista de presentes com 18 opções e escolha única mantida.
+[OK] Dados bancários e formulário de comprovativo do modelo removidos.
+[OK] Check-in/QR e Cápsula do Tempo não aparecem no convite; páginas directas mostram indisponibilidade.
+[OK] Lembrete ICS actualizado para Aplonia & Vander, data, horas e locais correctos.
+
+3. ADMIN
+[OK] Identidade visual corrigida para A&V.
+[OK] Menu contém apenas Dashboard, Convidados, RSVP, Presentes e Mensagens.
+[OK] Check-in e Cápsula estão ocultos/desactivados.
+[OK] Dashboard mostra data, cerimónia, recepção e contacto correctos.
+[OK] Métricas, navegação, tema claro/escuro, filtros e formulários carregam sem erro JavaScript.
+[OK] Ao adicionar convidado, o backend força o estado inicial “Não aberto”.
+[OK] Navegação desktop e mobile validada.
+
+4. TESTES TÉCNICOS EXECUTADOS
+[OK] Sintaxe Node/JavaScript: todos os ficheiros JS e scripts inline.
+[OK] JSON: invite-data.json e mongodb-seed-data.json válidos.
+[OK] HTML: sem IDs duplicados e sem âncoras internas quebradas.
+[OK] Recursos locais: nenhuma imagem, folha de estilo, script ou áudio referenciado está em falta.
+[OK] Pesquisa de resíduos: sem slug, nomes, data ou local antigos do casal-modelo.
+[OK] Teste de execução em Chromium: entrada, login nominal, convite, RSVP, presentes, mensagens, mapas, galeria e admin.
+[OK] Teste responsivo: convite mobile, admin desktop e admin mobile.
+[OK] Ficheiros sem uso do modelo removidos: imagens antigas, meios de pagamento antigos, mapa estático antigo e áudio duplicado.
+
+5. PENDÊNCIAS EXTERNAS
+- A lista oficial de convidados ainda está vazia. Deve ser adicionada a mongodb-seed-data.json ou importada pelo AdminManager antes da publicação.
+- A disponibilidade real do Render/MongoDB, a senha administrativa e as variáveis de ambiente dependem da infraestrutura de produção e não podem ser garantidas apenas pelo pacote local.

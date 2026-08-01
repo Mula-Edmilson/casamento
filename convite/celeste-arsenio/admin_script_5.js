@@ -1,0 +1,1 @@
+window.feather = window.feather || { replace: function(){} };
