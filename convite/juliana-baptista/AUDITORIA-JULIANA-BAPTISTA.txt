@@ -1,0 +1,155 @@
+AUDITORIA TÉCNICA FINAL — JULIANA & BAPTISTA
+===================================================
+APROVADOS: 143
+ERROS: 0
+AVISOS: 1
+
+VALIDAÇÕES APROVADAS
+- Ficheiro obrigatório index.html
+- Ficheiro obrigatório convite.html
+- Ficheiro obrigatório admin.html
+- Ficheiro obrigatório style.css
+- Ficheiro obrigatório client-config.js
+- Ficheiro obrigatório event-data.js
+- Ficheiro obrigatório lirandzo-api.js
+- Ficheiro obrigatório server.js
+- Ficheiro obrigatório invite-data.json
+- Ficheiro obrigatório mongodb-seed-data.json
+- Ficheiro obrigatório import-juliana-baptista-to-mongodb.js
+- Ficheiro obrigatório assets/media/romantic-music.mp3
+- Ficheiro obrigatório assets/media/capa-casal.jpg
+- Ficheiro obrigatório assets/media/hero-casal.jpg
+- Ficheiro obrigatório assets/media/historia-casal.jpg
+- Ficheiro obrigatório assets/media/momento-1.jpg
+- Ficheiro obrigatório assets/media/momento-2.jpg
+- Ficheiro obrigatório assets/media/momento-3.jpg
+- Ficheiro obrigatório assets/media/momento-4.jpg
+- Slug canónico
+- Data do evento
+- Prazo RSVP
+- Cerimónia
+- Recepção
+- Paleta declarada
+- Modo de contribuições
+- Três opções exactas
+- Incremento dos blocos
+- Incrementos restantes
+- Nomes completos
+- Monograma JB
+- Pais da noiva
+- Pais do noivo
+- Versículo e referência
+- Mapa exacto da cerimónia
+- Mapa exacto da recepção
+- Contacto do cliente
+- Sem contas bancárias
+- Funções do pacote
+- MP3 válido
+- Música completa: 329.30s
+- Formato da música
+- Música com tamanho plausível: 5493594
+- Imagem válida capa-casal.jpg: 1365×2048
+- Imagem válida hero-casal.jpg: 1365×2048
+- Imagem válida historia-casal.jpg: 1365×2048
+- Imagem válida momento-1.jpg: 1365×2048
+- Imagem válida momento-2.jpg: 1365×2048
+- Imagem válida momento-3.jpg: 1365×2048
+- Imagem válida momento-4.jpg: 1365×2048
+- IDs HTML únicos em index.html
+- IDs referidos existem em index.html
+- Referência local index.html → client-config.js
+- Referência local index.html → event-data.js
+- Referência local index.html → lirandzo-api.js
+- Referência local index.html → assets/media/lirandzo-logo.svg
+- Referência local index.html → assets/media/capa-casal.jpg
+- IDs HTML únicos em convite.html
+- IDs referidos existem em convite.html
+- Referência local convite.html → client-config.js
+- Referência local convite.html → event-data.js
+- Referência local convite.html → lirandzo-api.js
+- Referência local convite.html → assets/media/lirandzo-logo.svg
+- Referência local convite.html → style.css
+- Referência local convite.html → assets/media/historia-casal.jpg
+- Referência local convite.html → assets/media/momento-1.jpg
+- Referência local convite.html → assets/media/momento-2.jpg
+- Referência local convite.html → assets/media/momento-3.jpg
+- Referência local convite.html → assets/media/momento-4.jpg
+- Referência local convite.html → assets/media/romantic-music.mp3
+- IDs HTML únicos em admin.html
+- IDs referidos existem em admin.html
+- Referência local admin.html → event-data.js
+- Referência local admin.html → client-config.js
+- Referência local admin.html → lirandzo-api.js
+- Referência local admin.html → assets/media/lirandzo-logo.svg
+- Referência local admin.html → assets/media/lirandzo-logo.svg
+- Referência local admin.html → assets/media/lirandzo-logo.svg
+- IDs HTML únicos em ja-aberto.html
+- IDs referidos existem em ja-aberto.html
+- Referência local ja-aberto.html → assets/media/lirandzo-logo.svg
+- Referência local ja-aberto.html → assets/media/lirandzo-logo.svg
+- CSS principal sem erros de parsing
+- Paleta verde contém --bg: #F2F7F1
+- Paleta verde contém --accent: #4F6B5D
+- Paleta verde contém --section-bg: #E6EFE5
+- Paleta verde contém --border-color: #B4C8B6
+- Capa usa verde harmonizado
+- Theme color verde na capa
+- Theme color verde no convite
+- Sem paleta cinza antiga
+- Sem dados antigos em index.html
+- Sem dados antigos em convite.html
+- Sem dados antigos em admin.html
+- Sem dados antigos em event-data.js
+- Sem dados antigos em invite-data.json
+- Sem dados antigos em mongodb-seed-data.json
+- Sem dados antigos em client-config.js
+- Sem dados antigos em lirandzo-api.js
+- Sem dados antigos em style.css
+- Sem dados antigos em ja-aberto.html
+- Quatro capítulos da história
+- Estrutura dos capítulos
+- Pais apresentados correctamente
+- Horários públicos correctos
+- Mapas públicos correctos
+- Capa real aplicada
+- Hero real aplicado
+- História real aplicada
+- Quatro fotos reais na galeria
+- Nova música ligada ao convite
+- Sem função QR no cliente
+- Sem Check-in no convite
+- Sem dados bancários antigos
+- Login nominal
+- Validação por token
+- Marca abertura
+- RSVP
+- Mensagens
+- Contribuições por quantidade
+- Admin adiciona convidados
+- Backend aceita contribuições
+- Backend encaminha contribuições
+- Backend tem /admin-api
+- Backend tem login manager
+- Backend tem /api GET e POST
+- Sem Check-in na navegação do admin
+- Sem Cápsula na navegação do admin
+- Backend cria convidado Não aberto
+- Backend distingue Não aberto de Aberto
+- Get guest marca abertura correctamente
+- Admin trata Não aberto antes de procurar Aberto
+- Teste unitário dos estados Aberto/Não aberto
+- Sintaxe JavaScript client-config.js
+- Sintaxe JavaScript event-data.js
+- Sintaxe JavaScript lirandzo-api.js
+- Sintaxe JavaScript server.js
+- Sintaxe JavaScript import-juliana-baptista-to-mongodb.js
+- Sintaxe inline index.html bloco 3
+- Sintaxe inline convite.html bloco 3
+- Sintaxe inline admin.html bloco 5
+- Sintaxe inline admin.html bloco 6
+- Sintaxe inline ja-aberto.html bloco 0
+
+LIMITAÇÕES / AVISOS
+- Teste live do Render/MongoDB não executado: este ambiente não conseguiu resolver api-casamento-mj.onrender.com. A integração foi validada por rotas, payloads, sintaxe e consistência estrutural; faça o teste final depois do upload.
+
+RESULTADO: APROVADO PARA PUBLICAÇÃO, condicionado ao teste live após upload.
