@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · Juliana & Baptista</title>
+  <script src="./client-config.js"></script>
+  <script src="./event-data.js"></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body data-page="admin">
+  <main class="admin-shell">
+    <section class="card admin-login" id="adminLoginCard">
+      <p class="eyebrow">Admin do convite</p>
+      <h1 data-field="coupleNames">Juliana & Baptista</h1>
+      <form id="adminLoginForm" class="form-block"><label>Senha de admin<input name="password" type="password" required></label><button class="btn primary" type="submit">Entrar</button></form>
+      <div id="adminLoginFeedback" class="feedback hidden"></div>
+    </section>
+    <section class="admin-panel hidden" id="adminPanel">
+      <div class="panel-headline"><div><p class="eyebrow">Painel do cliente</p><h1 data-field="coupleNames">Juliana & Baptista</h1></div><button class="btn" id="adminRefreshBtn" type="button">Actualizar</button></div>
+      <div id="adminStats" class="stats-grid"></div>
+      <section class="card"><h2>Adicionar convidado</h2><form id="adminAddGuestForm" class="form-inline"><input name="name" placeholder="Nome" required><input name="table" placeholder="Mesa"><input name="companions" type="number" min="0" value="0"><button class="btn" type="submit">Adicionar</button></form></section>
+      <section class="card"><h2>Convidados</h2><div class="table-scroll"><table><thead><tr><th>Nome</th><th>Mesa</th><th>Pessoas</th><th>Estado</th><th>Token</th></tr></thead><tbody id="adminGuestsRows"></tbody></table></div></section>
+      <section class="card"><h2>Confirmações</h2><div class="table-scroll"><table><thead><tr><th>Nome</th><th>Pessoas</th><th>Telefone</th><th>Data</th></tr></thead><tbody id="adminRsvpRows"></tbody></table></div></section>
+      <section class="card"><h2>Mensagens</h2><div id="adminMessagesList" class="mini-list"></div></section>
+      <section class="card"><h2>Contribuições</h2><div id="adminContribList" class="mini-list"></div></section>
+    </section>
+  </main>
+  <script src="./lirandzo-api.js"></script>
+</body>
+</html>
