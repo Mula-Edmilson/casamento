@@ -843,6 +843,25 @@ textarea {
 }
 
 
+.contribution-message {
+  margin: 20px 0 24px;
+  padding: 18px 18px 18px 20px;
+  background: var(--section-bg);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  text-align: left;
+}
+
+.contribution-message p {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.contribution-message p:last-child {
+  margin-bottom: 0;
+}
+
 .info-block { 
   text-align: left; 
   padding: 16px; 
