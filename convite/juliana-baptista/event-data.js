@@ -85,8 +85,13 @@ window.LIRANDZO_EVENT = {
     "checkin": false,
     "capsule": false
   },
-  "guestListVersion": "Aguardando lista oficial de convidados",
-  "guestListUpdatedAt": "2026-08-01"
+  "guestListVersion": "Convite aberto — nomes recolhidos por RSVP e contribuições",
+  "guestListUpdatedAt": "2026-08-06",
+  "accessMode": "public",
+  "publicAccess": true,
+  "publicRsvpAutoCreate": true,
+  "publicGiftAutoCreate": true,
+  "requireMessageName": true
 };
 
 window.LIRANDZO_GUESTS = [];

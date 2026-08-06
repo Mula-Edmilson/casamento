@@ -30,8 +30,11 @@
       padding: 24px;
       background: var(--card);
     }
+    #messageForm input,
     #messageForm textarea {
       width: 100%;
+    }
+    #messageForm textarea {
       min-height: 100px;
       resize: vertical;
     }
@@ -96,6 +99,8 @@
     }
 
     /* Contribuições por quantidade */
+    .gift-intro-note{margin:16px 0 20px;padding:16px 18px;border:1px solid rgba(77,112,79,.22);border-left:4px solid var(--accent);border-radius:10px;background:linear-gradient(135deg,rgba(230,239,229,.92),rgba(247,250,246,.96));color:var(--text-dark);line-height:1.65;text-align:left}
+    .gift-intro-note strong{display:block;margin-bottom:5px;color:var(--accent);font-family:var(--font-heading);font-size:1.08rem}
     .gift-checklist{display:grid;gap:12px;max-height:500px;overflow-y:auto;padding:4px}
     .gift-item{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;padding:16px;background:#fff;border:1px solid var(--border-color);border-radius:10px;transition:border-color .2s ease,box-shadow .2s ease}
     .gift-item:hover{border-color:var(--accent);box-shadow:0 8px 22px rgba(72,51,38,.08)}
@@ -119,9 +124,6 @@
     </button>
     <button id="fabGiftsBtn" class="fab-item" aria-label="Opções de presente">
       <svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-    </button>
-    <button id="fabGuestInfoBtn" class="fab-item" aria-label="Ver a sua mesa">
-      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
     </button>
     <button id="fabMapBtn" class="fab-item" aria-label="Ver mapa do local">
       <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
@@ -317,9 +319,14 @@
 
       <form id="messageForm">
         <div style="margin-bottom: 16px;">
+          <label for="messageGuestName">Seu nome completo:</label>
+          <input id="messageGuestName" name="nome" type="text" autocomplete="name" maxlength="120" placeholder="Ex.: João Manuel" required>
+        </div>
+        <div style="margin-bottom: 16px;">
           <label for="messageText">A sua mensagem:</label>
           <textarea id="messageText" placeholder="Escreva aqui a sua felicitação..." required maxlength="500"></textarea>
         </div>
+        <p class="rsvp-note-clean">O nome é obrigatório para que os noivos saibam quem enviou cada mensagem.</p>
         <div class="form-actions" style="text-align: right;">
           <button type="submit" class="btn btn-primary">Enviar Mensagem</button>
         </div>
@@ -345,9 +352,13 @@
   <div class="modal" id="rsvpModal" role="dialog" aria-modal="true" aria-labelledby="rsvpTitle">
     <div class="modal-card">
       <h3 id="rsvpTitle">Confirmar Presença</h3>
-      <p>Confirme a sua presença neste dia especial. O convite é nominal e segue a lista oficial dos noivos.</p>
+      <p>Escreva o seu nome para que os noivos consigam identificar a sua confirmação no painel.</p>
       <form id="rsvpForm">
-        <p class="rsvp-note-clean">Ao confirmar, os noivos recebem a sua resposta conforme o seu convite nominal.</p>
+        <div>
+          <label for="rsvpName">Seu nome completo</label>
+          <input id="rsvpName" name="nome" type="text" autocomplete="name" maxlength="120" placeholder="Ex.: João Manuel" required>
+        </div>
+        <p class="rsvp-note-clean">O nome é obrigatório e será usado apenas para organizar as confirmações.</p>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary" id="sendRsvpServer">Confirmar Presença</button>
           <button type="button" class="btn btn-outline" id="addReminderBtn">Adicionar Lembrete</button>
@@ -360,8 +371,17 @@
   <div class="modal" id="giftsCombinedModal" role="dialog" aria-modal="true" aria-labelledby="giftsCombinedTitle">
     <div class="modal-card">
       <h3 id="giftsCombinedTitle">Contribuições para o Nosso Futuro</h3>
+      <div class="gift-intro-note">
+        <strong>Um presente com significado</strong>
+        Queridos familiares e amigos, esta lista é um pouco diferente porque estamos a construir, com muito amor, o nosso futuro lar. Cada bloco, saco de cimento ou varão ajudará a transformar esse sonho em realidade. A vossa presença é o nosso maior presente; qualquer contribuição será recebida com muito carinho e gratidão.
+      </div>
       <p>Escolha a quantidade que pretende oferecer. Pode contribuir para mais de um item.</p>
       <div id="giftListContainer" style="margin-top:24px;">
+        <div>
+          <label for="giftGuestName">Seu nome completo</label>
+          <input id="giftGuestName" name="nome" type="text" autocomplete="name" maxlength="120" placeholder="Ex.: João Manuel" form="giftListForm" required>
+        </div>
+        <p class="rsvp-note-clean">O nome é obrigatório para identificar a contribuição no painel dos noivos.</p>
         <div id="giftLoading" style="text-align:center;padding:32px;color:#777;">A carregar opções...</div>
         <div id="giftError" style="display:none;text-align:center;padding:16px;color:#D93025;background:#ffe6e8;border-radius:8px;margin-bottom:16px;"></div>
         <div id="giftList" class="gift-checklist" style="display:none;"></div>
@@ -380,25 +400,6 @@
     </div>
   </div>
 
-  <div class="modal" id="guestInfoModal" role="dialog" aria-modal="true" aria-labelledby="guestInfoTitle">
-    <div class="modal-card" style="text-align: left;">
-      <h3 id="guestInfoTitle" style="text-align: center;">O Seu Lugar</h3>
-      <p style="text-align: center; margin-bottom: 32px;">Informação para o dia da receção.</p>
-      
-      <div class="info-block">
-        <p><strong>Convidado:</strong></p>
-        <p id="guestInfoName" style="font-size: 1.1rem; color: var(--text-dark);">A carregar...</p>
-      </div>
-      <div class="info-block">
-        <p><strong>Mesa:</strong></p>
-        <p id="guestInfoMesa" style="font-size: 1.1rem; color: var(--accent); font-weight: 600;">A carregar...</p>
-      </div>
-      
-      <div class="form-actions" style="margin-top: 32px;">
-        <button type="button" class="btn btn-primary" data-close-modal style="width: 100%;">Fechar</button>
-      </div>
-    </div>
-  </div>
 
   <script src="client-config.js"></script>
   <script src="event-data.js"></script>
@@ -406,65 +407,9 @@
 
   <script>
 
-    // ============================================
-// VERIFICAÇÃO DE DISPOSITIVO (ADICIONAR NO INÍCIO)
-// ============================================
+    // Convite público: o acesso não exige nome, token ou validação prévia.
+    const API_URL = window.LIRANDZO_API_URL || '';
 
-// Coloca isto no TOPO absoluto da tua tag <script> no convite.html
-const API_URL = window.LIRANDZO_API_URL || '';
-
-function jsonpRequest(url) {
-  return new Promise((resolve, reject) => {
-    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-    window[callbackName] = function(data) {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      resolve(data);
-    };
-    const script = document.createElement('script');
-    const separator = url.includes('?') ? '&' : '?';
-    script.src = url + separator + 'callback=' + callbackName;
-    script.onerror = function() {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      reject(new Error('JSONP request failed'));
-    };
-    document.body.appendChild(script);
-  });
-}
-async function verifyDeviceAccess() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const tokenFromUrl = urlParams.get("t");
-
-  // MODO LOCAL: o acesso nesta versão não depende de credenciais externas.
-  if (!tokenFromUrl) {
-    const savedToken = localStorage.getItem('guestToken');
-    if (savedToken) {
-      window.location.href = `convite.html?t=${encodeURIComponent(savedToken)}`;
-      return false;
-    }
-    window.location.href = 'index.html';
-    return false;
-  }
-
-  if (!localStorage.getItem('guestName')) {
-    localStorage.setItem('guestName', 'Convidado(a)');
-  }
-
-  return true;
-}
-
-// Modificar o DOMContentLoaded para incluir a verificação
-document.addEventListener('DOMContentLoaded', async () => {
-  const hasAccess = await verifyDeviceAccess();
-  if (!hasAccess) return;
-
-  // Resto do código existente...
-  const urlParams = new URLSearchParams(window.location.search);
-  token = urlParams.get("t");
-  
-  // ... continuar com o código existente
-});
     // ============================================
     // CONFIGURAÇÃO DO GOOGLE APPS SCRIPT
     // ============================================
@@ -496,85 +441,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       return window.LirandzoAPI.post({ ...data, slug: window.LIRANDZO_INVITE_SLUG || 'juliana-baptista' });
     }
 
-    // Variáveis globais
-    let guestName = "";
-    let guestMesa = null;
+    // Identificação recolhida apenas nas acções que precisam de controlo no admin.
+    let guestName = localStorage.getItem('publicGuestName') || '';
     let maxGuests = 1;
-    let token = "";
-    let rsvpTitle = null; // Declarar para uso posterior
-    
-    document.addEventListener('DOMContentLoaded', async () => {
+    let token = '';
+    let rsvpTitle = null;
 
-      const urlParams = new URLSearchParams(window.location.search);
-      token = urlParams.get("t");
-
-      if (!token) {
-        document.body.innerHTML = "Convite inválido.";
-        return;
-      }
-
-      async function loadGuest() {
-        if (!window.LirandzoAPI || typeof window.LirandzoAPI.get !== 'function') return false;
-        try {
-          const result = await window.LirandzoAPI.get('get_guest', { token });
-          const guest = result.data || result || {};
-          guestName = guest.name || guest.nome || localStorage.getItem('guestName') || 'Convidado(a)';
-          guestMesa = guest.mesa || guest.table || localStorage.getItem('guestMesa') || 'A definir';
-          maxGuests = Number(guest.maxGuests || guest.maxGuestsTotal || localStorage.getItem('guestMax') || 1) || 1;
-          localStorage.setItem('guestName', guestName);
-          localStorage.setItem('guestMesa', guestMesa);
-          localStorage.setItem('guestMax', String(maxGuests));
-          if (window.LirandzoAPI && typeof window.LirandzoAPI.post === 'function') {
-            window.LirandzoAPI.post({ action: 'open_invite', token, nome: guestName }).catch(err => {
-              console.warn('Não foi possível marcar convite como aberto:', err);
-            });
-          }
-          return true;
-        } catch (err) {
-          console.error('Erro ao validar convidado:', err);
-          return false;
-        }
-      }
-
-      const success = await loadGuest();
-
-      if (!success) {
-        document.body.innerHTML = "Convite inválido.";
-        return;
-      }
-
-      initializeUI();
-    });
+    document.addEventListener('DOMContentLoaded', () => initializeUI());
 
     function initializeUI() {
-      const guestStatus = localStorage.getItem('guestStatus'); 
-      
-      // Adicionar mensagem de boas-vindas
-      const heroContent = document.querySelector('.hero-bottom-content');
-      if (heroContent) {
-        const welcomeMessage = document.createElement('p');
-        welcomeMessage.className = 'welcome-guest';
-        welcomeMessage.textContent = `Bem-vindo(a), ${guestName}!`;
-        heroContent.prepend(welcomeMessage);
-      }
-
       // Configurar RSVP
       const rsvpModal = document.getElementById('rsvpModal');
       const rsvpForm = document.getElementById('rsvpForm');
       if (rsvpForm && rsvpModal) {
-        const nameInput = rsvpForm.querySelector('#nome');
+        const nameInput = rsvpForm.querySelector('#rsvpName');
         rsvpTitle = rsvpModal.querySelector('#rsvpTitle');
         const rsvpSubmitBtn = rsvpForm.querySelector('#sendRsvpServer');
         const addReminderBtn = document.getElementById('addReminderBtn');
 
-        if (nameInput) {
-          nameInput.value = guestName;
-          nameInput.disabled = true; 
-        }
-        
-        if (guestStatus && guestStatus.toLowerCase().startsWith('confirmado')) {
-          if (rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
-          if (rsvpSubmitBtn) rsvpSubmitBtn.textContent = "Atualizar Confirmação";
+        if (nameInput && guestName) nameInput.value = guestName;
+        if (localStorage.getItem('publicRsvpConfirmed') === 'true') {
+          if (rsvpTitle) rsvpTitle.textContent = "Actualizar Presença";
+          if (rsvpSubmitBtn) rsvpSubmitBtn.textContent = "Actualizar Confirmação";
         }
 
         if (addReminderBtn) {
@@ -612,27 +500,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
 
-      // Configurar modal de informação do convidado
-      const guestInfoModal = document.getElementById('guestInfoModal');
-      if (guestInfoModal) {
-        const infoNameEl = document.getElementById('guestInfoName');
-        const infoMesaEl = document.getElementById('guestInfoMesa');
-        
-        if (infoNameEl) {
-          infoNameEl.textContent = guestName;
-        }
-        if (infoMesaEl) {
-          // Verificar se guestMesa existe e é uma string
-          if (guestMesa && typeof guestMesa === 'string' && guestMesa !== "A definir" && guestMesa !== "undefined" && guestMesa.trim() !== "") {
-            infoMesaEl.textContent = guestMesa;
-          } else {
-            infoMesaEl.textContent = "A sua mesa será indicada à entrada.";
-            infoMesaEl.style.color = "var(--text-light)";
-            infoMesaEl.style.fontWeight = "400";
-          }
-        }
-      }
-
       // Constantes
       const HOST_WHATSAPP_NUMBER = '+258825930786';
       const ADDRESS_RELIGIOSA = 'Igreja Assembleia de Deus Alfa e Omega de Campoane';
@@ -646,7 +513,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       const fabRsvpBtn = document.getElementById('fabRsvpBtn');
       const fabGiftsBtn = document.getElementById('fabGiftsBtn');
-      const fabGuestInfoBtn = document.getElementById('fabGuestInfoBtn');
       const fabMapBtn = document.getElementById('fabMapBtn'); 
       
       const rsvpBtn = document.getElementById('rsvpBtn');
@@ -708,9 +574,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (mapBtnReligiosa) mapBtnReligiosa.href = createMapLink(ADDRESS_RELIGIOSA, true); 
       if (mapBtnRecepcao) mapBtnRecepcao.href = createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true); 
       
-      [fabRsvpBtn, rsvpBtn].forEach(btn => btn?.addEventListener('click', () => openModal('rsvpModal')));
+      [fabRsvpBtn, rsvpBtn].forEach(btn => btn?.addEventListener('click', () => {
+        const input = document.getElementById('rsvpName');
+        const savedName = guestName || localStorage.getItem('publicGuestName') || '';
+        if (input && savedName && !input.value) input.value = savedName;
+        openModal('rsvpModal');
+      }));
       [fabGiftsBtn, giftsCombinedBtn].forEach(btn => btn?.addEventListener('click', () => openModal('giftsCombinedModal')));
-      fabGuestInfoBtn?.addEventListener('click', () => openModal('guestInfoModal'));
       fabMapBtn?.addEventListener('click', () => window.open(createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true), '_blank'));
       
       document.querySelectorAll('.modal').forEach(modal => {
@@ -742,19 +612,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         const rsvpStatus = document.getElementById('rsvpStatus');
         const submitButton = document.getElementById('sendRsvpServer');
         
-        const getRsvpData = () => ({
-          action: "rsvp",
-          nome: guestName, 
-          token: token,
-          guests: String(maxGuests || 1),
-          phone: '',
-          message: ''
-        });
+        const getRsvpData = () => {
+          const typedName = String(document.getElementById('rsvpName')?.value || '').trim();
+          return {
+            action: "rsvp",
+            nome: typedName,
+            token: '',
+            phone: '',
+            message: ''
+          };
+        };
 
         rsvpForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           const data = getRsvpData();
-          
+          if (!data.nome) {
+            rsvpStatus.style.color = "#D93025";
+            rsvpStatus.textContent = "Escreva o seu nome antes de confirmar.";
+            document.getElementById('rsvpName')?.focus();
+            return;
+          }
+          guestName = data.nome;
+          localStorage.setItem('publicGuestName', guestName);
+
           const originalButtonText = submitButton.textContent; 
           submitButton.disabled = true;
           submitButton.textContent = "A enviar...";
@@ -764,7 +644,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             await postRequest(data);
             
             // Se chegou aqui, assumimos que deu certo
-            localStorage.setItem('guestStatus', 'Confirmado');
+            localStorage.setItem('publicRsvpConfirmed', 'true');
             rsvpStatus.style.color = "green";
             rsvpStatus.textContent = "Confirmação recebida com sucesso! Obrigado.";
             submitButton.textContent = "Atualizado!";
@@ -843,7 +723,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const giftsCombinedModal = document.getElementById('giftsCombinedModal');
       if (giftsCombinedModal) {
         new MutationObserver(() => {
-          if (giftsCombinedModal.classList.contains('open')) loadGiftList();
+          if (giftsCombinedModal.classList.contains('open')) {
+            const input = document.getElementById('giftGuestName');
+            if (input && guestName && !input.value) input.value = guestName;
+            loadGiftList();
+          }
         }).observe(giftsCombinedModal, { attributes: true, attributeFilter: ['class'] });
       }
 
@@ -853,6 +737,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const submitButton = document.getElementById('submitGiftsBtn');
         giftListForm.addEventListener('submit', async (event) => {
           event.preventDefault();
+          const typedName = String(document.getElementById('giftGuestName')?.value || '').trim();
+          if (!typedName) {
+            giftStatus.style.color = '#D93025';
+            giftStatus.textContent = 'Escreva o seu nome antes de registar a contribuição.';
+            document.getElementById('giftGuestName')?.focus();
+            return;
+          }
+          guestName = typedName;
+          localStorage.setItem('publicGuestName', guestName);
+
           const contributions = Array.from(document.querySelectorAll('#giftList .gift-item')).map(item => {
             const quantity = Number(item.querySelector('.gift-quantity')?.value || 0);
             return { giftName: item.dataset.giftName, quantity, unit: item.dataset.unit, quantityStep: Number(item.dataset.step || 1) };
@@ -868,7 +762,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           submitButton.textContent = 'A registar...';
           giftStatus.textContent = '';
           try {
-            await postRequest({ action: 'save_gift_contributions', nome: guestName, token, giftContributions: contributions });
+            await postRequest({ action: 'save_gift_contributions', nome: typedName, token: '', giftContributions: contributions });
             giftStatus.style.color = 'green';
             giftStatus.textContent = 'Contribuição registada com sucesso. Muito obrigado!';
             submitButton.textContent = 'Registado!';
@@ -896,11 +790,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Mural de mensagens - Usando JSONP para carregar
       const messageForm = document.getElementById('messageForm');
+      const messageGuestName = document.getElementById('messageGuestName');
       const messageText = document.getElementById('messageText');
       const messageStatus = document.getElementById('messageStatus');
       const guestbookFeed = document.getElementById('guestbook-feed');
       const feedLoading = document.getElementById('feed-loading');
-
       function renderMessage(message) {
         const messageEl = document.createElement('div');
         messageEl.className = 'guestbook-entry';
@@ -944,8 +838,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           
-          const message = messageText.value;
-          if (!message.trim()) return;
+          const typedName = String(messageGuestName?.value || '').trim();
+          const message = String(messageText?.value || '').trim();
+          if (!typedName) {
+            messageStatus.style.color = '#D93025';
+            messageStatus.textContent = 'Escreva o seu nome antes de enviar a mensagem.';
+            messageGuestName?.focus();
+            return;
+          }
+          if (!message) {
+            messageStatus.style.color = '#D93025';
+            messageStatus.textContent = 'Escreva uma mensagem antes de enviar.';
+            messageText?.focus();
+            return;
+          }
 
           const submitButton = messageForm.querySelector('button[type="submit"]');
           submitButton.disabled = true;
@@ -954,8 +860,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           const data = {
             action: "post_message",
-            nome: guestName,
-            token: token,
+            nome: typedName,
+            token: '',
             message: message
           };
 

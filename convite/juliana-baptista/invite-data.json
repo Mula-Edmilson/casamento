@@ -4,5 +4,7 @@
   "clientName": "Juliana e Baptista",
   "packageKey": "perola",
   "publicUrl": "https://lirandzo.com/convite/juliana-baptista/",
-  "createdAt": "2026-08-01T00:00:00.000Z"
+  "createdAt": "2026-08-01T00:00:00.000Z",
+  "accessMode": "public",
+  "publicAccess": true
 }

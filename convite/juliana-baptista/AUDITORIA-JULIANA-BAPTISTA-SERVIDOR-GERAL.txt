@@ -1,0 +1,49 @@
+AUDITORIA — JULIANA & BAPTISTA / SERVIDOR GERAL MULTI-CONVITE
+
+RESULTADO: 41 validações aprovadas · 0 erro(s)
+
+[OK] JSON válido: invite-data.json
+[OK] JSON válido: mongodb-seed-data.json
+[OK] Sem IDs duplicados: index.html
+[OK] Documento HTML tem title: index.html
+[OK] Sem IDs duplicados: convite.html
+[OK] Documento HTML tem title: convite.html
+[OK] Sem IDs duplicados: admin.html
+[OK] Documento HTML tem title: admin.html
+[OK] Todas as referências locais existem
+[OK] Capa abre directamente convite.html
+[OK] Capa não contém formulário de login por nome
+[OK] RSVP exige nome no HTML
+[OK] Presentes exigem nome no HTML
+[OK] Mensagens exigem nome no HTML
+[OK] RSVP envia nome digitado
+[OK] Presentes enviam contribuições por quantidade
+[OK] Mensagens enviam nome digitado
+[OK] Servidor reconhece RSVP público por variável
+[OK] Servidor não contém slug Juliana hardcoded
+[OK] Servidor não contém slug Minoca hardcoded
+[OK] Servidor aceita save_gift_contributions
+[OK] Servidor valida quantidades
+[OK] Servidor cria identificação por contribuição
+[OK] Servidor exige nome real nas mensagens
+[OK] Admin carrega contribuições do servidor geral
+[OK] Admin mostra quantidade e nome
+[OK] Configuração de presentes por quantidade activa
+[OK] Blocos avançam de 10 em 10
+[OK] Cimento avança de 1 em 1
+[OK] Ferro avança de 1 em 1
+[OK] README preserva Minoca e acrescenta Juliana
+[OK] Sem fotografias provisórias do modelo
+[OK] JavaScript inline válido: index.html #1
+[OK] JavaScript inline válido: convite.html #1
+[OK] JavaScript inline válido: admin.html #1
+[OK] JavaScript inline válido: admin.html #2
+[OK] JavaScript válido: server.js
+[OK] JavaScript válido: client-config.js
+[OK] JavaScript válido: event-data.js
+[OK] JavaScript válido: lirandzo-api.js
+[OK] JavaScript válido: import-juliana-baptista-to-mongodb.js
+
+LIMITAÇÃO DE TESTE
+- A ligação real ao Render/MongoDB não foi executada neste ambiente. Foram validados sintaxe, rotas, payloads, configuração, referências e compatibilidade estática.
+- Depois do deploy, execute os testes descritos em CONFIGURACAO-RENDER-CONVITE-PUBLICO.txt.

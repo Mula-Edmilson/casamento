@@ -392,6 +392,10 @@ const ContributionSchema = new mongoose.Schema({
   slug: { type: String, required: true, index: true },
   nome: { type: String, required: true },
   canal: { type: String, default: '' },
+  quantity: { type: Number, default: 0, min: 0 },
+  unit: { type: String, default: 'unidade' },
+  quantityStep: { type: Number, default: 1, min: 1 },
+  source: { type: String, default: '' },
   fileName: { type: String, default: '' },
   originalName: { type: String, default: '' },
   mimeType: { type: String, default: '' },
@@ -1897,6 +1901,9 @@ app.post('/api', upload.any(), async (req, res) => {
     if (action === 'rsvp' || action === 'submit_rsvp') return handleRsvp(req, res, invite);
     if (action === 'rsvp_choice') return handleRsvpChoice(req, res, invite);
     if (action === 'post_message') return handlePostMessage(req, res, invite);
+    if (action === 'save_gift_contributions') {
+  return handleSaveGiftContributions(req, res, invite);
+}
     if (action === 'save_gifts' || action === 'reserve_gift' || action === 'reserve_gifts' || action === 'choose_gift') return handleSaveGifts(req, res, invite);
     if (action === 'upload_comprovativo' || action === 'submit_contribution') return handleUploadComprovativo(req, res, invite);
     if (action === 'checkin_guest') return handleCheckinGuest(req, res, invite);
@@ -3087,6 +3094,202 @@ function cleanGiftForPublic(gift) {
     createdAt: o.createdAt || null,
     updatedAt: o.updatedAt || null
   };
+}
+
+async function handleSaveGiftContributions(req, res, invite) {
+  /*
+   * Isolamento de segurança:
+   * 1. O convite deve estar autorizado no PUBLIC_RSVP_AUTO_CREATE_SLUGS.
+   * 2. O convite deve estar configurado para presentes por quantidade.
+   *
+   * Os restantes convites continuam a usar handleSaveGifts().
+   */
+  if (
+    !canAutoCreateGuestForRsvp(invite) ||
+    String(invite?.config?.giftSelectionMode || '') !== 'quantity_contributions'
+  ) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Este convite não utiliza presentes por quantidade.'
+    });
+  }
+
+  const body = req.body || {};
+  const nome = String(body.nome || '')
+    .trim()
+    .replace(/\s+/g, ' ');
+
+  if (!nome) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Escreva o seu nome antes de registar o presente.'
+    });
+  }
+
+  /*
+   * As opções vêm da configuração do convite no MongoDB.
+   * Não existem nomes como "Blocos" escritos directamente no servidor.
+   */
+  const configuredOptions = Array.isArray(invite?.config?.giftOptions)
+    ? invite.config.giftOptions
+    : [];
+
+  const optionMap = new Map(
+    configuredOptions
+      .map(item => {
+        const name = String(item?.name || '').trim();
+
+        if (!name) {
+          return null;
+        }
+
+        const step = Math.max(
+          1,
+          Number(item?.quantityStep || item?.step || 1)
+        );
+
+        const min = Math.max(
+          1,
+          Number(item?.minQuantity || step)
+        );
+
+        const unit = String(item?.unit || 'unidade').trim();
+
+        return [
+          normalizeText(name),
+          {
+            name,
+            step,
+            min,
+            unit
+          }
+        ];
+      })
+      .filter(Boolean)
+  );
+
+  if (!optionMap.size) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'A lista de presentes por quantidade não está configurada.'
+    });
+  }
+
+  const requested = Array.isArray(body.giftContributions)
+    ? body.giftContributions
+    : [];
+
+  if (!requested.length) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Seleccione pelo menos um presente e a respectiva quantidade.'
+    });
+  }
+
+  /*
+   * Primeiro valida tudo.
+   * Nenhum registo é gravado antes de todas as quantidades serem válidas.
+   */
+  const validated = [];
+
+  for (const item of requested) {
+    const requestedName = String(
+      item?.giftName || item?.name || ''
+    ).trim();
+
+    const option = optionMap.get(normalizeText(requestedName));
+
+    if (!option) {
+      return res.status(400).json({
+        status: 'error',
+        message: `Presente inválido: ${requestedName || 'não identificado'}.`
+      });
+    }
+
+    const quantity = Number(item?.quantity);
+
+    if (!Number.isInteger(quantity) || quantity < option.min) {
+      return res.status(400).json({
+        status: 'error',
+        message: `${option.name}: a quantidade mínima é ${option.min}.`
+      });
+    }
+
+    if (quantity % option.step !== 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: `${option.name}: a quantidade deve avançar de ${option.step} em ${option.step}.`
+      });
+    }
+
+    validated.push({
+      name: option.name,
+      quantity,
+      unit: option.unit,
+      step: option.step
+    });
+  }
+
+  const saved = [];
+
+  for (const item of validated) {
+    /*
+     * Um registo por nome + material.
+     * Caso a mesma pessoa volte a submeter o mesmo material,
+     * a quantidade é actualizada em vez de criar uma duplicação.
+     */
+    const record = await Contribution.findOneAndUpdate(
+      {
+        inviteId: invite._id,
+        nome,
+        selectedGift: item.name,
+        source: 'quantity_contributions'
+      },
+      {
+        $setOnInsert: {
+          inviteId: invite._id,
+          slug: invite.slug
+        },
+        $set: {
+          nome,
+          canal: 'Contribuição de presente',
+          selectedGift: item.name,
+          quantity: item.quantity,
+          unit: item.unit,
+          quantityStep: item.step,
+          source: 'quantity_contributions',
+          timestamp: new Date()
+        }
+      },
+      {
+        upsert: true,
+        new: true,
+        runValidators: true
+      }
+    );
+
+    saved.push({
+      id: String(record._id),
+      giftName: item.name,
+      quantity: item.quantity,
+      unit: item.unit
+    });
+  }
+
+  await logActivity({
+    invite,
+    type: 'gift',
+    title: 'Contribuição de presente',
+    detail: `${nome} · ${saved
+      .map(item => `${item.giftName}: ${item.quantity}`)
+      .join(', ')}`
+  });
+
+  return res.json({
+    status: 'success',
+    message: 'Contribuição registada com sucesso.',
+    data: saved
+  });
 }
 
 async function handleSaveGifts(req, res, invite) {

@@ -1,0 +1,48 @@
+JULIANA & BAPTISTA — CONFIGURAÇÃO NO RENDER
+
+OBJECTIVO
+O convite abre livremente, sem login por nome. O nome só é obrigatório ao:
+1. confirmar presença;
+2. registar uma contribuição de presente;
+3. enviar uma mensagem.
+
+1. SERVER.JS
+Substitua no serviço Render o server.js actual pelo server.js geral actualizado deste pacote.
+Este servidor continua multi-convite e não contém juliana-baptista hardcoded.
+
+2. VARIÁVEL DE AMBIENTE
+No Render, EDITE a variável já existente PUBLIC_RSVP_AUTO_CREATE_SLUGS.
+Não crie duas variáveis com o mesmo nome.
+
+Se actualmente estiver assim:
+PUBLIC_RSVP_AUTO_CREATE_SLUGS=minoca-abubacar
+
+Altere para:
+PUBLIC_RSVP_AUTO_CREATE_SLUGS=minoca-abubacar,juliana-baptista
+
+Caso já existam outros slugs, preserve-os e acrescente juliana-baptista separado por vírgula.
+Exemplo:
+PUBLIC_RSVP_AUTO_CREATE_SLUGS=minoca-abubacar,outro-convite,juliana-baptista
+
+Convites que não estejam nessa lista continuam a exigir nome previamente registado no MongoDB para o RSVP.
+
+3. IMPORTAÇÃO DO CONVITE
+Execute uma vez o importador para garantir que o convite e as opções de contribuição estão correctos no MongoDB:
+
+Windows CMD:
+set MONGODB_URI=mongodb+srv://UTILIZADOR:SENHA@cluster.mongodb.net/lirandzo?retryWrites=true&w=majority
+node import-juliana-baptista-to-mongodb.js
+
+PowerShell:
+$env:MONGODB_URI="mongodb+srv://UTILIZADOR:SENHA@cluster.mongodb.net/lirandzo?retryWrites=true&w=majority"
+node .\import-juliana-baptista-to-mongodb.js
+
+4. TESTE DEPOIS DO DEPLOY
+- Abrir /convite/juliana-baptista/ sem escrever nome.
+- Confirmar presença com um nome que ainda não exista no MongoDB.
+- Registar Blocos em múltiplos de 10.
+- Registar Cimento ou Ferro em múltiplos de 1.
+- Enviar mensagem com nome obrigatório.
+- Confirmar no admin que RSVP, contribuição e mensagem aparecem com o nome escrito.
+- Confirmar que minoca-abubacar continua público.
+- Confirmar que um convite fora da variável continua protegido por lista de nomes.

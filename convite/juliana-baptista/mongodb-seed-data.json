@@ -41,21 +41,21 @@
         "category": "Contribuições para construção",
         "quantityStep": 10,
         "minQuantity": 10,
-        "unit": "unidade"
+        "unit": "bloco"
       },
       {
         "name": "Cimento",
         "category": "Contribuições para construção",
         "quantityStep": 1,
         "minQuantity": 1,
-        "unit": "unidade"
+        "unit": "saco"
       },
       {
         "name": "Ferro (Varão)",
         "category": "Contribuições para construção",
         "quantityStep": 1,
         "minQuantity": 1,
-        "unit": "unidade"
+        "unit": "varão"
       }
     ],
     "bankAccounts": [],
@@ -85,8 +85,13 @@
       "checkin": false,
       "capsule": false
     },
-    "guestListVersion": "Aguardando lista oficial de convidados",
-    "guestListUpdatedAt": "2026-08-01"
+    "guestListVersion": "Convite aberto — nomes recolhidos por RSVP e contribuições",
+    "guestListUpdatedAt": "2026-08-06",
+    "accessMode": "public",
+    "publicAccess": true,
+    "publicRsvpAutoCreate": true,
+    "publicGiftAutoCreate": true,
+    "requireMessageName": true
   },
   "guests": [],
   "giftOptions": [
@@ -95,21 +100,21 @@
       "category": "Contribuições para construção",
       "quantityStep": 10,
       "minQuantity": 10,
-      "unit": "unidade"
+      "unit": "bloco"
     },
     {
       "name": "Cimento",
       "category": "Contribuições para construção",
       "quantityStep": 1,
       "minQuantity": 1,
-      "unit": "unidade"
+      "unit": "saco"
     },
     {
       "name": "Ferro (Varão)",
       "category": "Contribuições para construção",
       "quantityStep": 1,
       "minQuantity": 1,
-      "unit": "unidade"
+      "unit": "varão"
     }
   ]
 }
