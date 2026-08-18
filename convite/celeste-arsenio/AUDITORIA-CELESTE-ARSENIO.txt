@@ -21,7 +21,7 @@ Slug final: celeste-arsenio
 [OK] Todos os botões de mapa usam os links fornecidos.
 [OK] Botão flutuante de mapa abre escolha entre igreja e Quinta Santa Carolina.
 [OK] RSVP nominal, informação de mesa, mural, galeria/lightbox e música mantidos.
-[OK] Lista de presentes com 18 opções e escolha única mantida.
+[OK] Lista de presentes com 15 opções oficiais e escolha única mantida.
 [OK] Dados bancários e formulário de comprovativo do modelo removidos.
 [OK] Check-in/QR e Cápsula do Tempo não aparecem no convite; páginas directas mostram indisponibilidade.
 [OK] Lembrete ICS actualizado para Aplonia & Vander, data, horas e locais correctos.

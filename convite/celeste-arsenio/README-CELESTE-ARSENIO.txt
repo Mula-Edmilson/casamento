@@ -20,6 +20,6 @@ Notas de implementação
 - Todos os slugs foram uniformizados para celeste-arsenio.
 - As três fotografias fornecidas foram aplicadas na capa, história e galeria.
 - Os dados bancários do convite-modelo foram removidos, porque não foram fornecidos dados de contribuição para este casal.
-- A lista de presentes do modelo Pérola foi mantida e continua com escolha única.
+- A lista de presentes foi actualizada para as 15 opções oficiais e continua com escolha única.
 - Check-in e cápsula permanecem desactivados/ocultos no painel deste pacote.
 - A lista oficial de convidados ainda deve ser adicionada a mongodb-seed-data.json antes da importação.

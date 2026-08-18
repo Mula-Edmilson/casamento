@@ -78,63 +78,27 @@ window.LIRANDZO_GUESTS = [];
 
 window.LIRANDZO_GIFT_OPTIONS = [
   {
-    "name": "Microondas",
+    "name": "TV Plasma LED 55 polegadas (Samsung ou Hisense)",
     "category": "Lista de presentes"
   },
   {
-    "name": "Taças de cristal",
+    "name": "Sofá (Nando Service)",
     "category": "Lista de presentes"
   },
   {
-    "name": "Jogo de banho Maria",
+    "name": "Fogão de 6 Bocas",
     "category": "Lista de presentes"
   },
   {
-    "name": "Máquina de café",
+    "name": "Mesa de Jantar de 8 lugares",
     "category": "Lista de presentes"
   },
   {
-    "name": "Máquina de sumo",
+    "name": "Material de construção",
     "category": "Lista de presentes"
   },
   {
-    "name": "Jogo de chávenas",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Tigelas organizadoras de geleira",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Ferro de engomar",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Jogo de talheres",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Tábuas de madeira",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Edredon casal",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Organizador de gavetas",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Tapete para sala (cinza)",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Batedeira",
-    "category": "Lista de presentes"
-  },
-  {
-    "name": "Airfryer",
+    "name": "Ar condicionado 12000 BTUs",
     "category": "Lista de presentes"
   },
   {
@@ -142,11 +106,35 @@ window.LIRANDZO_GIFT_OPTIONS = [
     "category": "Lista de presentes"
   },
   {
-    "name": "Panelas anti aderentes",
+    "name": "Panelas de Inox",
     "category": "Lista de presentes"
   },
   {
-    "name": "Fogão a gás e forno elétrico",
+    "name": "Aspirador de Pó",
+    "category": "Lista de presentes"
+  },
+  {
+    "name": "Jogo de Pratos",
+    "category": "Lista de presentes"
+  },
+  {
+    "name": "Jogos de Taças",
+    "category": "Lista de presentes"
+  },
+  {
+    "name": "Maleta de Talheres",
+    "category": "Lista de presentes"
+  },
+  {
+    "name": "Banho Maria de material inox",
+    "category": "Lista de presentes"
+  },
+  {
+    "name": "Tanque de reservatório de Água (300 LT)",
+    "category": "Lista de presentes"
+  },
+  {
+    "name": "JBL PartyBox 320 ou Sound de Bar",
     "category": "Lista de presentes"
   }
 ];

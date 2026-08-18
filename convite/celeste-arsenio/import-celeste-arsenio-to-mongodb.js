@@ -35,10 +35,13 @@ async function main() {
     if (existing) { await Guest.updateOne({ _id: existing._id }, { $set: payload }); updated += 1; } else { await Guest.create(payload); inserted += 1; }
   }
   if (latestGuestNames.size) { const obsoleteGuests = await Guest.find({ inviteId: invite._id }).select('_id normalizedName'); const ids = obsoleteGuests.filter(g => !latestGuestNames.has(g.normalizedName)).map(g => g._id); if (ids.length) { const removal = await Guest.deleteMany({ _id: { $in: ids } }); removedObsoleteGuests = removal.deletedCount || ids.length; } }
+  const officialGiftNames = (seed.giftOptions || []).map(item => String(item.name || item.label || '').trim()).filter(Boolean);
   let giftCount = 0;
-  for (const item of seed.giftOptions || []) { const name = item.name || item.label; if (!name) continue; await GiftItem.findOneAndUpdate({ inviteId: invite._id, name }, { $setOnInsert: { inviteId: invite._id, slug: SLUG, name, category: item.category || 'Lista de presentes', reserved: false } }, { upsert: true }); giftCount += 1; }
-  await Activity.create({ inviteId: invite._id, slug: SLUG, type: 'import', title: 'Dados importados para MongoDB', detail: `${inserted} convidados novos · ${updated} actualizados · ${removedObsoleteGuests} convidados removidos · ${giftCount} presentes oficiais`, timestamp: new Date() });
-  console.log('Importação concluída.', { inviteId: String(invite._id), slug: SLUG, inserted, updated, removedObsoleteGuests, giftCount });
+  for (const item of seed.giftOptions || []) { const name = String(item.name || item.label || '').trim(); if (!name) continue; await GiftItem.findOneAndUpdate({ inviteId: invite._id, name }, { $setOnInsert: { inviteId: invite._id, slug: SLUG, name, category: item.category || 'Lista de presentes', reserved: false } }, { upsert: true }); giftCount += 1; }
+  const obsoleteGiftRemoval = officialGiftNames.length ? await GiftItem.deleteMany({ inviteId: invite._id, reserved: { $ne: true }, name: { $nin: officialGiftNames } }) : { deletedCount: 0 };
+  const removedObsoleteGifts = obsoleteGiftRemoval.deletedCount || 0;
+  await Activity.create({ inviteId: invite._id, slug: SLUG, type: 'import', title: 'Dados importados para MongoDB', detail: `${inserted} convidados novos · ${updated} actualizados · ${removedObsoleteGuests} convidados removidos · ${giftCount} presentes oficiais · ${removedObsoleteGifts} presentes antigos não escolhidos removidos`, timestamp: new Date() });
+  console.log('Importação concluída.', { inviteId: String(invite._id), slug: SLUG, inserted, updated, removedObsoleteGuests, giftCount, removedObsoleteGifts });
   await mongoose.disconnect();
 }
 main().catch(async err => { console.error(err); try { await mongoose.disconnect(); } catch {} process.exit(1); });

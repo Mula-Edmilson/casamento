@@ -945,37 +945,52 @@ const DEFAULT_GIFTS = ['Geleira', 'Fogão', 'Congelador', 'TV', 'Batedeira', 'Me
 // reservados no MongoDB e bloqueados correctamente.
 const INVITE_SPECIFIC_GIFTS = {
   'celeste-arsenio': [
-    'Microondas',
-    'Taças de cristal',
-    'Jogo de banho Maria',
-    'Máquina de café',
-    'Máquina de sumo',
-    'Jogo de chávenas',
-    'Tigelas organizadoras de geleira',
-    'Ferro de engomar',
-    'Jogo de talheres',
-    'Tábuas de madeira',
-    'Edredon casal',
-    'Organizador de gavetas',
-    'Tapete para sala (cinza)',
-    'Batedeira',
-    'Airfryer',
-    'Máquina de lavar',
-    'Panelas anti aderentes',
-    'Fogão a gás e forno elétrico'
+    "TV Plasma LED 55 polegadas (Samsung ou Hisense)",
+    "Sofá (Nando Service)",
+    "Fogão de 6 Bocas",
+    "Mesa de Jantar de 8 lugares",
+    "Material de construção",
+    "Ar condicionado 12000 BTUs",
+    "Máquina de lavar",
+    "Panelas de Inox",
+    "Aspirador de Pó",
+    "Jogo de Pratos",
+    "Jogos de Taças",
+    "Maleta de Talheres",
+    "Banho Maria de material inox",
+    "Tanque de reservatório de Água (300 LT)",
+    "JBL PartyBox 320 ou Sound de Bar"
   ]
 };
 
 function giftSeedListForInvite(invite) {
   const slug = String(invite?.slug || '').trim().toLowerCase();
   const custom = INVITE_SPECIFIC_GIFTS[slug] || [];
+
+  // Celeste & Arsenio usa apenas a lista oficial específica deste convite.
+  // Os restantes convites mantêm exactamente o comportamento anterior.
+  if (slug === 'celeste-arsenio' && custom.length) return Array.from(new Set(custom));
   return Array.from(new Set([...(custom.length ? custom : DEFAULT_GIFTS), ...DEFAULT_GIFTS]));
 }
 
 async function seedDefaultGifts(invite) {
   if (!invite || !invite._id) return;
 
-  for (const name of giftSeedListForInvite(invite)) {
+  const slug = String(invite.slug || '').trim().toLowerCase();
+  const custom = INVITE_SPECIFIC_GIFTS[slug] || [];
+  const officialNames = giftSeedListForInvite(invite);
+
+  // Para convites com lista própria, remove apenas itens antigos ainda não escolhidos.
+  // Reservas já efectuadas são preservadas para não apagar escolhas reais de convidados.
+  if (slug === 'celeste-arsenio' && custom.length) {
+    await GiftItem.deleteMany({
+      inviteId: invite._id,
+      reserved: { $ne: true },
+      name: { $nin: officialNames }
+    });
+  }
+
+  for (const name of officialNames) {
     try {
       await GiftItem.updateOne(
         { inviteId: invite._id, name },
