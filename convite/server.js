@@ -969,19 +969,86 @@ const INVITE_SPECIFIC_GIFTS = {
     'Fogão a gás e forno elétrico',
     'Ar condicionado',
     'Televisor LG'
+  ],
+  'celeste-arsenio': [
+    'TV Plasma LED 55 polegadas (Samsung ou Hisense)',
+    'Sofá (Nando Service)',
+    'Fogão de 6 Bocas',
+    'Mesa de Jantar de 8 lugares',
+    'Material de construção',
+    'Ar condicionado 12000 BTUs',
+    'Máquina de lavar',
+    'Panelas de Inox',
+    'Aspirador de Pó',
+    'Jogo de Pratos',
+    'Jogos de Taças',
+    'Maleta de Talheres',
+    'Banho Maria de material inox',
+    'Tanque de reservatório de Água (300 LT)',
+    'JBL PartyBox 320 ou Sound de Bar'
   ]
 };
 
 function giftSeedListForInvite(invite) {
   const slug = String(invite?.slug || '').trim().toLowerCase();
   const custom = INVITE_SPECIFIC_GIFTS[slug] || [];
+
+  // Celeste & Arsenio usa exclusivamente a lista oficial do seu convite.
+  // Todos os restantes convites mantêm exactamente o comportamento anterior.
+  if (slug === 'celeste-arsenio' && custom.length) return Array.from(new Set(custom));
+
   return Array.from(new Set([...(custom.length ? custom : DEFAULT_GIFTS), ...DEFAULT_GIFTS]));
 }
 
 async function seedDefaultGifts(invite) {
   if (!invite || !invite._id) return;
 
-  for (const name of giftSeedListForInvite(invite)) {
+  const slug = String(invite.slug || '').trim().toLowerCase();
+  const officialNames = giftSeedListForInvite(invite);
+
+  // Sincronização isolada de Celeste & Arsenio.
+  // Se uma reserva antiga tiver apenas uma grafia diferente do mesmo presente,
+  // normaliza o próprio registo reservado para o nome oficial sem perder a reserva.
+  // Depois remove somente itens antigos que ainda estejam livres.
+  if (slug === 'celeste-arsenio') {
+    const existingItems = await GiftItem.find({ inviteId: invite._id });
+
+    for (const officialName of officialNames) {
+      const equivalentReserved = existingItems.find(item => item.reserved && isSameGiftName(item.name, officialName));
+      if (!equivalentReserved || equivalentReserved.name === officialName) continue;
+
+      const exactOfficial = existingItems.find(item => item.name === officialName);
+      if (exactOfficial && String(exactOfficial._id) !== String(equivalentReserved._id)) {
+        if (exactOfficial.reserved) continue;
+        const removedDuplicate = await GiftItem.deleteOne({
+          _id: exactOfficial._id,
+          inviteId: invite._id,
+          reserved: { $ne: true }
+        });
+        // Se ficou reservado entre a leitura e a limpeza, preserva-o e não força rename.
+        if (!removedDuplicate.deletedCount) continue;
+      }
+
+      try {
+        await GiftItem.updateOne(
+          { _id: equivalentReserved._id, inviteId: invite._id },
+          { $set: { name: officialName, slug: invite.slug } }
+        );
+      } catch (err) {
+        // Uma corrida concorrente pode ter criado o nome oficial entretanto.
+        // Nesse caso, não elimina nem altera a reserva histórica.
+        if (!err || err.code !== 11000) throw err;
+      }
+    }
+
+    await GiftItem.deleteMany({
+      inviteId: invite._id,
+      reserved: { $ne: true },
+      name: { $nin: officialNames }
+    });
+  }
+
+  for (const name of officialNames) {
     try {
       await GiftItem.updateOne(
         { inviteId: invite._id, name },
@@ -2834,7 +2901,14 @@ async function listGiftSelections(req, res, invite) {
 
 async function listGiftRowsForPublic(invite) {
   await ensureLegacyGiftReservations(invite);
-  const gifts = await GiftItem.find({ inviteId: invite._id }).sort({ name: 1 });
+
+  const slug = String(invite?.slug || '').trim().toLowerCase();
+  const filter = { inviteId: invite._id };
+
+  // Celeste & Arsenio apresenta apenas os 15 itens da lista oficial.
+  if (slug === 'celeste-arsenio') filter.name = { $in: giftSeedListForInvite(invite) };
+
+  const gifts = await GiftItem.find(filter).sort({ name: 1 });
   return gifts.map(cleanGiftForPublic);
 }
 async function listContributions(req, res, invite) {
