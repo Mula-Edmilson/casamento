@@ -1,0 +1,87 @@
+{
+  "event": {
+    "coupleNames": "Louren & Acácio",
+    "displayNames": "Louren & Acácio",
+    "bride": "Louren Machava",
+    "groom": "Acácio Banze",
+    "monogram": "LA",
+    "eventType": "Casamento",
+    "language": "Português",
+    "visualStyle": "Elegante e romântico",
+    "colors": "Branco, cinza e prateado metálico",
+    "dateISO": "2026-10-31T10:30:00+02:00",
+    "eventDateLong": "31 de outubro de 2026",
+    "rsvpDeadline": "30 de setembro de 2026",
+    "timezone": "Africa/Maputo",
+    "verse": "Encontrei o amor da minha vida! Eu o abracei e não soltei",
+    "verseReference": "Canticos 3:4",
+    "brideParents": "Silvestre Machava & Emilia Macuacua",
+    "groomParents": "Francisco Banze (em Memória) & Felicidade Madime",
+    "ceremonyTitle": "Cerimónia Religiosa",
+    "ceremonyPlace": "Igreja - Paroquia Nossa Senhora das Vitorias",
+    "ceremonyTime": "10:30",
+    "ceremonyMap": "https://maps.app.goo.gl/UpuBSt3axwLJdYVV9",
+    "receptionTitle": "Recepção",
+    "receptionPlace": "Salao - Vila Verde, Mozal",
+    "receptionTime": "14:00",
+    "receptionMap": "https://maps.app.goo.gl/k6AyBu2VFFpy5R2EA",
+    "additionalTitle": "",
+    "additionalPlace": "",
+    "additionalTime": "",
+    "supportContacts": "+258 864053891",
+    "supportWhatsapp": "+258864053891",
+    "estimatedGuests": 200,
+    "guestRows": 0,
+    "giftSectionType": "Lista de presentes + contribuição monetária",
+    "bankAccounts": [
+      {
+        "label": "Conta Bancária (Millennium BIM) — DEMO",
+        "holder": "Louren & Acácio — DEMO",
+        "account": "000000000",
+        "nib": "000000000000000000000",
+        "logo": "assets/payment/bim.jpg"
+      },
+      {
+        "label": "Conta Bancária (BCI) — DEMO",
+        "holder": "Louren & Acácio — DEMO",
+        "account": "00000000000000",
+        "nib": "000000000000000000000",
+        "logo": "assets/payment/bci-placeholder.svg"
+      }
+    ],
+    "mobilePayments": [
+      {
+        "label": "M-Pesa — DEMO",
+        "number": "840000000",
+        "holder": "Louren & Acácio — DEMO",
+        "logo": "assets/payment/m-pesa.jpg"
+      },
+      {
+        "label": "e-Mola — DEMO",
+        "number": "860000000",
+        "holder": "Louren & Acácio — DEMO",
+        "logo": "assets/payment/e-mola.jpg"
+      }
+    ],
+    "story": {
+      "encontro": "Nós nos conhecemos numa paragem, enquanto esperávamos pelo chapa. Naquele momento, jamais imaginávamos que um encontro tão simples pudesse ser o início de uma história tão bonita.",
+      "amizade": "Entre conversas, momentos partilhados, fomos criando confiança, cumplicidade e um espaço especial na vida um do outro. E foi nessa amizade que começámos a descobrir o quanto significávamos um para o outro.",
+      "crescimento": "Com o passar do tempo, a nossa relação foi ganhando novas formas. Vivemos momentos felizes, enfrentámos desafios e aprendemos a estar presentes um para o outro.",
+      "promessa": "Hoje, diante de Deus e das pessoas que amamos, damos mais um passo na nossa história. Prometemos continuar a cuidar do nosso amor, a apoiar-nos nos dias bons e nos dias difíceis e a escolher um ao outro em cada nova etapa da vida."
+    },
+    "letter": "Queridos familiares e amigos,\n\nHoje celebramos muito mais do que o nosso casamento. Celebramos também as pessoas que fizeram e continuam a fazer parte da nossa história.\n\nA vossa presença neste dia torna este momento ainda mais especial. Obrigado por cada palavra, cada gesto de carinho, cada conselho e, acima de tudo, por caminharem connosco ao longo da vida.\n\nÉ uma alegria poder partilhar este novo capítulo ao lado das pessoas que amamos.\n\nLouren & Acácio"
+  },
+  "guests": [
+    {
+      "number": 1,
+      "category": "Single",
+      "name": "Convidado Demo",
+      "token": "la-2026-001-convidado-demo",
+      "mesa": "A definir",
+      "maxGuests": 1,
+      "companions": 0,
+      "checkedIn": false
+    }
+  ],
+  "giftOptions": []
+}
