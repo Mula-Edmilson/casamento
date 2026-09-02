@@ -4987,17 +4987,25 @@ body.convite-white-silver-theme .footer-contact {
 
 body.convite-white-silver-theme .hero-bottom-content .names,
 body.convite-white-silver-theme .names,
-body.convite-white-silver-theme .script-heading,
-body.convite-white-silver-theme .chapter-title,
-body.convite-white-silver-theme .event-location,
 body.convite-white-silver-theme .footer .names,
 body.convite-white-silver-theme .letter-signature,
 body.convite-white-silver-theme .modal-signature {
-  color: #aeb4bd !important;
-  background: var(--silver-metal) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
+  color: #545b64 !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #545b64 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,.92), 0 4px 14px rgba(36,41,47,.12) !important;
+}
+
+body.convite-white-silver-theme .script-heading,
+body.convite-white-silver-theme .chapter-title,
+body.convite-white-silver-theme .event-location {
+  color: #676e77 !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #676e77 !important;
   text-shadow: none !important;
 }
 

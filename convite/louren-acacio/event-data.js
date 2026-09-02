@@ -30,7 +30,7 @@ window.LIRANDZO_EVENT = {
   "additionalTime": "",
   "supportContacts": "+258 864053891",
   "supportWhatsapp": "+258864053891",
-  "estimatedGuests": 200,
+  "estimatedGuests": 0,
   "guestRows": 0,
   "giftSectionType": "Lista de presentes + contribuição monetária",
   "bankAccounts": [
@@ -71,16 +71,5 @@ window.LIRANDZO_EVENT = {
   },
   "letter": "Queridos familiares e amigos,\n\nHoje celebramos muito mais do que o nosso casamento. Celebramos também as pessoas que fizeram e continuam a fazer parte da nossa história.\n\nA vossa presença neste dia torna este momento ainda mais especial. Obrigado por cada palavra, cada gesto de carinho, cada conselho e, acima de tudo, por caminharem connosco ao longo da vida.\n\nÉ uma alegria poder partilhar este novo capítulo ao lado das pessoas que amamos.\n\nLouren & Acácio"
 };
-window.LIRANDZO_GUESTS = [
-  {
-    "number": 1,
-    "category": "Single",
-    "name": "Convidado Demo",
-    "token": "la-2026-001-convidado-demo",
-    "mesa": "A definir",
-    "maxGuests": 1,
-    "companions": 0,
-    "checkedIn": false
-  }
-];
+window.LIRANDZO_GUESTS = [];
 window.LIRANDZO_GIFT_OPTIONS = [];

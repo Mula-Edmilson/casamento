@@ -11,6 +11,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const seed = require('./mongodb-seed-data.json');
+const inviteMeta = require('./invite-data.json');
 
 const SLUG = process.env.INVITE_SLUG || 'louren-acacio';
 const PUBLIC_SITE_URL = (process.env.PUBLIC_SITE_URL || 'https://lirandzo.com').replace(/\/+$/, '');
@@ -91,15 +92,15 @@ async function main() {
     {
       $set: {
         slug: SLUG,
-        clientName: event.displayNames || event.coupleNames || 'Louren & Acácio',
+        clientName: inviteMeta.clientName || event.displayNames || event.coupleNames || 'Acacio Galiano Banze',
         coupleNames: event.coupleNames || 'Louren & Acácio',
         bride: event.bride || 'Louren Machava',
         groom: event.groom || 'Acácio Banze',
-        packageKey: process.env.INVITE_PACKAGE || 'rubi',
+        packageKey: process.env.INVITE_PACKAGE || inviteMeta.packageKey || 'esmeralda',
         status: 'published',
         eventDateISO: event.dateISO || '',
         rsvpDeadline: event.rsvpDeadline || '',
-        publicUrl: `${PUBLIC_SITE_URL}/convite/${SLUG}/`,
+        publicUrl: inviteMeta.publicUrl || `${PUBLIC_SITE_URL}/convite/${SLUG}/`,
         githubPath: `convite/${SLUG}`,
         config: event
       }
