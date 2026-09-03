@@ -32,7 +32,7 @@ window.LIRANDZO_EVENT = {
   "supportWhatsapp": "+258864053891",
   "estimatedGuests": 0,
   "guestRows": 0,
-  "giftSectionType": "Lista de presentes + contribuição monetária",
+  "giftSectionType": "Contribuição monetária",
   "bankAccounts": [
     {
       "label": "Conta Bancária (Millennium BIM) — DEMO",

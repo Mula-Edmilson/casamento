@@ -5413,3 +5413,224 @@ body.convite-white-silver-theme .modal-card.has-modal-hero > :not(.modal-hero) {
     max-width: calc(100% - 40px) !important;
   }
 }
+
+
+
+/* =========================================================
+   AJUSTES QA FINAIS — CONTRASTE / CONTRIBUIÇÕES / MAPAS
+   Abordagem INSPEÇÃO CSS: concentrado apenas no CSS proprietário
+   do convite, sem empilhar folhas novas.
+   ========================================================= */
+
+body.convite-white-silver-theme .section.section-scene .vintage-scene img {
+  filter: brightness(1.08) saturate(0.92) contrast(0.95) !important;
+}
+
+body.convite-white-silver-theme .section.section-scene .vintage-scene-overlay,
+body.convite-white-silver-theme .section.section-scene .vintage-scene-overlay.soft-dark,
+body.convite-white-silver-theme .section.section-scene .vintage-scene-overlay.warm-light {
+  background:
+    linear-gradient(to bottom,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.54) 28%,
+      rgba(255,255,255,0.82) 54%,
+      rgba(255,255,255,0.95) 72%,
+      rgba(255,255,255,1) 100%) !important;
+}
+
+body.convite-white-silver-theme .section.section-scene .vintage-content {
+  position: relative !important;
+}
+
+body.convite-white-silver-theme .section.section-scene .vintage-content::before {
+  content: "";
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(92%, 640px);
+  height: clamp(200px, 28vw, 272px);
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.72) 68%, rgba(255,255,255,0.08) 100%);
+  box-shadow: 0 18px 44px rgba(18,24,32,0.06);
+  pointer-events: none;
+  z-index: 1;
+}
+
+body.convite-white-silver-theme .section.section-scene .vintage-section-kicker,
+body.convite-white-silver-theme .section.section-scene .vintage-title-wrap,
+body.convite-white-silver-theme .section.section-scene .section-title,
+body.convite-white-silver-theme .section.section-scene .section-subtitle {
+  position: relative;
+  z-index: 2;
+}
+
+body.convite-white-silver-theme .section.section-scene .section-title {
+  color: #14181d !important;
+}
+
+body.convite-white-silver-theme .section.section-scene .section-subtitle {
+  color: #353d46 !important;
+  max-width: 660px !important;
+  line-height: 1.7 !important;
+}
+
+body.convite-white-silver-theme .vintage-letter-preview,
+body.convite-white-silver-theme .travel-card,
+body.convite-white-silver-theme .honor-grid,
+body.convite-white-silver-theme .menu-preview-grid,
+body.convite-white-silver-theme .etiquette-grid,
+body.convite-white-silver-theme .guide-grid {
+  position: relative;
+  z-index: 3;
+}
+
+body.convite-white-silver-theme .honor-grid,
+body.convite-white-silver-theme .menu-preview-grid,
+body.convite-white-silver-theme .etiquette-grid,
+body.convite-white-silver-theme .guide-grid {
+  align-items: stretch;
+}
+
+body.convite-white-silver-theme .honor-card,
+body.convite-white-silver-theme .menu-preview-card,
+body.convite-white-silver-theme .etiquette-item,
+body.convite-white-silver-theme .guide-item,
+body.convite-white-silver-theme .travel-card {
+  border-radius: 28px !important;
+}
+
+body.convite-white-silver-theme .guide-item,
+body.convite-white-silver-theme .travel-card,
+body.convite-white-silver-theme .vintage-letter-preview {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.convite-white-silver-theme .location-choice-card {
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+}
+
+body.convite-white-silver-theme .location-choice-preview {
+  min-height: 232px;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+body.convite-white-silver-theme .religious-preview {
+  background-image: url('assets/media/map-thumb-cerimonia.png') !important;
+}
+
+body.convite-white-silver-theme .civil-preview {
+  background-image: url('assets/media/map-thumb-recepcao.png') !important;
+}
+
+body.convite-white-silver-theme .location-choice-preview::before {
+  content: none !important;
+  display: none !important;
+}
+
+body.convite-white-silver-theme .location-choice-overlay {
+  background: linear-gradient(to bottom,
+    rgba(255,255,255,0.06) 0%,
+    rgba(255,255,255,0.10) 24%,
+    rgba(255,255,255,0.52) 58%,
+    rgba(255,255,255,0.94) 100%) !important;
+}
+
+body.convite-white-silver-theme .location-choice-top-accent {
+  background: linear-gradient(to bottom, rgba(23,27,32,0.10), rgba(23,27,32,0.00)) !important;
+  height: 42% !important;
+}
+
+body.convite-white-silver-theme .location-choice-caption {
+  left: 24px !important;
+  right: 24px !important;
+  bottom: 22px !important;
+}
+
+body.convite-white-silver-theme .location-choice-caption span {
+  color: #3c444d !important;
+  opacity: 1 !important;
+}
+
+body.convite-white-silver-theme .location-choice-caption strong {
+  color: #181d23 !important;
+  font-size: clamp(1.6rem, 3.6vw, 2.2rem) !important;
+  line-height: 1.08 !important;
+  max-width: 14ch;
+}
+
+body.convite-white-silver-theme .location-choice-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 22px 22px 24px !important;
+}
+
+body.convite-white-silver-theme .location-choice-body p {
+  color: #49515a !important;
+  margin: 0 !important;
+}
+
+body.convite-white-silver-theme .location-choice-body .btn {
+  margin-top: auto;
+}
+
+body.convite-white-silver-theme .tab-buttons.single-tab {
+  display: flex;
+  justify-content: center;
+}
+
+body.convite-white-silver-theme .tab-buttons.single-tab .tab-btn {
+  width: min(100%, 420px);
+  pointer-events: none;
+}
+
+body.convite-white-silver-theme .contribution-only {
+  padding-top: 8px;
+}
+
+@media (max-width: 768px) {
+  body.convite-white-silver-theme .section.section-scene .vintage-content::before {
+    top: -18px;
+    width: min(94%, 520px);
+    height: 220px;
+    border-radius: 28px;
+  }
+
+  body.convite-white-silver-theme .section.section-scene .section-title {
+    font-size: clamp(2.8rem, 11vw, 4rem) !important;
+  }
+
+  body.convite-white-silver-theme .section.section-scene .section-subtitle {
+    font-size: 1.04rem !important;
+    max-width: 92% !important;
+  }
+
+  body.convite-white-silver-theme .location-chooser-grid {
+    gap: 14px !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+  }
+
+  body.convite-white-silver-theme .location-choice-preview {
+    min-height: 196px !important;
+  }
+
+  body.convite-white-silver-theme .location-choice-caption strong {
+    font-size: 1.2rem !important;
+    max-width: none;
+  }
+
+  body.convite-white-silver-theme .location-choice-body {
+    padding: 18px 18px 20px !important;
+  }
+}
+
