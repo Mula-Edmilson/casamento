@@ -5634,3 +5634,90 @@ body.convite-white-silver-theme .contribution-only {
   }
 }
 
+
+
+/* =========================================================
+   AJUSTES FINAIS — LEGENDAS OCULTAS / POPUPS TOP-FOCUS /
+   DECORAÇÃO FULL-WIDTH NO GRANDE DIA
+   ========================================================= */
+
+/* 1) Remover apenas o texto de apoio, preservando exactamente o espaço */
+body.convite-white-silver-theme #carta-dos-noivos .section-subtitle,
+body.convite-white-silver-theme #menu-celebracao .section-subtitle,
+body.convite-white-silver-theme #etiqueta-evento .section-subtitle,
+body.convite-white-silver-theme #transporte-apoio .section-subtitle {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 2) Nos pop-ups/modais, dar mais ênfase ao topo das fotografias
+      para evitar rostos cortados */
+body.convite-white-silver-theme .modal-hero,
+body.convite-white-silver-theme .modal-hero::before,
+body.convite-white-silver-theme .modal-hero-rsvp,
+body.convite-white-silver-theme .modal-hero-gifts,
+body.convite-white-silver-theme .modal-hero-letter,
+body.convite-white-silver-theme .modal-hero-honor,
+body.convite-white-silver-theme .modal-hero-family,
+body.convite-white-silver-theme .modal-hero-menu,
+body.convite-white-silver-theme .modal-hero-etiquette,
+body.convite-white-silver-theme .modal-hero-travel,
+body.convite-white-silver-theme .modal-hero-guest {
+  background-position: center 14% !important;
+}
+
+/* 3) Fundo de linhas decorativas do bloco "O Grande Dia"
+      a tocar correctamente as duas bordas */
+body.convite-white-silver-theme #agenda-evento {
+  overflow: hidden !important;
+}
+
+body.convite-white-silver-theme #agenda-evento::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -18px !important;
+  right: -18px !important;
+  width: auto !important;
+  height: 128px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 180' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23bcae8d' stroke-width='1.6' stroke-linecap='round' opacity='0.52'%3E%3Cpath d='M0 118 C110 58 210 42 330 76 S560 148 720 112 S955 38 1200 88'/%3E%3Cpath d='M0 104 C115 44 225 28 352 62 S582 134 738 98 S968 26 1200 76'/%3E%3Cpath d='M0 132 C106 72 208 56 326 90 S558 162 718 126 S954 52 1200 102'/%3E%3Cpath d='M0 90 C118 32 236 18 366 54 S602 124 754 88 S982 12 1200 62'/%3E%3Cpath d='M0 146 C112 86 224 70 342 104 S574 176 736 140 S970 66 1200 116'/%3E%3C/g%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+  background-position: center top !important;
+  opacity: 0.9 !important;
+  transform: none !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+body.convite-white-silver-theme #agenda-evento::after {
+  opacity: 0.10 !important;
+}
+
+body.convite-white-silver-theme #agenda-evento > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  body.convite-white-silver-theme .modal-hero,
+  body.convite-white-silver-theme .modal-hero::before,
+  body.convite-white-silver-theme .modal-hero-rsvp,
+  body.convite-white-silver-theme .modal-hero-gifts,
+  body.convite-white-silver-theme .modal-hero-letter,
+  body.convite-white-silver-theme .modal-hero-honor,
+  body.convite-white-silver-theme .modal-hero-family,
+  body.convite-white-silver-theme .modal-hero-menu,
+  body.convite-white-silver-theme .modal-hero-etiquette,
+  body.convite-white-silver-theme .modal-hero-travel,
+  body.convite-white-silver-theme .modal-hero-guest {
+    background-position: center 10% !important;
+  }
+
+  body.convite-white-silver-theme #agenda-evento::before {
+    left: -12px !important;
+    right: -12px !important;
+    height: 118px !important;
+  }
+}
