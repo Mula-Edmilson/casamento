@@ -507,32 +507,7 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .info-text {
-      margin-top: 22px;
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      padding-top: 18px;
-      border-top: 1px solid rgba(174,180,189,0.14);
-      text-align: left;
-      display: grid;
-      gap: 8px;
-    }
-
-    .info-line {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .info-line svg {
-      width: 16px;
-      height: 16px;
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-
-    @media (max-width: 768px) {
+@media (max-width: 768px) {
       .names { font-size: 3.9rem; }
       .content { padding: 1rem 0.5rem; }
       .time-row { gap: 0.75rem; }
@@ -624,10 +599,10 @@
         
         <form id="loginForm">
           <div class="form-group">
-            <label for="name">Seu primeiro nome</label>
+            <label for="name">Seu nome e apelido</label>
             <div class="input-shell">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-3.1 3.5-5 7-5s6.2 1.9 7 5"/></svg>
-              <input type="text" id="name" placeholder="Ex.: João" required autocomplete="off">
+              <input type="text" id="name" placeholder="Ex.: João Silva" required autocomplete="off">
             </div>
           </div>
           <button type="submit" class="btn btn-primary" id="submitBtn">
@@ -637,11 +612,6 @@
           <button type="button" class="btn btn-close" id="closeLoginBtn">Cancelar</button>
           <p id="loginError" class="login-error-message"></p>
         </form>
-        
-        <div class="info-text">
-          <div class="info-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg><span>Qualquer dispositivo autorizado pode abrir o convite com o nome do convidado.</span></div>
-          <div class="info-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6.5-3.6-8.5-8.2C1.8 7.6 4.2 4 8 4c1.8 0 3.1.8 4 2 1-1.2 2.2-2 4-2 3.8 0 6.2 3.6 4.5 7.8C18.5 16.4 12 20 12 20Z"/></svg><span>Digite o seu primeiro nome como está no convite.</span></div>
-        </div>
       </div>
     </div>
   </div>

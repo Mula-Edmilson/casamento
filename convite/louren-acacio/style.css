@@ -1932,6 +1932,28 @@ input[type="file"]::file-selector-button:hover {
   display: inline-block;
 }
 
+
+
+.orientation-notice {
+  width: fit-content;
+  max-width: 100%;
+  margin: 4px auto 18px !important;
+  padding: 10px 14px;
+  border: 1px solid rgba(174, 180, 189, 0.42);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.78);
+  color: #4f5660 !important;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  letter-spacing: 0.015em;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.045);
+}
+
+.orientation-notice strong {
+  color: #3f464f !important;
+  font-weight: 600;
+}
+
 .has-icon {
   padding-top: 76px;
 }
