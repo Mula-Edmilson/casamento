@@ -192,6 +192,31 @@
       margin: 0.65rem 0 0.2rem;
     }
 
+    .page .index-names {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: .78;
+      width: 100%;
+      margin: .5rem auto .45rem;
+    }
+
+    .page .index-names > span {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .page .index-names .index-amp {
+      font-family: var(--font-heading);
+      font-size: .36em;
+      line-height: 1;
+      margin: .18em 0 .08em;
+      opacity: .92;
+    }
+
     .date-text {
       font-size: 0.9rem;
       letter-spacing: 0.22em;
@@ -574,7 +599,7 @@
         </div>
       </div>
 
-      <h1 class="names">Louren & Acácio</h1>
+      <h1 class="names index-names" aria-label="Louren e Acácio"><span>Louren</span><span class="index-amp">&amp;</span><span>Acácio</span></h1>
       <div class="date-text">31 DE OUTUBRO 2026</div>
       
       <button class="btn-open" id="openLoginBtn">
@@ -764,6 +789,8 @@ async function performLogin(name) {
     localStorage.setItem('guestMaxGuests', guest.maxGuests || '1');
     localStorage.setItem('guestCompanions', guest.companions || Math.max((Number(guest.maxGuests)||1)-1,0));
     localStorage.setItem('guestNumber', guest.number || '');
+    localStorage.setItem('guestCategory', guest.category || '');
+    localStorage.setItem('guestNotes', guest.notes || '');
     localStorage.removeItem('deviceToken');
     localStorage.setItem('demoMode', window.LirandzoAPI.isConfigured() ? 'false' : 'true');
     window.LirandzoAPI.post({ action: 'open_invite', token, nome: guest.name || guest.nome || cleanName, userAgent: getUserAgentInfo(), timestamp: new Date().toISOString() }).catch(() => {});

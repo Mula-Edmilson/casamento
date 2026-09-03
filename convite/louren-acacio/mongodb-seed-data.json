@@ -15,7 +15,7 @@
     "timezone": "Africa/Maputo",
     "verse": "Encontrei o amor da minha vida! Eu o abracei e não soltei",
     "verseReference": "Canticos 3:4",
-    "brideParents": "Silvestre Machava & Emilia Macuacua",
+    "brideParents": "Silvestre Machava & Emília Macuacua",
     "groomParents": "Francisco Banze (em Memória) & Felicidade Madime",
     "ceremonyTitle": "Cerimónia Religiosa",
     "ceremonyPlace": "Igreja - Paroquia Nossa Senhora das Vitorias",
@@ -32,37 +32,9 @@
     "supportWhatsapp": "+258864053891",
     "estimatedGuests": 0,
     "guestRows": 0,
-    "giftSectionType": "Lista de presentes + contribuição monetária",
-    "bankAccounts": [
-      {
-        "label": "Conta Bancária (Millennium BIM) — DEMO",
-        "holder": "Louren & Acácio — DEMO",
-        "account": "000000000",
-        "nib": "000000000000000000000",
-        "logo": "assets/payment/bim.jpg"
-      },
-      {
-        "label": "Conta Bancária (BCI) — DEMO",
-        "holder": "Louren & Acácio — DEMO",
-        "account": "00000000000000",
-        "nib": "000000000000000000000",
-        "logo": "assets/payment/bci-placeholder.svg"
-      }
-    ],
-    "mobilePayments": [
-      {
-        "label": "M-Pesa — DEMO",
-        "number": "840000000",
-        "holder": "Louren & Acácio — DEMO",
-        "logo": "assets/payment/m-pesa.jpg"
-      },
-      {
-        "label": "e-Mola — DEMO",
-        "number": "860000000",
-        "holder": "Louren & Acácio — DEMO",
-        "logo": "assets/payment/e-mola.jpg"
-      }
-    ],
+    "giftSectionType": "",
+    "bankAccounts": [],
+    "mobilePayments": [],
     "story": {
       "encontro": "Nós nos conhecemos numa paragem, enquanto esperávamos pelo chapa. Naquele momento, jamais imaginávamos que um encontro tão simples pudesse ser o início de uma história tão bonita.",
       "amizade": "Entre conversas, momentos partilhados, fomos criando confiança, cumplicidade e um espaço especial na vida um do outro. E foi nessa amizade que começámos a descobrir o quanto significávamos um para o outro.",

@@ -801,35 +801,6 @@
     .photo-meta span   { color: var(--muted); font-size: 11px; display:block; margin: 3px 0 9px; }
     .photo-meta .btn   { width: 100%; }
 
-    /* ── MEDIA MODAL ────────────────────────────────────────── */
-    .media-modal {
-      position: fixed; inset: 0; z-index: 2000;
-      display: none; align-items: center; justify-content: center;
-      padding: 18px;
-      background: rgba(0,0,0,.78);
-      backdrop-filter: blur(14px);
-    }
-    .media-modal.open { display: flex; }
-    .media-modal-card {
-      width: min(720px,96vw); max-height: 92dvh;
-      display: grid; gap: 12px;
-      background: var(--surface);
-      border: 1px solid var(--line-strong);
-      border-radius: var(--r-xl);
-      box-shadow: var(--shadow-lg);
-      padding: 14px;
-    }
-    .media-modal-head {
-      display: flex; justify-content: space-between; gap: 10px; align-items: center;
-      color: var(--text); font-weight: 700; font-size: 13px; padding: 2px 2px 0;
-    }
-    .media-modal-body {
-      background: #100d0a; border-radius: var(--r-md); overflow: hidden;
-      display: grid; place-items: center; min-height: min(58dvh,520px);
-    }
-    .media-modal-body img { width:100%; height:100%; max-height:70dvh; object-fit:contain; display:block; }
-    .media-modal-actions { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
-
     /* ── RESPONSIVE ────────────────────────────────────────── */
     @media (min-width: 1050px) {
       .sidebar { transform: none; box-shadow: none; }
@@ -898,17 +869,14 @@
     .table-wrap { width:100% !important; max-width:100% !important; overflow-x:hidden !important; overflow-y:visible !important; }
     .desktop-table table, .table-wrap table, table { width:100% !important; min-width:0 !important; max-width:100% !important; table-layout:fixed !important; }
     th, td { white-space:normal !important; overflow-wrap:anywhere !important; word-break:normal !important; line-height:1.35 !important; }
-    td strong, td small, .status-badge, .contribution-info, .contribution-info strong, .contribution-info small { min-width:0 !important; max-width:100% !important; overflow-wrap:anywhere !important; white-space:normal !important; }
-    .contribution-cell { min-width:0 !important; width:100% !important; align-items:flex-start !important; }
-    .contribution-link { width:fit-content !important; max-width:100% !important; white-space:normal !important; text-align:left !important; }
+    td strong, td small, .status-badge { min-width:0 !important; max-width:100% !important; overflow-wrap:anywhere !important; white-space:normal !important; }
     html, body, .app { width:100%; max-width:100%; overflow-x:hidden !important; }
 
     #guestRows tr > :nth-child(1) { width: 44px; }
     #guestRows tr > :nth-child(3), #guestRows tr > :nth-child(4), #guestRows tr > :nth-child(5), #guestRows tr > :nth-child(7) { width: 11%; }
     #guestRows tr > :nth-child(6) { width: 15%; }
-    #rsvpRows tr > :nth-child(1), #giftRows tr > :nth-child(1), #messageRows tr > :nth-child(1), #checkinRows tr > :nth-child(1) { width: 15%; }
+    #rsvpRows tr > :nth-child(1), #messageRows tr > :nth-child(1), #checkinRows tr > :nth-child(1) { width: 15%; }
     #rsvpRows tr > :nth-child(3), #rsvpRows tr > :nth-child(4), #rsvpRows tr > :nth-child(5), #checkinRows tr > :nth-child(3), #checkinRows tr > :nth-child(4), #checkinRows tr > :nth-child(5), #checkinRows tr > :nth-child(6) { width: 12%; }
-    #giftRows tr > :nth-child(3) { width: 15%; }
     #messageRows tr > :nth-child(2) { width: 24%; }
 
     @media (min-width: 1050px) {
@@ -971,8 +939,7 @@
     html[data-theme="light"] .metric-card,
     html[data-theme="light"] .mobile-card,
     html[data-theme="light"] .chart-box,
-    html[data-theme="light"] .photo-card,
-    html[data-theme="light"] .media-modal-card {
+    html[data-theme="light"] .photo-card {
       background: rgba(253,248,243,.96);
       border-color: var(--line-strong);
       box-shadow: var(--shadow);
@@ -1168,20 +1135,6 @@
       .mobile-list { display:grid !important; }
     }
 
-    /* Contribuições/comprovativos: classes herdadas do template base. */
-    .contribution-cell { display:flex; align-items:center; gap:10px; min-width:0; width:100%; }
-    .contribution-thumb { width:54px; height:54px; border-radius:13px; object-fit:cover; background:#171310; border:1px solid var(--line-strong); flex:0 0 auto; box-shadow:0 8px 18px rgba(0,0,0,.18); }
-    .contribution-info { min-width:0; display:grid; gap:4px; }
-    .contribution-info strong { color:var(--text); font-size:12px; line-height:1.25; min-width:0; overflow-wrap:anywhere; }
-    .contribution-info small { color:var(--muted); font-size:11px; line-height:1.25; overflow-wrap:anywhere; min-width:0; }
-    .contribution-link { width:fit-content; max-width:100%; min-height:26px; padding:0 9px; border-radius:999px; border:1px solid var(--line-strong); color:var(--accent-2); text-decoration:none; display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; white-space:normal; }
-    .contribution-placeholder { width:54px; height:54px; border-radius:13px; display:grid; place-items:center; color:var(--accent-2); background:rgba(158,165,173,.10); border:1px solid var(--line); flex:0 0 auto; }
-    .contribution-mobile { display:grid; gap:8px; }
-    .contribution-preview { border:0; padding:0; background:transparent; width:54px; height:54px; border-radius:13px; position:relative; flex:0 0 auto; }
-    .contribution-preview::after { content:"Ver"; position:absolute; inset:auto 4px 4px; min-height:16px; border-radius:999px; background:rgba(0,0,0,.55); color:#fff; display:grid; place-items:center; font-size:9px; font-weight:800; letter-spacing:.04em; }
-    .contribution-preview:focus-visible { outline:3px solid rgba(190,198,206,.45); outline-offset:3px; }
-    .media-modal-actions { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
-
     /* Formulário adicionar convidado: compacto e sem quebra estranha. */
     #addGuestForm.admin-form-grid, form#addGuestForm {
       display:grid !important;
@@ -1362,11 +1315,6 @@
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="check-circle"></i> Confirmações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="rsvpSearch" class="search-input" type="search" placeholder="Pesquisar confirmação"></div><div class="toolbar-right"><button class="btn secondary small" data-export="rsvps" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Pessoas</th><th>Telefone</th><th>Resposta</th><th>Mensagem</th><th>Acção</th></tr></thead><tbody id="rsvpRows"></tbody></table></div><div id="rsvpMobile" class="mobile-list"></div></div></section>
       </section>
 
-      <section id="giftsPanel" class="page-panel">
-        <div class="section-title"><div><h1>Contribuições</h1><p>Registos de contribuição monetária e comprovativos.</p></div><span id="giftBadge" class="event-chip">0 registos</span></div>
-        <section class="panel-card"><div class="panel-head"><h2><i data-feather="gift"></i> Contribuições monetárias</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="giftSearch" class="search-input" type="search" placeholder="Pesquisar contribuição"></div><div class="toolbar-right"><button class="btn secondary small" data-export="gifts" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Convidado</th><th>Canal</th><th>Comprovativo / detalhes</th></tr></thead><tbody id="giftRows"></tbody></table></div><div id="giftMobile" class="mobile-list"></div></div></section>
-      </section>
-
       <section id="messagesPanel" class="page-panel">
         <div class="section-title"><div><h1>Mensagens</h1><p>Mural de felicitações enviado pelos convidados.</p></div><span id="messageBadge" class="event-chip">0 mensagens</span></div>
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="message-circle"></i> Felicitações</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="messageSearch" class="search-input" type="search" placeholder="Pesquisar mensagem"><select id="messageVisibilityFilter" class="filter-select" aria-label="Filtrar mensagens"><option value="all">Todas</option><option value="visible">Visíveis</option><option value="hidden">Ocultas</option></select></div><div class="toolbar-right"><button class="btn secondary small" data-export="messages" type="button"><i data-feather="download"></i> CSV</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Data</th><th>Nome</th><th>Mensagem</th><th>Estado</th><th>Acção</th></tr></thead><tbody id="messageRows"></tbody></table></div><div id="messageMobile" class="mobile-list"></div></div></section>
@@ -1384,23 +1332,6 @@
     </main>
   </div>
 
-
-  <div id="mediaModal" class="media-modal" aria-hidden="true" role="dialog" aria-label="Pré-visualização do comprovativo">
-    <div class="media-modal-card">
-      <div class="media-modal-head">
-        <span id="mediaModalTitle">Comprovativo</span>
-        <button id="mediaModalClose" class="btn secondary icon-only" type="button" aria-label="Fechar"><i data-feather="x"></i></button>
-      </div>
-      <div class="media-modal-body">
-        <img id="mediaModalImg" src="" alt="Comprovativo">
-      </div>
-      <div class="media-modal-actions">
-        <a id="mediaModalOpen" class="btn secondary small" href="#" target="_blank" rel="noopener"><i data-feather="external-link"></i> Abrir ficheiro</a>
-        <button id="mediaModalCloseBottom" class="btn ghost small" type="button">Fechar</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     (function () {
       'use strict';
@@ -1411,12 +1342,11 @@
         { id: 'dashboard', label: 'Dashboard', icon: 'layout' },
         { id: 'guests', label: 'Convidados', icon: 'users' },
         { id: 'rsvps', label: 'RSVP', icon: 'check-circle' },
-        { id: 'gifts', label: 'Contribuições', icon: 'gift' },
         { id: 'messages', label: 'Mensagens', icon: 'message-circle' },
         { id: 'checkins', label: 'Check-in', icon: 'log-in' },
         { id: 'capsule', label: 'Cápsula', icon: 'image' }
       ];
-      const DATA = { stats: {}, guests: [], rsvps: [], gifts: [], messages: [], checkins: [], photos: [] };
+      const DATA = { stats: {}, guests: [], rsvps: [], messages: [], checkins: [], photos: [] };
       const charts = {};
 
       const $ = (id) => document.getElementById(id);
@@ -1544,7 +1474,6 @@
         buildNavigation();
         fillEventDetails();
         bindEvents();
-        bindMediaPreview();
         setDataSourceState();
       }
 
@@ -1570,37 +1499,6 @@
         }
         if (window.feather) feather.replace();
         if (Object.keys(charts).length) renderCharts();
-      }
-
-      function bindMediaPreview() {
-        const modal = $('mediaModal');
-        const img = $('mediaModalImg');
-        const title = $('mediaModalTitle');
-        const openLink = $('mediaModalOpen');
-        const closeButtons = [$('mediaModalClose'), $('mediaModalCloseBottom')].filter(Boolean);
-        const close = () => {
-          if (!modal) return;
-          modal.classList.remove('open');
-          modal.setAttribute('aria-hidden', 'true');
-          if (img) img.removeAttribute('src');
-        };
-        document.addEventListener('click', (event) => {
-          const trigger = event.target.closest('[data-preview-src]');
-          if (!trigger) return;
-          event.preventDefault();
-          const src = trigger.dataset.previewSrc || '';
-          const open = trigger.dataset.previewOpen || src;
-          if (title) title.textContent = trigger.dataset.previewTitle || 'Comprovativo';
-          if (img) img.src = src;
-          if (openLink) openLink.href = open || '#';
-          if (modal) {
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
-          }
-        });
-        closeButtons.forEach(button => button.addEventListener('click', close));
-        modal?.addEventListener('click', (event) => { if (event.target === modal) close(); });
-        document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
       }
 
       function bindEvents() {
@@ -1762,7 +1660,7 @@
         dataSourceBadge.className = 'status-badge ' + (configured ? 'ok' : 'warn');
         dataSourceBadge.textContent = configured ? 'Sistema activo' : 'Modo teste';
         backendNote.innerHTML = configured
-          ? 'Painel sincronizado. Os dados são actualizados sempre que houver novas confirmações, contribuições, mensagens ou entradas.'
+          ? 'Painel sincronizado. Os dados são actualizados sempre que houver novas confirmações, mensagens, entradas ou fotografias.'
           : 'Modo de teste activo. Alguns dados podem estar guardados apenas neste navegador.';
       }
 
@@ -1781,13 +1679,13 @@
       }
 
       function renderSkeletons() {
-        const metricSkeleton = Array.from({ length: 6 }).map(() => '<article class="metric-card"><span class="skeleton-line" style="width:72%"></span><strong class="skeleton-line" style="width:42%;height:28px;margin-top:9px"></strong><small class="skeleton-line" style="width:58%;height:12px;margin-top:8px"></small></article>').join('');
+        const metricSkeleton = Array.from({ length: 5 }).map(() => '<article class="metric-card"><span class="skeleton-line" style="width:72%"></span><strong class="skeleton-line" style="width:42%;height:28px;margin-top:9px"></strong><small class="skeleton-line" style="width:58%;height:12px;margin-top:8px"></small></article>').join('');
         $('metricsGrid').innerHTML = metricSkeleton;
         $('activityList').innerHTML = Array.from({ length: 5 }).map(() => '<article class="activity-item"><div class="skeleton-card" style="width:34px;min-height:34px"></div><div style="display:grid;gap:7px"><span class="skeleton-line" style="width:72%"></span><span class="skeleton-line" style="width:92%;height:12px"></span></div><span class="skeleton-line" style="width:86px;height:24px;border-radius:999px"></span></article>').join('');
         const tableSkeleton = (cols) => Array.from({ length: 5 }).map(() => '<tr>' + Array.from({ length: cols }).map(() => '<td><span class="skeleton-cell"></span></td>').join('') + '</tr>').join('');
         const mobileSkeleton = Array.from({ length: 4 }).map(() => '<article class="mobile-card"><span class="skeleton-line" style="width:62%"></span><span class="skeleton-line" style="width:88%;height:12px;margin-top:8px"></span></article>').join('');
-        ['guestRows','rsvpRows','giftRows','messageRows','checkinRows'].forEach((id, index) => { const el = $(id); if (el) el.innerHTML = tableSkeleton([7,7,4,5,7][index]); });
-        ['guestMobile','rsvpMobile','giftMobile','messageMobile','checkinMobile'].forEach(id => { const el = $(id); if (el) el.innerHTML = mobileSkeleton; });
+        ['guestRows','rsvpRows','messageRows','checkinRows'].forEach((id, index) => { const el = $(id); if (el) el.innerHTML = tableSkeleton([7,7,5,7][index]); });
+        ['guestMobile','rsvpMobile','messageMobile','checkinMobile'].forEach(id => { const el = $(id); if (el) el.innerHTML = mobileSkeleton; });
         if ($('capsuleGrid')) $('capsuleGrid').innerHTML = Array.from({ length: 6 }).map(() => '<article class="photo-card"><div class="skeleton-card" style="aspect-ratio:1/1;border-radius:0;min-height:auto"></div><div class="photo-meta"><span class="skeleton-line" style="width:70%"></span><span class="skeleton-line" style="width:48%;height:12px;margin-top:8px"></span></div></article>').join('');
       }
 
@@ -1797,11 +1695,10 @@
         app.classList.add('is-loading');
         renderSkeletons();
         try {
-          const [stats, guests, rsvps, gifts, messages, checkins, photos] = await Promise.all([
+          const [stats, guests, rsvps, messages, checkins, photos] = await Promise.all([
             adminPost('stats'),
             adminPost('get_guests'),
             adminPost('get_rsvps'),
-            adminPost('list_gift_records'),
             adminPost('get_messages'),
             adminPost('get_checkins'),
             adminPost('get_capsule_photos')
@@ -1809,7 +1706,6 @@
           DATA.stats = stats.data || {};
           DATA.guests = guests.data || [];
           DATA.rsvps = rsvps.data || [];
-          DATA.gifts = gifts.data || [];
           DATA.messages = messages.data || [];
           DATA.checkins = checkins.data || [];
           DATA.photos = photos.data || [];
@@ -1841,7 +1737,6 @@
           pendingCheckin: Math.max(totalPeople - checkedPeople, 0),
           confirmedRows,
           checkedRows,
-          gifts: DATA.gifts.length,
           messages: DATA.messages.length,
           photos: DATA.photos.length
         };
@@ -1861,7 +1756,6 @@
           ['Pessoas', s.totalPeople, 'previstas'],
           ['RSVP', s.confirmedPeople, `${percent(s.confirmedPeople, s.totalPeople)}% confirmado`],
           ['Check-in', s.checkedPeople, `${percent(s.checkedPeople, s.totalPeople)}% no salão`],
-          ['Contribuições', s.gifts, 'registos'],
           ['Cápsula', s.photos, 'fotos']
         ];
         $('metricsGrid').innerHTML = metrics.map(item => `<article class="metric-card"><span>${esc(item[0])}</span><strong>${esc(item[1])}</strong><small>${esc(item[2])}</small></article>`).join('');
@@ -1896,13 +1790,12 @@
         const empty = cssVar('--chart-empty') || '#4c4540';
         makeChart('rsvpChart', ['Confirmados', 'Pendentes'], [s.confirmedPeople, s.pendingPeople], [cssVar('--accent') || '#9ea5ad', empty]);
         makeChart('checkinChart', ['Entraram', 'Por entrar'], [s.checkedPeople, s.pendingCheckin], [cssVar('--green') || '#18b783', empty]);
-        makeChart('interactionChart', ['RSVP', 'Contrib.', 'Msgs', 'Fotos'], [s.confirmedRows, s.gifts, s.messages, s.photos], [cssVar('--accent-2') || '#d0ad8f', cssVar('--orange') || '#f2a84a', cssVar('--blue') || '#6aa5ff', cssVar('--green') || '#18b783']);
+        makeChart('interactionChart', ['RSVP', 'Msgs', 'Fotos'], [s.confirmedRows, s.messages, s.photos], [cssVar('--accent-2') || '#d0ad8f', cssVar('--blue') || '#6aa5ff', cssVar('--green') || '#18b783']);
       }
 
       function renderActivity() {
         const items = [
           ...DATA.rsvps.map(x => ({ ...x, type: 'RSVP', icon: 'check-circle', detail: `${peopleFromRsvp(x) || '-'} pessoa(s) confirmada(s)` })),
-          ...DATA.gifts.map(x => ({ ...x, type: 'Contribuição', icon: 'gift', detail: giftDetail(x) })),
           ...DATA.messages.map(x => ({ ...x, type: 'Mensagem', icon: 'message-circle', detail: text(x.message).slice(0, 90) })),
           ...DATA.checkins.map(x => ({ ...x, type: 'Check-in', icon: 'log-in', detail: `${num(x.guests || x.maxGuests) || 1} pessoa(s) · ${x.mesa || 'Mesa a definir'}` })),
           ...DATA.photos.map(x => ({ ...x, type: 'Cápsula', icon: 'image', detail: x.filename || 'Foto enviada' }))
@@ -1921,7 +1814,6 @@
       function renderLists() {
         renderGuests();
         renderRsvps();
-        renderGifts();
         renderMessages();
         renderCheckins();
         renderCapsule();
@@ -2044,60 +1936,6 @@
         }).join('') : '<div class="empty">Sem dados para mostrar.</div>';
       }
 
-      function parseGiftDetails(g) {
-        const raw = g && g.details;
-        if (!raw) return {};
-        if (typeof raw === 'object') return raw;
-        try { return JSON.parse(raw); } catch (err) { return {}; }
-      }
-
-      function giftMedia(g) {
-        const d = parseGiftDetails(g);
-        const fileName = g.filename || g.comprovativoFile_filename || d.comprovativoFile_filename || d.filename || '';
-        const mimeType = g.mimeType || d.comprovativoFile_type || d.mimeType || 'image/jpeg';
-        const base64 = d.comprovativoFile || g.comprovativoFile || '';
-        const dataUrl = d.dataUrl || g.dataUrl || (base64 ? `data:${mimeType};base64,${base64}` : '');
-        const rawView = g.viewUrl || d.viewUrl || '';
-        const rawPreview = g.previewUrl || d.previewUrl || '';
-        const rawDownload = g.downloadUrl || d.downloadUrl || '';
-        const fileId = g.fileId || d.fileId || driveIdFromUrl(rawView) || driveIdFromUrl(rawPreview) || driveIdFromUrl(rawDownload);
-        const thumb = g.thumbnailUrl || d.thumbnailUrl || driveThumbUrl(fileId) || dataUrl || rawView || rawPreview;
-        const openUrl = rawPreview || driveOpenUrl(fileId) || rawView || dataUrl || rawDownload;
-        const download = rawDownload || dataUrl || rawView || openUrl;
-        return { fileName, imgUrl: thumb, openUrl, download, fileId };
-      }
-
-      function giftDetail(g) {
-        const d = parseGiftDetails(g);
-        let value = g.selectedGifts || g.gifts || d.selectedGifts || d.gifts || g.filename || d.comprovativoFile_filename || g.canal || '';
-        if (Array.isArray(value)) value = value.join(', ');
-        if (typeof value === 'object' && value !== null) value = JSON.stringify(value);
-        return text(value) || 'Contribuição registada';
-      }
-
-      function giftPreviewMarkup(g) {
-        const media = giftMedia(g);
-        const detail = giftDetail(g);
-        const fileLabel = media.fileName || detail;
-        const imgUrl = media.imgUrl;
-        const openUrl = media.openUrl || media.download || imgUrl;
-        const preview = imgUrl
-          ? `<button type="button" class="contribution-preview" data-preview-src="${esc(imgUrl)}" data-preview-open="${esc(openUrl)}" data-preview-title="${esc(fileLabel)}"><img class="contribution-thumb" src="${esc(imgUrl)}" alt="Comprovativo de ${esc(nameOf(g))}" loading="lazy" onerror="this.closest('.contribution-preview').classList.add('image-error')"></button>`
-          : `<div class="contribution-placeholder"><i data-feather="image"></i></div>`;
-        const link = openUrl
-          ? `<a class="contribution-link" href="${esc(openUrl)}" target="_blank" rel="noopener"><i data-feather="external-link"></i> Abrir ficheiro</a>`
-          : '';
-        return `<div class="contribution-cell">${preview}<div class="contribution-info"><strong>${esc(fileLabel)}</strong><small>${esc(detail)}</small>${link}</div></div>`;
-      }
-
-      function renderGifts() {
-        const list = filtered(DATA.gifts, 'giftSearch');
-        $('giftBadge').textContent = `${list.length} registos`;
-        $('giftRows').innerHTML = list.length ? list.map(g => `<tr><td>${esc(dateFmt(g.timestamp))}</td><td><strong>${esc(nameOf(g))}</strong></td><td>${esc(g.canal || 'Contribuição')}</td><td>${giftPreviewMarkup(g)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">Ainda não há contribuições.</td></tr>';
-        $('giftMobile').innerHTML = list.length ? list.map(g => `<article class="mobile-card"><strong>${esc(nameOf(g))}</strong><span>${esc(g.canal || 'Contribuição')} · ${esc(dateFmt(g.timestamp))}</span><div class="contribution-mobile">${giftPreviewMarkup(g)}</div><span class="status-badge">Registado</span></article>`).join('') : '<div class="empty">Sem dados para mostrar.</div>';
-        feather.replace();
-      }
-
       function renderMessages() {
         const all = filtered(DATA.messages, 'messageSearch');
         const hiddenCount = all.filter(m => m.hidden === true || String(m.status || '').toLowerCase() === 'hidden').length;
@@ -2157,7 +1995,7 @@
       }
 
       function exportCSV(type) {
-        const map = { guests: DATA.guests, rsvps: DATA.rsvps, gifts: DATA.gifts, messages: DATA.messages, checkins: DATA.checkins, photos: DATA.photos };
+        const map = { guests: DATA.guests, rsvps: DATA.rsvps, messages: DATA.messages, checkins: DATA.checkins, photos: DATA.photos };
         const rows = map[type] || [];
         if (!rows.length) { alert('Sem dados para exportar.'); return; }
         const keys = [...new Set(rows.flatMap(row => Object.keys(row || {})))];

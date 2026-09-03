@@ -90,52 +90,6 @@
       border: 1px solid rgba(255,255,255,0.3);
     }
 
-    /* Estilos para a lista dinâmica de presentes */
-    .gift-checklist {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
-      max-height: 500px;
-      overflow-y: auto;
-      padding: 16px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background: #fafafa;
-    }
-    .gift-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: white;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.95rem;
-    }
-    .gift-item:hover {
-      border-color: var(--accent);
-      background: #fff5f5;
-    }
-    .gift-item.reserved {
-      background: #f0f0f0;
-      color: #999;
-      border-color: #ddd;
-      cursor: not-allowed;
-      opacity: 0.7;
-      text-decoration: line-through;
-    }
-    .gift-item.reserved input {
-      pointer-events: none;
-      opacity: 0.5;
-    }
-    .gift-item input {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
-
 
 
     /* Feedback premium após confirmação de presença */
@@ -226,9 +180,6 @@
 <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
 <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
 </button>
-<button aria-label="Contribuições" class="fab-item" id="fabGiftsBtn">
-<svg viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect height="5" width="20" x="2" y="7"></rect><line x1="12" x2="12" y1="22" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-</button>
 <button aria-label="Ver a sua mesa" class="fab-item" id="fabGuestInfoBtn">
 <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
 </button>
@@ -267,7 +218,7 @@
 <div class="couple-details">
 <div>
 <h3>Louren</h3>
-<p>Filha de <strong>Silvestre Machava</strong><br/>e de <strong>Emilia Macuacua</strong></p>
+<p>Filha de <strong>Silvestre Machava</strong><br/>e de <strong>Emília Macuacua</strong></p>
 </div>
 <div class="decorative-ampersand">♡</div>
 <div>
@@ -513,16 +464,6 @@ Ver no Mapa
 <button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
 <button class="btn btn-outline" id="calendarBtn" type="button">Adicionar ao Calendário</button>
 </div>
-<div class="guide-item">
-<h4>Inspiração de Vestuário</h4>
-<p>O estilo visual será elegante e romântico, com inspiração em branco, cinza e detalhes prateados metálicos.</p>
-<button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
-</div>
-<div class="guide-item">
-<h4>Contribuições</h4>
-<p>A sua presença é o nosso maior presente! Se desejar, pode contribuir para o nosso futuro.</p>
-<button class="btn btn-outline" id="giftsCombinedBtn">Ver Dados de Contribuição</button>
-</div>
 </div>
 </section>
 <!-- SECÇÃO VINTAGE: ETIQUETA DO EVENTO -->
@@ -549,7 +490,7 @@ Ver no Mapa
 <button class="btn btn-outline vintage-action" data-open-modal="etiquetaEventoModal" type="button">Ver Recomendações</button>
 </div>
 </section>
-<!-- SECÇÃO VINTAGE: TRANSPORTE, ESTACIONAMENTO & APOIO -->
+<!-- SECÇÃO VINTAGE: ORIENTAÇÕES -->
 <section class="section section-highlight vintage-section travel-section section-scene fade-in-section" id="transporte-apoio">
 <div class="vintage-scene">
 <img alt="Louren e Acácio" src="assets/media/galeria-5.jpg"/>
@@ -561,7 +502,7 @@ Ver no Mapa
 <span aria-hidden="true" class="vintage-icon-badge">
 <svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.4"></circle></svg>
 </span>
-<h2 class="section-title">Transporte &amp; Apoio</h2>
+<h2 class="section-title">Orientações</h2>
 </div>
 <p class="section-subtitle">Informação prática para chegar aos locais do evento com segurança e sem pressa.</p>
 <div class="travel-card elevated-card">
@@ -647,53 +588,6 @@ Ver no Mapa
 <button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
 </div>
 <p id="rsvpStatus" class="rsvp-status" style="font-size: 0.9rem; margin-top: 16px;"></p>
-</div>
-</div>
-<div aria-labelledby="dressCodeTitle" aria-modal="true" class="modal" id="dressCodeModal" role="dialog">
-<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-dress"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M8 4h8l1 4-2 2v10H9V10L7 8l1-4Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
-<h3 id="dressCodeTitle">Inspiração: Elegante e Romântico</h3>
-<p>O objetivo é um visual sofisticado e equilibrado, com branco, cinza, prata e tons neutros.</p>
-<div class="dresscode-grid dresscode-palette dresscode-silver-palette" aria-label="Paleta de inspiração">
-<div class="dress-swatch"><span style="background:#ffffff"></span><small>Branco</small></div>
-<div class="dress-swatch"><span style="background:#d9dde2"></span><small>Cinza claro</small></div>
-<div class="dress-swatch"><span style="background:#9fa6ae"></span><small>Prata</small></div>
-<div class="dress-swatch"><span style="background:#4b5159"></span><small>Grafite</small></div>
-</div>
-<button class="btn btn-ghost" data-close-modal="" type="button">Entendi</button>
-</div>
-</div>
-<div aria-labelledby="giftsCombinedTitle" aria-modal="true" class="modal" id="giftsCombinedModal" role="dialog">
-<div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-gifts"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><rect fill="none" height="4" stroke="currentColor" stroke-width="1.5" width="18" x="3" y="8"></rect><path d="M12 8v13M5 12v9h14v-9" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="M12 8H8.5a2.5 2.5 0 1 1 0-5C11 3 12 8 12 8Zm0 0h3.5a2.5 2.5 0 1 0 0-5C13 3 12 8 12 8Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
-<h3 id="giftsCombinedTitle">Contribuição Monetária</h3>
-<p>A sua presença é o maior presente! Se desejar, pode contribuir para o nosso futuro pelos canais abaixo.</p>
-<div class="tab-buttons single-tab">
-<button class="tab-btn active" data-tab="monetaryContent" type="button">Contribuição Monetária</button>
-</div>
-<div class="tab-content active contribution-only" id="monetaryContent">
-<h4>Um Mimo para o Futuro</h4>
-<p class="demo-payment-notice"><strong>Dados DEMO:</strong> substituir pelos dados bancários reais antes da publicação.</p>
-<div class="info-block payment-method-block">
-<div class="payment-method-header"><strong>Conta Bancária (Millennium BIM) — DEMO</strong><div class="payment-logo-stack" aria-label="Logotipo Millennium BIM"><div class="payment-logo-slot payment-logo-real"><img src="assets/payment/bim.jpg" alt="Millennium BIM" loading="lazy"/></div></div></div>
-<p>Titular: Louren &amp; Acácio — DEMO<br/>Conta: 000000000<br/>NIB: 000000000000000000000</p>
-<p>Banco: Millennium BIM</p></div>
-<div class="info-block payment-method-block">
-<div class="payment-method-header"><strong>Conta Bancária (BCI) — DEMO</strong><div class="payment-logo-stack" aria-label="Logotipo BCI"><div class="payment-logo-slot payment-logo-real"><img src="assets/payment/bci-placeholder.svg" alt="BCI" loading="lazy"/></div></div></div>
-<p>Titular: Louren &amp; Acácio — DEMO<br/>Conta: 00000000000000<br/>NIB: 000000000000000000000</p>
-<p>Banco: BCI</p></div>
-<div class="info-block payment-method-block">
-<div class="payment-method-header"><strong>M-Pesa / e-Mola — DEMO</strong><div class="payment-logo-stack" aria-label="Logotipos M-Pesa e e-Mola"><div class="payment-logo-slot payment-logo-real"><img src="assets/payment/m-pesa.jpg" alt="M-Pesa" loading="lazy"/></div><div class="payment-logo-slot payment-logo-real"><img src="assets/payment/e-mola.jpg" alt="e-Mola" loading="lazy"/></div></div></div>
-<p>M-Pesa: 840000000<br/>e-Mola: 860000000<br/>Titular: Louren &amp; Acácio — DEMO</p></div>
-<hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);"/>
-<h4>Registar Comprovativo</h4>
-<p style="font-size: 0.9rem; text-align: left; margin-bottom: 16px;">Se desejar, pode partilhar o seu comprovativo de pagamento aqui.</p>
-<form enctype="multipart/form-data" id="comprovativoForm">
-<div style="margin-bottom: 16px; text-align: left;"><label for="canalPagamento">Canal de contribuição</label><select id="canalPagamento" required=""><option value="">Seleccione o canal usado</option><option value="Carteira móvel">Carteira móvel</option><option value="Transferência bancária">Transferência bancária</option></select></div>
-<div style="margin-bottom: 16px; text-align: left;"><label for="comprovativoFile">Anexar Imagem (PNG, JPG)</label><input accept="image/png, image/jpeg" id="comprovativoFile" name="comprovativoFile" required="" type="file"/></div>
-<div class="form-actions"><button class="btn btn-primary" type="submit">Enviar Comprovativo</button></div>
-<p id="comprovativoStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
-</form>
-</div>
-<button class="btn btn-ghost" data-close-modal="" style="margin-top: 24px;" type="button">Fechar</button>
 </div>
 </div>
 <!-- MODAIS VINTAGE ADICIONAIS -->
@@ -785,7 +679,7 @@ Ver no Mapa
 </div>
 <div aria-labelledby="transporteApoioTitle" aria-modal="true" class="modal vintage-detail-modal" id="transporteApoioModal" role="dialog">
 <div class="modal-card vintage-modal-card wide-modal has-modal-hero"><div class="modal-hero modal-hero-travel"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div></div>
-<span class="modal-kicker">Transporte &amp; Apoio</span>
+<span class="modal-kicker">Orientações</span>
 <h3 id="transporteApoioTitle">Detalhes de chegada</h3>
 <div class="modal-divider"></div>
 <div class="modal-travel-grid">
@@ -1026,6 +920,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Variáveis globais
     let guestName = "";
     let guestMesa = null;
+    let guestCategory = "";
+    let guestNotes = "";
     let maxGuests = 1;
     let token = "";
     let rsvpTitle = null; // Declarar para uso posterior
@@ -1055,11 +951,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           const guest = result.data || result;
           guestName = guest.name || guest.nome || localStorage.getItem('guestName') || "Convidado";
           guestMesa = guest.mesa || localStorage.getItem('guestMesa') || "A definir";
+          guestCategory = String(guest.category || localStorage.getItem('guestCategory') || '');
+          guestNotes = String(guest.notes || localStorage.getItem('guestNotes') || '');
           maxGuests = Number(guest.maxGuests || guest.guests || localStorage.getItem('guestMaxGuests') || 1) || 1;
           const companions = Number(guest.companions ?? Math.max(maxGuests - 1, 0)) || 0;
 
           localStorage.setItem('guestName', guestName);
           localStorage.setItem('guestMesa', guestMesa);
+          localStorage.setItem('guestCategory', guestCategory);
+          localStorage.setItem('guestNotes', guestNotes);
           localStorage.setItem('guestMaxGuests', String(maxGuests));
           localStorage.setItem('guestCompanions', String(companions));
           localStorage.setItem('guestNumber', guest.number || localStorage.getItem('guestNumber') || '');
@@ -1092,10 +992,25 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Adicionar mensagem de boas-vindas com dados reais do convidado
       const heroContent = document.querySelector('.hero-bottom-content');
       if (heroContent) {
-        const safeGuestName = guestName || localStorage.getItem('guestName') || 'Convidado';
+        const rawGuestName = guestName || localStorage.getItem('guestName') || 'Convidado';
+        const rawNotes = guestNotes || localStorage.getItem('guestNotes') || '';
+        const rawCategory = guestCategory || localStorage.getItem('guestCategory') || '';
+
+        const formatWelcomeGuestName = (name, notes, category) => {
+          let label = String(name || 'Convidado').trim().replace(/\s*&\s*/g, ' e ');
+          const relationship = String(notes || '').match(/\b(esposa|esposo)\b/i);
+          const alreadyHasRelationship = /\b(esposa|esposo)\b/i.test(label);
+          if (!alreadyHasRelationship && relationship && /couple|casal/i.test(String(category || ''))) {
+            const relation = relationship[1].toLowerCase() === 'esposa' ? 'Esposa' : 'Esposo';
+            label += ` e ${relation}`;
+          }
+          return label.replace(/\s{2,}/g, ' ').trim();
+        };
+
+        const welcomeGuestName = formatWelcomeGuestName(rawGuestName, rawNotes, rawCategory);
         const welcomeMessage = document.createElement('p');
         welcomeMessage.className = 'welcome-guest';
-        welcomeMessage.textContent = `Bem-vindo(a), ${safeGuestName}`;
+        welcomeMessage.textContent = `Bem-vindo(a), ${welcomeGuestName}`;
         const previousWelcome = heroContent.querySelector('.welcome-guest');
         if (previousWelcome) previousWelcome.remove();
         heroContent.prepend(welcomeMessage);
@@ -1188,13 +1103,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const musicControl = document.getElementById('musicControl');
       
       const fabRsvpBtn = document.getElementById('fabRsvpBtn');
-      const fabGiftsBtn = document.getElementById('fabGiftsBtn');
       const fabGuestInfoBtn = document.getElementById('fabGuestInfoBtn');
       const fabMapBtn = document.getElementById('fabMapBtn'); 
       
       const rsvpBtn = document.getElementById('rsvpBtn');
-      const dressCodeBtn = document.getElementById('dressCodeBtn');
-      const giftsCombinedBtn = document.getElementById('giftsCombinedBtn');
       const mapBtnReligiosa = document.getElementById('mapBtnReligiosa'); 
       const mapBtnCivil = document.getElementById('mapBtnCivil');
       
@@ -1515,9 +1427,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       };
 
       [fabRsvpBtn, rsvpBtn].forEach(btn => bindModalTrigger(btn, 'rsvpModal'));
-      [fabGiftsBtn, giftsCombinedBtn].forEach(btn => bindModalTrigger(btn, 'giftsCombinedModal'));
       bindModalTrigger(fabGuestInfoBtn, 'guestInfoModal');
-      bindModalTrigger(dressCodeBtn, 'dressCodeModal');
       document.querySelectorAll('[data-open-modal]').forEach(btn => {
         btn.addEventListener('click', (event) => {
           event.preventDefault();
@@ -1728,236 +1638,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       configureTimeCapsule();
 
-      const giftsModal = document.getElementById('giftsCombinedModal');
-      if (giftsModal) {
-        const tabButtons = giftsModal.querySelectorAll('.tab-btn');
-        const tabContents = giftsModal.querySelectorAll('.tab-content');
-        tabButtons.forEach(button => {
-          button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            const tabId = button.getAttribute('data-tab');
-            tabContents.forEach(content => {
-              content.classList.toggle('active', content.id === tabId);
-            });
-          });
-        });
-      }
-
-      const giftChecklist = document.getElementById('giftChecklist');
-      const giftListStatus = document.getElementById('giftListStatus');
-
-      async function loadGiftList() {
-        if (!giftChecklist) return;
-        try {
-          const result = window.LirandzoAPI ? await window.LirandzoAPI.get('list_gifts') : { status: 'success', data: [] };
-          const items = (result && (result.data || result)) || [];
-          if (!Array.isArray(items) || !items.length) {
-            giftChecklist.innerHTML = '<p class="gift-list-empty">A lista de presentes ainda não foi fornecida pelos noivos.</p>';
-            return;
-          }
-          giftChecklist.innerHTML = items.map((item, index) => {
-            const name = escapeHTML(item.name || item.nome || `Presente ${index + 1}`);
-            const reserved = Boolean(item.reserved || item.isReserved || item.reservedBy);
-            return `<button class="gift-item gift-choice ${reserved ? 'reserved' : ''}" type="button" data-gift-name="${name}" ${reserved ? 'disabled' : ''}>
-              <span>${name}</span><small>${reserved ? 'Já reservado' : 'Reservar presente'}</small>
-            </button>`;
-          }).join('');
-        } catch (err) {
-          console.warn('Não foi possível carregar a lista de presentes:', err);
-          giftChecklist.innerHTML = '<p class="gift-list-empty">A lista de presentes ainda não está disponível.</p>';
-        }
-      }
-
-      if (giftChecklist) {
-        giftChecklist.addEventListener('click', async (event) => {
-          const button = event.target.closest('.gift-choice');
-          if (!button || button.disabled) return;
-          const giftName = button.getAttribute('data-gift-name');
-          if (!giftName) return;
-          try {
-            setButtonLoading(button, true, 'A reservar...');
-            await window.LirandzoAPI.post({ action: 'reserve_gift', token, nome: guestName, gift: giftName, giftName, timestamp: new Date().toISOString() });
-            button.classList.add('reserved');
-            button.disabled = true;
-            button.innerHTML = `<span>${escapeHTML(giftName)}</span><small>Reservado por si</small>`;
-            if (giftListStatus) {
-              giftListStatus.style.color = '#15803d';
-              giftListStatus.textContent = 'Presente reservado com sucesso.';
-            }
-          } catch (err) {
-            if (giftListStatus) {
-              giftListStatus.style.color = '#D93025';
-              giftListStatus.textContent = 'Não foi possível reservar este presente agora.';
-            }
-            setButtonLoading(button, false);
-          }
-        });
-
-        loadGiftList();
-      }
-      
-      // RSVP Form - Corrigido para CORS
-      if (rsvpForm) {
-        const rsvpStatus = document.getElementById('rsvpStatus');
-        const submitButton = document.getElementById('sendRsvpServer');
-        
-        const getRsvpData = () => ({
-          action: "rsvp",
-          nome: guestName, 
-          token: token,
-          guests: rsvpForm.querySelector('#guests').value,
-          phone: rsvpForm.querySelector('#phone').value.trim(),
-          message: rsvpForm.querySelector('#message').value.trim()
-        });
-
-        rsvpForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const data = getRsvpData();
-          
-          const originalButtonText = submitButton.textContent; 
-          setButtonLoading(submitButton, true, 'A enviar...');
-          rsvpStatus.textContent = "";
-
-          try {
-            await postRequest(data);
-            
-            // Se chegou aqui, assumimos que deu certo
-            localStorage.setItem('guestStatus', `Confirmado (${data.guests})`);
-            rsvpStatus.textContent = "";
-            submitButton.textContent = "Confirmado";
-            await showRsvpSuccessFeedback('Obrigado. A vossa presença foi registada com sucesso.');
-            closeModal(document.getElementById('rsvpModal'));
-            setButtonLoading(submitButton, false);
-            submitButton.textContent = "Atualizar Confirmação";
-            if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
-            
-          } catch (err) {
-            rsvpStatus.style.color = "#D93025";
-            rsvpStatus.textContent = "Erro ao registar. Tente novamente.";
-            setButtonLoading(submitButton, false);
-            submitButton.textContent = originalButtonText; 
-          }
-        });
-        
-        rsvpForm.querySelector('#sendWhatsapp')?.addEventListener('click', () => {
-          const data = getRsvpData();
-          const text = `RSVP - Olá! Sim! confirmo.. Nome: ${data.nome}, Convidados: ${data.guests}. Mensagem: ${data.message}`;
-          window.open(`https://wa.me/${HOST_WHATSAPP_NUMBER.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`, '_blank');
-          closeModal(document.getElementById('rsvpModal'));
-        });
-      }
-      
-      // Abrir confirmação de presença 5 segundos depois de chegar ao fim do convite
-      let endOfInviteRsvpTimer = null;
-      let endOfInviteRsvpOpened = false;
-      const isAtEndOfInvite = () => {
-        const scrollPosition = window.scrollY + window.innerHeight;
-        const documentHeight = Math.max(
-          document.documentElement.scrollHeight,
-          document.body.scrollHeight
-        );
-        return scrollPosition >= documentHeight - 90;
-      };
-
-      const scheduleEndOfInviteRsvp = () => {
-        if (endOfInviteRsvpOpened) return;
-        if (isAtEndOfInvite()) {
-          if (!endOfInviteRsvpTimer) {
-            endOfInviteRsvpTimer = window.setTimeout(() => {
-              endOfInviteRsvpTimer = null;
-              if (endOfInviteRsvpOpened || !isAtEndOfInvite() || document.querySelector('.modal.open')) return;
-              endOfInviteRsvpOpened = true;
-              openModal('rsvpModal');
-            }, 5000);
-          }
-        } else if (endOfInviteRsvpTimer) {
-          window.clearTimeout(endOfInviteRsvpTimer);
-          endOfInviteRsvpTimer = null;
-        }
-      };
-
-      window.addEventListener('scroll', scheduleEndOfInviteRsvp, { passive: true });
-      window.addEventListener('resize', scheduleEndOfInviteRsvp);
-      scheduleEndOfInviteRsvp();
-
-      // Galeria
-      galleryImages.forEach(img => {
-        img.addEventListener('click', () => {
-          lightboxImage.src = img.getAttribute('data-src') || img.src;
-          openModal('lightboxModal');
-        });
-      });
-      // Comprovativo Form - CORRIGIDO PARA BASE64
-      const comprovativoForm = document.getElementById('comprovativoForm');
-      if (comprovativoForm) {
-        const comprovativoStatus = document.getElementById('comprovativoStatus');
-        const submitButton = comprovativoForm.querySelector('button[type="submit"]');
-
-        comprovativoForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          const canal = document.getElementById('canalPagamento').value;
-          const fileInput = document.getElementById('comprovativoFile');
-          const file = fileInput.files[0];
-
-          if (!file || !canal) {
-            comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Por favor, preencha o canal e anexe um ficheiro.";
-            return;
-          }
-
-          setButtonLoading(submitButton, true, 'A processar imagem...');
-          comprovativoStatus.textContent = "";
-
-          // LER O FICHEIRO COMO BASE64 ANTES DE ENVIAR
-          const reader = new FileReader();
-          reader.onload = async function() {
-            const base64File = reader.result.split(',')[1]; 
-            
-            const data = {
-              action: 'upload_comprovativo',
-              nome: guestName,
-              token: token,
-              canal: canal,
-              comprovativoFile: base64File,
-              comprovativoFile_filename: file.name,
-              comprovativoFile_type: file.type
-            };
-
-            submitButton.textContent = "A enviar...";
-
-            try {
-              // Agora usamos o postRequest normal em vez do postFormData
-              await postRequest(data); 
-              
-              comprovativoStatus.style.color = "green";
-              comprovativoStatus.textContent = "Comprovativo registado com sucesso!";
-              submitButton.textContent = "Enviado!";
-              comprovativoForm.reset();
-              
-              setTimeout(() => {
-                setButtonLoading(submitButton, false);
-                comprovativoStatus.textContent = "";
-              }, 3000);
-              
-            } catch (err) {
-              comprovativoStatus.style.color = "#D93025";
-              comprovativoStatus.textContent = "Erro ao enviar comprovativo. Tente novamente.";
-              setButtonLoading(submitButton, false);
-            }
-          };
-
-          reader.onerror = function() {
-            comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Erro ao ler o ficheiro no seu dispositivo.";
-            setButtonLoading(submitButton, false);
-          };
-
-          // Inicia a leitura do ficheiro
-          reader.readAsDataURL(file);
-        });
-      }
 
       // Animações de scroll reversíveis por secção
       const animatedSections = document.querySelectorAll('.fade-in-section');
