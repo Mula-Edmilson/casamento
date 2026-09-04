@@ -5828,3 +5828,75 @@ body.convite-white-silver-theme #guia-evento .guide-grid {
   grid-template-columns: minmax(0, 560px) !important;
   justify-content: center !important;
 }
+
+
+/* =========================================================
+   AJUSTES v9 — MONOGRAMA LA + HERO SEM ESPAÇO + NOMES VERTICAIS
+   ========================================================= */
+
+/* Hero encostado ao topo, sem faixa branca acima da fotografia */
+body.convite-white-silver-theme .invite-wrap {
+  margin-top: 0 !important;
+}
+
+body.convite-white-silver-theme .invite-wrap > .hero:first-of-type,
+body.convite-white-silver-theme .hero {
+  margin-top: 0 !important;
+}
+
+body.convite-white-silver-theme .hero {
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+  background-position: center 22% !important;
+}
+
+/* Nomes do casal em coluna, centralizados no hero */
+body.convite-white-silver-theme .hero-bottom-content .hero-couple-names {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.02em !important;
+  line-height: 0.88 !important;
+  margin: 0 auto 10px !important;
+  text-align: center !important;
+}
+
+body.convite-white-silver-theme .hero-bottom-content .hero-couple-names > span {
+  display: block !important;
+}
+
+body.convite-white-silver-theme .hero-bottom-content .hero-couple-names .hero-amp {
+  line-height: 0.72 !important;
+}
+
+/* Substituir ícones de "pessoinhas" por monograma LA nos cards de honra */
+body.convite-white-silver-theme #padrinhos-honra .honor-card .card-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: var(--font-heading) !important;
+  font-size: 0.98rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.12em !important;
+  color: #7d848d !important;
+}
+
+body.convite-white-silver-theme #padrinhos-honra .honor-card .card-icon svg {
+  display: none !important;
+}
+
+body.convite-white-silver-theme #padrinhos-honra .honor-card .card-icon::before {
+  content: 'LA' !important;
+}
+
+@media (max-width: 768px) {
+  body.convite-white-silver-theme .hero {
+    background-position: center 20% !important;
+  }
+
+  body.convite-white-silver-theme .hero-bottom-content .hero-couple-names {
+    line-height: 0.9 !important;
+    margin-bottom: 12px !important;
+  }
+}
