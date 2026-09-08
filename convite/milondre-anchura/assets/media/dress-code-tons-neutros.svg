@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="t d">
+<title id="t">Paleta de tons neutros</title><desc id="d">Paleta elegante em castanho, nude, bege, areia, taupe e marfim.</desc>
+<rect width="1200" height="700" fill="#f7f2eb"/>
+<g transform="translate(90 100)">
+<text x="0" y="0" font-family="Georgia, serif" font-size="48" fill="#3c2c27">Tons Neutros</text>
+<text x="0" y="48" font-family="Arial, sans-serif" font-size="22" fill="#79645b">Inspiração de vestuário</text>
+<g transform="translate(0 115)">
+<circle cx="90" cy="90" r="86" fill="#4a352f"/><circle cx="285" cy="90" r="86" fill="#76594b"/>
+<circle cx="480" cy="90" r="86" fill="#a98673"/><circle cx="675" cy="90" r="86" fill="#c9aa92"/>
+<circle cx="870" cy="90" r="86" fill="#dfc9b4"/><circle cx="1020" cy="90" r="86" fill="#eee3d4"/>
+</g>
+<g font-family="Arial, sans-serif" font-size="18" fill="#5a4942" text-anchor="middle" transform="translate(0 330)">
+<text x="90" y="0">Castanho</text><text x="285" y="0">Chocolate</text><text x="480" y="0">Taupe</text>
+<text x="675" y="0">Nude</text><text x="870" y="0">Areia</text><text x="1020" y="0">Marfim</text>
+</g>
+<path d="M0 420H1020" stroke="#cdbcae" stroke-width="1"/>
+<text x="510" y="490" text-anchor="middle" font-family="Georgia, serif" font-size="28" fill="#4a352f">Elegância suave, natural e harmoniosa</text>
+</g></svg>

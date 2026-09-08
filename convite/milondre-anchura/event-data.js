@@ -1,0 +1,78 @@
+// Dados do casamento Milondre & Anchura — gerado pela Lirandzo
+window.LIRANDZO_EVENT = {
+  "slug": "milondre-anchura",
+  "coupleNames": "Milondre & Anchura",
+  "displayNames": "Milondre e Anchura",
+  "bride": "Edna Otília Mondlane",
+  "groom": "Mauro Damison Macamo",
+  "monogram": "EM",
+  "eventType": "Casamento",
+  "language": "Português",
+  "visualStyle": "Clássico",
+  "colors": "Castanho e nude",
+  "dateISO": "2026-11-07T13:00:00+02:00",
+  "eventDateLong": "7 de novembro de 2026",
+  "rsvpDeadline": "",
+  "timezone": "Africa/Maputo",
+  "verse": "Assim, eles já não são dois, mas sim uma só carne. Portanto, o que Deus uniu, ninguém o separe.",
+  "verseReference": "Mateus 19:6",
+  "brideParents": "Faustino Tembe e Marta João da Silva",
+  "groomParents": "Damison Macamo e Celeste Macucule",
+  "ceremonyTitle": "Cerimónia Religiosa",
+  "ceremonyPlace": "Paróquia Nossa Senhora das Vitórias da Malhanguane",
+  "ceremonyTime": "09:30",
+  "ceremonyMap": "https://www.google.com/maps/search/?api=1&query=Par%C3%B3quia%20Nossa%20Senhora%20das%20Vit%C3%B3rias%20da%20Malhanguane",
+  "receptionTitle": "Recepção",
+  "receptionPlace": "Salão de Eventos The Gardens",
+  "receptionTime": "13:00",
+  "receptionMap": "https://www.google.com/maps/search/?api=1&query=Sal%C3%A3o%20de%20Eventos%20The%20Gardens%2C%20Maputo%2C%20Mo%C3%A7ambique",
+  "additionalTitle": "",
+  "additionalPlace": "",
+  "additionalTime": "",
+  "photoTitle": "",
+  "photoPlace": "",
+  "photoTime": "",
+  "welcomeDrinkTitle": "",
+  "welcomeDrinkPlace": "",
+  "welcomeDrinkTime": "",
+  "supportContacts": "+258 84 433 6578",
+  "supportWhatsapp": "+258844336578",
+  "clientName": "Edna Mondlane",
+  "clientEmail": "ednaotiliam@gmail.com",
+  "clientCity": "Maputo, Moçambique",
+  "estimatedGuests": 0,
+  "guestRows": 0,
+  "giftSectionType": "Apenas lista de presentes",
+  "giftStore": "Loiça Amiga — Baixa da Cidade, Av. Karl Marx",
+  "bankAccounts": [],
+  "mobilePayments": [],
+  "program": [
+    {
+      "title": "Cerimónia Religiosa",
+      "place": "Paróquia Nossa Senhora das Vitórias da Malhanguane",
+      "time": "09:30"
+    },
+    {
+      "title": "Recepção",
+      "place": "Salão de Eventos The Gardens",
+      "time": "13:00"
+    }
+  ],
+  "story": {},
+  "letter": "Querido(a) convidado(a),\n\nCom muita alegria, convidamo-lo(a) a celebrar connosco o início desta nova etapa. A sua presença tornará o nosso dia ainda mais especial.\n\nEsperamos por si para partilhar este momento de amor, família e gratidão.\n\nCom carinho,\nMilondre e Anchura",
+  "audioYoutube": "",
+  "audioMp3": "",
+  "guestListVersion": "Lista de convidados por importar",
+  "guestListUpdatedAt": "2026-09-07",
+  "features": {
+    "qrCode": true,
+    "checkin": true,
+    "timeCapsule": false,
+    "rsvp": true,
+    "guestMessages": true,
+    "gifts": true,
+    "guestInfo": true
+  }
+};
+
+window.LIRANDZO_GUESTS = [];

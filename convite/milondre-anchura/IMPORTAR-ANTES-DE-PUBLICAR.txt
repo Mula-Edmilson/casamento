@@ -1,0 +1,11 @@
+IMPORTANTE — Milondre & Anchura
+
+Slug oficial: milondre-anchura
+Endpoint: https://api-casamento-mj.onrender.com
+
+Este ZIP NÃO contém convidados do convite-modelo. A lista de convidados está intencionalmente vazia e deve ser importada separadamente quando a lista oficial for fornecida.
+
+Para carregar os dados do evento e a lista de presentes no MongoDB:
+  node import-milondre-anchura-to-mongodb.js
+
+A importação sincroniza os presentes oficiais da Loiça Amiga e remove itens antigos desse mesmo convite/slug.

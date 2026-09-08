@@ -1,0 +1,7 @@
+VALIDAÇÃO DOS DADOS RECEBIDOS
+
+O formulário define a data oficial do evento como 07/11/2026, cerimónia às 09:30 e recepção às 13:00.
+O ficheiro “Programa do dia de casamento Milondre & Anchura.xlsx” contém um programa com datas 30 e 31 de Outubro, que entram em conflito com o formulário.
+Por segurança, essas datas do Excel NÃO foram publicadas no convite. O convite usa a data e horários explícitos do formulário.
+
+O título do Excel identifica o casal como “Milondre & Anchura”; esta designação foi usada como nome público do convite. Os nomes civis no convite são Edna Otília Mondlane e Mauro Damison Macamo.
