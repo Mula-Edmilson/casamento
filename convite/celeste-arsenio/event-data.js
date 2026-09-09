@@ -95,7 +95,8 @@ window.LIRANDZO_GIFT_OPTIONS = [
   },
   {
     "name": "Material de construção",
-    "category": "Lista de presentes"
+    "category": "Lista de presentes",
+    "repeatable": true
   },
   {
     "name": "Ar condicionado 12000 BTUs",

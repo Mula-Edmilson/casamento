@@ -18,7 +18,7 @@ Dados principais
 
 Notas de implementação
 - Todos os slugs foram uniformizados para celeste-arsenio.
-- As três fotografias fornecidas foram aplicadas na capa, história e galeria.
+- As quatro fotografias fornecidas foram aplicadas na capa inicial, hero do convite e galeria.
 - Os dados bancários do convite-modelo foram removidos, porque não foram fornecidos dados de contribuição para este casal.
 - A lista de presentes foi actualizada para as 15 opções oficiais e continua com escolha única.
 - Check-in e cápsula permanecem desactivados/ocultos no painel deste pacote.

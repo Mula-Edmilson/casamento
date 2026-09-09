@@ -10,7 +10,7 @@
   <meta property="og:title" content="Convite de Casamento — Aplonia & Vander">
   <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/media/capa-hero.jpg">
+  <meta property="og:image" content="assets/media/hero.jpeg">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -225,7 +225,7 @@
   <!-- Story Timeline com imagem de fundo e overlay -->
   <div class="story-timeline-container">
     <div class="story-background-image">
-      <img src="assets/media/momentos-maos.jpg" alt="Mãos dos noivos com alianças">
+      <img src="assets/media/galeria1.jpeg" alt="Os noivos num momento especial">
       <div class="story-overlay"></div>
     </div>
     
@@ -393,10 +393,10 @@
       <h2 class="section-title">Momentos</h2>
       <div class="gallery-grid">
         <div class="gallery-image-container">
-          <img src="assets/media/momentos-maos.jpg" alt="Mãos dos noivos com alianças" data-src="assets/media/momentos-maos.jpg">
+          <img src="assets/media/galeria1.jpeg" alt="Os noivos num momento romântico" data-src="assets/media/galeria1.jpeg">
         </div>
         <div class="gallery-image-container">
-          <img src="assets/media/momentos-champagne.jpg" alt="Brinde de casamento com flores e velas" data-src="assets/media/momentos-champagne.jpg">
+          <img src="assets/media/galeria2.jpeg" alt="Os noivos juntos" data-src="assets/media/galeria2.jpeg">
         </div>
       </div>
     </section>
@@ -486,7 +486,7 @@
   <div class="modal" id="giftsCombinedModal" role="dialog" aria-modal="true" aria-labelledby="giftsCombinedTitle">
     <div class="modal-card">
       <h3 id="giftsCombinedTitle">Lista de Presentes</h3>
-      <p>A sua presença é o nosso maior presente. Caso deseje oferecer um mimo, escolha apenas <strong>1 presente</strong>; depois de registado, ficará indisponível para os restantes convidados.</p>
+      <p>A sua presença é o nosso maior presente. Se desejar brindar-nos com um gesto de carinho, preparámos algumas sugestões na nossa lista. Agradecemos de coração por fazer parte deste momento tão especial.</p>
       <div id="giftListContainer" style="margin-top: 24px;">
         <div id="giftLoading" style="text-align: center; padding: 40px; color: #777;">A carregar lista de presentes...</div>
         <div id="giftError" style="display: none; text-align: center; padding: 20px; color: #D93025; background: #ffe6e8; border-radius: 8px; margin-bottom: 20px;"></div>
@@ -630,7 +630,7 @@ const DEMO_DEFAULT_GIFTS = [
   { id: 'gift-02', name: "Sofá (Nando Service)", reserved: false, reserved_by: '', timestamp: '' },
   { id: 'gift-03', name: "Fogão de 6 Bocas", reserved: false, reserved_by: '', timestamp: '' },
   { id: 'gift-04', name: "Mesa de Jantar de 8 lugares", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-05', name: "Material de construção", reserved: false, reserved_by: '', timestamp: '' },
+  { id: 'gift-05', name: "Material de construção", repeatable: true, reserved: false, reserved_by: '', timestamp: '' },
   { id: 'gift-06', name: "Ar condicionado 12000 BTUs", reserved: false, reserved_by: '', timestamp: '' },
   { id: 'gift-07', name: "Máquina de lavar", reserved: false, reserved_by: '', timestamp: '' },
   { id: 'gift-08', name: "Panelas de Inox", reserved: false, reserved_by: '', timestamp: '' },
@@ -689,6 +689,21 @@ function normalizeGiftKey(value) {
     .replace(/[\u0300-\u036f]/g, '')
     .trim()
     .toLowerCase();
+}
+
+function giftOptionConfig(giftName) {
+  const key = normalizeGiftKey(giftName);
+  return (window.LIRANDZO_GIFT_OPTIONS || []).find(item => {
+    const name = item && typeof item === 'object' ? (item.name || item.label || '') : String(item || '');
+    return normalizeGiftKey(name) === key;
+  }) || null;
+}
+
+function isRepeatableGift(giftName) {
+  const option = giftOptionConfig(giftName);
+  if (option && option.repeatable === true) return true;
+  return (window.LIRANDZO_INVITE_SLUG || 'celeste-arsenio') === 'celeste-arsenio' &&
+    normalizeGiftKey(giftName) === normalizeGiftKey('Material de construção');
 }
 
 function parseGiftDetails(value) {
@@ -828,7 +843,7 @@ function reservationToken(record) {
 
 async function fetchGiftRecords() {
   if (!window.LirandzoAPI || typeof window.LirandzoAPI.get !== 'function') return [];
-  const actions = ['get_gifts', 'list_gifts'];
+  const actions = ['get_gifts', 'list_gifts', 'list_gift_records'];
   const settled = await Promise.allSettled(actions.map(action => window.LirandzoAPI.get(action, {})));
   const records = [];
   const seen = new Set();
@@ -853,6 +868,8 @@ async function getGiftState() {
   const nameNow = normalizeGiftKey(guestName || localStorage.getItem('guestName') || '');
   const taken = new Map();
 
+  let mineSelection = null;
+
   records.forEach(record => {
     const explicitGift = giftNameFromRecord(record);
     const inventoryGift = isReservedGiftRecord(record) ? (record.name || record.label || record.giftName || '') : '';
@@ -869,12 +886,19 @@ async function getGiftState() {
       (nameNow && normalizeGiftKey(who) === nameNow)
     );
 
+    // Presentes repetíveis continuam disponíveis para outros convidados.
+    // A escolha do próprio convidado continua a ser reconhecida para manter
+    // a regra geral de um presente por convidado.
+    if (isRepeatableGift(gift) && !mine) return;
+
     if (!taken.has(key) || mine) {
-      taken.set(key, { gift, who, mine, record });
+      const entry = { gift, who, mine, record };
+      taken.set(key, entry);
+      if (mine) mineSelection = entry;
     }
   });
 
-  const mine = Array.from(taken.values()).find(item => item.mine) || null;
+  const mine = mineSelection || Array.from(taken.values()).find(item => item.mine) || null;
   return { options, records, taken, mine };
 }
 

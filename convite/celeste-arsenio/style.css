@@ -106,7 +106,7 @@ p:last-child {
 .hero {
   position: relative;
   min-height: 100vh;
-  background-image: url('assets/media/capa-hero.jpg');
+  background-image: url('assets/media/hero.jpeg');
   background-size: cover;
   background-position: center 30%;
   display: flex;

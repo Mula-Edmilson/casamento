@@ -15,7 +15,7 @@ Slug final: celeste-arsenio
 [OK] Removidas referências residuais do casal-modelo; “Amelia Gulele” permanece por ser o nome fornecido para a mãe do noivo.
 
 2. CONVITE
-[OK] Capa, história e galeria usam as três fotografias fornecidas.
+[OK] Capa inicial, hero do convite e galeria usam as quatro fotografias fornecidas.
 [OK] Contagem decrescente aponta para 2026-11-21 09:00 no fuso de Maputo.
 [OK] Quatro eventos e respectivos horários são apresentados na ordem correcta.
 [OK] Todos os botões de mapa usam os links fornecidos.
