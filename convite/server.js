@@ -1000,6 +1000,24 @@ function giftSeedListForInvite(invite) {
   return Array.from(new Set([...(custom.length ? custom : DEFAULT_GIFTS), ...DEFAULT_GIFTS]));
 }
 
+const INVITE_REPEATABLE_GIFTS = {
+  'celeste-arsenio': ['Material de construção']
+};
+
+function repeatableGiftNamesForInvite(invite) {
+  const slug = String(invite?.slug || '').trim().toLowerCase();
+  return INVITE_REPEATABLE_GIFTS[slug] || [];
+}
+
+function repeatableGiftKey(value) {
+  return normalizeText(value).replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function isRepeatableGiftForInvite(invite, giftName) {
+  const key = repeatableGiftKey(giftName);
+  return repeatableGiftNamesForInvite(invite).some(name => repeatableGiftKey(name) === key);
+}
+
 async function seedDefaultGifts(invite) {
   if (!invite || !invite._id) return;
 
@@ -1039,6 +1057,104 @@ async function seedDefaultGifts(invite) {
         // Nesse caso, não elimina nem altera a reserva histórica.
         if (!err || err.code !== 11000) throw err;
       }
+    }
+
+    // "Material de construção" é uma opção repetível apenas neste convite.
+    // Se existir uma reserva antiga no GiftItem, preserva a escolha como registo
+    // de Contribution e liberta o item para continuar disponível a outras pessoas.
+    for (const repeatableName of repeatableGiftNamesForInvite(invite)) {
+      const repeatableItem = await GiftItem.findOne({ inviteId: invite._id, name: exactRegex(repeatableName) });
+      if (!repeatableItem || !repeatableItem.reserved) continue;
+
+      const owner = String(repeatableItem.reservedBy || 'Convidado').trim();
+      const ownerToken = String(repeatableItem.reservedToken || '').trim();
+      const identity = [];
+      if (ownerToken) identity.push({ token: ownerToken });
+      if (owner) identity.push({ nome: exactRegex(owner) });
+
+      let historical = null;
+      if (identity.length) {
+        historical = await Contribution.findOne({
+          inviteId: invite._id,
+          $and: [
+            {
+              $or: [
+                { selectedGift: exactRegex(repeatableName) },
+                { giftChoice: exactRegex(repeatableName) },
+                { gifts: exactRegex(repeatableName) }
+              ]
+            },
+            { $or: identity }
+          ]
+        }).sort({ timestamp: 1, createdAt: 1 });
+      }
+
+      if (historical) {
+        await Contribution.updateOne(
+          { _id: historical._id },
+          {
+            $set: {
+              source: 'repeatable_gift',
+              selectedGift: repeatableName,
+              giftChoice: repeatableName,
+              selectedGifts: [repeatableName],
+              gifts: repeatableName,
+              legacyGiftMigrated: true,
+              legacyGiftConflict: false,
+              legacyGiftConflictReason: '',
+              legacyGiftReservedInGiftItem: false,
+              legacyGiftReservedBy: owner,
+              legacyGiftReservedAt: repeatableItem.reservedAt || historical.timestamp || new Date(),
+              details: {
+                ...safeParseObject(historical.details),
+                selectedGift: repeatableName,
+                selectedGifts: [repeatableName],
+                giftChoice: repeatableName,
+                nome: owner,
+                token: ownerToken,
+                repeatableGift: true,
+                source: 'repeatable_gift'
+              }
+            }
+          }
+        );
+      } else {
+        await Contribution.create({
+          inviteId: invite._id,
+          slug: invite.slug,
+          nome: owner,
+          canal: 'Presente escolhido',
+          selectedGift: repeatableName,
+          giftChoice: repeatableName,
+          selectedGifts: [repeatableName],
+          gifts: repeatableName,
+          token: ownerToken,
+          source: 'repeatable_gift',
+          legacyGiftMigrated: true,
+          legacyGiftConflict: false,
+          legacyGiftReservedInGiftItem: false,
+          legacyGiftReservedBy: owner,
+          legacyGiftReservedAt: repeatableItem.reservedAt || new Date(),
+          details: { selectedGift: repeatableName, selectedGifts: [repeatableName], giftChoice: repeatableName, nome: owner, token: ownerToken, repeatableGift: true, source: 'repeatable_gift' },
+          timestamp: repeatableItem.reservedAt || new Date()
+        });
+      }
+
+      await GiftItem.updateOne(
+        { _id: repeatableItem._id, inviteId: invite._id },
+        {
+          $set: {
+            reserved: false,
+            reservedBy: '',
+            reservedByNormalized: '',
+            reservedToken: '',
+            reservedSource: '',
+            reservedContributionId: null,
+            reservedAt: null
+          },
+          $unset: { reservedByGuestId: '' }
+        }
+      );
     }
 
     await GiftItem.deleteMany({
@@ -1540,6 +1656,20 @@ app.post('/manager/invites/:id/gifts/reset-reservations', requireManager, requir
     }
   );
 
+  let repeatableRemoved = 0;
+  if (String(invite.slug || '').trim().toLowerCase() === 'celeste-arsenio') {
+    const repeatableNames = repeatableGiftNamesForInvite(invite);
+    const repeatableResult = await Contribution.deleteMany({
+      inviteId: invite._id,
+      $or: [
+        { source: 'repeatable_gift' },
+        { selectedGift: { $in: repeatableNames }, canal: /presente escolhido/i }
+      ]
+    });
+    repeatableRemoved = repeatableResult.deletedCount || 0;
+    invalidateLegacyGiftRepairCache(invite);
+  }
+
   await logActivity({
     invite,
     type: 'gift',
@@ -1550,7 +1680,7 @@ app.post('/manager/invites/:id/gifts/reset-reservations', requireManager, requir
   return res.json({
     status: 'success',
     message: 'Reservas de presentes reiniciadas com sucesso.',
-    data: { matched: result.matchedCount || 0, modified: result.modifiedCount || 0 }
+    data: { matched: result.matchedCount || 0, modified: result.modifiedCount || 0, repeatableRemoved }
   });
 });
 
@@ -2385,7 +2515,7 @@ function invalidateLegacyGiftRepairCache(invite) {
   if (key) LEGACY_GIFT_REPAIR_CACHE.delete(key);
 }
 async function legacyGiftRowsNeedRepair(invite) {
-  const needs = await Contribution.exists({
+  const filter = {
     inviteId: invite._id,
     canal: /presente escolhido/i,
     $or: [
@@ -2393,7 +2523,15 @@ async function legacyGiftRowsNeedRepair(invite) {
       { selectedGift: { $in: [null, ''] } },
       { giftChoice: { $in: [null, ''] } }
     ]
-  });
+  };
+
+  // Isolamento: só ignora registos repetíveis nos convites que realmente
+  // tenham essa funcionalidade configurada (actualmente, Celeste & Arsenio).
+  if (repeatableGiftNamesForInvite(invite).length) {
+    filter.source = { $ne: 'repeatable_gift' };
+  }
+
+  const needs = await Contribution.exists(filter);
   return Boolean(needs);
 }
 
@@ -2539,7 +2677,14 @@ async function ensureLegacyGiftReservations(invite, optionsArg = {}) {
 
   await seedDefaultGifts(invite);
   const options = await giftOptionNamesForInvite(invite);
-  const rows = await Contribution.find({ inviteId: invite._id, canal: /presente escolhido/i })
+  const legacyRowsFilter = { inviteId: invite._id, canal: /presente escolhido/i };
+
+  // Isolamento: não altera a leitura de contribuições dos restantes convites.
+  if (repeatableGiftNamesForInvite(invite).length) {
+    legacyRowsFilter.source = { $ne: 'repeatable_gift' };
+  }
+
+  const rows = await Contribution.find(legacyRowsFilter)
     .sort({ timestamp: 1, createdAt: 1, _id: 1 });
 
   const result = { scanned: rows.length, migrated: 0, reserved: 0, conflicts: 0, unresolved: 0 };
@@ -2559,6 +2704,34 @@ async function ensureLegacyGiftReservations(invite, optionsArg = {}) {
         legacyGiftConflictReason: 'Não foi possível identificar o nome real do presente neste registo antigo.',
         details: { legacyGiftUnresolved: true, migratedAt: new Date().toISOString() }
       });
+      continue;
+    }
+
+    if (isRepeatableGiftForInvite(invite, giftName)) {
+      await markContributionGiftMeta(row, {
+        source: 'repeatable_gift',
+        selectedGift: giftName,
+        giftChoice: giftName,
+        selectedGifts: [giftName],
+        gifts: giftName,
+        legacyGiftMigrated: true,
+        legacyGiftConflict: false,
+        legacyGiftConflictReason: '',
+        legacyGiftReservedInGiftItem: false,
+        legacyGiftReservedBy: guestName,
+        legacyGiftReservedAt: pickedAt,
+        details: {
+          selectedGift: giftName,
+          selectedGifts: [giftName],
+          giftChoice: giftName,
+          nome: guestName,
+          token: tokenValue,
+          repeatableGift: true,
+          source: 'repeatable_gift',
+          migratedAt: new Date().toISOString()
+        }
+      });
+      result.migrated += 1;
       continue;
     }
 
@@ -2754,6 +2927,12 @@ async function cleanGiftSelectionRecordsFastForAdmin(invite) {
     const details = safeParseObject(row.details);
     let conflict = Boolean(row.legacyGiftConflict || details.duplicateGift || details.duplicateGuestGift);
     let reason = row.legacyGiftConflictReason || details.legacyGiftConflictReason || '';
+
+    if (isRepeatableGiftForInvite(invite, giftName)) {
+      duplicateMetaById.set(String(row._id || ''), { conflict: false, reason: '', giftName, guestName });
+      continue;
+    }
+
     if (owner && !sameOwner) {
       conflict = true;
       reason = reason || `Presente duplicado: ${giftName} já estava reservado por ${owner.guestName || 'outro convidado'}.`;
@@ -3366,6 +3545,100 @@ async function handleSaveGiftContributions(req, res, invite) {
   });
 }
 
+function repeatableGiftSelectionPublic(row, giftName, reservedBy, reservedAt) {
+  return {
+    id: String(row?._id || ''),
+    _id: String(row?._id || ''),
+    name: giftName,
+    label: giftName,
+    giftName,
+    selectedGift: giftName,
+    giftChoice: giftName,
+    selectedGifts: [giftName],
+    gifts: giftName,
+    reserved: true,
+    isReserved: true,
+    repeatable: true,
+    reservedBy,
+    reserved_by: reservedBy,
+    reservedAt: reservedAt || row?.timestamp || row?.createdAt || new Date()
+  };
+}
+
+async function findRepeatableGiftSelectionByGuest(invite, { reservedBy = '', reservedToken = '' } = {}) {
+  const identity = [];
+  if (reservedToken) identity.push({ token: String(reservedToken).trim() });
+  if (reservedBy) identity.push({ nome: exactRegex(String(reservedBy).trim()) });
+  if (!identity.length) return null;
+
+  const repeatableNames = repeatableGiftNamesForInvite(invite);
+  if (!repeatableNames.length) return null;
+
+  return Contribution.findOne({
+    inviteId: invite._id,
+    $and: [
+      { $or: [{ source: 'repeatable_gift' }, { canal: /presente escolhido/i }] },
+      {
+        $or: repeatableNames.flatMap(name => [
+          { selectedGift: exactRegex(name) },
+          { giftChoice: exactRegex(name) },
+          { gifts: exactRegex(name) }
+        ])
+      },
+      { $or: identity }
+    ]
+  }).sort({ timestamp: 1, createdAt: 1 });
+}
+
+async function saveRepeatableGiftSelection({ invite, guest, reservedBy, reservedToken, giftName, reservedAt }) {
+  const identityFilter = reservedToken
+    ? { token: reservedToken }
+    : { nome: reservedBy };
+
+  return Contribution.findOneAndUpdate(
+    {
+      inviteId: invite._id,
+      source: 'repeatable_gift',
+      selectedGift: giftName,
+      ...identityFilter
+    },
+    {
+      $setOnInsert: {
+        inviteId: invite._id,
+        slug: invite.slug,
+        canal: 'Presente escolhido'
+      },
+      $set: {
+        nome: reservedBy,
+        selectedGift: giftName,
+        giftChoice: giftName,
+        selectedGifts: [giftName],
+        gifts: giftName,
+        token: reservedToken,
+        source: 'repeatable_gift',
+        legacyGiftMigrated: true,
+        legacyGiftConflict: false,
+        legacyGiftConflictReason: '',
+        legacyGiftReservedInGiftItem: false,
+        legacyGiftReservedBy: reservedBy,
+        legacyGiftReservedAt: reservedAt,
+        details: {
+          selectedGift: giftName,
+          selectedGifts: [giftName],
+          giftChoice: giftName,
+          nome: reservedBy,
+          token: reservedToken,
+          guestId: guest?._id ? String(guest._id) : '',
+          repeatableGift: true,
+          source: 'repeatable_gift'
+        },
+        timestamp: reservedAt
+      }
+    },
+    { upsert: true, new: true, runValidators: true }
+  );
+}
+
 async function handleSaveGifts(req, res, invite) {
   await seedDefaultGifts(invite);
 
@@ -3390,6 +3663,30 @@ async function handleSaveGifts(req, res, invite) {
   const reservedBy = String(guest?.name || rawName || 'Convidado').trim();
   const reservedByNormalized = normalizeText(reservedBy);
   const reservedToken = String(rawToken || guest?.inviteToken || '').trim();
+  const requestedGift = giftNames[0];
+  const canonicalGift = giftSeedListForInvite(invite).find(name => isSameGiftName(name, requestedGift)) || requestedGift;
+  const repeatableGift = isRepeatableGiftForInvite(invite, canonicalGift);
+
+  const alreadyRepeatableByGuest = await findRepeatableGiftSelectionByGuest(invite, { reservedBy, reservedToken });
+  if (alreadyRepeatableByGuest) {
+    const previousGift = String(alreadyRepeatableByGuest.selectedGift || alreadyRepeatableByGuest.giftChoice || alreadyRepeatableByGuest.gifts || repeatableGiftNamesForInvite(invite)[0] || '').trim();
+    if (repeatableGift && isSameGiftName(previousGift, canonicalGift)) {
+      const publicGift = repeatableGiftSelectionPublic(alreadyRepeatableByGuest, canonicalGift, reservedBy, alreadyRepeatableByGuest.timestamp || alreadyRepeatableByGuest.createdAt);
+      return res.json({
+        status: 'success',
+        code: 'GIFT_ALREADY_RESERVED_BY_THIS_GUEST',
+        data: { success: [publicGift], failed: [] },
+        reserved: [publicGift],
+        message: 'Este presente já estava registado em seu nome.'
+      });
+    }
+
+    return res.status(409).json({
+      status: 'error',
+      code: 'GUEST_ALREADY_SELECTED_GIFT',
+      message: `Já existe um presente registado em seu nome: ${previousGift || 'Material de construção'}. Cada convidado só pode escolher 1 presente.`
+    });
+  }
 
   const alreadyReservedByGuest = await GiftItem.findOne({
     inviteId: invite._id,
@@ -3422,6 +3719,39 @@ async function handleSaveGifts(req, res, invite) {
   }
 
   const now = new Date();
+
+  if (repeatableGift) {
+    const officialExists = giftSeedListForInvite(invite).some(name => isSameGiftName(name, canonicalGift));
+    if (!officialExists) {
+      return res.status(404).json({ status: 'error', message: 'Presente inexistente.' });
+    }
+
+    const row = await saveRepeatableGiftSelection({
+      invite,
+      guest,
+      reservedBy,
+      reservedToken,
+      giftName: canonicalGift,
+      reservedAt: now
+    });
+
+    await logActivity({
+      invite,
+      type: 'gift',
+      title: 'Reserva de presente',
+      detail: `${reservedBy} · ${canonicalGift}`,
+      meta: { reservedBy, reservedToken, gifts: [canonicalGift], repeatable: true }
+    });
+
+    const publicGift = repeatableGiftSelectionPublic(row, canonicalGift, reservedBy, now);
+    return res.json({
+      status: 'success',
+      data: { success: [publicGift], failed: [] },
+      reserved: [publicGift],
+      message: 'Presente registado com sucesso.'
+    });
+  }
+
   const results = { success: [], failed: [] };
 
   for (const giftName of giftNames) {
