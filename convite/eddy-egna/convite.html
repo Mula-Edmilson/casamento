@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html lang="pt">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Convite de Lobolo — Eddy &amp; Egna</title>
+<link href="assets/media/lirandzo-logo.svg" rel="icon" type="image/png"/>
+<meta content="Convite de Lobolo — Eddy &amp; Egna" property="og:title"/>
+<meta content="Junte-se a nós para celebrar o Lobolo de Eddy e Egna." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="assets/media/eddy-egna-casal.jpg" property="og:image"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;family=Parisienne&amp;display=swap" rel="stylesheet"/>
+<link href="style.css" rel="stylesheet"/>
+<style>
+    /* Estilos para o formulário de mensagens */
+    #messageForm {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: left;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      background: var(--card);
+    }
+    #messageForm textarea {
+      width: 100%;
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    /* Estilos para o feed de mensagens */
+    #guestbook-feed {
+      max-width: 600px;
+      margin: 40px auto 0 auto;
+      max-height: 500px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 24px;
+      background: #fff;
+    }
+    #feed-loading {
+      text-align: center;
+      padding: 40px;
+      color: #777;
+    }
+    .guestbook-entry {
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 0;
+    }
+    .guestbook-entry:last-child {
+      border-bottom: 0;
+    }
+    .guestbook-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .guestbook-header strong {
+      color: var(--accent);
+      font-size: 1.1rem;
+    }
+    .guestbook-header span {
+      font-size: 0.85rem;
+      color: #777;
+    }
+    .guestbook-entry p {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      color: #333;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    
+    /* Estilo para a mensagem de boas-vindas */
+    .welcome-guest {
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: white;
+      background: rgba(0,0,0,0.3);
+      padding: 8px 16px;
+      border-radius: 50px;
+      display: inline-block;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    /* Estilos para a lista dinâmica de presentes */
+    .gift-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .gift-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+    .gift-item:hover {
+      border-color: var(--accent);
+      background: #fff5f5;
+    }
+    .gift-item.reserved {
+      background: #f0f0f0;
+      color: #999;
+      border-color: #ddd;
+      cursor: not-allowed;
+      opacity: 0.7;
+      text-decoration: line-through;
+    }
+    .gift-item.reserved input {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .gift-item input {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+
+
+    /* Feedback premium após confirmação de presença */
+    .rsvp-success-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(18, 14, 12, .46);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .28s ease, visibility .28s ease;
+      pointer-events: none;
+    }
+    .rsvp-success-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .rsvp-success-card {
+      width: min(330px, 92vw);
+      min-height: 210px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 28px;
+      background: rgba(255, 252, 248, .92);
+      box-shadow: 0 28px 80px rgba(0,0,0,.26);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px 24px;
+      transform: translateY(10px) scale(.96);
+      transition: transform .36s cubic-bezier(.2,.9,.2,1);
+    }
+    .rsvp-success-overlay.show .rsvp-success-card {
+      transform: translateY(0) scale(1);
+    }
+    .rsvp-checkmark {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 18px 36px rgba(34, 197, 94, .28);
+      animation: checkPulse .95s ease both;
+    }
+    .rsvp-checkmark svg {
+      width: 46px;
+      height: 46px;
+      stroke-dasharray: 52;
+      stroke-dashoffset: 52;
+      animation: drawCheck .56s .18s ease forwards;
+    }
+    .rsvp-success-card strong {
+      display: block;
+      margin-top: 18px;
+      font-family: var(--font-heading);
+      color: #2f261f;
+      font-size: 1.55rem;
+      line-height: 1.05;
+    }
+    .rsvp-success-card span {
+      display: block;
+      margin-top: 8px;
+      color: #6f5b4e;
+      font-size: .95rem;
+      line-height: 1.45;
+    }
+    @keyframes checkPulse {
+      0% { transform: scale(.72); opacity: 0; }
+      55% { transform: scale(1.08); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+  
+/* MENU REAL - EDDY & EGNA */
+.menu-real-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  text-align: left;
+}
+.menu-real-category {
+  padding: 14px 14px 12px;
+  border: 1px solid rgba(109, 76, 58, 0.18);
+  border-radius: 16px;
+  background: rgba(255, 252, 247, 0.74);
+}
+.menu-real-category strong {
+  display: block;
+  color: var(--accent);
+  font-size: 0.92rem;
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+.menu-real-category ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.menu-real-category li {
+  margin: 4px 0;
+  color: var(--text-dark);
+  line-height: 1.35;
+  font-size: 0.9rem;
+}
+
+</style>
+</head>
+<body class="loading convite-rustic-theme eddy-egna-theme">
+<div class="fixed-ui-container">
+  <audio id="backgroundMusic" loop playsinline preload="auto"></audio>
+  <button aria-label="Tocar música" id="musicControl" type="button">
+    <svg viewbox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path></svg>
+  </button>
+  <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn" type="button">
+    <svg viewbox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
+  </button>
+  <button aria-label="Falar no WhatsApp" class="fab-item" id="fabWhatsappBtn" type="button">
+    <svg viewbox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 21l2-5.3A8.5 8.5 0 1 1 21 11.5z"></path><path d="M8.5 8.5c.8 3 3.1 5.3 6 6"></path></svg>
+  </button>
+  <button aria-label="Ver detalhes do evento" class="fab-item" id="fabEventInfoBtn" type="button">
+    <svg viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 10v6M12 7h.01"></path></svg>
+  </button>
+  <button aria-label="Ver mapa do local" class="fab-item" id="fabMapBtn" type="button">
+    <svg viewbox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+  </button>
+</div>
+
+<main aria-labelledby="inviteTitle" class="invite-wrap" role="main">
+  <div class="decor-flower-top-right"></div>
+  <div class="decor-flower-bottom-left"></div>
+
+  <header class="hero">
+    <div class="hero-gradient-overlay"></div>
+    <div class="hero-bottom-content">
+      <p class="lead"><strong>Celebre connosco o nosso Lobolo</strong></p>
+      <h1 class="names" id="inviteTitle">Eddy &amp; Egna</h1>
+      <p class="lead">14 de novembro de 2026 · 14:00</p>
+      <div id="countdown">
+        <div><span id="days">00</span><small>Dias</small></div>
+        <div><span id="hours">00</span><small>Horas</small></div>
+        <div><span id="minutes">00</span><small>Minutos</small></div>
+        <div><span id="seconds">00</span><small>Segundos</small></div>
+      </div>
+    </div>
+    <a class="scroll-down-indicator" href="#nossa-historia" aria-label="Continuar"></a>
+  </header>
+
+  <section class="section fade-in-section" id="nossa-historia">
+    <p class="verse">Eddy &amp; Egna</p>
+    <p class="verse-reference">14.09.2026</p>
+    <h2 class="section-title">As Nossas Famílias</h2>
+    <div class="couple-details">
+      <div><h3>Egna</h3><p>Noiva<br/><strong>Egna</strong><br/><small>Família Chongole</small></p></div>
+      <div class="decorative-ampersand">♡</div>
+      <div><h3>Eddy</h3><p>Noivo<br/><strong>Eddy</strong><br/><small>Família Gulele</small></p></div>
+    </div>
+    <p class="section-subtitle">Duas famílias reunidas para celebrar um momento especial: o nosso Lobolo.</p>
+  </section>
+
+  <section class="section vintage-section section-scene fade-in-section" id="carta-dos-noivos">
+    <div class="vintage-scene"><img alt="Fundo romântico" src="assets/media/fundo-flores-2.jpg"/><div class="vintage-scene-overlay"></div></div>
+    <div class="vintage-content">
+      <div class="vintage-section-kicker">------</div>
+      <div class="vintage-title-wrap">
+        <span aria-hidden="true" class="vintage-icon-badge"><svg viewbox="0 0 24 24"><path d="M4 7.5h16M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 18 19.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path><path d="m8 11 2 2 6-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4"></path></svg></span>
+        <h2 class="section-title">O Nosso Lobolo</h2>
+      </div>
+      <p class="section-subtitle">Será uma alegria partilhar este momento com as pessoas que fazem parte da nossa caminhada.</p>
+      <div class="vintage-letter-preview elevated-card">
+        <div aria-hidden="true" class="letter-seal">E&amp;E</div>
+        <div class="letter-topline"><span><i></i> Família</span><span><i></i> Amor</span><span><i></i> Celebração</span></div>
+        <p class="letter-intro">Querido(a) convidado(a),</p>
+        <p>É com muita alegria que o convidamos a celebrar connosco o Lobolo de Eddy e Egna.</p>
+        <div class="letter-signature">Eddy &amp; Egna</div>
+        <button class="btn btn-primary vintage-action" data-open-modal="cartaNoivosModal" type="button">Ler a Mensagem</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-highlight fade-in-section" id="agenda-evento">
+    <div class="agenda-centered">
+      <div class="agenda-header">
+        <div class="agenda-icon-divider"><span class="divider"></span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="divider"></span></div>
+        <h2 class="section-title">O Grande Dia</h2>
+        <p class="section-subtitle">Temos a honra de convidá-lo(a) a celebrar connosco este momento.</p>
+      </div>
+      <div class="agenda-event">
+        <h3 class="event-title">Lobolo</h3>
+        <p class="event-time">14:00</p>
+        <h4 class="event-location">Eddy &amp; Egna</h4>
+        <p class="event-description">Sábado, 14 de novembro de 2026.</p>
+        <a class="map-link-button" href="https://maps.app.goo.gl/1JTxHuKMnCRXwyrM6" rel="noopener noreferrer" target="_blank">Ver no Mapa</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-highlight fade-in-section" id="guia-evento">
+    <h2 class="section-title">Guia do Evento</h2>
+    <p class="section-subtitle">Tudo o que precisa de saber para celebrar connosco.</p>
+    <div class="guide-grid">
+      <div class="guide-item">
+        <h4>Confirme a Sua Presença</h4>
+        <p>Confirme até 13 de novembro de 2026. Escreva o seu nome e envie a confirmação pelo WhatsApp.</p>
+        <button class="btn btn-primary" id="rsvpBtn" type="button">Confirmar Presença</button>
+      </div>
+      <div class="guide-item">
+        <h4>Localização</h4>
+        <p>Use o mapa para abrir a rota até ao local do Lobolo.</p>
+        <button class="btn btn-outline" id="locationBtn" type="button">Ver Localização</button>
+      </div>
+      <div class="guide-item">
+        <h4>Contacto</h4>
+        <p>Para confirmação ou qualquer questão sobre o evento, fale connosco directamente pelo WhatsApp.</p>
+        <button class="btn btn-outline" id="whatsappBtn" type="button">Abrir WhatsApp</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section vintage-section etiquette-section section-scene fade-in-section" id="etiqueta-evento">
+    <div class="vintage-scene"><img alt="Fundo da secção de informações" src="assets/media/fundo-flores-2.jpg"/><div class="vintage-scene-overlay soft-dark"></div></div>
+    <div class="vintage-content">
+      <div class="vintage-section-kicker">------</div>
+      <div class="vintage-title-wrap"><span aria-hidden="true" class="vintage-icon-badge"><svg viewbox="0 0 24 24"><path d="M8 4h8l4 4v8l-4 4H8l-4-4V8z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="M9 12h6M12 9v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path></svg></span><h2 class="section-title">Informações Importantes</h2></div>
+      <p class="section-subtitle">Quatro detalhes essenciais para ter tudo à mão.</p>
+      <div class="etiquette-grid etiquette-visual-grid">
+        <div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewbox="0 0 24 24"><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"></path><circle cx="12" cy="12" fill="none" r="8" stroke="currentColor" stroke-width="1.4"></circle></svg></span><p>O Lobolo começa às 14:00.</p></div>
+        <div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewbox="0 0 24 24"><path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.4"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg></span><p>Confirmações até 13 de novembro.</p></div>
+        <div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewbox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12c0-4.42 4.03-8 9-8s9 3.58 9 8z" fill="none" stroke="currentColor" stroke-width="1.4"></path><circle cx="12" cy="10" fill="none" r="2.5" stroke="currentColor" stroke-width="1.4"></circle></svg></span><p>O mapa está disponível directamente no convite.</p></div>
+        <div class="etiquette-item elevated-card"><span aria-hidden="true" class="etiquette-icon"><svg viewbox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 21l2-5.3A8.5 8.5 0 1 1 21 11.5z" fill="none" stroke="currentColor" stroke-width="1.4"></path></svg></span><p>WhatsApp para confirmações: 85 851 1647.</p></div>
+      </div>
+      <button class="btn btn-outline vintage-action" id="infoButton" type="button">Ver Detalhes</button>
+    </div>
+  </section>
+
+  <section class="section section-highlight vintage-section travel-section section-scene fade-in-section" id="transporte-apoio">
+    <div class="vintage-scene"><img alt="Fundo da secção localização e apoio" src="assets/media/fundo-flores.jpg"/><div class="vintage-scene-overlay warm-light"></div></div>
+    <div class="vintage-content">
+      <div class="vintage-section-kicker">------</div>
+      <div class="vintage-title-wrap"><span aria-hidden="true" class="vintage-icon-badge"><svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.4"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.4"></circle></svg></span><h2 class="section-title">Localização &amp; Apoio</h2></div>
+      <p class="section-subtitle">Abra o mapa ou fale directamente connosco caso precise de ajuda.</p>
+      <div class="travel-card elevated-card">
+        <div aria-hidden="true" class="travel-map-mark">⌖</div>
+        <div><h3>Lobolo · 14:00</h3><p>14 de novembro de 2026</p><div class="travel-points"><span><i></i> Mapa</span><span><i></i> WhatsApp</span><span><i></i> Confirmação</span></div></div>
+        <button class="btn btn-primary" id="travelDetailsBtn" type="button">Ver Localização</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer fade-in-section">
+    <h3 class="names">Eddy &amp; Egna</h3>
+    <p>Agradecemos por fazer parte deste momento. Esperamos por si!</p>
+    <div class="footer-contact"><span>WhatsApp</span><span>+258 85 851 1647</span></div>
+  </footer>
+  <footer aria-label="Rodapé Lirandzo" class="lirandzo-demo-footer"><img alt="Lirandzo" loading="lazy" src="assets/media/lirandzo-logo.svg"/></footer>
+</main>
+
+<!-- RSVP / WHATSAPP -->
+<div aria-labelledby="rsvpTitle" aria-modal="true" class="modal" id="rsvpModal" role="dialog">
+  <div class="modal-card has-modal-hero">
+    <div class="modal-hero modal-hero-rsvp"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
+    <h3 id="rsvpTitle">Confirmar Presença</h3>
+    <p>Escreva o seu nome. Ao continuar, o WhatsApp abrirá com a confirmação pronta para enviar.</p>
+    <form id="rsvpForm">
+      <div><label for="guestName">Nome do convidado</label><input id="guestName" name="guestName" placeholder="Escreva o seu nome" required type="text" autocomplete="name"/></div>
+      <div class="form-actions" style="margin-top:20px;">
+        <button class="btn btn-primary" type="submit">Enviar Confirmação no WhatsApp</button>
+        <button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
+      </div>
+      <p id="rsvpStatus" style="font-size:.9rem;margin-top:14px;text-align:center;"></p>
+    </form>
+  </div>
+</div>
+
+<!-- MENSAGEM -->
+<div aria-labelledby="letterTitle" aria-modal="true" class="modal vintage-detail-modal" id="cartaNoivosModal" role="dialog">
+  <div class="modal-card vintage-modal-card has-modal-hero">
+    <div class="modal-hero modal-hero-letter"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div></div>
+    <div class="modal-kicker">Eddy &amp; Egna</div>
+    <h3 id="letterTitle">O Nosso Lobolo</h3>
+    <div class="modal-divider"></div>
+    <p>Querido(a) convidado(a),</p>
+    <p>É com muita alegria que o convidamos a celebrar connosco o nosso Lobolo, no dia 14 de novembro de 2026, às 14:00.</p>
+    <p>A sua presença tornará este momento ainda mais especial para nós e para as nossas famílias.</p>
+    <p class="modal-signature">Eddy &amp; Egna</p>
+    <div class="form-actions"><button class="btn btn-primary" data-close-modal="" type="button">Fechar</button></div>
+  </div>
+</div>
+
+<!-- DETALHES -->
+<div aria-labelledby="eventInfoTitle" aria-modal="true" class="modal" id="eventInfoModal" role="dialog">
+  <div class="modal-card has-modal-hero" style="text-align:left;">
+    <div class="modal-hero modal-hero-guest"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><circle cx="12" cy="12" fill="none" r="9" stroke="currentColor" stroke-width="1.5"></circle><path d="M12 10v6M12 7h.01" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path></svg></div></div>
+    <h3 id="eventInfoTitle" style="text-align:center;">Detalhes do Evento</h3>
+    <p style="text-align:center;margin-bottom:28px;">Informações principais do Lobolo.</p>
+    <div class="info-block"><p><strong>Casal</strong></p><p style="font-size:1.1rem;color:var(--text-dark);">Eddy &amp; Egna</p></div>
+    <div class="info-block"><p><strong>Famílias</strong></p><p style="font-size:1.1rem;color:var(--text-dark);">Gulele &amp; Chongole</p></div>
+    <div class="info-block"><p><strong>Data e hora</strong></p><p style="font-size:1.1rem;color:var(--accent);font-weight:600;">14 de novembro de 2026 · 14:00</p></div>
+    <div class="info-block"><p><strong>Prazo de confirmação</strong></p><p style="font-size:1.1rem;color:var(--text-dark);">13 de novembro de 2026</p></div>
+    <div class="form-actions" style="margin-top:28px;"><button class="btn btn-primary" data-close-modal="" style="width:100%;" type="button">Fechar</button></div>
+  </div>
+</div>
+
+<!-- LOCALIZAÇÃO -->
+<div aria-labelledby="locationChooserTitle" aria-modal="true" class="modal" id="locationChooserModal" role="dialog">
+  <div class="modal-card location-chooser-card has-modal-hero">
+    <div class="modal-hero modal-hero-mapchooser"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M12 21s-6.5-5-6.5-11A6.5 6.5 0 1 1 18.5 10C18.5 16 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.5"></path><circle cx="12" cy="10" fill="none" r="2.2" stroke="currentColor" stroke-width="1.5"></circle></svg></div></div>
+    <h3 id="locationChooserTitle">Localização</h3>
+    <p>Abra a rota para o local do Lobolo.</p>
+    <div class="location-chooser-grid">
+      <article class="location-choice-card">
+        <div class="location-choice-preview copo-preview"><div class="location-choice-overlay"></div><div class="location-choice-top-accent"></div><div class="location-choice-caption"><span>Lobolo</span><strong>Eddy &amp; Egna</strong></div></div>
+        <div class="location-choice-body"><p>14 de novembro de 2026 · 14:00</p><a class="btn btn-primary" href="https://maps.app.goo.gl/1JTxHuKMnCRXwyrM6" rel="noopener noreferrer" target="_blank">Abrir Mapa</a></div>
+      </article>
+    </div>
+    <div class="form-actions" style="margin-top:12px;"><button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button></div>
+  </div>
+</div>
+
+<script src="invite.js"></script>
+</body>
+</html>
