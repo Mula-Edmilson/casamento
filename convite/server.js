@@ -2453,7 +2453,8 @@ async function getPublicStats(req, res, invite) {
   const checkedPeople = checkins.reduce((sum, c) => sum + (Number(c.guests) || 1), 0);
   const openedRows = guests.filter(g => {
     const status = normalizeText(g.status || '');
-    return status.includes('abert') || status.includes('confirm') || status.includes('check') || Boolean(g.checkedIn);
+    const explicitlyNotOpened = status.includes('nao abert');
+    return ((!explicitlyNotOpened && status.includes('abert')) || status.includes('confirm') || status.includes('check') || Boolean(g.checkedIn));
   }).length;
   const confirmedRows = rsvps.length;
   sendJson(req, res, {
@@ -3118,6 +3119,14 @@ async function getGuestDetails(req, res, invite) {
   const guest = await findGuestByIdentity(invite, { nome: req.body?.nome || req.query?.nome || req.query?.name, name: req.query?.name, token: req.body?.token || req.query?.token });
   if (!guest) return sendJson(req, res, { status: 'error', message: 'Convidado não encontrado.' }, 404);
   await ensureGuestInviteToken(invite, guest);
+
+  const currentStatus = normalizeText(guest.status || '');
+  const alreadyConfirmedOrChecked = currentStatus.includes('confirm') || currentStatus.includes('check') || currentStatus.includes('entrou') || Boolean(guest.checkedIn);
+  if (!alreadyConfirmedOrChecked && !currentStatus.includes('abert')) {
+    guest.status = 'Convite Aberto';
+    await guest.save();
+    await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name, meta: { source: 'get_guest_details' } });
+  }
 
   const data = cleanGuestForPublic(guest);
   sendJson(req, res, { status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
