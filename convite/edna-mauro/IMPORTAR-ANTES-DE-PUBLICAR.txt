@@ -1,0 +1,11 @@
+IMPORTANTE — Edna & Mauro
+
+Slug oficial: edna-mauro
+Endpoint: https://api-casamento-mj.onrender.com
+Modo do convite: acesso aberto, sem login/validação por lista de convidados.
+
+Para carregar os dados do evento e a lista de presentes no MongoDB:
+  node import-edna-mauro-to-mongodb.js
+
+Não é necessário importar uma lista de convidados para abrir o convite. Os nomes são recolhidos nas acções de RSVP, reserva de presentes e mensagens.
+A importação sincroniza os presentes oficiais da Loiça Amiga e não elimina convidados/registos criados posteriormente pelas interacções do convite aberto.
