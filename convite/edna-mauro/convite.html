@@ -278,7 +278,7 @@
 <body class="loading convite-rustic-theme edna-mauro-theme">
 <div class="fixed-ui-container">
 <audio id="backgroundMusic" loop="" playsinline="" preload="auto"></audio>
-<button aria-label="Tocar música" id="musicControl" style="display:none" type="button">
+<button aria-label="Tocar música" id="musicControl" title="Tocar música" type="button">
 <svg viewbox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path></svg>
 </button>
 <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
@@ -823,23 +823,31 @@
       setTimeout(() => body.classList.add('loaded'), 100);
 
       const updateMusicIcon = () => {
-        if (!musicControl) return;
-        musicControl.innerHTML = music.paused 
+        if (!musicControl || !music) return;
+        const isPaused = music.paused;
+        musicControl.innerHTML = isPaused
           ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>`
           : `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>`;
-        musicControl.classList.toggle('playing', !music.paused);
+        musicControl.classList.toggle('playing', !isPaused);
+        musicControl.setAttribute('aria-label', isPaused ? 'Tocar música' : 'Pausar música');
+        musicControl.setAttribute('title', isPaused ? 'Tocar música' : 'Pausar música');
       };
 
       const MUSIC_URL = 'https://static.wixstatic.com/mp3/819ea0_e333d443f2f545e59d79429cdd3c1361.mp3';
 
       const prepareMusic = () => {
-        if (!music || !MUSIC_URL) { if (musicControl) musicControl.style.display = 'none'; return false; }
+        if (!music || !MUSIC_URL) {
+          if (musicControl) musicControl.style.display = 'none';
+          return false;
+        }
+        if (musicControl) musicControl.style.display = 'flex';
         if (music.getAttribute('src') !== MUSIC_URL) music.setAttribute('src', MUSIC_URL);
         music.loop = true;
         music.preload = 'auto';
         music.autoplay = true;
         music.setAttribute('playsinline', '');
         music.volume = 0.72;
+        return true;
       };
 
       const safePlayMusic = () => {
