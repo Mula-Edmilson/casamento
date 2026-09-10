@@ -2150,6 +2150,7 @@
 
       function guestOpened(g) {
         const status = normalizeKey(g && (g.status || g.guestStatus || g.accessStatus || g.openStatus));
+        const explicitlyNotOpened = status.includes('nao abert');
         const accessCount = num(g?.openCount || g?.openedCount || g?.views || g?.viewCount || g?.accessCount || g?.loginCount || g?.opens);
         return Boolean(
           guestConfirmed(g) ||
@@ -2168,11 +2169,13 @@
           g?.lastAccessAt ||
           g?.lastLoginAt ||
           g?.loginAt ||
-          status.includes('abert') ||
-          status.includes('opened') ||
-          status.includes('visualiz') ||
-          status.includes('view') ||
-          status.includes('access')
+          (!explicitlyNotOpened && (
+            status.includes('abert') ||
+            status.includes('opened') ||
+            status.includes('visualiz') ||
+            status.includes('view') ||
+            status.includes('access')
+          ))
         );
       }
 
