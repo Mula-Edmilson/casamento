@@ -3119,14 +3119,6 @@ async function getGuestDetails(req, res, invite) {
   if (!guest) return sendJson(req, res, { status: 'error', message: 'Convidado não encontrado.' }, 404);
   await ensureGuestInviteToken(invite, guest);
 
-  const currentStatus = normalizeText(guest.status || '');
-  const alreadyConfirmedOrChecked = currentStatus.includes('confirm') || currentStatus.includes('check') || currentStatus.includes('entrou') || Boolean(guest.checkedIn);
-  if (!alreadyConfirmedOrChecked && !currentStatus.includes('abert')) {
-    guest.status = 'Convite Aberto';
-    await guest.save();
-    await logActivity({ invite, type: 'login', title: 'Convite aberto', detail: guest.name, meta: { source: 'get_guest_details' } });
-  }
-
   const data = cleanGuestForPublic(guest);
   sendJson(req, res, { status: 'success', data, guestName: data.name, guestStatus: data.status, Mesa: data.mesa, maxGuestsTotal: data.maxGuestsTotal, token: data.token });
 }
