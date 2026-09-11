@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Convite de Casamento — Aplonia & Vander</title>
+  <title>Convite de Casamento — Aplónia & Vânder</title>
   
   <link rel="icon" type="image/png" href="assets/media/lirandzo-logo.svg">
 
-  <meta property="og:title" content="Convite de Casamento — Aplonia & Vander">
+  <meta property="og:title" content="Convite de Casamento — Aplónia & Vânder">
   <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/media/hero.jpeg">
@@ -188,7 +188,7 @@
       <div class="hero-gradient-overlay"></div>
       <div class="hero-bottom-content">
         <p class="lead"><strong>Celebre connosco o nosso casamento</strong></p>
-        <h1 class="names">Aplonia & Vander</h1>
+        <h1 class="names">Aplónia & Vânder</h1>
         <p class="lead"><strong>21 de novembro de 2026</strong></p>
         
         <div id="countdown">
@@ -212,12 +212,12 @@
   
   <div class="couple-details">
     <div>
-      <h3>Aplonia</h3>
-      <p>Filha de <strong>Joãzinho Langa</strong><br>e de <strong>Rosária da Conceião</strong></p>
+      <h3>Aplónia</h3>
+      <p>Filha de <strong>Joãozinho Langa</strong><br>e de <strong>Rosária da Conceição</strong></p>
     </div>
     <div class="decorative-ampersand">♡</div>
     <div>
-      <h3>Vander</h3>
+      <h3>Vânder</h3>
       <p>Filho de <strong>Crimildo Lifaniça</strong><br>e de <strong>Amélia Gulele</strong></p>
     </div>
   </div>
@@ -445,7 +445,7 @@
     </section>
     
     <footer class="footer fade-in-section">
-      <h3 class="names">Aplonia & Vander</h3>
+      <h3 class="names">Aplónia & Vânder</h3>
       <p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
       <div class="footer-contact">
         <span>Tem dúvidas?</span>
@@ -498,6 +498,24 @@
           <p id="giftStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
         </form>
       </div>
+
+      <div id="monetaryGifts" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+        <h4 style="margin-bottom: 8px;">Presentes monetários</h4>
+        <p style="font-size: 0.92rem; text-align: left; margin-bottom: 16px;">Se preferir oferecer um presente em valor monetário, pode usar uma das opções abaixo.</p>
+        <div class="info-block">
+          <p><strong>MBIM</strong></p>
+          <p>1236817998<br>Titular: Celeste Aplónia</p>
+        </div>
+        <div class="info-block">
+          <p><strong>M-Pesa</strong></p>
+          <p>849904594<br>Titular: Arsenio Lifaniça</p>
+        </div>
+        <div class="info-block">
+          <p><strong>E-Mola</strong></p>
+          <p>879999095<br>Titular: Celeste Langa</p>
+        </div>
+      </div>
+
       <button type="button" class="btn btn-ghost" data-close-modal style="margin-top: 24px;">Fechar</button>
     </div>
   </div>
@@ -973,31 +991,30 @@ async function postRequest(data) {
     }
     
     // Variáveis globais
-    let guestName = ""; // Identidade real usada no login/API. Não deve incluir acompanhante.
-    let guestDisplayName = ""; // Nome usado apenas visualmente no convite.
+    let guestName = "";
     let guestMesa = null;
-    let guestCompanions = 0;
-    let guestCompanionLabel = "";
     let maxGuests = 1;
+    let guestCompanions = 0;
+    let guestNotes = "";
     let token = "";
     let rsvpTitle = null; // Declarar para uso posterior
 
-    function getCompanionLabelFromNotes(notes) {
-      const text = String(notes || '');
-      // Permite personalização sem alterar o nome de login. Ex.: "Acompanhante: Esposa".
-      const match = text.match(/(?:^|[\n;|])\s*Acompanhante(?:s)?\s*:\s*([^\n;|]+)/i);
+    function getCompanionLabel(notes) {
+      const raw = String(notes || '').trim();
+      if (!raw) return '';
+      const match = raw.match(/(?:acompanhante|companhia)\s*:\s*([^;\n|]+)/i);
       return match && match[1] ? match[1].trim() : '';
     }
 
-    function buildGuestDisplayName(name, companions, companionLabel = '') {
-      const baseName = String(name || 'Convidado(a)').trim();
-      const count = Math.max(0, Number(companions) || 0);
-      const customLabel = String(companionLabel || '').trim();
+    function getGuestDisplayName() {
+      const baseName = guestName || localStorage.getItem('guestName') || 'Convidado(a)';
+      const companions = Math.max(0, Number(guestCompanions || Math.max((Number(maxGuests) || 1) - 1, 0)) || 0);
+      const customLabel = getCompanionLabel(guestNotes) || localStorage.getItem('guestCompanionLabel') || '';
 
-      if (count <= 0) return baseName;
+      if (companions <= 0) return baseName;
+      if (companions === 1) return `${baseName} e ${customLabel || 'Acompanhante'}`;
       if (customLabel) return `${baseName} e ${customLabel}`;
-      if (count === 1) return `${baseName} e Acompanhante`;
-      return `${baseName} + ${count} acompanhantes`;
+      return `${baseName} + ${companions} acompanhantes`;
     }
     
     document.addEventListener('DOMContentLoaded', async () => {
@@ -1018,15 +1035,16 @@ async function postRequest(data) {
           guestName = guest.name || guest.nome || localStorage.getItem('guestName') || 'Convidado(a)';
           guestMesa = guest.mesa || guest.table || localStorage.getItem('guestMesa') || 'A definir';
           maxGuests = Number(guest.maxGuests || guest.maxGuestsTotal || localStorage.getItem('guestMax') || 1) || 1;
-          guestCompanions = Math.max(0, Number(guest.companions ?? (maxGuests - 1)) || 0);
-          guestCompanionLabel = getCompanionLabelFromNotes(guest.notes || '');
-          guestDisplayName = buildGuestDisplayName(guestName, guestCompanions, guestCompanionLabel);
+          guestCompanions = Math.max(0, Number(guest.companions ?? Math.max(maxGuests - 1, 0)) || 0);
+          guestNotes = String(guest.notes || '');
+          const companionLabel = getCompanionLabel(guestNotes);
 
           localStorage.setItem('guestName', guestName);
-          localStorage.setItem('guestDisplayName', guestDisplayName);
           localStorage.setItem('guestMesa', guestMesa);
           localStorage.setItem('guestMax', String(maxGuests));
           localStorage.setItem('guestCompanions', String(guestCompanions));
+          if (companionLabel) localStorage.setItem('guestCompanionLabel', companionLabel);
+          else localStorage.removeItem('guestCompanionLabel');
           if (window.LirandzoAPI && typeof window.LirandzoAPI.post === 'function') {
             window.LirandzoAPI.post({ action: 'open_invite', token, nome: guestName }).catch(err => {
               console.warn('Não foi possível marcar convite como aberto:', err);
@@ -1057,10 +1075,10 @@ async function postRequest(data) {
       if (heroContent) {
         const welcomeMessage = document.createElement('p');
         welcomeMessage.className = 'welcome-guest';
-        const visualName = guestDisplayName || buildGuestDisplayName(guestName, guestCompanions, guestCompanionLabel);
+        const displayName = getGuestDisplayName();
         welcomeMessage.textContent = guestCompanions > 0
-          ? `Bem-vindos, ${visualName}!`
-          : `Bem-vindo(a), ${visualName}!`;
+          ? `Bem-vindos, ${displayName}!`
+          : `Bem-vindo(a), ${displayName}!`;
         heroContent.prepend(welcomeMessage);
       }
 
@@ -1094,13 +1112,13 @@ async function postRequest(data) {
               'DTSTAMP:20260801T102000Z',
               'DTSTART:20261121T070000Z',
               'DTEND:20261121T160000Z',
-              'SUMMARY:Casamento de Aplonia & Vander',
+              'SUMMARY:Casamento de Aplónia & Vânder',
               'DESCRIPTION:Cerimónia religiosa às 09h00 na Igreja Católica Sagrada Família da Machava. Recepção às 13h30, cerimónia civil às 14h00 e copo de água às 15h00 na Quinta Santa Carolina.',
               'LOCATION:Igreja Católica Sagrada Família da Machava e Quinta Santa Carolina',
               'BEGIN:VALARM',
               'TRIGGER:-P1D',
               'ACTION:DISPLAY',
-              'DESCRIPTION:Lembrete do casamento de Aplonia & Vander',
+              'DESCRIPTION:Lembrete do casamento de Aplónia & Vânder',
               'END:VALARM',
               'END:VEVENT',
               'END:VCALENDAR'
@@ -1109,7 +1127,7 @@ async function postRequest(data) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'lembrete-casamento-aplonia-vander.ics';
+            link.download = 'lembrete-casamento-aplónia-vânder.ics';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1124,18 +1142,17 @@ async function postRequest(data) {
         const infoNameEl = document.getElementById('guestInfoName');
         const infoMesaEl = document.getElementById('guestInfoMesa');
         const infoGuestsEl = document.getElementById('guestInfoGuests');
-        const visualName = guestDisplayName || buildGuestDisplayName(guestName, guestCompanions, guestCompanionLabel);
+        const displayName = getGuestDisplayName();
         
         if (infoNameEl) {
-          infoNameEl.textContent = visualName;
+          infoNameEl.textContent = displayName;
         }
         if (infoGuestsEl) {
           if (guestCompanions <= 0) {
             infoGuestsEl.textContent = 'Sem acompanhante registado';
-          } else if (guestCompanionLabel) {
-            infoGuestsEl.textContent = guestCompanionLabel;
           } else if (guestCompanions === 1) {
-            infoGuestsEl.textContent = '1 acompanhante';
+            const customLabel = getCompanionLabel(guestNotes) || localStorage.getItem('guestCompanionLabel') || '';
+            infoGuestsEl.textContent = customLabel || '1 acompanhante';
           } else {
             infoGuestsEl.textContent = `${guestCompanions} acompanhantes`;
           }
