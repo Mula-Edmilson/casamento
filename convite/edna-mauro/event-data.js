@@ -16,7 +16,7 @@ window.LIRANDZO_EVENT = {
   "timezone": "Africa/Maputo",
   "verse": "Assim, eles já não são dois, mas sim uma só carne. Portanto, o que Deus uniu, ninguém o separe.",
   "verseReference": "Mateus 19:6",
-  "brideParents": "Faustino Tembe e Marta João da Silva",
+  "brideParents": "Rojasse Mondlane e Marta João da Silva",
   "groomParents": "Damison Macamo e Celeste Macucule",
   "ceremonyTitle": "Cerimónia Religiosa",
   "ceremonyPlace": "Paróquia Nossa Senhora das Vitórias da Malhanguane",
@@ -35,8 +35,9 @@ window.LIRANDZO_EVENT = {
   "welcomeDrinkTitle": "",
   "welcomeDrinkPlace": "",
   "welcomeDrinkTime": "",
-  "supportContacts": "+258 84 433 6578",
+  "supportContacts": "+258 84 433 6578 · +258 84 113 9064",
   "supportWhatsapp": "+258844336578",
+  "supportWhatsappSecondary": "+258841139064",
   "clientName": "Edna Mondlane",
   "clientEmail": "ednaotiliam@gmail.com",
   "clientCity": "Maputo, Moçambique",
@@ -74,7 +75,9 @@ window.LIRANDZO_EVENT = {
     "guestInfo": false
   },
   "guestAccessMode": "open",
-  "requireNameOnActions": true
+  "requireNameOnActions": true,
+  "maxGuestsPerRsvp": 2,
+  "allowCompanionName": true
 };
 
 window.LIRANDZO_GUESTS = [];

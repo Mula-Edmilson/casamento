@@ -316,7 +316,7 @@
 <p class="verse">“Assim, eles já não são dois, mas sim uma só carne. Portanto, o que Deus uniu, ninguém o separe.”</p>
 <p class="verse-reference">Mateus 19:6</p>
 <h2 class="section-title">A Nossa História</h2>
-<div class="couple-details"><div><h3>Edna</h3><p>Noiva<br/><strong>Edna Otília Mondlane</strong><br/><small>Filha de Faustino Tembe e Marta João da Silva</small></p></div><div class="decorative-ampersand">♡</div><div><h3>Mauro</h3><p>Noivo<br/><strong>Mauro Damison Macamo</strong><br/><small>Filho de Damison Macamo e Celeste Macucule</small></p></div></div>
+<div class="couple-details"><div><h3>Edna</h3><p>Noiva<br/><strong>Edna Otília Mondlane</strong><br/><small>Filha de Rojasse Mondlane e Marta João da Silva</small></p></div><div class="decorative-ampersand">♡</div><div><h3>Mauro</h3><p>Noivo<br/><strong>Mauro Damison Macamo</strong><br/><small>Filho de Damison Macamo e Celeste Macucule</small></p></div></div>
 
 </section>
 <!-- SECÇÃO VINTAGE: CARTA DOS NOIVOS -->
@@ -466,7 +466,7 @@
 <p>Agradecemos por fazer parte deste momento. Esperamos por si!</p>
 <div class="footer-contact">
 <span>Contacto</span>
-<span>+258 84 433 6578</span>
+<span>+258 84 433 6578 · +258 84 113 9064</span>
 </div>
 </footer>
 <footer aria-label="Rodapé Lirandzo" class="lirandzo-demo-footer">
@@ -477,10 +477,15 @@
 <div aria-labelledby="rsvpTitle" aria-modal="true" class="modal" id="rsvpModal" role="dialog">
 <div class="modal-card has-modal-hero"><div class="modal-hero modal-hero-rsvp"><div class="modal-hero-overlay"></div><div class="modal-hero-top-accent"></div><div aria-hidden="true" class="modal-hero-badge"><svg viewbox="0 0 24 24"><path d="M4 5h16v14H4z" fill="none" stroke="currentColor" stroke-width="1.5"></path><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg></div></div>
 <h3 id="rsvpTitle">Confirmar Presença</h3>
-<p>Insira o seu nome antes de confirmar. A resposta será registada no painel dos noivos para uma identificação mais precisa.</p>
+<p>Insira o seu nome antes de confirmar. Se for acompanhado(a), indique também o nome do acompanhante. Este convite permite no máximo 2 pessoas.</p>
 <div class="action-name-field">
 <label for="rsvpGuestName">Seu nome completo</label>
 <input autocomplete="name" id="rsvpGuestName" maxlength="120" placeholder="Escreva o seu nome" required type="text"/>
+</div>
+<div class="action-name-field">
+<label for="rsvpCompanionName">Nome do acompanhante <span style="font-weight:400;opacity:.68">(opcional)</span></label>
+<input autocomplete="name" id="rsvpCompanionName" maxlength="120" placeholder="Preencha apenas se vier acompanhado(a)" type="text"/>
+<small style="display:block;margin-top:7px;opacity:.72;line-height:1.45">Máximo: convidado(a) + 1 acompanhante.</small>
 </div>
 <div aria-describedby="rsvpStatus" class="rsvp-options" id="rsvpOptions">
 <button class="btn btn-primary rsvp-choice" id="confirmPresenceBtn" type="button">Sim! confirmo.</button>
@@ -560,7 +565,7 @@
 <span class="modal-kicker">Transporte &amp; Apoio</span>
 <h3 id="transporteApoioTitle">Detalhes de chegada</h3>
 <div class="modal-divider"></div>
-<div class="modal-travel-grid"><div><strong>Cerimónia</strong><p>Paróquia Nossa Senhora das Vitórias da Malhanguane, às 09:30.</p></div><div><strong>Recepção</strong><p>Salão de Eventos The Gardens, às 13:00.</p></div><div><strong>Dress code</strong><p>Tons Neutros.</p></div><div><strong>Contacto</strong><p>+258 84 433 6578.</p></div></div>
+<div class="modal-travel-grid"><div><strong>Cerimónia</strong><p>Paróquia Nossa Senhora das Vitórias da Malhanguane, às 09:30.</p></div><div><strong>Recepção</strong><p>Salão de Eventos The Gardens, às 13:00.</p></div><div><strong>Dress code</strong><p>Tons Neutros.</p></div><div><strong>Contactos de apoio</strong><p>+258 84 433 6578<br/>+258 84 113 9064</p></div></div>
 <button class="btn btn-primary" data-close-modal="" type="button">Fechar Detalhes</button>
 </div>
 </div>
@@ -678,12 +683,6 @@
       return '';
     }
 
-    let guestName = '';
-    let token = '';
-    let maxGuests = 1;
-    let rsvpAlreadyConfirmed = false;
-    let rsvpTitle = null;
-
     document.addEventListener('DOMContentLoaded', () => {
       initializeUI();
     });
@@ -691,12 +690,7 @@
     function initializeUI() {
       // O convite é aberto. O nome é solicitado apenas nas acções que gravam dados no painel.
       const rsvpModal = document.getElementById('rsvpModal');
-      const rsvpForm = null;
-
       // Constantes
-      const HOST_WHATSAPP_NUMBER = '+258844336578';
-      const ADDRESS_RELIGIOSA = "Paróquia Nossa Senhora das Vitórias da Malhanguane";
-      const ADDRESS_CIVIL = "Paróquia Nossa Senhora das Vitórias da Malhanguane";
       const ADDRESS_COPO_DE_AGUA = "Salão de Eventos The Gardens, Maputo";
       const MAP_FAROL2_URL = "https://maps.google.com/?q=25.791513,32.674191";
       const MAP_CIVIL_URL = "https://www.google.com/maps/search/?api=1&query=Par%C3%B3quia%20Nossa%20Senhora%20das%20Vit%C3%B3rias%20da%20Malhanguane"; 
@@ -719,12 +713,6 @@
       const lightboxModal = document.getElementById('lightboxModal');
       const lightboxImage = document.getElementById('lightboxImage');
       
-      const createMapLink = (address, isDirections = false) => {
-        const baseUrl = 'https://www.google.com/maps'; 
-        const encodedAddress = encodeURIComponent(address);
-        if (isDirections) return `${baseUrl}/dir/?api=1&destination=${encodedAddress}`;
-        return `${baseUrl}/search/?api=1&query=${encodedAddress}`;
-      };
       let preservedScrollY = 0;
       const MODAL_CLOSE_ANIMATION_MS = 420;
 
@@ -822,12 +810,14 @@
       body.classList.remove('loading');
       setTimeout(() => body.classList.add('loaded'), 100);
 
+      let musicPausedByUser = sessionStorage.getItem('lirandzoMusicPausedByUser') === '1';
+
       const updateMusicIcon = () => {
         if (!musicControl || !music) return;
         const isPaused = music.paused;
         musicControl.innerHTML = isPaused
-          ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>`
-          : `<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13M9 18a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 16a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>`;
+          ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`
+          : `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>`;
         musicControl.classList.toggle('playing', !isPaused);
         musicControl.setAttribute('aria-label', isPaused ? 'Tocar música' : 'Pausar música');
         musicControl.setAttribute('title', isPaused ? 'Tocar música' : 'Pausar música');
@@ -844,24 +834,26 @@
         if (music.getAttribute('src') !== MUSIC_URL) music.setAttribute('src', MUSIC_URL);
         music.loop = true;
         music.preload = 'auto';
-        music.autoplay = true;
+        music.autoplay = !musicPausedByUser;
         music.setAttribute('playsinline', '');
         music.volume = 0.72;
         return true;
       };
 
-      const safePlayMusic = () => {
-        if (!music || !MUSIC_URL) return Promise.resolve(false);
+      const safePlayMusic = (force = false) => {
+        if (!music || !MUSIC_URL || (musicPausedByUser && !force)) return Promise.resolve(false);
         prepareMusic();
         return music.play()
           .then(() => {
+            musicPausedByUser = false;
+            sessionStorage.setItem('lirandzoMusicPausedByUser', '0');
             sessionStorage.removeItem('lirandzoPlayMusic');
             document.body.classList.remove('music-needs-tap');
             updateMusicIcon();
             return true;
           })
           .catch(() => {
-            document.body.classList.add('music-needs-tap');
+            if (!musicPausedByUser) document.body.classList.add('music-needs-tap');
             updateMusicIcon();
             return false;
           });
@@ -871,6 +863,7 @@
         prepareMusic();
 
         const playOnFirstInteraction = () => {
+          if (musicPausedByUser) return;
           safePlayMusic().then((played) => {
             if (played) {
               document.removeEventListener('click', playOnFirstInteraction, true);
@@ -882,6 +875,7 @@
         };
 
         const bindMusicFallback = () => {
+          if (musicPausedByUser) return;
           document.addEventListener('click', playOnFirstInteraction, true);
           document.addEventListener('touchstart', playOnFirstInteraction, true);
           document.addEventListener('pointerdown', playOnFirstInteraction, true);
@@ -889,25 +883,34 @@
         };
 
         requestAnimationFrame(() => {
+          if (musicPausedByUser) {
+            updateMusicIcon();
+            return;
+          }
           safePlayMusic().then((played) => {
             if (!played) bindMusicFallback();
           });
         });
 
         document.addEventListener('visibilitychange', () => {
-          if (!document.hidden && music.paused) safePlayMusic();
+          if (!document.hidden && music.paused && !musicPausedByUser) safePlayMusic();
         });
       }
-      
-      if(musicControl) {
+
+      if (musicControl) {
         musicControl.addEventListener('click', (event) => {
           event.preventDefault();
           event.stopPropagation();
           if (!music) return;
           if (music.paused) {
-            safePlayMusic();
+            musicPausedByUser = false;
+            sessionStorage.setItem('lirandzoMusicPausedByUser', '0');
+            safePlayMusic(true);
           } else {
+            musicPausedByUser = true;
+            sessionStorage.setItem('lirandzoMusicPausedByUser', '1');
             music.pause();
+            document.body.classList.remove('music-needs-tap');
             updateMusicIcon();
           }
         });
@@ -960,6 +963,22 @@
         const currentGuestName = requireGuestName('rsvpGuestName', rsvpOptionsStatus);
         if (!currentGuestName) return;
 
+        const companionInput = document.getElementById('rsvpCompanionName');
+        const companionName = cleanGuestName(companionInput && companionInput.value);
+        const samePerson = companionName && companionName.toLocaleLowerCase('pt-PT') === currentGuestName.toLocaleLowerCase('pt-PT');
+        if (samePerson) {
+          if (rsvpOptionsStatus) {
+            rsvpOptionsStatus.style.color = '#D93025';
+            rsvpOptionsStatus.textContent = 'O nome do acompanhante deve ser diferente do nome do convidado.';
+          }
+          companionInput?.focus();
+          companionInput?.setAttribute('aria-invalid', 'true');
+          return;
+        }
+
+        const totalGuests = companionName ? 2 : 1;
+        const companionNote = companionName ? `Acompanhante: ${companionName}` : '';
+
         try {
           setButtonLoading(sourceButton, true, choice === 'confirmed' ? 'A confirmar...' : 'A guardar...');
           if (rsvpOptionsStatus) rsvpOptionsStatus.textContent = '';
@@ -969,15 +988,22 @@
             nome: currentGuestName,
             token: '',
             choice,
-            guests: 1,
+            guests: totalGuests,
+            companions: totalGuests - 1,
+            message: companionNote,
+            companionName,
             timestamp: new Date().toISOString()
           });
 
           const nameInput = document.getElementById('rsvpGuestName');
           if (nameInput) nameInput.removeAttribute('aria-invalid');
+          if (companionInput) companionInput.removeAttribute('aria-invalid');
 
           if (choice === 'confirmed') {
-            await showRsvpSuccessFeedback(`Obrigado, ${escapeHTML(currentGuestName)}. A sua presença foi registada com sucesso.`);
+            const successMessage = companionName
+              ? `Obrigado, ${escapeHTML(currentGuestName)}. A presença de ${escapeHTML(companionName)} como acompanhante também foi registada.`
+              : `Obrigado, ${escapeHTML(currentGuestName)}. A sua presença foi registada com sucesso.`;
+            await showRsvpSuccessFeedback(successMessage);
             closeModal(document.getElementById('rsvpModal'));
           } else if (rsvpOptionsStatus) {
             rsvpOptionsStatus.style.color = '#9E7A13';
@@ -1175,57 +1201,7 @@
       }
       loadGiftChecklist();
 
-      // RSVP Form - Corrigido para CORS
-      if (rsvpForm) {
-        const rsvpStatus = document.getElementById('rsvpStatus');
-        const submitButton = document.getElementById('sendRsvpServer');
-        
-        const getRsvpData = () => ({
-          action: "rsvp",
-          nome: guestName, 
-          token: token,
-          guests: rsvpForm.querySelector('#guests').value,
-          phone: rsvpForm.querySelector('#phone').value.trim(),
-          message: rsvpForm.querySelector('#message').value.trim()
-        });
 
-        rsvpForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const data = getRsvpData();
-          
-          const originalButtonText = submitButton.textContent; 
-          setButtonLoading(submitButton, true, 'A enviar...');
-          rsvpStatus.textContent = "";
-
-          try {
-            await postRequest(data);
-            
-            // Se chegou aqui, assumimos que deu certo
-            localStorage.setItem('guestStatus', `Confirmado (${data.guests})`);
-            rsvpStatus.textContent = "";
-            submitButton.textContent = "Confirmado";
-            await showRsvpSuccessFeedback('Obrigado. A vossa presença foi registada com sucesso.');
-            closeModal(document.getElementById('rsvpModal'));
-            setButtonLoading(submitButton, false);
-            submitButton.textContent = "Atualizar Confirmação";
-            if(rsvpTitle) rsvpTitle.textContent = "Atualizar Presença";
-            
-          } catch (err) {
-            rsvpStatus.style.color = "#D93025";
-            rsvpStatus.textContent = "Erro ao registar. Tente novamente.";
-            setButtonLoading(submitButton, false);
-            submitButton.textContent = originalButtonText; 
-          }
-        });
-        
-        rsvpForm.querySelector('#sendWhatsapp')?.addEventListener('click', () => {
-          const data = getRsvpData();
-          const text = `RSVP - Olá! Sim! confirmo.. Nome: ${data.nome}, Convidados: ${data.guests}. Mensagem: ${data.message}`;
-          window.open(`https://wa.me/${HOST_WHATSAPP_NUMBER.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`, '_blank');
-          closeModal(document.getElementById('rsvpModal'));
-        });
-      }
-      
       // Abrir confirmação de presença 5 segundos depois de chegar ao fim do convite
       let endOfInviteRsvpTimer = null;
       let endOfInviteRsvpOpened = false;
@@ -1266,76 +1242,6 @@
           openModal('lightboxModal');
         });
       });
-      // Comprovativo Form - CORRIGIDO PARA BASE64
-      const comprovativoForm = document.getElementById('comprovativoForm');
-      if (comprovativoForm) {
-        const comprovativoStatus = document.getElementById('comprovativoStatus');
-        const submitButton = comprovativoForm.querySelector('button[type="submit"]');
-
-        comprovativoForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          const canal = document.getElementById('canalPagamento').value;
-          const fileInput = document.getElementById('comprovativoFile');
-          const file = fileInput.files[0];
-
-          if (!file || !canal) {
-            comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Por favor, preencha o canal e anexe um ficheiro.";
-            return;
-          }
-
-          setButtonLoading(submitButton, true, 'A processar imagem...');
-          comprovativoStatus.textContent = "";
-
-          // LER O FICHEIRO COMO BASE64 ANTES DE ENVIAR
-          const reader = new FileReader();
-          reader.onload = async function() {
-            const base64File = reader.result.split(',')[1]; 
-            
-            const data = {
-              action: 'upload_comprovativo',
-              nome: guestName,
-              token: token,
-              canal: canal,
-              comprovativoFile: base64File,
-              comprovativoFile_filename: file.name,
-              comprovativoFile_type: file.type
-            };
-
-            submitButton.textContent = "A enviar...";
-
-            try {
-              // Agora usamos o postRequest normal em vez do postFormData
-              await postRequest(data); 
-              
-              comprovativoStatus.style.color = "green";
-              comprovativoStatus.textContent = "Comprovativo registado com sucesso!";
-              submitButton.textContent = "Enviado!";
-              comprovativoForm.reset();
-              
-              setTimeout(() => {
-                setButtonLoading(submitButton, false);
-                comprovativoStatus.textContent = "";
-              }, 3000);
-              
-            } catch (err) {
-              comprovativoStatus.style.color = "#D93025";
-              comprovativoStatus.textContent = "Erro ao enviar comprovativo. Tente novamente.";
-              setButtonLoading(submitButton, false);
-            }
-          };
-
-          reader.onerror = function() {
-            comprovativoStatus.style.color = "#D93025";
-            comprovativoStatus.textContent = "Erro ao ler o ficheiro no seu dispositivo.";
-            setButtonLoading(submitButton, false);
-          };
-
-          // Inicia a leitura do ficheiro
-          reader.readAsDataURL(file);
-        });
-      }
 
       // Animações de scroll reversíveis por secção
       const animatedSections = document.querySelectorAll('.fade-in-section');
