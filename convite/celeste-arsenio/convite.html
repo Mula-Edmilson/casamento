@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Convite de Casamento — Aplonia & Vander</title>
+  <title>Convite de Casamento — Aplónia & Vânder</title>
   
   <link rel="icon" type="image/png" href="assets/media/lirandzo-logo.svg">
 
-  <meta property="og:title" content="Convite de Casamento — Aplonia & Vander">
+  <meta property="og:title" content="Convite de Casamento — Aplónia & Vânder">
   <meta property="og:description" content="Junte-se a nós para celebrar o nosso casamento e o início de uma nova etapa das nossas vidas.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/media/hero.jpeg">
@@ -188,7 +188,7 @@
       <div class="hero-gradient-overlay"></div>
       <div class="hero-bottom-content">
         <p class="lead"><strong>Celebre connosco o nosso casamento</strong></p>
-        <h1 class="names">Aplonia & Vander</h1>
+        <h1 class="names">Aplónia & Vânder</h1>
         <p class="lead"><strong>21 de novembro de 2026</strong></p>
         
         <div id="countdown">
@@ -212,12 +212,12 @@
   
   <div class="couple-details">
     <div>
-      <h3>Aplonia</h3>
-      <p>Filha de <strong>Joãzinho Langa</strong><br>e de <strong>Rosária da Conceião</strong></p>
+      <h3>Aplónia</h3>
+      <p>Filha de <strong>Joãozinho Langa</strong><br>e de <strong>Rosária da Conceição</strong></p>
     </div>
     <div class="decorative-ampersand">♡</div>
     <div>
-      <h3>Vander</h3>
+      <h3>Vânder</h3>
       <p>Filho de <strong>Crimildo Lifaniça</strong><br>e de <strong>Amélia Gulele</strong></p>
     </div>
   </div>
@@ -445,7 +445,7 @@
     </section>
     
     <footer class="footer fade-in-section">
-      <h3 class="names">Aplonia & Vander</h3>
+      <h3 class="names">Aplónia & Vânder</h3>
       <p>Agradecemos por fazer parte da nossa história. Esperamos por si!</p>
       <div class="footer-contact">
         <span>Tem dúvidas?</span>
@@ -498,6 +498,24 @@
           <p id="giftStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
         </form>
       </div>
+
+      <div id="monetaryGifts" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+        <h4 style="margin-bottom: 8px;">Presentes monetários</h4>
+        <p style="font-size: 0.92rem; text-align: left; margin-bottom: 16px;">Se preferir oferecer um presente em valor monetário, pode usar uma das opções abaixo.</p>
+        <div class="info-block">
+          <p><strong>MBIM</strong></p>
+          <p>1236817998<br>Titular: Celeste Aplónia</p>
+        </div>
+        <div class="info-block">
+          <p><strong>M-Pesa</strong></p>
+          <p>849904594<br>Titular: Arsenio Lifaniça</p>
+        </div>
+        <div class="info-block">
+          <p><strong>E-Mola</strong></p>
+          <p>879999095<br>Titular: Celeste Langa</p>
+        </div>
+      </div>
+
       <button type="button" class="btn btn-ghost" data-close-modal style="margin-top: 24px;">Fechar</button>
     </div>
   </div>
@@ -1060,13 +1078,13 @@ async function postRequest(data) {
               'DTSTAMP:20260801T102000Z',
               'DTSTART:20261121T070000Z',
               'DTEND:20261121T160000Z',
-              'SUMMARY:Casamento de Aplonia & Vander',
+              'SUMMARY:Casamento de Aplónia & Vânder',
               'DESCRIPTION:Cerimónia religiosa às 09h00 na Igreja Católica Sagrada Família da Machava. Recepção às 13h30, cerimónia civil às 14h00 e copo de água às 15h00 na Quinta Santa Carolina.',
               'LOCATION:Igreja Católica Sagrada Família da Machava e Quinta Santa Carolina',
               'BEGIN:VALARM',
               'TRIGGER:-P1D',
               'ACTION:DISPLAY',
-              'DESCRIPTION:Lembrete do casamento de Aplonia & Vander',
+              'DESCRIPTION:Lembrete do casamento de Aplónia & Vânder',
               'END:VALARM',
               'END:VEVENT',
               'END:VCALENDAR'
@@ -1075,7 +1093,7 @@ async function postRequest(data) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'lembrete-casamento-aplonia-vander.ics';
+            link.download = 'lembrete-casamento-aplónia-vânder.ics';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

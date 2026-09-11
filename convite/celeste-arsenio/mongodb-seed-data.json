@@ -1,11 +1,11 @@
 {
   "event": {
     "slug": "celeste-arsenio",
-    "coupleNames": "Aplonia & Vander",
-    "displayNames": "Aplonia e Vander",
+    "coupleNames": "Aplónia & Vânder",
+    "displayNames": "Aplónia e Vânder",
     "clientName": "Celeste Aplónia Langa",
     "bride": "Celeste Aplónia Langa",
-    "groom": "Arsenio Vander Lifaniça",
+    "groom": "Arsenio Vânder Lifaniça",
     "monogram": "AV",
     "eventType": "Casamento",
     "language": "Português",
@@ -17,8 +17,8 @@
     "timezone": "Africa/Maputo",
     "verse": "O amor é paciente, o amor é bondoso. Não inveja, não se vangloria, não se orgulha. Não maltrata, não procura seus interesses, não se ira facilmente, não guarda rancor. O amor não se alegra com a injustiça, mas se alegra com a verdade. Tudo sofre, tudo crê, tudo espera, tudo suporta.",
     "verseReference": "1 Coríntios 13:4–7",
-    "brideParents": "Joazinho Langa e Rosaria da Conceião",
-    "groomParents": "Crimildo Lifaniça e Amelia Gulele",
+    "brideParents": "Joãozinho Langa e Rosária da Conceição",
+    "groomParents": "Crimildo Lifaniça e Amélia Gulele",
     "ceremonyTitle": "Cerimónia Religiosa",
     "ceremonyPlace": "Igreja Católica Sagrada Família da Machava",
     "ceremonyTime": "09:00",
@@ -37,9 +37,26 @@
     "estimatedGuests": 0,
     "guestRows": 0,
     "giftSectionType": "Lista de presentes",
-    "contributionsEnabled": false,
-    "bankAccounts": [],
-    "mobilePayments": [],
+    "contributionsEnabled": true,
+    "bankAccounts": [
+      {
+        "bank": "MBIM",
+        "holder": "Celeste Aplónia",
+        "account": "1236817998"
+      }
+    ],
+    "mobilePayments": [
+      {
+        "type": "M-Pesa",
+        "holder": "Arsenio Lifaniça",
+        "number": "849904594"
+      },
+      {
+        "type": "E-Mola",
+        "holder": "Celeste Langa",
+        "number": "879999095"
+      }
+    ],
     "program": [
       {
         "title": "Cerimónia Religiosa",

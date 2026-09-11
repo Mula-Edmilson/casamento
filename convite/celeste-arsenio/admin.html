@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-  <title>Painel do Cliente · Aplonia & Vander</title>
+  <title>Painel do Cliente · Aplónia & Vânder</title>
   <!-- LIRANDZO_ADMIN_FORM_FIX_V15 -->
   <meta name="robots" content="noindex,nofollow">
   <link rel="icon" type="image/svg+xml" href="assets/media/lirandzo-logo.svg">
@@ -1126,7 +1126,7 @@
     <section class="login-card" aria-labelledby="loginTitle">
       <div class="login-logo-wrap"><img src="assets/media/lirandzo-logo.svg" alt="Lirandzo" class="login-logo"></div>
       <h1 id="loginTitle">Painel do Cliente</h1>
-      <p>Gestão compacta do casamento Aplonia & Vander.</p>
+      <p>Gestão compacta do casamento Aplónia & Vânder.</p>
       <form id="loginForm">
         <div class="field">
           <label for="adminPassword">Senha de acesso</label>
@@ -1161,7 +1161,7 @@
         <button id="topbarLogoutBtn" class="topbar-logout" type="button" aria-label="Sair" title="Sair"><i data-feather="log-out"></i></button>
         <div class="topbar-title">
           <strong id="topbarTitle">Dashboard</strong>
-          <span id="topbarSubtitle">Aplonia & Vander · 21 de novembro de 2026</span>
+          <span id="topbarSubtitle">Aplónia & Vânder · 21 de novembro de 2026</span>
         </div>
       </div>
       <div class="topbar-actions">
@@ -1858,9 +1858,9 @@
       }
 
       function fillEventDetails() {
-        $('topbarSubtitle').textContent = `${EVENT.displayNames || EVENT.coupleNames || 'Aplonia & Vander'} · ${EVENT.eventDateLong || 'Data do evento'}`;
+        $('topbarSubtitle').textContent = `${EVENT.displayNames || EVENT.coupleNames || 'Aplónia & Vânder'} · ${EVENT.eventDateLong || 'Data do evento'}`;
         $('eventChip').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
-        $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Aplonia e Vander'}`;
+        $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Aplónia e Vânder'}`;
         $('eventDate').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
         $('rsvpDate').textContent = EVENT.rsvpDeadline || 'Prazo RSVP';
         $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '09:00'} · ${EVENT.ceremonyPlace || 'Local da cerimónia'}`;

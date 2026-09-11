@@ -1,4 +1,4 @@
-Aplonia & Vander — Convite digital Lirandzo
+Aplónia & Vânder — Convite digital Lirandzo
 
 Slug: celeste-arsenio
 URL pública esperada: https://lirandzo.com/convite/celeste-arsenio/
@@ -6,8 +6,8 @@ Pacote: Pérola
 
 Dados principais
 - Cliente/noiva: Celeste Aplónia Langa
-- Noivo: Arsenio Vander Lifaniça
-- Nomes exibidos: Aplonia & Vander
+- Noivo: Arsenio Vânder Lifaniça
+- Nomes exibidos: Aplónia & Vânder
 - Data: 21 de novembro de 2026
 - Cerimónia religiosa: 09:00 — Igreja Católica Sagrada Família da Machava
 - Recepção dos convidados: 13:30 — Quinta Santa Carolina

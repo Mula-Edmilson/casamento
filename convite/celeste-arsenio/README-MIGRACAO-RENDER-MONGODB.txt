@@ -1,4 +1,4 @@
-Aplonia & Vander — Convite preparado para Render + MongoDB
+Aplónia & Vânder — Convite preparado para Render + MongoDB
 
 Organização padronizada com o convite rosalina-monteiro:
 - ficheiros principais na raiz da pasta do convite;

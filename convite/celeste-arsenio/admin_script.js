@@ -517,9 +517,9 @@
       }
 
       function fillEventDetails() {
-        $('topbarSubtitle').textContent = `${EVENT.displayNames || EVENT.coupleNames || 'Aplonia & Vander'} · ${EVENT.eventDateLong || 'Data do evento'}`;
+        $('topbarSubtitle').textContent = `${EVENT.displayNames || EVENT.coupleNames || 'Aplónia & Vânder'} · ${EVENT.eventDateLong || 'Data do evento'}`;
         $('eventChip').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
-        $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Aplonia e Vander'}`;
+        $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Aplónia e Vânder'}`;
         $('eventDate').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
         $('rsvpDate').textContent = EVENT.rsvpDeadline || 'Prazo RSVP';
         $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '09:00'} · ${EVENT.ceremonyPlace || 'Local da cerimónia'}`;

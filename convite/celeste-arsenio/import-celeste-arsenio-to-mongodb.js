@@ -1,5 +1,5 @@
 /*
-  Importador MongoDB — Aplonia & Vander
+  Importador MongoDB — Aplónia & Vânder
   Use depois de colocar a lista oficial de convidados em mongodb-seed-data.json.
 */
 require('dotenv').config();
@@ -25,7 +25,7 @@ async function main() {
   if (!process.env.MONGODB_URI) throw new Error('MONGODB_URI não definido.');
   await mongoose.connect(process.env.MONGODB_URI);
   const event = seed.event || {};
-  const invite = await Invite.findOneAndUpdate({ slug: SLUG }, { $set: { slug: SLUG, clientName: 'Celeste Aplónia Langa', coupleNames: event.coupleNames || 'Aplonia & Vander', bride: event.bride || 'Celeste Aplónia Langa', groom: event.groom || 'Arsenio Vander Lifaniça', packageKey: process.env.INVITE_PACKAGE || 'perola', status: 'published', eventDateISO: event.dateISO || '', rsvpDeadline: event.rsvpDeadline || '', publicUrl: `${PUBLIC_SITE_URL}/convite/${SLUG}/`, githubPath: `convite/${SLUG}`, config: event } }, { upsert: true, new: true });
+  const invite = await Invite.findOneAndUpdate({ slug: SLUG }, { $set: { slug: SLUG, clientName: 'Celeste Aplónia Langa', coupleNames: event.coupleNames || 'Aplónia & Vânder', bride: event.bride || 'Celeste Aplónia Langa', groom: event.groom || 'Arsenio Vânder Lifaniça', packageKey: process.env.INVITE_PACKAGE || 'perola', status: 'published', eventDateISO: event.dateISO || '', rsvpDeadline: event.rsvpDeadline || '', publicUrl: `${PUBLIC_SITE_URL}/convite/${SLUG}/`, githubPath: `convite/${SLUG}`, config: event } }, { upsert: true, new: true });
   const latestGuestNames = new Set((seed.guests || []).map(g => normalizeText(g.name)));
   let inserted = 0, updated = 0, removedObsoleteGuests = 0;
   for (const g of seed.guests || []) {

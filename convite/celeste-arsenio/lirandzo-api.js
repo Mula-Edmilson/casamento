@@ -1,5 +1,5 @@
 // lirandzo-api.js — Cliente oficial Render/MongoDB para convites Lirandzo
-// Convite: Aplonia & Vander | slug: celeste-arsenio
+// Convite: Aplónia & Vânder | slug: celeste-arsenio
 (function () {
   'use strict';
 
