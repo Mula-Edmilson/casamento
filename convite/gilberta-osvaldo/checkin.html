@@ -1,20 +1,6 @@
 <!doctype html>
-<html lang="pt">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Check-in · Gilberta & Osvaldo</title>
-  <script src="./client-config.js"></script><script src="./event-data.js"></script><link rel="stylesheet" href="./style.css">
-</head>
-<body data-page="checkin">
-  <main class="admin-shell">
-    <section class="card">
-      <p class="eyebrow">Check-in</p><h1 data-field="coupleNames">Gilberta & Osvaldo</h1>
-      <form id="checkinAuthForm" class="form-block"><label>Senha de admin/check-in<input name="password" type="password" required></label><button class="btn primary" type="submit">Entrar</button></form>
-      <form id="checkinForm" class="form-block hidden"><input name="nome" placeholder="Nome ou token do convidado" required><button class="btn primary" type="submit">Confirmar entrada</button></form>
-      <div id="checkinFeedback" class="feedback hidden"></div>
-      <div id="checkinGuestList" class="mini-list"></div>
-    </section>
-  </main>
-  <script src="./lirandzo-api.js"></script>
-</body>
-</html>
+<html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Check-in — Osvaldo & Gilberta</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fbfaf6;color:#2c2417;font-family:Inter,Arial,sans-serif;padding:24px}.card{width:min(520px,100%);background:#fff;border:1px solid #d8c59a;padding:32px;box-shadow:0 20px 45px rgba(60,45,20,.08)}h1{font-family:Georgia,serif;font-size:2.2rem;margin:0 0 8px}p{line-height:1.65}.muted{color:#766b59}.box{margin:22px 0;padding:18px;background:#f7f1e5;border:1px solid #e7d9ba}button{width:100%;padding:14px;border:0;background:#b58b3e;color:#fff;font-weight:700;cursor:pointer}button:disabled{opacity:.55;cursor:not-allowed}.ok{color:#247344}.err{color:#a22}</style>
+</head><body><main class="card"><h1>Check-in</h1><p class="muted">Osvaldo & Gilberta</p><div id="info" class="box">A validar o convite...</div><button id="confirm" disabled>Confirmar entrada</button><p id="status"></p></main>
+<script src="client-config.js"></script><script src="event-data.js"></script><script src="lirandzo-api.js"></script>
+<script>(async()=>{const q=new URLSearchParams(location.search),token=q.get('t')||q.get('token')||'';const info=document.getElementById('info'),btn=document.getElementById('confirm'),status=document.getElementById('status');let guest=null;if(!token){info.textContent='QR/Token não encontrado.';status.className='err';return;}try{const r=await LirandzoAPI.get('get_guest',{token});guest=r.data||r;const name=guest.name||guest.nome||'Convidado';const table=guest.mesa||guest.table||'A definir';info.innerHTML='<strong>'+name+'</strong><br>Mesa: '+table;btn.disabled=false;}catch(e){info.textContent=e.message||'Não foi possível validar o convidado.';status.className='err';}btn.addEventListener('click',async()=>{if(!guest)return;btn.disabled=true;status.textContent='A confirmar...';try{await LirandzoAPI.post({action:'checkin_guest',token,nome:guest.name||guest.nome||''});status.textContent='Entrada confirmada com sucesso.';status.className='ok';info.innerHTML+='<br><strong>Check-in realizado</strong>';}catch(e){status.textContent=e.message||'Erro ao confirmar entrada.';status.className='err';btn.disabled=false;}});})();</script></body></html>
