@@ -71,7 +71,7 @@ p:last-child {
 .invite-wrap {
   width: 100%;
   max-width: 800px;
-  margin: 48px auto;
+  margin: 0 auto;
   background: var(--card);
   border: 1px solid var(--border-color);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
@@ -1100,9 +1100,9 @@ input[type="file"]::file-selector-button:hover {
 /* ===== STORY TIMELINE PREMIUM ===== */
 .story-timeline-container {
   position: relative;
-  width: 100%;
-  margin: 60px 0 40px;
-  border-radius: 24px;
+  width: calc(100% + 120px);
+  margin: 60px 0 40px -60px;
+  border-radius: 0;
   overflow: hidden;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
   background: #faf8f6;
@@ -1146,18 +1146,20 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .story-timeline {
+  --chapter-width: min(560px, calc(100vw - 48px));
   position: relative;
   z-index: 3;
   display: flex;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  gap: 0;
-  padding: 60px 40px;
+  scroll-padding-inline: max(24px, calc((100% - var(--chapter-width)) / 2));
+  gap: 28px;
+  padding: 70px max(24px, calc((100% - var(--chapter-width)) / 2));
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--accent) rgba(255, 255, 255, 0.1);
-  min-height: 450px;
+  min-height: 520px;
   align-items: center;
 }
 
@@ -1183,11 +1185,13 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .story-chapter {
-  scroll-snap-align: start;
-  flex: 0 0 calc(100% - 80px);
-  max-width: 500px;
-  margin: 0 40px 0 0;
-  padding: 30px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  flex: 0 0 var(--chapter-width);
+  max-width: var(--chapter-width);
+  margin: 0;
+  padding: 36px;
+  text-align: center;
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -1209,7 +1213,7 @@ input[type="file"]::file-selector-button:hover {
 
 .chapter-marker {
   display: inline-block;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
   position: relative;
 }
 
@@ -1229,7 +1233,8 @@ input[type="file"]::file-selector-button:hover {
   content: '';
   position: absolute;
   bottom: -10px;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 60px;
   height: 2px;
   background: linear-gradient(90deg, var(--accent), transparent);
@@ -1327,15 +1332,20 @@ input[type="file"]::file-selector-button:hover {
 
 /* Responsividade */
 @media (max-width: 768px) {
+  .story-timeline-container {
+    width: calc(100% + 48px);
+    margin-left: -24px;
+  }
+
   .story-timeline {
-    padding: 40px 20px;
-    min-height: 400px;
+    --chapter-width: calc(100vw - 48px);
+    gap: 18px;
+    padding-block: 48px 64px;
+    min-height: 440px;
   }
   
   .story-chapter {
-    flex: 0 0 calc(100% - 40px);
-    margin: 0 20px 0 0;
-    padding: 25px;
+    padding: 28px 24px;
   }
   
   .chapter-number {
@@ -1364,13 +1374,13 @@ input[type="file"]::file-selector-button:hover {
 
 @media (max-width: 480px) {
   .story-timeline {
-    padding: 30px 15px;
+    --chapter-width: calc(100vw - 32px);
+    gap: 12px;
+    padding-block: 36px 52px;
   }
   
   .story-chapter {
-    flex: 0 0 calc(100% - 30px);
-    margin: 0 15px 0 0;
-    padding: 20px;
+    padding: 24px 20px;
   }
   
   .chapter-number {
@@ -1402,6 +1412,77 @@ input[type="file"]::file-selector-button:hover {
     background: linear-gradient(90deg, transparent, rgba(0,0,0,0.2));
     pointer-events: none;
     z-index: 5;
+  }
+}
+
+/* Modal de localizações do botão flutuante de mapa */
+.locations-modal-card {
+  max-width: 560px;
+  text-align: left;
+}
+
+.locations-modal-card > h3,
+.locations-modal-card > p {
+  text-align: center;
+}
+
+.location-list {
+  display: grid;
+  gap: 12px;
+  margin: 28px 0 20px;
+}
+
+.location-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.location-option:last-child {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.location-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.location-kicker {
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.location-copy strong {
+  color: var(--text-dark);
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.location-copy small {
+  color: var(--text-light);
+}
+
+.location-map-btn {
+  margin: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .location-option {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .location-map-btn {
+    width: 100%;
+    text-align: center;
   }
 }
 

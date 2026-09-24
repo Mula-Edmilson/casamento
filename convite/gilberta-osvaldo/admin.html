@@ -1966,19 +1966,29 @@
           renderAll();
           backendNote.innerHTML = 'Dados principais carregados. Presentes e cápsula continuam a sincronizar em segundo plano.';
 
-          loadGiftRowsSafe()
-            .then(giftRows => {
-              DATA.gifts = prepareGiftRecords(responseArray(giftRows));
-              renderGifts();
-              renderMetrics();
-              renderActivity();
-              renderCharts();
-              backendNote.innerHTML = 'Painel sincronizado. Presentes carregados em modo leve, sem PDF, sem imagem e sem pré-visualização.';
-            })
-            .catch(err => {
-              console.warn('[gifts]', err);
-              backendNote.innerHTML = 'Dados principais carregados. Presentes não carregaram agora; actualize apenas se precisar rever a lista.';
-            });
+          const giftsConfigured = Array.isArray(window.LIRANDZO_GIFT_OPTIONS) && window.LIRANDZO_GIFT_OPTIONS.length > 0;
+          if (giftsConfigured) {
+            loadGiftRowsSafe()
+              .then(giftRows => {
+                DATA.gifts = prepareGiftRecords(responseArray(giftRows));
+                renderGifts();
+                renderMetrics();
+                renderActivity();
+                renderCharts();
+                backendNote.innerHTML = 'Painel sincronizado. Presentes carregados em modo leve, sem PDF, sem imagem e sem pré-visualização.';
+              })
+              .catch(err => {
+                console.warn('[gifts]', err);
+                backendNote.innerHTML = 'Dados principais carregados. Presentes não carregaram agora; actualize apenas se precisar rever a lista.';
+              });
+          } else {
+            DATA.gifts = [];
+            renderGifts();
+            renderMetrics();
+            renderActivity();
+            renderCharts();
+            backendNote.innerHTML = 'Painel sincronizado. Este convite não tem lista de presentes/contribuições configurada.';
+          }
 
           trySources([
             () => adminPost('get_capsule_photos'),
@@ -2156,6 +2166,18 @@
       function guestOpened(g) {
         const status = normalizeKey(g && (g.status || g.guestStatus || g.accessStatus || g.openStatus));
         const accessCount = num(g?.openCount || g?.openedCount || g?.views || g?.viewCount || g?.accessCount || g?.loginCount || g?.opens);
+
+        // IMPORTANTE: "Não aberto" contém a palavra "aberto". Tratar estados
+        // negativos primeiro evita marcar convidados nunca abertos como "Aberto".
+        const explicitlyNotOpened =
+          status.includes('nao aberto') ||
+          status.includes('nao foi aberto') ||
+          status.includes('nunca aberto') ||
+          status.includes('not opened') ||
+          status.includes('unopened');
+
+        if (explicitlyNotOpened && !guestConfirmed(g) && !guestCheckedIn(g)) return false;
+
         return Boolean(
           guestConfirmed(g) ||
           guestCheckedIn(g) ||
@@ -2173,11 +2195,12 @@
           g?.lastAccessAt ||
           g?.lastLoginAt ||
           g?.loginAt ||
-          status.includes('abert') ||
+          status.includes('convite aberto') ||
+          status === 'aberto' ||
           status.includes('opened') ||
-          status.includes('visualiz') ||
-          status.includes('view') ||
-          status.includes('access')
+          status.includes('visualizado') ||
+          status.includes('viewed') ||
+          status.includes('acessado')
         );
       }
 

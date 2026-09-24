@@ -158,9 +158,6 @@
 <button aria-label="Confirmar presença" class="fab-item" id="fabRsvpBtn">
 <svg viewbox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM4 6l8 5 8-5"></path></svg>
 </button>
-<button aria-label="Opções de presente" class="fab-item" id="fabGiftsBtn">
-<svg viewbox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect height="5" width="20" x="2" y="7"></rect><line x1="12" x2="12" y1="22" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-</button>
 <button aria-label="Ver a sua mesa" class="fab-item" id="fabGuestInfoBtn">
 <svg viewbox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
 </button>
@@ -336,11 +333,6 @@
           <p>O estilo sugerido é elegante e discreto, em sintonia com a atmosfera romântica do evento.</p>
           <button class="btn btn-outline" id="dressCodeBtn">Ver Sugestões</button>
         </div>-->
-<div class="guide-item">
-<h4>Presentes e Mimos</h4>
-<p>A sua presença é o nosso maior presente! Se desejar, pode contribuir para o nosso futuro.</p>
-<button class="btn btn-outline" id="giftsCombinedBtn">Ver Opções de Presente</button>
-</div>
 </div>
 </section>
 <section class="section fade-in-section" id="mural-felicitacoes">
@@ -382,38 +374,29 @@
 </div>
 </div>
 
-<div aria-labelledby="giftsCombinedTitle" aria-modal="true" class="modal" id="giftsCombinedModal" role="dialog">
-<div class="modal-card">
-<h3 id="giftsCombinedTitle">Presentes e Contribuições</h3>
-<p>A sua presença é o maior presente! Se desejar, temos algumas opções:</p>
-<div class="tab-buttons">
-<button class="tab-btn active" data-tab="monetaryContent">Contribuição Monetária</button>
-<button class="tab-btn" data-tab="loicasContent">Lista de Presentes</button>
+<div aria-labelledby="locationsTitle" aria-modal="true" class="modal" id="locationsModal" role="dialog">
+<div class="modal-card locations-modal-card">
+<h3 id="locationsTitle">Localizações do Evento</h3>
+<p>Escolha o local que pretende abrir no mapa.</p>
+<div class="location-list">
+<div class="location-option">
+<div class="location-copy">
+<span class="location-kicker">08:30 · Cerimónia Religiosa</span>
+<strong>Comunidade Imaculada Conceição</strong>
+<small>Patrice Lumumba, Matola</small>
 </div>
-<div class="tab-content active" id="monetaryContent"><h4>Contribuição Monetária</h4><div class="info-block"><p>Os dados para contribuição monetária serão partilhados pelos noivos assim que estiverem disponíveis.</p></div></div>
-<!-- SEÇÃO DE LISTA DE PRESENTES ATUALIZADA -->
-<div class="tab-content" id="loicasContent">
-<h4>Lista de Presentes</h4>
-<p>Escolha apenas <strong>1 presente</strong>. Depois de marcado, ele fica indisponível para os restantes convidados.</p>
-<div id="giftListContainer" style="margin-top: 24px;">
-<!-- Loading state -->
-<div id="giftLoading" style="text-align: center; padding: 40px; color: #777;">
-            A carregar lista de presentes...
-          </div>
-<!-- Error state -->
-<div id="giftError" style="display: none; text-align: center; padding: 20px; color: #D93025; background: #ffe6e8; border-radius: 8px; margin-bottom: 20px;"></div>
-<!-- Gift checklist (populated by JavaScript) -->
-<div class="gift-checklist" id="giftList" style="display: none;"></div>
-<!-- Form for submitting gifts -->
-<form id="giftListForm" style="text-align: left; margin-top: 24px;">
-<div class="form-actions" style="margin-top: 24px;">
-<button class="btn btn-primary" id="submitGiftsBtn" type="submit">Registar Presente Escolhido</button>
+<a class="btn btn-outline location-map-btn" href="https://www.google.com/maps/search/?api=1&amp;query=Comunidade%20Imaculada%20Conceicao%20Patrice%20Lumumba%20Matola%20Mozambique" rel="noopener noreferrer" target="_blank">Abrir no mapa</a>
 </div>
-<p id="giftStatus" style="font-size: 0.9rem; text-align: center; margin-top: 16px;"></p>
-</form>
+<div class="location-option">
+<div class="location-copy">
+<span class="location-kicker">14:00 · Recepção</span>
+<strong>Aliny Eventos</strong>
+<small>Matola, Moçambique</small>
+</div>
+<a class="btn btn-outline location-map-btn" href="https://www.google.com/maps/search/?api=1&amp;query=Aliny%20Eventos%20Matola%20Mozambique" rel="noopener noreferrer" target="_blank">Abrir no mapa</a>
 </div>
 </div>
-<button class="btn btn-ghost" data-close-modal="" style="margin-top: 24px;" type="button">Fechar</button>
+<button class="btn btn-ghost" data-close-modal="" type="button">Fechar</button>
 </div>
 </div>
 <div aria-modal="true" class="modal" id="lightboxModal" role="dialog">
@@ -522,37 +505,7 @@ const DEMO_MESSAGES_KEY = 'lirandzo_gilberta_osvaldo_messages';
 const DEMO_RSVP_KEY = 'lirandzo_gilberta_osvaldo_rsvps';
 const DEMO_COMPROV_KEY = 'lirandzo_gilberta_osvaldo_comprovativos';
 
-const DEMO_DEFAULT_GIFTS = [
-  { id: 'gift-01', name: "Geleira", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-02', name: "Fogão", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-03', name: "Congelador", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-04', name: "TV", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-05', name: "Batedeira", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-06', name: "Mesa", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-07', name: "Cadeira", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-08', name: "Panela", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-09', name: "Ar Condicionado", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-10', name: "Micro-ondas", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-11', name: "Ferro a vapor", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-12', name: "Mesa de centro", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-13', name: "Vaso", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-14', name: "Pratos", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-15', name: "Colcha", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-16', name: "Cobertor", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-17', name: "Colchão", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-18', name: "Forno eléctrico", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-19', name: "Jogo de facas", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-20', name: "Máquina de lavar", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-21', name: "Tapete", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-22', name: "Saladeira", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-23', name: "Panela de pressão", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-24', name: "Porta-temperos", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-25', name: "Copos", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-26', name: "Fritadeira eléctrica", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-27', name: "Bandeja", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-28', name: "Torradeira", reserved: false, reserved_by: '', timestamp: '' },
-  { id: 'gift-29', name: "Frigideira eléctrica", reserved: false, reserved_by: '', timestamp: '' }
-];
+const DEMO_DEFAULT_GIFTS = [];
 
 function getDemoDefaultMessages() {
   return [];
@@ -1073,7 +1026,7 @@ async function postRequest(data) {
       [fabGiftsBtn, giftsCombinedBtn].forEach(btn => btn?.addEventListener('click', () => openModal('giftsCombinedModal')));
       fabGuestInfoBtn?.addEventListener('click', () => openModal('guestInfoModal'));
       dressCodeBtn?.addEventListener('click', () => openModal('dressCodeModal'));
-      fabMapBtn?.addEventListener('click', () => window.open(createMapLink(ADDRESS_CIVIL_COPO_DE_AGUA, true), '_blank'));
+      fabMapBtn?.addEventListener('click', () => openModal('locationsModal'));
       
       document.querySelectorAll('.modal').forEach(modal => {
         modal.addEventListener('click', (e) => {
