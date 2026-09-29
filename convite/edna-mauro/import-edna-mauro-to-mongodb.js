@@ -1,10 +1,13 @@
 /*
   Importador MongoDB — Edna & Mauro
-  Executar apenas quando quiseres carregar os dados deste convite no MongoDB.
 
-  Exemplo Windows CMD:
-  set MONGODB_URI=mongodb+srv://UTILIZADOR:SENHA@cluster.mongodb.net/lirandzo?retryWrites=true&w=majority
-  node import-edna-mauro-to-mongodb.js
+  Este importador gere dados gerais/convidados. Depois da migração do catálogo
+  para giftCatalogMode="mongo", os GiftItems deixam de ser sincronizados aqui
+  e passam a ser geridos exclusivamente pelo AdminManager.
+
+  Para activar o catálogo Mongo pela primeira vez, usar:
+    node migrate-gifts-to-mongo.js        (dry-run)
+    node migrate-gifts-to-mongo.js --apply
 */
 
 require('dotenv').config();
@@ -86,6 +89,17 @@ async function main() {
   await mongoose.connect(process.env.MONGODB_URI);
 
   const event = seed.event || {};
+  const seedGiftMode = normalizeText(event.giftCatalogMode);
+  const existingInvite = await Invite.findOne({ slug: SLUG }).lean();
+  const existingGiftMode = normalizeText(existingInvite && existingInvite.config && existingInvite.config.giftCatalogMode);
+
+  // O importador normal nunca deve ser o mecanismo que activa o piloto Mongo.
+  // Isso evita uma janela em que o modo muda antes de o catálogo ter sido
+  // reconciliado de forma transaccional.
+  if (seedGiftMode === 'mongo' && existingGiftMode !== 'mongo') {
+    throw new Error('Catálogo Mongo ainda não activado com segurança. Execute primeiro migrate-gifts-to-mongo.js (dry-run e depois --apply).');
+  }
+
   const invite = await Invite.findOneAndUpdate(
     { slug: SLUG },
     {
@@ -145,29 +159,55 @@ async function main() {
   }
 
   let giftCount = 0;
-  const officialGiftNames = new Set();
-  for (const item of seed.giftOptions || []) {
-    const name = item.name || item.label;
-    if (!name) continue;
-    officialGiftNames.add(name);
-    await GiftItem.findOneAndUpdate(
-      { inviteId: invite._id, name },
-      { $setOnInsert: { inviteId: invite._id, slug: SLUG, name, category: item.category || 'Lista de presentes', reserved: false } },
-      { upsert: true }
-    );
-    giftCount += 1;
-  }
-
   let removedObsoleteGifts = 0;
-  if (officialGiftNames.size) {
-    const removal = await GiftItem.deleteMany({ inviteId: invite._id, name: { $nin: Array.from(officialGiftNames) } });
-    removedObsoleteGifts = removal.deletedCount || 0;
+
+  if (seedGiftMode === 'mongo') {
+    // Depois da migração, o catálogo já não pertence a este importador.
+    // Isto impede que uma reimportação futura apague/renomeie reservas ou
+    // reverta alterações feitas pelo AdminManager.
+    giftCount = await GiftItem.countDocuments({ inviteId: invite._id });
+  } else {
+    const officialGiftNames = new Set();
+    for (const item of seed.giftOptions || []) {
+      const name = item.name || item.label;
+      if (!name) continue;
+      officialGiftNames.add(name);
+      await GiftItem.findOneAndUpdate(
+        { inviteId: invite._id, name },
+        { $setOnInsert: { inviteId: invite._id, slug: SLUG, name, category: item.category || 'Lista de presentes', reserved: false } },
+        { upsert: true }
+      );
+      giftCount += 1;
+    }
+
+    if (officialGiftNames.size) {
+      const removal = await GiftItem.deleteMany({ inviteId: invite._id, name: { $nin: Array.from(officialGiftNames) }, reserved: { $ne: true } });
+      removedObsoleteGifts = removal.deletedCount || 0;
+    }
   }
 
-  await Activity.create({ inviteId: invite._id, slug: SLUG, type: 'import', title: 'Dados importados para MongoDB', detail: `${inserted} convidados novos · ${updated} actualizados · ${removedObsoleteGuests} convidados removidos · ${giftCount} presentes oficiais · ${removedObsoleteGifts} presentes antigos removidos`, timestamp: new Date() });
+  await Activity.create({
+    inviteId: invite._id,
+    slug: SLUG,
+    type: 'import',
+    title: 'Dados importados para MongoDB',
+    detail: seedGiftMode === 'mongo'
+      ? `${inserted} convidados novos · ${updated} actualizados · ${removedObsoleteGuests} convidados removidos · catálogo de presentes Mongo preservado (${giftCount} itens)`
+      : `${inserted} convidados novos · ${updated} actualizados · ${removedObsoleteGuests} convidados removidos · ${giftCount} presentes oficiais · ${removedObsoleteGifts} presentes antigos removidos`,
+    timestamp: new Date()
+  });
 
   console.log('Importação concluída.');
-  console.log({ inviteId: String(invite._id), slug: SLUG, inserted, updated, removedObsoleteGuests, giftCount });
+  console.log({
+    inviteId: String(invite._id),
+    slug: SLUG,
+    inserted,
+    updated,
+    removedObsoleteGuests,
+    giftCount,
+    giftCatalogMode: seedGiftMode || 'legacy',
+    giftsManagedBy: seedGiftMode === 'mongo' ? 'AdminManager' : 'importador legacy'
+  });
   await mongoose.disconnect();
 }
 
