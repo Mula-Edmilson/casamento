@@ -1,10 +1,8 @@
 node_modules/
-package-lock.json
 .env
 .env.*
 !.env.example
 .phase4-lab/
-**/.migration-backups/
 *.log
 npm-debug.log*
 .DS_Store
