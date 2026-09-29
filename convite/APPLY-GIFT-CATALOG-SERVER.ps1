@@ -7,22 +7,35 @@ $PatchedSha256  = '53d01fe184ffba91670263f89c7564c9acfe15f6ea3cced0ac68b09f5c517
 Write-Host 'Lirandzo - aplicar backend do catalogo MongoDB' -ForegroundColor Cyan
 Write-Host 'Este script recusa executar no main e so pode fazer push para a branch de feature.' -ForegroundColor DarkGray
 
-$repoRoot = (git rev-parse --show-toplevel 2>$null).Trim()
-if (-not $repoRoot) { throw 'Execute este script dentro de um clone Git do repositorio Mula-Edmilson/casamento.' }
+# IMPORTANT: do not derive the working path from `git rev-parse --show-toplevel`.
+# Windows PowerShell 5.1 can decode UTF-8 output from native commands using the
+# active OEM code page. Paths containing characters such as "ç" and "ã" can
+# therefore become mojibake. $PSScriptRoot is supplied by PowerShell itself and
+# preserves the real filesystem path exactly.
+$scriptDir = $PSScriptRoot
+if (-not $scriptDir -or -not (Test-Path $scriptDir)) {
+  throw 'Nao foi possivel determinar a pasta do script.'
+}
+
+Set-Location -LiteralPath $scriptDir
+$repoRoot = Split-Path -Parent $scriptDir
+
+if (-not (Test-Path -LiteralPath (Join-Path $repoRoot '.git'))) {
+  throw 'Execute este script dentro de um clone Git do repositorio Mula-Edmilson/casamento.'
+}
 
 $branch = (git rev-parse --abbrev-ref HEAD).Trim()
 if ($branch -ne $ExpectedBranch) {
   throw "Branch incorrecta: $branch. Mude primeiro para $ExpectedBranch. O main nao sera alterado por este script."
 }
 
-Set-Location (Join-Path $repoRoot 'convite')
-$serverPath = Join-Path (Get-Location) 'server.js'
-$patchPath = Join-Path (Get-Location) 'tools\server-gift-catalog.patch'
+$serverPath = Join-Path $scriptDir 'server.js'
+$patchPath = Join-Path $scriptDir 'tools\server-gift-catalog.patch'
 
-if (-not (Test-Path $serverPath)) { throw 'server.js nao encontrado.' }
-if (-not (Test-Path $patchPath)) { throw 'Patch auditado nao encontrado em tools\server-gift-catalog.patch.' }
+if (-not (Test-Path -LiteralPath $serverPath)) { throw 'server.js nao encontrado.' }
+if (-not (Test-Path -LiteralPath $patchPath)) { throw 'Patch auditado nao encontrado em tools\server-gift-catalog.patch.' }
 
-$currentHash = (Get-FileHash $serverPath -Algorithm SHA256).Hash.ToLowerInvariant()
+$currentHash = (Get-FileHash -LiteralPath $serverPath -Algorithm SHA256).Hash.ToLowerInvariant()
 Write-Host "SHA256 actual de server.js: $currentHash"
 
 if ($currentHash -eq $PatchedSha256) {
@@ -35,7 +48,7 @@ if ($currentHash -eq $PatchedSha256) {
   git apply --ignore-space-change --whitespace=nowarn 'tools/server-gift-catalog.patch'
   if ($LASTEXITCODE -ne 0) { throw 'git apply falhou.' }
 
-  $afterHash = (Get-FileHash $serverPath -Algorithm SHA256).Hash.ToLowerInvariant()
+  $afterHash = (Get-FileHash -LiteralPath $serverPath -Algorithm SHA256).Hash.ToLowerInvariant()
   Write-Host "SHA256 depois do patch: $afterHash"
   if ($afterHash -ne $PatchedSha256) {
     git checkout -- server.js
@@ -49,7 +62,7 @@ Write-Host 'A executar verificacoes da branch...' -ForegroundColor Cyan
 npm run verify
 if ($LASTEXITCODE -ne 0) { throw 'npm run verify falhou. O ficheiro nao sera enviado.' }
 
-$finalHash = (Get-FileHash $serverPath -Algorithm SHA256).Hash.ToLowerInvariant()
+$finalHash = (Get-FileHash -LiteralPath $serverPath -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($finalHash -ne $PatchedSha256) { throw 'O hash de server.js mudou durante os testes. Push cancelado.' }
 
 $dirtyServer = git status --porcelain -- server.js
