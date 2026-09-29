@@ -3,20 +3,11 @@
 /*
   Migração segura do catálogo de presentes — Edna & Mauro
 
-  Por defeito é DRY-RUN e não altera a base de dados:
+  DRY-RUN (não escreve):
     node migrate-gifts-to-mongo.js
 
-  Para aplicar depois de validar o dry-run:
+  APPLY (transacção MongoDB):
     node migrate-gifts-to-mongo.js --apply
-
-  Requisitos:
-    - MONGODB_URI definido no ambiente local
-    - convite existente com slug exacto "edna-mauro"
-    - catálogo oficial com exactamente 20 presentes
-    - nenhum presente obsoleto pode estar reservado
-
-  A aplicação usa uma transacção MongoDB. Se a transacção não for suportada,
-  a migração falha sem fazer fallback para escritas parciais.
 */
 
 require('dotenv').config();
@@ -39,7 +30,7 @@ function normalize(value) {
     .replace(/\s+/g, ' ');
 }
 
-function canonicalGiftRows() {
+function officialGiftRows() {
   const rows = (seed.giftOptions || [])
     .map(item => ({
       name: String(item.name || item.label || '').trim(),
@@ -61,26 +52,32 @@ function canonicalGiftRows() {
   return rows;
 }
 
-function serializeDoc(value) {
-  return JSON.parse(JSON.stringify(value, (_key, current) => {
-    if (current && current._bsontype === 'ObjectId') return String(current);
-    return current;
-  }));
+function fingerprint(rows) {
+  const stable = rows.map(row => ({
+    id: String(row._id || ''),
+    name: String(row.name || ''),
+    category: String(row.category || ''),
+    reserved: Boolean(row.reserved),
+    reservedBy: String(row.reservedBy || ''),
+    reservedToken: String(row.reservedToken || ''),
+    updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : ''
+  })).sort((a, b) => a.id.localeCompare(b.id));
+
+  return crypto.createHash('sha256').update(JSON.stringify(stable)).digest('hex');
 }
 
-function fingerprintGifts(rows) {
-  const stable = rows
+function reservationSnapshot(rows, officialRows) {
+  const officialKeys = new Set(officialRows.map(row => normalize(row.name)));
+  return rows
+    .filter(row => officialKeys.has(normalize(row.name)))
     .map(row => ({
-      id: String(row._id || ''),
-      name: String(row.name || ''),
-      category: String(row.category || ''),
+      key: normalize(row.name),
       reserved: Boolean(row.reserved),
       reservedBy: String(row.reservedBy || ''),
       reservedToken: String(row.reservedToken || ''),
-      updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : ''
+      reservedAt: row.reservedAt ? new Date(row.reservedAt).toISOString() : ''
     }))
-    .sort((a, b) => a.id.localeCompare(b.id));
-  return crypto.createHash('sha256').update(JSON.stringify(stable)).digest('hex');
+    .sort((a, b) => a.key.localeCompare(b.key));
 }
 
 function buildPlan(currentRows, officialRows) {
@@ -94,34 +91,34 @@ function buildPlan(currentRows, officialRows) {
     currentByKey.set(key, row);
   }
 
-  const officialKeys = new Set(officialRows.map(item => normalize(item.name)));
+  const officialKeys = new Set(officialRows.map(row => normalize(row.name)));
   const toInsert = [];
   const toUpdate = [];
 
   for (const item of officialRows) {
-    const key = normalize(item.name);
-    const existing = currentByKey.get(key);
+    const existing = currentByKey.get(normalize(item.name));
     if (!existing) {
       toInsert.push(item);
-      continue;
-    }
-    if (existing.name !== item.name || existing.category !== item.category || existing.slug !== SLUG) {
+    } else if (existing.name !== item.name || existing.category !== item.category || existing.slug !== SLUG) {
       toUpdate.push({ existing, item });
     }
   }
 
   const obsolete = currentRows.filter(row => !officialKeys.has(normalize(row.name)));
   const blockedReserved = obsolete.filter(row => Boolean(row.reserved));
-
   return { currentByKey, toInsert, toUpdate, obsolete, blockedReserved };
+}
+
+function safeBackup(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
 async function main() {
   if (!process.env.MONGODB_URI) {
-    throw new Error('MONGODB_URI não definido. Não coloques a URI no chat; define-a apenas no teu terminal local.');
+    throw new Error('MONGODB_URI não definido. Define-o apenas no teu terminal local e nunca o envies no chat.');
   }
 
-  const officialRows = canonicalGiftRows();
+  const officialRows = officialGiftRows();
   await mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 15000 });
 
   const db = mongoose.connection.db;
@@ -132,13 +129,13 @@ async function main() {
   const invite = await invites.findOne({ slug: SLUG });
   if (!invite) throw new Error(`Convite não encontrado: ${SLUG}`);
 
-  const selectionMode = normalize(invite.config && invite.config.giftSelectionMode);
-  if (selectionMode === 'quantity_contributions') {
+  if (normalize(invite.config && invite.config.giftSelectionMode) === 'quantity_contributions') {
     throw new Error('Migração recusada: este convite está em quantity_contributions.');
   }
 
   const currentRows = await gifts.find({ inviteId: invite._id }).sort({ name: 1 }).toArray();
-  const initialFingerprint = fingerprintGifts(currentRows);
+  const initialFingerprint = fingerprint(currentRows);
+  const initialReservations = reservationSnapshot(currentRows, officialRows);
   const plan = buildPlan(currentRows, officialRows);
   const currentMode = normalize(invite.config && invite.config.giftCatalogMode) || 'legacy';
 
@@ -170,26 +167,26 @@ async function main() {
 
   const backupDir = path.join(__dirname, '.migration-backups');
   fs.mkdirSync(backupDir, { recursive: true });
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const backupPath = path.join(backupDir, `edna-mauro-gifts-${timestamp}.json`);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const backupPath = path.join(backupDir, `edna-mauro-gifts-${stamp}.json`);
   fs.writeFileSync(backupPath, JSON.stringify({
     createdAt: new Date().toISOString(),
     slug: SLUG,
-    invite: serializeDoc(invite),
-    gifts: serializeDoc(currentRows),
+    invite: safeBackup(invite),
+    gifts: safeBackup(currentRows),
     fingerprint: initialFingerprint
   }, null, 2), 'utf8');
   console.log('Backup local criado:', backupPath);
 
-  const session = mongoose.startSession();
+  const session = await mongoose.startSession();
   try {
     await session.withTransaction(async () => {
-      const freshInvite = await invites.findOne({ _id: invite._id }, { session });
+      const freshInvite = await invites.findOne({ _id: invite._id, slug: SLUG }, { session });
       if (!freshInvite) throw new Error('O convite deixou de existir durante a migração.');
 
       const freshRows = await gifts.find({ inviteId: invite._id }, { session }).sort({ name: 1 }).toArray();
-      if (fingerprintGifts(freshRows) !== initialFingerprint) {
-        throw new Error('O estado dos presentes mudou depois do dry-run inicial. Migração cancelada para evitar sobrescrita concorrente.');
+      if (fingerprint(freshRows) !== initialFingerprint) {
+        throw new Error('O estado dos presentes mudou depois do preflight. Migração cancelada para evitar sobrescrita concorrente.');
       }
 
       const freshPlan = buildPlan(freshRows, officialRows);
@@ -202,7 +199,7 @@ async function main() {
         if (existing) {
           await gifts.updateOne(
             { _id: existing._id, inviteId: invite._id },
-            { $set: { name: item.name, category: item.category, slug: SLUG } },
+            { $set: { name: item.name, category: item.category, slug: SLUG, updatedAt: new Date() } },
             { session }
           );
         } else {
@@ -224,10 +221,11 @@ async function main() {
       }
 
       if (freshPlan.obsolete.length) {
-        await gifts.deleteMany(
-          { _id: { $in: freshPlan.obsolete.map(row => row._id) }, inviteId: invite._id, reserved: { $ne: true } },
-          { session }
-        );
+        await gifts.deleteMany({
+          _id: { $in: freshPlan.obsolete.map(row => row._id) },
+          inviteId: invite._id,
+          reserved: { $ne: true }
+        }, { session });
       }
 
       const nextConfig = { ...(freshInvite.config || {}), giftCatalogMode: 'mongo' };
@@ -261,10 +259,11 @@ async function main() {
     await session.endSession();
   }
 
-  const finalInvite = await invites.findOne({ _id: invite._id });
+  const finalInvite = await invites.findOne({ _id: invite._id, slug: SLUG });
   const finalRows = await gifts.find({ inviteId: invite._id }).sort({ name: 1 }).toArray();
   const finalKeys = new Set(finalRows.map(row => normalize(row.name)));
-  const officialKeys = new Set(officialRows.map(row => normalize(row.name)));
+  const expectedKeys = new Set(officialRows.map(row => normalize(row.name)));
+  const finalReservations = reservationSnapshot(finalRows, officialRows);
 
   if (normalize(finalInvite && finalInvite.config && finalInvite.config.giftCatalogMode) !== 'mongo') {
     throw new Error('Verificação final falhou: giftCatalogMode não ficou em mongo.');
@@ -272,15 +271,18 @@ async function main() {
   if (finalRows.length !== EXPECTED_GIFT_COUNT) {
     throw new Error(`Verificação final falhou: esperados ${EXPECTED_GIFT_COUNT} presentes, encontrados ${finalRows.length}.`);
   }
-  if ([...officialKeys].some(key => !finalKeys.has(key)) || [...finalKeys].some(key => !officialKeys.has(key))) {
+  if ([...expectedKeys].some(key => !finalKeys.has(key)) || [...finalKeys].some(key => !expectedKeys.has(key))) {
     throw new Error('Verificação final falhou: o catálogo MongoDB não corresponde exactamente à lista oficial.');
+  }
+  if (JSON.stringify(initialReservations) !== JSON.stringify(finalReservations.filter(item => initialReservations.some(before => before.key === item.key)))) {
+    throw new Error('Verificação final falhou: o estado de uma reserva oficial existente mudou durante a migração.');
   }
 
   console.log('');
   console.log('MIGRAÇÃO EDNA & MAURO: PASS');
   console.log('giftCatalogMode: mongo');
   console.log(`GiftItems: ${finalRows.length}/${EXPECTED_GIFT_COUNT}`);
-  console.log('As reservas dos presentes oficiais existentes foram preservadas.');
+  console.log('Reservas oficiais existentes: preservadas.');
 }
 
 main()
