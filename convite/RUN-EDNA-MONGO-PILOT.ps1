@@ -5,6 +5,11 @@ param(
 $ErrorActionPreference = 'Stop'
 $ExpectedBranch = 'feature/edna-mauro-mongo-pilot'
 
+# Windows PowerShell 5.1 pode apresentar UTF-8 como mojibake sem esta definição.
+$Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[Console]::OutputEncoding = $Utf8NoBom
+$OutputEncoding = $Utf8NoBom
+
 Write-Host 'Lirandzo — Piloto MongoDB Edna & Mauro' -ForegroundColor Cyan
 if ($Apply) {
   Write-Host 'MODO: APPLY — altera apenas o convite edna-mauro no MongoDB.' -ForegroundColor Yellow
@@ -29,7 +34,7 @@ if ($status) {
 }
 
 if (-not (Test-Path (Join-Path $conviteRoot 'node_modules'))) {
-  Write-Host 'Dependências Node não encontradas. A executar npm install apenas em /convite, sem gerar package-lock.json...' -ForegroundColor DarkGray
+  Write-Host 'Dependências Node não encontradas. A executar npm install apenas em /convite...' -ForegroundColor DarkGray
   npm install --package-lock=false
   if ($LASTEXITCODE -ne 0) { throw 'npm install falhou.' }
 }
@@ -61,10 +66,10 @@ if (-not $Apply) {
 }
 
 Write-Host ''
-Write-Host 'MongoDB migrado. A retirar a lista local do frontend Edna & Mauro...' -ForegroundColor Cyan
+Write-Host 'MongoDB validado. A retirar a lista local do frontend Edna & Mauro...' -ForegroundColor Cyan
 node .\edna-mauro\apply-remote-gift-frontend.js
 if ($LASTEXITCODE -ne 0) {
-  throw 'A migração MongoDB passou, mas o patch do frontend falhou. NÃO houve deploy: o frontend actual continua publicado e funcional com a lista oficial local.'
+  throw 'O patch do frontend falhou. NÃO houve deploy do frontend; o main e o Render não foram alterados.'
 }
 
 $frontPath = Join-Path $conviteRoot 'edna-mauro\convite.html'
