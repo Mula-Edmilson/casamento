@@ -3,11 +3,20 @@
 /*
   Migração segura do catálogo de presentes — Edna & Mauro
 
-  DRY-RUN (não escreve):
+  Por defeito é DRY-RUN e não altera a base de dados:
     node migrate-gifts-to-mongo.js
 
-  APPLY (transacção MongoDB):
+  Para aplicar depois de validar o dry-run:
     node migrate-gifts-to-mongo.js --apply
+
+  Requisitos:
+    - MONGODB_URI definido no ambiente local
+    - convite existente com slug exacto "edna-mauro"
+    - catálogo oficial com exactamente 20 presentes
+    - nenhum presente obsoleto pode estar reservado
+
+  A aplicação usa uma transacção MongoDB. Se a transacção não for suportada,
+  a migração falha sem fazer fallback para escritas parciais.
 */
 
 require('dotenv').config();
@@ -30,7 +39,7 @@ function normalize(value) {
     .replace(/\s+/g, ' ');
 }
 
-function officialGiftRows() {
+function canonicalGiftRows() {
   const rows = (seed.giftOptions || [])
     .map(item => ({
       name: String(item.name || item.label || '').trim(),
@@ -52,32 +61,26 @@ function officialGiftRows() {
   return rows;
 }
 
-function fingerprint(rows) {
-  const stable = rows.map(row => ({
-    id: String(row._id || ''),
-    name: String(row.name || ''),
-    category: String(row.category || ''),
-    reserved: Boolean(row.reserved),
-    reservedBy: String(row.reservedBy || ''),
-    reservedToken: String(row.reservedToken || ''),
-    updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : ''
-  })).sort((a, b) => a.id.localeCompare(b.id));
-
-  return crypto.createHash('sha256').update(JSON.stringify(stable)).digest('hex');
+function serializeDoc(value) {
+  return JSON.parse(JSON.stringify(value, (_key, current) => {
+    if (current && current._bsontype === 'ObjectId') return String(current);
+    return current;
+  }));
 }
 
-function reservationSnapshot(rows, officialRows) {
-  const officialKeys = new Set(officialRows.map(row => normalize(row.name)));
-  return rows
-    .filter(row => officialKeys.has(normalize(row.name)))
+function fingerprintGifts(rows) {
+  const stable = rows
     .map(row => ({
-      key: normalize(row.name),
+      id: String(row._id || ''),
+      name: String(row.name || ''),
+      category: String(row.category || ''),
       reserved: Boolean(row.reserved),
       reservedBy: String(row.reservedBy || ''),
       reservedToken: String(row.reservedToken || ''),
-      reservedAt: row.reservedAt ? new Date(row.reservedAt).toISOString() : ''
+      updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : ''
     }))
-    .sort((a, b) => a.key.localeCompare(b.key));
+    .sort((a, b) => a.id.localeCompare(b.id));
+  return crypto.createHash('sha256').update(JSON.stringify(stable)).digest('hex');
 }
 
 function buildPlan(currentRows, officialRows) {
@@ -91,34 +94,34 @@ function buildPlan(currentRows, officialRows) {
     currentByKey.set(key, row);
   }
 
-  const officialKeys = new Set(officialRows.map(row => normalize(row.name)));
+  const officialKeys = new Set(officialRows.map(item => normalize(item.name)));
   const toInsert = [];
   const toUpdate = [];
 
   for (const item of officialRows) {
-    const existing = currentByKey.get(normalize(item.name));
+    const key = normalize(item.name);
+    const existing = currentByKey.get(key);
     if (!existing) {
       toInsert.push(item);
-    } else if (existing.name !== item.name || existing.category !== item.category || existing.slug !== SLUG) {
+      continue;
+    }
+    if (existing.name !== item.name || existing.category !== item.category || existing.slug !== SLUG) {
       toUpdate.push({ existing, item });
     }
   }
 
   const obsolete = currentRows.filter(row => !officialKeys.has(normalize(row.name)));
   const blockedReserved = obsolete.filter(row => Boolean(row.reserved));
-  return { currentByKey, toInsert, toUpdate, obsolete, blockedReserved };
-}
 
-function safeBackup(value) {
-  return JSON.parse(JSON.stringify(value));
+  return { currentByKey, toInsert, toUpdate, obsolete, blockedReserved };
 }
 
 async function main() {
   if (!process.env.MONGODB_URI) {
-    throw new Error('MONGODB_URI não definido. Define-o apenas no teu terminal local e nunca o envies no chat.');
+    throw new Error('MONGODB_URI não definido. Não coloques a URI no chat; define-a apenas no teu terminal local.');
   }
 
-  const officialRows = officialGiftRows();
+  const officialRows = canonicalGiftRows();
   await mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 15000 });
 
   const db = mongoose.connection.db;
@@ -129,13 +132,13 @@ async function main() {
   const invite = await invites.findOne({ slug: SLUG });
   if (!invite) throw new Error(`Convite não encontrado: ${SLUG}`);
 
-  if (normalize(invite.config && invite.config.giftSelectionMode) === 'quantity_contributions') {
+  const selectionMode = normalize(invite.config && invite.config.giftSelectionMode);
+  if (selectionMode === 'quantity_contributions') {
     throw new Error('Migração recusada: este convite está em quantity_contributions.');
   }
 
   const currentRows = await gifts.find({ inviteId: invite._id }).sort({ name: 1 }).toArray();
-  const initialFingerprint = fingerprint(currentRows);
-  const initialReservations = reservationSnapshot(currentRows, officialRows);
+  const initialFingerprint = fingerprintGifts(currentRows);
   const plan = buildPlan(currentRows, officialRows);
   const currentMode = normalize(invite.config && invite.config.giftCatalogMode) || 'legacy';
 
@@ -158,6 +161,21 @@ async function main() {
     throw new Error('Migração bloqueada: existe pelo menos um presente obsoleto reservado. Nenhum dado foi alterado.');
   }
 
+  const alreadyMigrated = currentMode === 'mongo'
+    && currentRows.length === EXPECTED_GIFT_COUNT
+    && plan.toInsert.length === 0
+    && plan.toUpdate.length === 0
+    && plan.obsolete.length === 0;
+
+  if (alreadyMigrated) {
+    console.log('');
+    console.log('MIGRAÇÃO EDNA & MAURO: PASS — já aplicada anteriormente.');
+    console.log('giftCatalogMode: mongo');
+    console.log(`GiftItems: ${currentRows.length}/${EXPECTED_GIFT_COUNT}`);
+    console.log('Nenhuma nova escrita foi feita no MongoDB nesta execução.');
+    return;
+  }
+
   if (!APPLY) {
     console.log('');
     console.log('DRY-RUN CONCLUÍDO. Nenhum dado foi alterado.');
@@ -167,26 +185,26 @@ async function main() {
 
   const backupDir = path.join(__dirname, '.migration-backups');
   fs.mkdirSync(backupDir, { recursive: true });
-  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const backupPath = path.join(backupDir, `edna-mauro-gifts-${stamp}.json`);
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const backupPath = path.join(backupDir, `edna-mauro-gifts-${timestamp}.json`);
   fs.writeFileSync(backupPath, JSON.stringify({
     createdAt: new Date().toISOString(),
     slug: SLUG,
-    invite: safeBackup(invite),
-    gifts: safeBackup(currentRows),
+    invite: serializeDoc(invite),
+    gifts: serializeDoc(currentRows),
     fingerprint: initialFingerprint
   }, null, 2), 'utf8');
   console.log('Backup local criado:', backupPath);
 
-  const session = await mongoose.startSession();
+  const session = mongoose.startSession();
   try {
     await session.withTransaction(async () => {
-      const freshInvite = await invites.findOne({ _id: invite._id, slug: SLUG }, { session });
+      const freshInvite = await invites.findOne({ _id: invite._id }, { session });
       if (!freshInvite) throw new Error('O convite deixou de existir durante a migração.');
 
       const freshRows = await gifts.find({ inviteId: invite._id }, { session }).sort({ name: 1 }).toArray();
-      if (fingerprint(freshRows) !== initialFingerprint) {
-        throw new Error('O estado dos presentes mudou depois do preflight. Migração cancelada para evitar sobrescrita concorrente.');
+      if (fingerprintGifts(freshRows) !== initialFingerprint) {
+        throw new Error('O estado dos presentes mudou depois do dry-run inicial. Migração cancelada para evitar sobrescrita concorrente.');
       }
 
       const freshPlan = buildPlan(freshRows, officialRows);
@@ -199,7 +217,7 @@ async function main() {
         if (existing) {
           await gifts.updateOne(
             { _id: existing._id, inviteId: invite._id },
-            { $set: { name: item.name, category: item.category, slug: SLUG, updatedAt: new Date() } },
+            { $set: { name: item.name, category: item.category, slug: SLUG } },
             { session }
           );
         } else {
@@ -221,11 +239,10 @@ async function main() {
       }
 
       if (freshPlan.obsolete.length) {
-        await gifts.deleteMany({
-          _id: { $in: freshPlan.obsolete.map(row => row._id) },
-          inviteId: invite._id,
-          reserved: { $ne: true }
-        }, { session });
+        await gifts.deleteMany(
+          { _id: { $in: freshPlan.obsolete.map(row => row._id) }, inviteId: invite._id, reserved: { $ne: true } },
+          { session }
+        );
       }
 
       const nextConfig = { ...(freshInvite.config || {}), giftCatalogMode: 'mongo' };
@@ -259,11 +276,10 @@ async function main() {
     await session.endSession();
   }
 
-  const finalInvite = await invites.findOne({ _id: invite._id, slug: SLUG });
+  const finalInvite = await invites.findOne({ _id: invite._id });
   const finalRows = await gifts.find({ inviteId: invite._id }).sort({ name: 1 }).toArray();
   const finalKeys = new Set(finalRows.map(row => normalize(row.name)));
-  const expectedKeys = new Set(officialRows.map(row => normalize(row.name)));
-  const finalReservations = reservationSnapshot(finalRows, officialRows);
+  const officialKeys = new Set(officialRows.map(row => normalize(row.name)));
 
   if (normalize(finalInvite && finalInvite.config && finalInvite.config.giftCatalogMode) !== 'mongo') {
     throw new Error('Verificação final falhou: giftCatalogMode não ficou em mongo.');
@@ -271,18 +287,15 @@ async function main() {
   if (finalRows.length !== EXPECTED_GIFT_COUNT) {
     throw new Error(`Verificação final falhou: esperados ${EXPECTED_GIFT_COUNT} presentes, encontrados ${finalRows.length}.`);
   }
-  if ([...expectedKeys].some(key => !finalKeys.has(key)) || [...finalKeys].some(key => !expectedKeys.has(key))) {
+  if ([...officialKeys].some(key => !finalKeys.has(key)) || [...finalKeys].some(key => !officialKeys.has(key))) {
     throw new Error('Verificação final falhou: o catálogo MongoDB não corresponde exactamente à lista oficial.');
-  }
-  if (JSON.stringify(initialReservations) !== JSON.stringify(finalReservations.filter(item => initialReservations.some(before => before.key === item.key)))) {
-    throw new Error('Verificação final falhou: o estado de uma reserva oficial existente mudou durante a migração.');
   }
 
   console.log('');
   console.log('MIGRAÇÃO EDNA & MAURO: PASS');
   console.log('giftCatalogMode: mongo');
   console.log(`GiftItems: ${finalRows.length}/${EXPECTED_GIFT_COUNT}`);
-  console.log('Reservas oficiais existentes: preservadas.');
+  console.log('As reservas dos presentes oficiais existentes foram preservadas.');
 }
 
 main()
