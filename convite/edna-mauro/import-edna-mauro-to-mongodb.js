@@ -1,13 +1,12 @@
 /*
   Importador MongoDB — Edna & Mauro
 
-  Este importador gere dados gerais/convidados. Depois da migração do catálogo
-  para giftCatalogMode="mongo", os GiftItems deixam de ser sincronizados aqui
-  e passam a ser geridos exclusivamente pelo AdminManager.
+  Este importador gere dados gerais/convidados. Com giftCatalogMode="mongo",
+  os GiftItems não são sincronizados aqui e passam a ser geridos exclusivamente
+  pelo AdminManager.
 
-  Para activar o catálogo Mongo pela primeira vez, usar:
-    node migrate-gifts-to-mongo.js        (dry-run)
-    node migrate-gifts-to-mongo.js --apply
+  Segurança: este importador não activa o modo Mongo pela primeira vez. Essa
+  activação deve ser feita por uma migração controlada e previamente validada.
 */
 
 require('dotenv').config();
@@ -93,11 +92,11 @@ async function main() {
   const existingInvite = await Invite.findOne({ slug: SLUG }).lean();
   const existingGiftMode = normalizeText(existingInvite && existingInvite.config && existingInvite.config.giftCatalogMode);
 
-  // O importador normal nunca deve ser o mecanismo que activa o piloto Mongo.
+  // O importador normal nunca deve ser o mecanismo que activa o modo Mongo.
   // Isso evita uma janela em que o modo muda antes de o catálogo ter sido
-  // reconciliado de forma transaccional.
+  // reconciliado de forma controlada.
   if (seedGiftMode === 'mongo' && existingGiftMode !== 'mongo') {
-    throw new Error('Catálogo Mongo ainda não activado com segurança. Execute primeiro migrate-gifts-to-mongo.js (dry-run e depois --apply).');
+    throw new Error('Catálogo Mongo ainda não activado com segurança. Faça uma migração controlada do catálogo antes de executar este importador.');
   }
 
   const invite = await Invite.findOneAndUpdate(
