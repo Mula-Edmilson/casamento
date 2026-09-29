@@ -6,7 +6,11 @@ $ErrorActionPreference = 'Stop'
 $ExpectedBranch = 'feature/edna-mauro-mongo-pilot'
 
 Write-Host 'Lirandzo — Piloto MongoDB Edna & Mauro' -ForegroundColor Cyan
-Write-Host ($Apply ? 'MODO: APPLY — altera apenas o convite edna-mauro no MongoDB.' : 'MODO: DRY-RUN — não altera MongoDB nem frontend.') -ForegroundColor Yellow
+if ($Apply) {
+  Write-Host 'MODO: APPLY — altera apenas o convite edna-mauro no MongoDB.' -ForegroundColor Yellow
+} else {
+  Write-Host 'MODO: DRY-RUN — não altera MongoDB nem frontend.' -ForegroundColor Yellow
+}
 
 # Usa o caminho fornecido pelo próprio PowerShell para evitar problemas de encoding
 # em pastas com caracteres acentuados no Windows PowerShell 5.1.
@@ -82,10 +86,11 @@ if ($LASTEXITCODE -ne 0) { throw 'git diff --check falhou.' }
 Write-Host ''
 Write-Host 'A preparar commit apenas do frontend Edna & Mauro...' -ForegroundColor Cyan
 git -C $repoRoot add -- 'convite/edna-mauro/convite.html'
-$staged = git -C $repoRoot diff --cached --name-only
-if (-not $staged) { throw 'Nenhuma alteração de frontend ficou preparada para commit.' }
-if (($staged | Where-Object { $_ -ne 'convite/edna-mauro/convite.html' }).Count -gt 0) {
-  throw "Foram detectados ficheiros inesperados no stage:`n$staged"
+$staged = @(git -C $repoRoot diff --cached --name-only)
+if (-not $staged -or $staged.Count -eq 0) { throw 'Nenhuma alteração de frontend ficou preparada para commit.' }
+$unexpected = @($staged | Where-Object { $_ -ne 'convite/edna-mauro/convite.html' })
+if ($unexpected.Count -gt 0) {
+  throw "Foram detectados ficheiros inesperados no stage:`n$($unexpected -join "`n")"
 }
 
 git -C $repoRoot commit -m 'feat(edna): use MongoDB as gift catalog source'
