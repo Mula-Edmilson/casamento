@@ -29,8 +29,8 @@ if ($status) {
 }
 
 if (-not (Test-Path (Join-Path $conviteRoot 'node_modules'))) {
-  Write-Host 'Dependências Node não encontradas. A executar npm install apenas em /convite...' -ForegroundColor DarkGray
-  npm install
+  Write-Host 'Dependências Node não encontradas. A executar npm install apenas em /convite, sem gerar package-lock.json...' -ForegroundColor DarkGray
+  npm install --package-lock=false
   if ($LASTEXITCODE -ne 0) { throw 'npm install falhou.' }
 }
 
