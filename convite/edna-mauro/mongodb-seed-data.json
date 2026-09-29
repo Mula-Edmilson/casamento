@@ -43,6 +43,7 @@
     "estimatedGuests": 0,
     "guestRows": 0,
     "giftSectionType": "Apenas lista de presentes",
+    "giftCatalogMode": "mongo",
     "giftStore": "Loiça Amiga — Baixa da Cidade, Av. Karl Marx",
     "bankAccounts": [],
     "mobilePayments": [],
