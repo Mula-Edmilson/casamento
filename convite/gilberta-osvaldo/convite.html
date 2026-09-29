@@ -274,7 +274,7 @@
 </div>
 <div class="agenda-event">
 <h3 class="event-title">Cerimónia Religiosa</h3>
-<p class="event-time">08:30</p>
+<p class="event-time">09:00</p>
 <div class="agenda-icon-divider">
 <span class="divider"></span>
 <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -293,8 +293,8 @@
           </a>
 </div>
 <div class="agenda-event">
-<h3 class="event-title">Recepção</h3>
-<p class="event-time">14:00</p>
+<h3 class="event-title">Registo Civil</h3>
+<p class="event-time">13:00</p>
 <div class="agenda-icon-divider">
 <span class="divider"></span>
 <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -305,6 +305,26 @@
 </div>
 <h4 class="event-location">Aliny Eventos</h4>
 <a class="map-link-button" href="https://www.google.com/maps/search/?api=1&amp;query=Aliny%20Eventos%20Matola%20Mozambique" id="mapBtnCivil" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+            Ver no Mapa
+          </a>
+</div>
+<div class="agenda-event">
+<h3 class="event-title">Copo de Água</h3>
+<p class="event-time">14:00</p>
+<div class="agenda-icon-divider">
+<span class="divider"></span>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="divider"></span>
+</div>
+<h4 class="event-location">Aliny Eventos</h4>
+<a class="map-link-button" href="https://www.google.com/maps/search/?api=1&amp;query=Aliny%20Eventos%20Matola%20Mozambique" id="mapBtnRecepcao" rel="noopener noreferrer" target="_blank">
 <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 <path d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
 <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -327,6 +347,14 @@
 <h4>Confirme a Sua Presença</h4>
 <p>Por favor, informe-nos se poderemos contar consigo com a maior antecedência possível.</p>
 <button class="btn btn-primary" id="rsvpBtn">Confirmar Presença</button>
+</div>
+<div class="guide-item">
+<h4>Apoio e Orientação</h4>
+<p>Se precisar de apoio ou orientação no dia do evento, entre em contacto com:</p>
+<div class="form-actions">
+<a class="btn btn-outline" href="tel:+258849113648">Joice · 84 911 3648</a>
+<a class="btn btn-outline" href="tel:+258844884723">Efraime · 84 488 4723</a>
+</div>
 </div>
 <!--<div class="guide-item">
           <h4>Inspiração de Vestuário</h4>
@@ -381,7 +409,7 @@
 <div class="location-list">
 <div class="location-option">
 <div class="location-copy">
-<span class="location-kicker">08:30 · Cerimónia Religiosa</span>
+<span class="location-kicker">09:00 · Cerimónia Religiosa</span>
 <strong>Comunidade Imaculada Conceição</strong>
 <small>Patrice Lumumba, Matola</small>
 </div>
@@ -389,7 +417,7 @@
 </div>
 <div class="location-option">
 <div class="location-copy">
-<span class="location-kicker">14:00 · Recepção</span>
+<span class="location-kicker">13:00 · Registo Civil · 14:00 · Copo de Água</span>
 <strong>Aliny Eventos</strong>
 <small>Matola, Moçambique</small>
 </div>
@@ -898,9 +926,9 @@ async function postRequest(data) {
               'BEGIN:VEVENT',
               'UID:gilberta-osvaldo-20261121@lirandzo.com',
               'DTSTAMP:20260924T085500Z',
-              'DTSTART;TZID=Africa/Maputo:20261121T083000',
+              'DTSTART;TZID=Africa/Maputo:20261121T090000',
               'SUMMARY:Casamento de Osvaldo & Gilberta',
-              'DESCRIPTION:Cerimónia religiosa às 08h30 na Comunidade Imaculada Conceição — Patrice Lumumba. Recepção às 14h00 no Aliny Eventos.',
+              'DESCRIPTION:Cerimónia religiosa às 09h00 na Comunidade Imaculada Conceição — Patrice Lumumba. Registo Civil às 13h00 e Copo de Água às 14h00 no Aliny Eventos.',
               'LOCATION:Comunidade Imaculada Conceição — Patrice Lumumba e Aliny Eventos',
               'BEGIN:VALARM',
               'TRIGGER:-P1D',
@@ -950,7 +978,7 @@ async function postRequest(data) {
       const CHURCH_MAP_URL = 'https://www.google.com/maps/search/?api=1&query=Comunidade%20Imaculada%20Conceicao%20Patrice%20Lumumba%20Matola%20Mozambique';
       const ADDRESS_CIVIL_COPO_DE_AGUA = 'Aliny Eventos'; 
       const SALON_MAP_URL = 'https://www.google.com/maps/search/?api=1&query=Aliny%20Eventos%20Matola%20Mozambique';
-      const EVENT_DATE = "2026-11-21T08:30:00+02:00"; 
+      const EVENT_DATE = "2026-11-21T09:00:00+02:00"; 
       const body = document.body;
       const music = document.getElementById('backgroundMusic');
       const musicControl = document.getElementById('musicControl');

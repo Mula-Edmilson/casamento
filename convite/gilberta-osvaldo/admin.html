@@ -1235,9 +1235,9 @@
                   <div class="info-row"><span>Evento</span><strong id="eventName">Casamento</strong></div>
                   <div class="info-row"><span>Data</span><strong id="eventDate">21 de novembro de 2026</strong></div>
                   <div class="info-row"><span>RSVP até</span><strong id="rsvpDate">Não definido</strong></div>
-                  <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">08:30 · Comunidade Imaculada Conceição — Patrice Lumumba</strong></div>
-                  <div class="info-row"><span>Recepção</span><strong id="receptionInfo">14:00 · Aliny Eventos</strong></div>
-                  <div class="info-row"><span>Apoio</span><strong id="supportInfo">Não informado</strong></div>
+                  <div class="info-row"><span>Cerimónia</span><strong id="ceremonyInfo">09:00 · Comunidade Imaculada Conceição — Patrice Lumumba</strong></div>
+                  <div class="info-row"><span>Aliny Eventos</span><strong id="receptionInfo">13:00 Registo Civil · 14:00 Copo de Água</strong></div>
+                  <div class="info-row"><span>Apoio</span><strong id="supportInfo">Joice: 84 911 3648 · Efraime: 84 488 4723</strong></div>
                 </div>
               </div>
             </section>
@@ -1307,8 +1307,12 @@
         eventDateLong: RAW_EVENT.eventDateLong || RAW_EVENT.event.dateLabel,
         ceremonyPlace: RAW_EVENT.ceremonyPlace || RAW_EVENT.event.religiousVenue || RAW_EVENT.event.civilVenue,
         ceremonyTime: RAW_EVENT.ceremonyTime || RAW_EVENT.event.religiousTime || RAW_EVENT.event.civilTime,
+        additionalTitle: RAW_EVENT.additionalTitle || RAW_EVENT.event.civilTitle || 'Registo Civil',
+        additionalPlace: RAW_EVENT.additionalPlace || RAW_EVENT.event.civilVenue,
+        additionalTime: RAW_EVENT.additionalTime || RAW_EVENT.event.civilTime,
         receptionPlace: RAW_EVENT.receptionPlace || RAW_EVENT.event.receptionVenue || RAW_EVENT.event.civilVenue,
-        receptionTime: RAW_EVENT.receptionTime || RAW_EVENT.event.receptionTime || RAW_EVENT.event.civilTime,
+        receptionTime: RAW_EVENT.receptionTime || RAW_EVENT.event.receptionTime,
+        receptionTitle: RAW_EVENT.receptionTitle || RAW_EVENT.event.receptionTitle || 'Copo de Água',
         supportContacts: RAW_EVENT.supportContacts || RAW_EVENT.event.contactPhone || RAW_EVENT.event.whatsapp
       }) : RAW_EVENT;
       const configured = !!(window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured());
@@ -1867,8 +1871,8 @@
         $('eventName').textContent = `${EVENT.eventType || 'Casamento'} · ${EVENT.displayNames || EVENT.coupleNames || 'Osvaldo e Gilberta'}`;
         $('eventDate').textContent = EVENT.eventDateLong || onlyDate(EVENT.dateISO);
         $('rsvpDate').textContent = EVENT.rsvpDeadline || 'Prazo RSVP';
-        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '08:30'} · ${EVENT.ceremonyPlace || 'Local da cerimónia'}`;
-        $('receptionInfo').textContent = `${EVENT.receptionTime || '14:00'} · ${EVENT.receptionPlace || 'Local da recepção'}`;
+        $('ceremonyInfo').textContent = `${EVENT.ceremonyTime || '09:00'} · ${EVENT.ceremonyPlace || 'Local da cerimónia'}`;
+        $('receptionInfo').textContent = `${EVENT.additionalTime || '13:00'} ${EVENT.additionalTitle || 'Registo Civil'} · ${EVENT.receptionTime || '14:00'} ${EVENT.receptionTitle || 'Copo de Água'} · ${EVENT.receptionPlace || EVENT.additionalPlace || 'Aliny Eventos'}`;
         $('supportInfo').textContent = EVENT.supportContacts || 'Não informado';
       }
 
