@@ -106,7 +106,7 @@ p:last-child {
 .hero {
   position: relative;
   min-height: 100vh;
-  background-image: url('assets/media/GO-08.jpg');
+  background-image: url('assets/media/GO-06.jpg');
   background-size: cover;
   background-position: center 30%;
   display: flex;
