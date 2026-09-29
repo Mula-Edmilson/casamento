@@ -601,29 +601,9 @@
     // ============================================
     const API_URL = window.LIRANDZO_APPS_SCRIPT_URL || '#demo-offline';
     const DEMO_MODE = !(window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured());
-    const DEMO_GIFTS = [
-      {"name": "Jogo de panelas anti-aderentes", "reserved": false, "reserved_by": null},
-      {"name": "Tábua de engomar", "reserved": false, "reserved_by": null},
-      {"name": "Tigelas de mesa de jantar em porcelana", "reserved": false, "reserved_by": null},
-      {"name": "Jogos de pratos", "reserved": false, "reserved_by": null},
-      {"name": "Batedeira", "reserved": false, "reserved_by": null},
-      {"name": "Air fryer", "reserved": false, "reserved_by": null},
-      {"name": "Jogo de taças de 18 peças", "reserved": false, "reserved_by": null},
-      {"name": "Estante para batatas", "reserved": false, "reserved_by": null},
-      {"name": "Mesas rectangulares brancas ou pretas", "reserved": false, "reserved_by": null},
-      {"name": "Jogos de lençóis de algodão tamanho King", "reserved": false, "reserved_by": null},
-      {"name": "Tapete turco 2 × 3 m", "reserved": false, "reserved_by": null},
-      {"name": "Artigos decorativos", "reserved": false, "reserved_by": null},
-      {"name": "Quadros decorativos", "reserved": false, "reserved_by": null},
-      {"name": "Vasos decorativos", "reserved": false, "reserved_by": null},
-      {"name": "Candeeiro para quarto", "reserved": false, "reserved_by": null},
-      {"name": "Penteadeira", "reserved": false, "reserved_by": null},
-      {"name": "Mesa de jantar de 6 lugares", "reserved": false, "reserved_by": null},
-      {"name": "Consola com espelho", "reserved": false, "reserved_by": null},
-      {"name": "Ar condicionado", "reserved": false, "reserved_by": null},
-      {"name": "Geleira de portas", "reserved": false, "reserved_by": null}
-    ];
-    window.LIRANDZO_GIFT_OPTIONS = window.LIRANDZO_GIFT_OPTIONS || DEMO_GIFTS;
+    // EDNA_MAURO_REMOTE_GIFT_CATALOG_V1
+    // A lista de presentes deixou de existir no frontend como fonte de verdade.
+    // O catálogo publicado é carregado exclusivamente pela API/MongoDB.
 
     function jsonpRequest(url) {
       const parsed = new URL(String(url || ''), window.location.href);
@@ -1114,7 +1094,6 @@
       const saveGiftsBtn = document.getElementById('saveGiftsBtn');
       const giftReservationStatus = document.getElementById('giftReservationStatus');
 
-      const OFFICIAL_GIFT_OPTIONS = (window.LIRANDZO_GIFT_OPTIONS || []).map(normalizeGiftItem).filter(g => g.name);
 
       function normalizeGiftItem(item) {
         return {
@@ -1125,13 +1104,6 @@
         };
       }
 
-      function mergeOfficialGiftsWithRemote(remoteItems) {
-        const remoteMap = new Map((remoteItems || []).map(normalizeGiftItem).filter(g => g.name).map(g => [g.name, g]));
-        return OFFICIAL_GIFT_OPTIONS.map(item => {
-          const remote = remoteMap.get(item.name);
-          return remote ? { ...item, reserved: Boolean(remote.reserved), reservedBy: remote.reservedBy || remote.reserved_by || '' } : item;
-        });
-      }
 
       function renderGiftChecklist(items) {
         if (!giftChecklist) return;
@@ -1158,16 +1130,36 @@
       });
 
       async function loadGiftChecklist() {
+        if (!giftChecklist) return;
+
+        if (saveGiftsBtn) saveGiftsBtn.disabled = true;
+        giftChecklist.innerHTML = '<p class="small-modal-text">A carregar lista de presentes...</p>';
+        if (giftReservationStatus) {
+          giftReservationStatus.style.color = '';
+          giftReservationStatus.textContent = '';
+        }
+
         try {
-          let gifts = OFFICIAL_GIFT_OPTIONS;
-          if (window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured()) {
-            const res = await window.LirandzoAPI.get('gifts');
-            gifts = mergeOfficialGiftsWithRemote(res.data || []);
-          }
+          const apiReady = window.LirandzoAPI && window.LirandzoAPI.isConfigured && window.LirandzoAPI.isConfigured();
+          if (!apiReady) throw new Error('API Lirandzo não configurada.');
+
+          const res = await window.LirandzoAPI.get('gifts');
+          const gifts = (res.data || []).map(normalizeGiftItem).filter(g => g.name);
           renderGiftChecklist(gifts);
+
+          if (saveGiftsBtn) saveGiftsBtn.disabled = gifts.length === 0;
+          if (!gifts.length && giftReservationStatus) {
+            giftReservationStatus.style.color = '#9E7A13';
+            giftReservationStatus.textContent = 'A lista de presentes ainda não está disponível.';
+          }
         } catch (err) {
-          console.warn('Não foi possível carregar a lista de presentes:', err);
-          renderGiftChecklist(OFFICIAL_GIFT_OPTIONS);
+          console.warn('Não foi possível carregar a lista de presentes do MongoDB:', err);
+          giftChecklist.innerHTML = '<p class="small-modal-text">Não foi possível carregar a lista de presentes agora. Feche e tente novamente dentro de alguns instantes.</p>';
+          if (giftReservationStatus) {
+            giftReservationStatus.style.color = '#D93025';
+            giftReservationStatus.textContent = 'A lista não está disponível neste momento. Nenhuma reserva foi efectuada.';
+          }
+          if (saveGiftsBtn) saveGiftsBtn.disabled = true;
         }
       }
 
