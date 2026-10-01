@@ -30,7 +30,8 @@ test('Builder detalhes: bloqueia edição quando o Builder principal tem altera�
 test('Builder detalhes: corrige visualização de dateISO completo sem reformatar o Draft automaticamente', () => {
   assert.match(source, /event\.dateISO/);
   assert.match(source, /eventDate\.type = 'text'/);
-  assert.match(source, /YYYY-MM-DDT09:00:00\+02:00/);
+  assert.match(source, /YYYY-MM-DD ou ISO completo/);
+  assert.match(source, /2026-08-08T09:00:00\+02:00/);
 });
 
 test('Builder detalhes: preserva chaves desconhecidas dos itens ao editar', () => {
