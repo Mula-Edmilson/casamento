@@ -198,7 +198,7 @@ async function main() {
         const nextDraft = freshClass.enriched;
         const nextHash = freshClass.enrichedHash;
 
-        await models.InviteContent.updateOne(
+        const write = await models.InviteContent.updateOne(
           { _id: freshContent._id, draftRevision: 1, publishedRevision: 0 },
           {
             $set: {
@@ -209,6 +209,7 @@ async function main() {
           },
           { session }
         );
+        if (write.modifiedCount !== 1) throw new Error('Guard de escrita falhou: InviteContent não foi actualizado exactamente uma vez.');
 
         await models.InviteContentRevision.create([{
           inviteId: freshContent.inviteId,
@@ -227,8 +228,8 @@ async function main() {
     }
 
     const after = await models.InviteContent.findOne({ slug: TARGET_SLUG }).lean();
-    const afterRevisions = await models.InviteContentRevision.find({ inviteId: after.inviteId }).sort({ revision: 1 }).lean();
     if (!after) throw new Error('Verificação pós-escrita falhou: InviteContent não encontrado.');
+    const afterRevisions = await models.InviteContentRevision.find({ inviteId: after.inviteId }).sort({ revision: 1 }).lean();
     if (Number(after.draftRevision) !== 2 || Number(after.publishedRevision) !== 0) throw new Error('Verificação pós-escrita falhou: revisões inesperadas.');
     if (!publishedIsEmpty(after)) throw new Error('Verificação pós-escrita falhou: published não está vazio.');
     if (after.draft?.runtime?.contentMode !== 'legacy') throw new Error('Verificação pós-escrita falhou: renderer deixou de estar legacy.');
