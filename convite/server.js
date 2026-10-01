@@ -8,6 +8,8 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const { GIFT_CATALOG_MODES, giftCatalogModeForInvite, usesMongoGiftCatalog, shouldSeedLegacyGiftCatalog, shouldRepairLegacyGiftReservations, shouldUseLegacyRepeatableGiftRules } = require('./gift-catalog-mode');
 const { DEFAULT_GIFT_CATEGORY, normalizeGiftAdminKey, sanitizeGiftAdminInput, parseGiftImportText } = require('./gift-catalog-admin');
+const { createBuilderV2Models } = require('./builder-v2/mongo-models-v2');
+const { registerBuilderV2ContentRoutes } = require('./builder-v2/content-api-v2');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -557,6 +559,7 @@ const Activity = mongoose.model('Activity', ActivitySchema);
 const Backup = mongoose.model('Backup', BackupSchema);
 const Client = mongoose.model('Client', ClientSchema);
 const MarketingCampaign = mongoose.model('MarketingCampaign', MarketingCampaignSchema);
+const { InviteContent, InviteContentRevision, FormSubmission } = createBuilderV2Models(mongoose);
 
 function cleanInviteDoc(doc) {
   if (!doc) return null;
@@ -4704,6 +4707,18 @@ app.get('/api/capsule/:id/file', async (req, res) => {
   res.send(Buffer.from(doc.fileBase64, 'base64'));
 });
 
+registerBuilderV2ContentRoutes(app, {
+  mongoose,
+  Invite,
+  InviteContent,
+  InviteContentRevision,
+  FormSubmission,
+  Activity,
+  requireManager,
+  requireAdmin,
+  asyncRoute
+});
+
 app.use((err, req, res, next) => {
   console.error('[server-error]', err);
 
@@ -4712,12 +4727,19 @@ app.use((err, req, res, next) => {
   }
 
   const isCorsError = String(err.message || '').includes('Origem não autorizada');
-
-  return res.status(isCorsError ? 403 : 500).json({
+  const explicitStatus = Number(err.statusCode);
+  const statusCode = Number.isInteger(explicitStatus) && explicitStatus >= 400 && explicitStatus <= 599
+    ? explicitStatus
+    : (isCorsError ? 403 : 500);
+  const code = String(err.code || (isCorsError ? 'CORS_BLOCKED' : 'SERVER_ERROR'));
+  const payload = {
     status: 'error',
-    code: isCorsError ? 'CORS_BLOCKED' : 'SERVER_ERROR',
+    code,
     message: err.message || 'Erro interno no servidor.'
-  });
+  };
+  if (err.details !== undefined) payload.details = err.details;
+
+  return res.status(statusCode).json(payload);
 });
 
 async function start() {
