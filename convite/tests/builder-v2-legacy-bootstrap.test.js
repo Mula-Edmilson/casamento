@@ -13,6 +13,7 @@ const ROOT = path.resolve(__dirname, '..');
 const INVITE_DIR = path.join(ROOT, 'rosalina-monteiro');
 const inviteMeta = JSON.parse(fs.readFileSync(path.join(INVITE_DIR, 'invite-data.json'), 'utf8'));
 const seedData = JSON.parse(fs.readFileSync(path.join(INVITE_DIR, 'mongodb-seed-data.json'), 'utf8'));
+const dbBootstrapSource = fs.readFileSync(path.join(ROOT, 'tools', 'rosalina-builder-v2-bootstrap-db.js'), 'utf8');
 
 function draft() {
   return buildLegacyBootstrapDraft({ inviteMeta, seedData });
@@ -102,4 +103,32 @@ test('Rosalina: bootstrap não força template incompatível durante a migraçã
   const out = draft();
   assert.equal(out.identity.templateKey, '');
   assert.equal(out.identity.packageKey, 'esmeralda');
+});
+
+test('Rosalina DB bootstrap: modo padrão é CHECK e apply exige confirmação literal', () => {
+  assert.match(dbBootstrapSource, /const APPLY = process\.argv\.includes\('--apply'\)/);
+  assert.match(dbBootstrapSource, /--confirm=rosalina-monteiro/);
+  assert.match(dbBootstrapSource, /CONFIRM !== TARGET_SLUG/);
+});
+
+test('Rosalina DB bootstrap: recusa package mismatch e renderer mongo-v2 antes de escrever', () => {
+  assert.match(dbBootstrapSource, /PACKAGE_MISMATCH/);
+  assert.match(dbBootstrapSource, /CONTENT_MODE_NOT_LEGACY/);
+  assert.match(dbBootstrapSource, /INVITE_CONTENT_ALREADY_EXISTS/);
+  assert.match(dbBootstrapSource, /REVISION_HISTORY_ALREADY_EXISTS/);
+});
+
+test('Rosalina DB bootstrap: escrita é limitada a InviteContent e InviteContentRevision', () => {
+  assert.match(dbBootstrapSource, /models\.InviteContent\.create/);
+  assert.match(dbBootstrapSource, /models\.InviteContentRevision\.create/);
+  assert.doesNotMatch(dbBootstrapSource, /Invite\.update/);
+  assert.doesNotMatch(dbBootstrapSource, /findOneAndUpdate/);
+  assert.doesNotMatch(dbBootstrapSource, /deleteMany|deleteOne|findOneAndDelete/);
+});
+
+test('Rosalina DB bootstrap: cria somente draft revision 1 e mantém published vazio', () => {
+  assert.match(dbBootstrapSource, /draftRevision:\s*1/);
+  assert.match(dbBootstrapSource, /publishedRevision:\s*0/);
+  assert.match(dbBootstrapSource, /published:\s*\{\}/);
+  assert.match(dbBootstrapSource, /contentMode.*legacy|draft\.runtime\.contentMode !== 'legacy'/s);
 });
