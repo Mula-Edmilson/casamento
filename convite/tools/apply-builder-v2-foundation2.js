@@ -25,6 +25,49 @@ const ROUTE_REGISTRATION = [
   '});'
 ].join('\n');
 
+const LEGACY_ERROR_HANDLER = [
+  'app.use((err, req, res, next) => {',
+  "  console.error('[server-error]', err);",
+  '',
+  '  if (res.headersSent) {',
+  '    return next(err);',
+  '  }',
+  '',
+  "  const isCorsError = String(err.message || '').includes('Origem não autorizada');",
+  '',
+  '  return res.status(isCorsError ? 403 : 500).json({',
+  "    status: 'error',",
+  "    code: isCorsError ? 'CORS_BLOCKED' : 'SERVER_ERROR',",
+  "    message: err.message || 'Erro interno no servidor.'",
+  '  });',
+  '});'
+].join('\n');
+
+const STRUCTURED_ERROR_HANDLER = [
+  'app.use((err, req, res, next) => {',
+  "  console.error('[server-error]', err);",
+  '',
+  '  if (res.headersSent) {',
+  '    return next(err);',
+  '  }',
+  '',
+  "  const isCorsError = String(err.message || '').includes('Origem não autorizada');",
+  '  const explicitStatus = Number(err.statusCode);',
+  '  const statusCode = Number.isInteger(explicitStatus) && explicitStatus >= 400 && explicitStatus <= 599',
+  '    ? explicitStatus',
+  '    : (isCorsError ? 403 : 500);',
+  "  const code = String(err.code || (isCorsError ? 'CORS_BLOCKED' : 'SERVER_ERROR'));",
+  '  const payload = {',
+  "    status: 'error',",
+  '    code,',
+  "    message: err.message || 'Erro interno no servidor.'",
+  '  };',
+  "  if (err.details !== undefined) payload.details = err.details;",
+  '',
+  '  return res.status(statusCode).json(payload);',
+  '});'
+].join('\n');
+
 function count(haystack, needle) {
   return String(haystack).split(needle).length - 1;
 }
@@ -53,28 +96,46 @@ function assertSingleAnchor(text, anchor, label) {
   }
 }
 
+function patchErrorContract(text) {
+  if (text.includes(STRUCTURED_ERROR_HANDLER)) return { changed: false, content: text };
+  if (text.includes(LEGACY_ERROR_HANDLER)) {
+    return { changed: true, content: text.replace(LEGACY_ERROR_HANDLER, STRUCTURED_ERROR_HANDLER) };
+  }
+  if (text.includes("console.error('[server-error]', err);")) {
+    throw new Error('Error handler do server.js mudou em relação ao baseline auditado. Nenhum ficheiro foi alterado.');
+  }
+  return { changed: false, content: text };
+}
+
 function patchServerSource(source) {
   const usedCrLf = String(source || '').includes('\r\n');
   let text = normalizeForPatch(source);
   const state = inspectServerIntegration(text);
   const integratedCount = Object.values(state).filter(Boolean).length;
 
-  if (integratedCount === 3) return { changed: false, content: source, state };
-  if (integratedCount > 0) {
+  if (integratedCount > 0 && integratedCount < 3) {
     throw new Error(`server.js contém integração parcial Builder V2 (${JSON.stringify(state)}). Corrija/reverta antes de continuar.`);
   }
 
-  assertSingleAnchor(text, IMPORT_ANCHOR, 'Import anchor');
-  assertSingleAnchor(text, MODEL_ANCHOR, 'Model anchor');
-  assertSingleAnchor(text, ERROR_HANDLER_ANCHOR, 'Route anchor');
+  let changed = false;
+  if (integratedCount === 0) {
+    assertSingleAnchor(text, IMPORT_ANCHOR, 'Import anchor');
+    assertSingleAnchor(text, MODEL_ANCHOR, 'Model anchor');
+    assertSingleAnchor(text, ERROR_HANDLER_ANCHOR, 'Route anchor');
 
-  text = text.replace(IMPORT_ANCHOR, `${IMPORT_ANCHOR}\n${BUILDER_IMPORTS}`);
-  text = text.replace(MODEL_ANCHOR, `${MODEL_ANCHOR}\n${BUILDER_MODELS}`);
-  text = text.replace(ERROR_HANDLER_ANCHOR, `${ROUTE_REGISTRATION}\n\n${ERROR_HANDLER_ANCHOR}`);
+    text = text.replace(IMPORT_ANCHOR, `${IMPORT_ANCHOR}\n${BUILDER_IMPORTS}`);
+    text = text.replace(MODEL_ANCHOR, `${MODEL_ANCHOR}\n${BUILDER_MODELS}`);
+    text = text.replace(ERROR_HANDLER_ANCHOR, `${ROUTE_REGISTRATION}\n\n${ERROR_HANDLER_ANCHOR}`);
+    changed = true;
+  }
+
+  const errorPatch = patchErrorContract(text);
+  text = errorPatch.content;
+  changed = changed || errorPatch.changed;
 
   const finalState = inspectServerIntegration(text);
   if (!Object.values(finalState).every(Boolean)) throw new Error('Falha interna ao validar integração Builder V2 no server.js.');
-  return { changed: true, content: restoreEol(text, usedCrLf), state: finalState };
+  return { changed, content: restoreEol(text, usedCrLf), state: finalState };
 }
 
 function appendCommand(command, addition) {
@@ -145,9 +206,15 @@ function runCli() {
     throw new Error('Validação pós-patch falhou. Reverta a working tree antes de continuar.');
   }
 
+  const finalServer = normalizeForPatch(fs.readFileSync(serverPath, 'utf8'));
+  if (!finalServer.includes(STRUCTURED_ERROR_HANDLER)) {
+    throw new Error('Contrato de erros estruturados não foi aplicado ao server.js.');
+  }
+
   console.log('Builder V2 Foundation 2 — APPLY PASS');
   console.log(`server.js alterado: ${serverPatched.changed ? 'sim' : 'não (já integrado)'}`);
   console.log(`package.json alterado: ${packagePatched.changed ? 'sim' : 'não (já integrado)'}`);
+  console.log('Erros HTTP estruturados (status/code/details): PASS');
   console.log('Nenhuma alteração foi feita no MongoDB, Render ou main por este script.');
 }
 
@@ -167,7 +234,10 @@ module.exports = {
   BUILDER_MODELS,
   ERROR_HANDLER_ANCHOR,
   ROUTE_REGISTRATION,
+  LEGACY_ERROR_HANDLER,
+  STRUCTURED_ERROR_HANDLER,
   inspectServerIntegration,
+  patchErrorContract,
   patchServerSource,
   patchPackageObject,
   patchPackageJsonText,
