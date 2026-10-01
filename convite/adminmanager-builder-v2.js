@@ -3,7 +3,6 @@
 
   const PANEL_ID = 'builderV2';
   const PANEL_EL_ID = 'builderV2Panel';
-  const ACTIVE_MODE = 'mongo-v2';
   const state = {
     inviteId: '',
     invite: null,
@@ -18,12 +17,11 @@
     activeTab: 'identity'
   };
 
-  const byId = id => document.getElementById(id);
-  const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
-  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+  const $ = id => document.getElementById(id);
+  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[char]));
-  const bool = value => Boolean(value);
+  }[ch]));
+  const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
 
   function adminApi(path, options = {}) {
     if (typeof api !== 'function') return Promise.reject(new Error('API do AdminManager indispon√≠vel.'));
@@ -45,8 +43,13 @@
     catch { /* noop */ }
   }
 
+  function toast(message, type = '') {
+    try { if (typeof appToast === 'function') appToast(message, type || undefined); }
+    catch { /* noop */ }
+  }
+
   function setFeedback(message = '', error = false) {
-    const el = byId('builderV2Feedback');
+    const el = $('builderV2Feedback');
     if (!el) return;
     if (!message) {
       el.className = 'feedback hidden';
@@ -54,88 +57,54 @@
       return;
     }
     el.className = `feedback${error ? ' error' : ''}`;
-    el.innerHTML = message;
+    el.textContent = message;
   }
 
-  function setLoading(loading) {
-    state.loading = Boolean(loading);
-    document.querySelectorAll('[data-builder-v2-action]').forEach(button => {
-      if (button.dataset.builderV2Action === 'preview') return;
-      button.disabled = state.loading;
+  function getPath(obj, path) {
+    return String(path).split('.').reduce((acc, key) => acc == null ? undefined : acc[key], obj);
+  }
+
+  function setPath(obj, path, value) {
+    const parts = String(path).split('.');
+    let cursor = obj;
+    parts.forEach((key, index) => {
+      if (index === parts.length - 1) cursor[key] = value;
+      else {
+        const nextKey = parts[index + 1];
+        if (cursor[key] == null || typeof cursor[key] !== 'object') cursor[key] = /^\d+$/.test(nextKey) ? [] : {};
+        cursor = cursor[key];
+      }
     });
-    const panel = byId(PANEL_EL_ID);
-    if (panel) panel.classList.toggle('builder-v2-loading', state.loading);
   }
 
-  function getPath(object, path) {
-    return String(path || '').split('.').filter(Boolean).reduce((value, key) => value == null ? undefined : value[key], object);
+  function ensureDraftShape(input) {
+    const draft = clone(input || {});
+    draft.identity = { slug: '', packageKey: 'perola', templateKey: '', eventType: 'Casamento', language: 'Portugu√™s', ...(draft.identity || {}) };
+    draft.people = { coupleNames: '', displayNames: '', bride: '', groom: '', monogram: '', brideParents: '', groomParents: '', ...(draft.people || {}) };
+    draft.event = { dateISO: '', dateLabel: '', timezone: 'Africa/Maputo', rsvpDeadline: '', verse: '', verseReference: '', invitationNote: '', ...(draft.event || {}) };
+    draft.story = { title: 'A Nossa Hist√≥ria', text: '', chapters: [], letter: '', ...(draft.story || {}) };
+    draft.access = { mode: 'nominal', rsvpIdentity: 'guest_token', requireNameOnActions: false, maxGuestsPerRsvp: 1, allowCompanionName: false, autoCreateGuestOnRsvp: false, autoCreateGuestOnGift: false, ...(draft.access || {}) };
+    draft.features = { story: true, gallery: true, rsvp: true, dressCode: true, gifts: true, contributions: true, messages: true, checkin: true, capsule: true, guestInfo: true, menu: true, ...(draft.features || {}) };
+    draft.gifts = { mode: 'catalog', catalogMode: 'legacy', store: '', options: [], ...(draft.gifts || {}) };
+    draft.media = { heroImage: '', coverImage: '', storyImage: '', musicUrl: '', ...(draft.media || {}) };
+    draft.seo = { title: '', description: '', image: '', ...(draft.seo || {}) };
+    draft.schedule = Array.isArray(draft.schedule) ? draft.schedule : [];
+    draft.story.chapters = Array.isArray(draft.story.chapters) ? draft.story.chapters : [];
+    return draft;
   }
 
-  function setPath(object, path, value) {
-    const keys = String(path || '').split('.').filter(Boolean);
-    if (!keys.length) return;
-    let cursor = object;
-    keys.slice(0, -1).forEach(key => {
-      if (!cursor[key] || typeof cursor[key] !== 'object' || Array.isArray(cursor[key])) cursor[key] = {};
-      cursor = cursor[key];
-    });
-    cursor[keys[keys.length - 1]] = value;
-  }
-
-  function defaultDraft() {
-    return {
-      schemaVersion: '2.0',
-      identity: { slug: '', packageKey: 'perola', templateKey: '', eventType: 'Casamento', language: 'Portugu√™s' },
-      people: { coupleNames: '', displayNames: '', bride: '', groom: '', monogram: '', brideParents: '', groomParents: '' },
-      event: { dateISO: '', dateLabel: '', timezone: 'Africa/Maputo', rsvpDeadline: '', verse: '', verseReference: '', invitationNote: '' },
-      schedule: [],
-      story: { title: 'A Nossa Hist√≥ria', text: '', chapters: [], letter: '' },
-      access: { mode: 'nominal', rsvpIdentity: 'guest_token', requireNameOnActions: false, maxGuestsPerRsvp: 1, allowCompanionName: false, autoCreateGuestOnRsvp: false, autoCreateGuestOnGift: false },
-      features: { story: true, gallery: true, rsvp: true, dressCode: true, gifts: true, contributions: true, messages: true, checkin: true, capsule: true, guestInfo: true, menu: true },
-      gifts: { mode: 'catalog', catalogMode: 'legacy', store: '', options: [] },
-      payments: { bankAccounts: [], mobilePayments: [] },
-      support: { text: '', contacts: [], whatsapp: '', whatsappSecondary: '' },
-      gallery: { title: 'Momentos', items: [] },
-      dressCode: { title: '', note: '', image: '' },
-      menu: { title: '', note: '', items: [] },
-      media: { heroImage: '', coverImage: '', storyImage: '', musicUrl: '' },
-      seo: { title: '', description: '', image: '' },
-      runtime: { contentMode: 'legacy', rendererVersion: 'v1' }
-    };
-  }
-
-  function normalizeDraftShape(value) {
-    const base = defaultDraft();
-    const source = value && typeof value === 'object' ? clone(value) : {};
-    return {
-      ...base,
-      identity: { ...base.identity, ...(source.identity || {}) },
-      people: { ...base.people, ...(source.people || {}) },
-      event: { ...base.event, ...(source.event || {}) },
-      story: { ...base.story, ...(source.story || {}) },
-      access: { ...base.access, ...(source.access || {}) },
-      features: { ...base.features, ...(source.features || {}) },
-      gifts: { ...base.gifts, ...(source.gifts || {}) },
-      payments: { ...base.payments, ...(source.payments || {}) },
-      support: { ...base.support, ...(source.support || {}) },
-      gallery: { ...base.gallery, ...(source.gallery || {}) },
-      dressCode: { ...base.dressCode, ...(source.dressCode || {}) },
-      menu: { ...base.menu, ...(source.menu || {}) },
-      media: { ...base.media, ...(source.media || {}) },
-      seo: { ...base.seo, ...(source.seo || {}) },
-      runtime: { ...base.runtime, ...(source.runtime || {}) },
-      schedule: Array.isArray(source.schedule) ? source.schedule : [],
-    };
+  function markDirty() {
+    state.dirty = true;
+    renderStatus();
   }
 
   function ensurePanelDefinition() {
     try {
-      if (Array.isArray(panels) && !panels.some(panel => panel.id === PANEL_ID)) {
-        const manageIndex = panels.findIndex(panel => panel.id === 'manage');
-        const entry = { id: PANEL_ID, label: 'Construtor', icon: 'edit-3' };
-        if (manageIndex >= 0) panels.splice(manageIndex + 1, 0, entry);
-        else panels.push(entry);
-      }
+      if (!Array.isArray(panels) || panels.some(panel => panel.id === PANEL_ID)) return;
+      const entry = { id: PANEL_ID, label: 'Construtor', icon: 'edit-3' };
+      const githubIndex = panels.findIndex(panel => panel.id === 'github');
+      if (githubIndex >= 0) panels.splice(githubIndex, 0, entry);
+      else panels.push(entry);
     } catch { /* fallback navigation below */ }
   }
 
@@ -146,34 +115,455 @@
     button.type = 'button';
     button.dataset.panel = PANEL_ID;
     button.innerHTML = '<i data-feather="edit-3"></i><span>Construtor</span>';
-    const manage = target.querySelector('[data-panel="manage"]');
-    if (manage?.nextSibling) target.insertBefore(button, manage.nextSibling);
-    else if (manage) target.appendChild(button);
-    else target.appendChild(button);
+    const github = target.querySelector('[data-panel="github"]');
+    if (github) target.insertBefore(button, github); else target.appendChild(button);
   }
 
   function ensureNavigation() {
-    makeNavButton(byId('sideNav'), false);
-    makeNavButton(byId('mobileTabs'), true);
+    makeNavButton($('sideNav'), false);
+    makeNavButton($('mobileTabs'), true);
     document.querySelectorAll(`[data-panel="${PANEL_ID}"]`).forEach(button => {
       if (button.dataset.builderV2Bound === '1') return;
       button.dataset.builderV2Bound = '1';
       button.addEventListener('click', () => {
-        try { if (typeof showPanel === 'function') showPanel(PANEL_ID); }
-        catch { /* noop */ }
+        try { if (typeof showPanel === 'function') showPanel(PANEL_ID); } catch { /* noop */ }
         syncInviteOptions();
-        if (state.inviteId) loadContent();
       });
     });
   }
 
+  function panelHtml() {
+    return `
+      <section class="section" id="${PANEL_EL_ID}">
+        <div class="section-title builder-v2-title">
+          <div><h1>Construtor</h1><p>Conte√∫do estruturado do convite com Draft, valida√ß√£o, publica√ß√£o e hist√≥rico.</p></div>
+          <span id="builderV2Mode" class="builder-v2-mode legacy">Legacy</span>
+        </div>
+        <div class="builder-v2-safe-note"><i data-feather="shield"></i><div><strong>Publicar conte√∫do n√£o activa o renderer V2.</strong><span>A activa√ß√£o de <code>mongo-v2</code> continua separada e expl√≠cita. Esta interface n√£o migra convites automaticamente.</span></div></div>
+        <section class="panel-card builder-v2-toolbar-card"><div class="panel-body"><div class="builder-v2-toolbar">
+          <select id="builderV2InviteSelect" class="search-input"><option value="">Seleccione um convite...</option></select>
+          <div class="builder-v2-toolbar-spacer"></div>
+          <button class="btn small" id="builderV2ReloadBtn" type="button"><i data-feather="refresh-cw"></i> Recarregar</button>
+          <button class="btn small" id="builderV2ValidateBtn" type="button"><i data-feather="check-circle"></i> Validar</button>
+          <button class="btn small" id="builderV2PreviewBtn" type="button"><i data-feather="eye"></i> Preview</button>
+          <button class="btn small primary" id="builderV2SaveBtn" type="button"><i data-feather="save"></i> Guardar Draft</button>
+          <button class="btn small builder-v2-publish" id="builderV2PublishBtn" type="button"><i data-feather="upload-cloud"></i> Publicar</button>
+        </div><div id="builderV2Feedback" class="feedback hidden"></div></div></section>
+        <div id="builderV2Empty" class="builder-v2-empty"><div><i data-feather="edit-3"></i><strong>Seleccione um convite</strong><span>O Builder carrega o Draft existente ou prepara uma sugest√£o a partir da configura√ß√£o legacy, sem gravar nada automaticamente.</span></div></div>
+        <div id="builderV2Workspace" class="hidden">
+          <div id="builderV2Metrics" class="metrics-grid builder-v2-metrics"></div>
+          <div id="builderV2Tabs" class="builder-v2-tabs"></div>
+          <div id="builderV2Editor"></div>
+        </div>
+      </section>`;
+  }
+
+  function ensurePanel() {
+    if ($(PANEL_EL_ID)) return;
+    const anchor = $('managePanel') || $('guestsPanel') || document.querySelector('.content');
+    if (!anchor) return;
+    if (anchor.classList.contains('section')) anchor.insertAdjacentHTML('afterend', panelHtml());
+    else anchor.insertAdjacentHTML('beforeend', panelHtml());
+  }
+
+  function ensurePreviewModal() {
+    if ($('builderV2PreviewModal')) return;
+    document.body.insertAdjacentHTML('beforeend', `
+      <div class="builder-v2-modal" id="builderV2PreviewModal" aria-hidden="true">
+        <div class="builder-v2-dialog" role="dialog" aria-modal="true" aria-labelledby="builderV2PreviewTitle">
+          <div class="builder-v2-dialog-head"><div><small>PREVIEW EDITORIAL</small><h3 id="builderV2PreviewTitle">Draft do convite</h3></div><button class="btn icon-only" type="button" data-builder-close="builderV2PreviewModal" aria-label="Fechar"><i data-feather="x"></i></button></div>
+          <div id="builderV2PreviewBody"></div>
+        </div>
+      </div>`);
+  }
+
+  function syncInviteOptions() {
+    const select = $('builderV2InviteSelect');
+    if (!select) return;
+    const list = currentInvites();
+    const previous = state.inviteId || select.value;
+    select.innerHTML = '<option value="">Seleccione um convite...</option>' + list.map(invite =>
+      `<option value="${escapeHtml(invite.id)}">${escapeHtml(invite.coupleNames || invite.slug)} ¬∑ ${escapeHtml(invite.slug)}</option>`
+    ).join('');
+    if (previous && list.some(invite => String(invite.id) === String(previous))) select.value = previous;
+  }
+
+  function renderStatus() {
+    const mode = $('builderV2Mode');
+    const inviteMode = String(state.invite?.contentMode || 'legacy');
+    if (mode) {
+      mode.className = `builder-v2-mode ${inviteMode === 'legacy' ? 'legacy' : 'mongo'}`;
+      mode.textContent = inviteMode === 'legacy' ? 'Legacy' : 'V2 activo';
+    }
+    const metrics = $('builderV2Metrics');
+    if (metrics && state.draft) {
+      metrics.innerHTML = [
+        ['Draft', state.draftRevision, state.dirty ? 'altera√ß√µes locais' : 'sincronizado'],
+        ['Publicado', state.publishedRevision, state.publishedRevision ? 'revis√£o actual' : 'ainda n√£o publicado'],
+        ['Renderer', inviteMode === 'legacy' ? 'Legacy' : 'V2', inviteMode === 'legacy' ? 'n√£o activado' : 'activo']
+      ].map(([label, value, note]) => `<article class="metric-card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(note)}</small></article>`).join('');
+    }
+    const publish = $('builderV2PublishBtn');
+    if (publish) publish.disabled = !state.draft || !adminIsAdmin() || state.dirty || state.loading;
+  }
+
   const field = (label, path, options = {}) => {
     const type = options.type || 'text';
-    const attrs = [
-      `data-builder-path="${escapeHtml(path)}"`,
-      options.placeholder ? `placeholder="${escapeHtml(options.placeholder)}"` : '',
-      options.readonly ? 'readonly' : '',
-      options.min ? `min="${escapeHtml(options.min)}"` : ''
-    ].filter(Boolean).join(' ');
-    if (type === 'textarea') return `<div class="field ${options.span ? 'builder-span-2' : ''}"><label>${escapeHtml(label)}</label><textarea ${attrs}></textarea>${options.hint ? `<small class="hint">${escapeHtml(options.hint)}≤»="25Ω±±âÖç¨∏ú∞Å—…’î§Ï(ÄÄÄÅ•òÄ†Ö›•πëΩ‹πçΩπô•…¥°ÅIïÕ—Ö’…Ö»ÅÑÅ…ïŸ•œçºÅ¡’â±•çÖëÑÄëÌ…ïŸ•Õ•ΩπÙÅ¡Ö…ÑÅ’¥ÅπΩŸºÅ…Öô–¸Å<ÅçΩπ—óÈëºÅ√Èâ±•çºÅªçºÅÕïÀÑÅÖ±—ï…ÖëºπÄ§§Å…ï—’…∏Ï(ÄÄÄÅÕï—1ΩÖë•πú°—…’î§ÏÅÕï—ïïëâÖç¨†úú§Ï(ÄÄÄÅ—…‰ÅÏ(ÄÄÄÄÄÅçΩπÕ–ÅΩ’–ÄÙÅÖ›Ö•–ÅÖëµ•π¡§°ÄΩµÖπÖùï»Ω•πŸ•—ïÃºëÌïπçΩëïUI%Ωµ¡Ωπïπ–°Õ—Ö—îπ•πŸ•—ï%ê•ÙΩçΩπ—ïπ–Ω…Ω±±âÖç≠Ä∞ÅÏ(ÄÄÄÄÄÄÄÅµï—°ΩêËÄùA=MPú∞ÅâΩë‰ËÅ)M=8πÕ—…•πù•ô‰°ÏÅ…ïŸ•Õ•Ω∏ËÅ9’µâï»°…ïŸ•Õ•Ω∏§∞Åï·¡ïç—ïë…Öô—IïŸ•Õ•Ω∏ËÅÕ—Ö—îπë…Öô—IïŸ•Õ•Ω∏ÅÙ§(ÄÄÄÄÄÅÙ§Ï(ÄÄÄÄÄÅçΩπÕ–ÅëÖ—ÑÄÙÅΩ’–πëÖ—ÑÅÒÅÌÙÏ(ÄÄÄÄÄÅÕ—Ö—îπë…Öô–ÄÙÅπΩ…µÖ±•Èï…Öô—M°Ö¡î°ëÖ—ÑπçΩπ—ïπ–¸πë…Öô–ÅÒÅÕ—Ö—îπë…Öô–§Ï(ÄÄÄÄÄÅÕ—Ö—îπë…Öô—IïŸ•Õ•Ω∏ÄÙÅ9’µâï»°ëÖ—ÑπçΩπ—ïπ–¸πë…Öô—IïŸ•Õ•Ω∏ÅÒÅÕ—Ö—îπë…Öô—IïŸ•Õ•Ω∏Ä¨Äƒ§Ï(ÄÄÄÄÄÅÕ—Ö—îπ¡’â±•Õ°ïëIïŸ•Õ•Ω∏ÄÙÅ9’µâï»°ëÖ—ÑπçΩπ—ïπ–¸π¡’â±•Õ°ïëIïŸ•Õ•Ω∏ÅÒÅÕ—Ö—îπ¡’â±•Õ°ïëIïŸ•Õ•Ω∏§Ï(ÄÄÄÄÄÅÕ—Ö—îπë•…—‰ÄÙÅôÖ±ÕîÏ(ÄÄÄÄÄÅ…ïπëï…•ï±ëÃ†§Ï(ÄÄÄÄÄÅÕï—ïïëâÖç¨°ÅIïŸ•œçºÅ¡’â±•çÖëÑÄëÌïÕçÖ¡ï!—µ∞°…ïŸ•Õ•Ω∏•ÙÅ…ïÕ—Ö’…ÖëÑÅ¡Ö…ÑÅºÅ…Öô–ÄëÌïÕçÖ¡ï!—µ∞°Õ—Ö—îπë…Öô—IïŸ•Õ•Ω∏•Ù∏Å<ÅçΩπ—óÈëºÅ√Èâ±•çºÅªçºÅµ’ëΩ‘πÄ§Ï(ÄÄÄÄÄÅÖ›Ö•–Å±ΩÖëIïŸ•Õ•ΩπÃ†§Ï(ÄÄÄÅÙÅçÖ—ç†Ä°ï……Ω»§ÅÏ(ÄÄÄÄÄÅÕï—ïïëâÖç¨°ïÕçÖ¡ï!—µ∞°ï……Ω»πµïÕÕÖùîÅÒÄùÖ±°ÑÅÖºÅ…ïÕ—Ö’…Ö»Å…ïŸ•œçº∏ú§∞Å—…’î§Ï(ÄÄÄÅÙÅô•πÖ±±‰ÅÏÅÕï—1ΩÖë•πú°ôÖ±Õî§ÏÅÙ(ÄÅÙ((ÄÅô’πç—•Ω∏ÅÖ¡¡±ÂëŸÖπçïë)ÕΩ∏†§ÅÏ(ÄÄÄÅçΩπÕ–Å©ÕΩ∏ÄÙÅâÂ%ê†ùâ’•±ëï…X…)ÕΩ∏ú§Ï(ÄÄÄÅ•òÄ†Ö©ÕΩ∏§Å…ï—’…∏Ï(ÄÄÄÅ—…‰ÅÏ(ÄÄÄÄÄÅçΩπÕ–Å¡Ö…ÕïêÄÙÅ)M=8π¡Ö…Õî°©ÕΩ∏πŸÖ±’î§Ï(ÄÄÄÄÄÅ•òÄ†Ö¡Ö…ÕïêÅÒÅ—Â¡ïΩòÅ¡Ö…ÕïêÄÑÙÙÄùΩâ©ïç–úÅÒÅ……Ö‰π•Õ……Ö‰°¡Ö…Õïê§§Å—°…Ω‹Åπï‹Å……Ω»†ù<Å)M=8Å¡…ïç•ÕÑÅ…ï¡…ïÕïπ—Ö»Å’¥ÅΩâ©ïç—º∏ú§Ï(ÄÄÄÄÄÅçΩπÕ–Åï·•Õ—•πùM±’úÄÙÅÕ—Ö—îπë…Öô–¸π•ëïπ—•—‰¸πÕ±’úÅÒÄúúÏ(ÄÄÄÄÄÅÕ—Ö—îπë…Öô–ÄÙÅπΩ…µÖ±•Èï…Öô—M°Ö¡î°¡Ö…Õïê§Ï(ÄÄÄÄÄÅ•òÄ°ï·•Õ—•πùM±’ú§ÅÕ—Ö—îπë…Öô–π•ëïπ—•—‰πÕ±’úÄÙÅï·•Õ—•πùM±’úÏ(ÄÄÄÄÄÅµÖ…≠•…—‰†§Ï(ÄÄÄÄÄÅ…ïπëï…•ï±ëÃ†§Ï(ÄÄÄÄÄÅÕï—ïïëâÖç¨†ù)M=8ÅÖ¡±•çÖëºÅÖºÅ…Öô–Å±ΩçÖ∞∏ÅYÖ±•ëîÅîÅù’Ö…ëîÅÖπ—ïÃÅëîÅ¡’â±•çÖ»∏ú§Ï(ÄÄÄÅÙÅçÖ—ç†Ä°ï……Ω»§ÅÏ(ÄÄÄÄÄÅÕï—ïïëâÖç¨°Å)M=8Å•π€Ö±•ëºËÄëÌïÕçÖ¡ï!—µ∞°ï……Ω»πµïÕÕÖùî•ıÄ∞Å—…’î§Ï(ÄÄÄÅÙ(ÄÅÙ((ÄÅô’πç—•Ω∏Å…ïπëï…A…ïŸ•ï‹†§ÅÏ(ÄÄÄÅ•òÄ†ÖÕ—Ö—îπë…Öô–§Å…ï—’…∏Ï(ÄÄÄÅçΩπÕ–ÅêÄÙÅÕ—Ö—îπë…Öô–Ï(ÄÄÄÅçΩπÕ–ÅâΩë‰ÄÙÅâÂ%ê†ùâ’•±ëï…X…A…ïŸ•ï›	Ωë‰ú§Ï(ÄÄÄÅ•òÄ†ÖâΩë‰§Å…ï—’…∏Ï(ÄÄÄÅâΩë‰π•ππï…!Q50ÄÙÅÄ(ÄÄÄÄÄÄÒë•ÿÅç±ÖÕÃÙââ’•±ëï»µÿ»µ¡…ïŸ•ï‹µ°ï…ºà¯ëÌêπµïë•Ñ¸π°ï…Ω%µÖùîÄ¸ÅÄÒ•µúÅç±ÖÕÃÙââ’•±ëï»µÿ»µ¡…ïŸ•ï‹µ•µÖùîàÅÕ…åÙàëÌïÕçÖ¡ï!—µ∞°êπµïë•Ñπ°ï…Ω%µÖùî•ÙàÅÖ±–Ùàà˘ÄÄËÄúùÙÒë•ÿ¯ÒÕµÖ±∞¯ëÌïÕçÖ¡ï!—µ∞°êπ•ëïπ—•—‰¸πïŸïπ—QÂ¡îÅÒÄùÖÕÖµïπ—ºú•ÙΩÕµÖ±∞¯Ò†»¯ëÌïÕçÖ¡ï!—µ∞°êπ¡ïΩ¡±î¸πë•Õ¡±ÖÂ9ÖµïÃÅÒÅêπ¡ïΩ¡±î¸πçΩ’¡±ï9ÖµïÃÅÒÄù9ΩµîÅëºÅçÖÕÖ∞ú•ÙΩ†»¯Ò¿¯ëÌïÕçÖ¡ï!—µ∞°êπïŸïπ–¸πëÖ—ï1Öâï∞ÅÒÅêπïŸïπ–¸πëÖ—ï%M<ÅÒÄùÖ—ÑÅ¡Ω»Åëïô•π•»ú•ÙΩ¿¯Ωë•ÿ¯Ωë•ÿ¯(ÄÄÄÄÄÄëÌêπïŸïπ–¸πŸï…ÕîÄ¸ÅÄÒâ±Ωç≠≈’Ω—î¯ëÌïÕçÖ¡ï!—µ∞°êπïŸïπ–πŸï…Õî•ÙëÌêπïŸïπ–¸πŸï…ÕïIïôï…ïπçîÄ¸ÅÄÒç•—î¯ëÌïÕçÖ¡ï!—µ∞°êπïŸïπ–πŸï…ÕïIïôï…ïπçî•ÙΩç•—î˘ÄÄËÄúùÙΩâ±Ωç≠≈’Ω—î˘ÄÄËÄúùÙ(ÄÄÄÄÄÄÒë•ÿÅç±ÖÕÃÙââ’•±ëï»µÿ»µ¡…ïŸ•ï‹µù…•êà¯ëÏ°êπÕç°ïë’±îÅÒÅmt§πµÖ¿°•—ï¥ÄÙ¯ÅÄÒÖ…—•ç±î¯ÒÕµÖ±∞¯ëÌïÕçÖ¡ï!—µ∞°•—ï¥π—•µîÅÒÄúú•ÙΩÕµÖ±∞¯ÒÕ—…Ωπú¯ëÌïÕçÖ¡ï!—µ∞°•—ï¥π—•—±îÅÒÄúú•ÙΩÕ—…Ωπú¯ÒÕ¡Ö∏¯ëÌïÕçÖ¡ï!—µ∞°•—ï¥πŸïπ’îÅÒÄúú•ÙΩÕ¡Ö∏¯ΩÖ…—•ç±î˘Ä§π©Ω•∏†úú•ÙΩë•ÿ¯(ÄÄÄÄÄÄëÌêπÕ—Ω…‰¸π—ï·–Ä¸ÅÄÒÕïç—•Ω∏Åç±ÖÕÃÙââ’•±ëï»µÿ»µ¡…ïŸ•ï‹µçΩ¡‰à¯Ò†Ã¯ëÌïÕçÖ¡ï!—µ∞°êπÕ—Ω…‰π—•—±îÅÒÄùÅ9ΩÕÕÑÅ!•Õ”Õ…•Ñú•ÙΩ†Ã¯Ò¿¯ëÌïÕçÖ¡ï!—µ∞°êπÕ—Ω…‰π—ï·–•ÙΩ¿¯ΩÕïç—•Ω∏˘ÄÄËÄúùÙ(ÄÄÄÄÄÄÒë•ÿÅç±ÖÕÃÙââ’•±ëï»µÿ»µ¡…ïŸ•ï‹µôΩΩ—ï»à¯ÒÕ¡Ö∏˘A…ïŸ•ï‹Åïë•—Ω…•Ö∞ÅëºÅ…Öô–É
-‹ÅªçºÉ§ÅºÅ!Q50Å√Èâ±•çºΩÕ¡Ö∏¯ÒÕ¡Ö∏¯ëÌÕ—Ö—îπë•…—‰Ä¸Äù±—ï…áü’ïÃÅ±ΩçÖ•ÃÅ¡Ω»Åù’Ö…ëÖ»úÄËÅÅ…Öô–ÄëÌïÕçÖ¡ï!—µ∞°Õ—Ö—îπë…Öô—IïŸ•Õ•Ω∏•ıÅÙΩÕ¡Ö∏¯Ωë•ÿ˘ÄÏ(ÄÄÄÅΩ¡ïπ5ΩëÖ∞†ùâ’•±ëï…X…A…ïŸ•ï›5ΩëÖ∞ú§Ï(ÄÄÄÅ…ïô…ïÕ°%çΩπÃ†§Ï(ÄÅÙ((ÄÅô’πç—•Ω∏ÅÖëëMç°ïë’±î†§ÅÏ(ÄÄÄÅÕ—Ö—îπë…Öô–πÕç°ïë’±îÄÙÅ……Ö‰π•Õ……Ö‰°Õ—Ö—îπë…Öô–πÕç°ïë’±î§Ä¸ÅÕ—Ö—îπë…Öô–πÕç°ïë’±îÄËÅmtÏ(ÄÄÄÅÕ—Ö—îπë…Öô–πÕç°ïë’±îπ¡’Õ†°ÏÅ•êÈÅÕç°ïë’±î¥ëÌÖ—îππΩ‹†•ıÄ∞Å—Â¡îËùÖëë•—•ΩπÖ∞ú∞Å—•—±îËúú∞Å—•µîËúú∞ÅŸïπ’îËúú∞ÅµÖ¡U…∞Ëúú∞ÅπΩ—îËúúÅÙ§Ï(ÄÄÄÅµÖ…≠•…—‰†§ÏÅ…ïπëï…Mç°ïë’±î†§Ï(ÄÅÙ((ÄÅô’πç—•Ω∏ÅÖëë°Ö¡—ï»†§ÅÏ(ÄÄÄÅÕ—Ö—îπë…Öô–πÕ—Ω…‰πç°Ö¡—ï…ÃÄÙÅ……Ö‰π•Õ……Ö‰°Õ—Ö—îπë…Öô–πÕ—Ω…‰πç°Ö¡—ï…Ã§Ä¸ÅÕ—Ö—îπë…Öô–πÕ—Ω…‰πç°Ö¡—ï…ÃÄËÅmtÏ(ÄÄÄÅÕ—Ö—îπë…Öô–πÕ—Ω…‰πç°Ö¡—ï…Ãπ¡’Õ†°ÏÅ•êÈÅç°Ö¡—ï»¥ëÌÖ—îππΩ‹†•ıÄ∞Å—•—±îËúú∞Å—ï·–ËúúÅÙ§Ï(ÄÄÄÅµÖ…≠•…—‰†§ÏÅ…ïπëï…°Ö¡—ï…Ã†§Ï(ÄÅÙ((ÄÅô’πç—•Ω∏Åâ•πëŸïπ—Ã†§ÅÏ(ÄÄÄÅâÂ%ê†ùâ’•±ëï…X…%πŸ•—ïMï±ïç–ú§¸πÖëëŸïπ—1•Õ—ïπï»†ùç°Öπùîú∞Ä†§ÄÙ¯Å±ΩÖëΩπ—ïπ–†§§Ï((ÄÄÄÅâÂ%ê°A91}1}%§¸πÖëëŸïπ—1•Õ—ïπï»†ù•π¡’–ú∞ÅïŸïπ–ÄÙ¯ÅÏ(ÄÄÄÄÄÅçΩπÕ–Å•π¡’–ÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µ¡Ö—°tú§Ï(ÄÄÄÄÄÅ•òÄ°•π¡’–§Å…ï—’…∏Å…ïÖëMçÖ±Ö…%π¡’–°•π¡’–§Ï(ÄÄÄÄÄÅçΩπÕ–Å—Ωùù±îÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µ—Ωùù±îµ¡Ö—°tú§Ï(ÄÄÄÄÄÅ•òÄ°—Ωùù±î§ÅÏÅÕï—AÖ—†°Õ—Ö—îπë…Öô–∞Å—Ωùù±îπëÖ—ÖÕï–πâ’•±ëï…QΩùù±ïAÖ—†∞ÅâΩΩ∞°—Ωùù±îπç°ïç≠ïê§§ÏÅµÖ…≠•…—‰†§ÏÅ…ï—’…∏ÏÅÙ(ÄÄÄÄÄÅçΩπÕ–ÅÕç°ïë’±ï•ï±êÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µÕç°ïë’±îµ¡Ö—°tú§Ï(ÄÄÄÄÄÅ•òÄ°Õç°ïë’±ï•ï±ê§ÅÏ(ÄÄÄÄÄÄÄÅçΩπÕ–Å…Ω‹ÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µÕç°ïë’±ïtú§Ï(ÄÄÄÄÄÄÄÅçΩπÕ–Å•πëï‡ÄÙÅ9’µâï»°…Ω‹¸πëÖ—ÖÕï–πâ’•±ëï…Mç°ïë’±î§Ï(ÄÄÄÄÄÄÄÅ•òÄ°9’µâï»π•Õ%π—ïùï»°•πëï‡§ÄòòÅÕ—Ö—îπë…Öô–πÕç°ïë’±ïm•πëï·t§ÅÏÅÕ—Ö—îπë…Öô–πÕç°ïë’±ïm•πëï·umÕç°ïë’±ï•ï±êπëÖ—ÖÕï–πâ’•±ëï…Mç°ïë’±ïAÖ—°tÄÙÅÕç°ïë’±ï•ï±êπŸÖ±’îÏÅµÖ…≠•…—‰†§ÏÅÙ(ÄÄÄÄÄÄÄÅ…ï—’…∏Ï(ÄÄÄÄÄÅÙ(ÄÄÄÄÄÅçΩπÕ–Åç°Ö¡—ï…•ï±êÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µç°Ö¡—ï»µ¡Ö—°tú§Ï(ÄÄÄÄÄÅ•òÄ°ç°Ö¡—ï…•ï±ê§ÅÏ(ÄÄÄÄÄÄÄÅçΩπÕ–Å…Ω‹ÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µç°Ö¡—ï…tú§Ï(ÄÄÄÄÄÄÄÅçΩπÕ–Å•πëï‡ÄÙÅ9’µâï»°…Ω‹¸πëÖ—ÖÕï–πâ’•±ëï…°Ö¡—ï»§Ï(ÄÄÄÄÄÄÄÅ•òÄ°9’µâï»π•Õ%π—ïùï»°•πëï‡§ÄòòÅÕ—Ö—îπë…Öô–πÕ—Ω…‰πç°Ö¡—ï…Õm•πëï·t§ÅÏÅÕ—Ö—îπë…Öô–πÕ—Ω…‰πç°Ö¡—ï…Õm•πëï·umç°Ö¡—ï…•ï±êπëÖ—ÖÕï–πâ’•±ëï…°Ö¡—ï…AÖ—°tÄÙÅç°Ö¡—ï…•ï±êπŸÖ±’îÏÅµÖ…≠•…—‰†§ÏÅÙ(ÄÄÄÄÄÅÙ(ÄÄÄÅÙ§Ï((ÄÄÄÅëΩç’µïπ–πÖëëŸïπ—1•Õ—ïπï»†ùç±•ç¨ú∞ÅïŸïπ–ÄÙ¯ÅÏ(ÄÄÄÄÄÅçΩπÕ–Å—ÖàÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µÿ»µ—Öâtú§Ï(ÄÄÄÄÄÅ•òÄ°—Öà§Å…ï—’…∏ÅÖç—•ŸÖ—ïQÖà°—ÖàπëÖ—ÖÕï–πâ’•±ëï…X…QÖà§Ï(ÄÄÄÄÄÅçΩπÕ–Åç±ΩÕîÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µÿ»µç±ΩÕïtú§Ï(ÄÄÄÄÄÅ•òÄ°ç±ΩÕî§Å…ï—’…∏Åç±ΩÕï5ΩëÖ∞°ç±ΩÕîπëÖ—ÖÕï–πâ’•±ëï…X…±ΩÕî§Ï(ÄÄÄÄÄÅçΩπÕ–Å…ïµΩŸïMç°ïë’±îÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µÿ»µ…ïµΩŸîµÕç°ïë’±ïtú§Ï(ÄÄÄÄÄÅ•òÄ°…ïµΩŸïMç°ïë’±îÄòòÅÕ—Ö—îπë…Öô–§ÅÏ(ÄÄÄÄÄÄÄÅÕ—Ö—îπë…Öô–πÕç°ïë’±îπÕ¡±•çî°9’µâï»°…ïµΩŸïMç°ïë’±îπëÖ—ÖÕï–πâ’•±ëï…X…IïµΩŸïMç°ïë’±î§∞Äƒ§ÏÅµÖ…≠•…—‰†§ÏÅ…ïπëï…Mç°ïë’±î†§ÏÅ…ï—’…∏Ï(ÄÄÄÄÄÅÙ(ÄÄÄÄÄÅçΩπÕ–Å…ïµΩŸï°Ö¡—ï»ÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µÿ»µ…ïµΩŸîµç°Ö¡—ï…tú§Ï(ÄÄÄÄÄÅ•òÄ°…ïµΩŸï°Ö¡—ï»ÄòòÅÕ—Ö—îπë…Öô–§ÅÏ(ÄÄÄÄÄÄÄÅÕ—Ö—îπë…Öô–πÕ—Ω…‰πç°Ö¡—ï…ÃπÕ¡±•çî°9’µâï»°…ïµΩŸï°Ö¡—ï»πëÖ—ÖÕï–πâ’•±ëï…X…IïµΩŸï°Ö¡—ï»§∞Äƒ§ÏÅµÖ…≠•…—‰†§ÏÅ…ïπëï…°Ö¡—ï…Ã†§ÏÅ…ï—’…∏Ï(ÄÄÄÄÄÅÙ(ÄÄÄÄÄÅçΩπÕ–Å…Ω±±âÖç¨ÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µÿ»µ…Ω±±âÖç≠tú§Ï(ÄÄÄÄÄÅ•òÄ°…Ω±±âÖç¨§Å…ï—’…∏Å…Ω±±âÖç≠IïŸ•Õ•Ω∏°…Ω±±âÖç¨πëÖ—ÖÕï–πâ’•±ëï…X…IΩ±±âÖç¨§Ï(ÄÄÄÄÄÅçΩπÕ–ÅÖç—•Ω∏ÄÙÅïŸïπ–π—Ö…ùï–πç±ΩÕïÕ–†ùmëÖ—Ñµâ’•±ëï»µÿ»µÖç—•Ωπtú§¸πëÖ—ÖÕï–πâ’•±ëï…X…ç—•Ω∏Ï(ÄÄÄÄÄÅ•òÄ†ÖÖç—•Ω∏§Å…ï—’…∏Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄù…ï±ΩÖêú§Å…ï—’…∏Å±ΩÖëΩπ—ïπ–†§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄùÕÖŸîú§Å…ï—’…∏ÅÕÖŸï…Öô–†§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄùŸÖ±•ëÖ—îú§Å…ï—’…∏ÅŸÖ±•ëÖ—ï…Öô–†ù¡’â±•Õ†ú§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄù¡…ïŸ•ï‹ú§Å…ï—’…∏Å…ïπëï…A…ïŸ•ï‹†§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄù¡’â±•Õ†ú§Å…ï—’…∏Å¡’â±•Õ°…Öô–†§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄùÕç°ïë’±îµÖëêú§Å…ï—’…∏ÅÖëëMç°ïë’±î†§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄùç°Ö¡—ï»µÖëêú§Å…ï—’…∏ÅÖëë°Ö¡—ï»†§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄù©ÕΩ∏µ…ïô…ïÕ†ú§Å…ï—’…∏ÅÕÂπçëŸÖπçïë)ÕΩ∏†§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄù©ÕΩ∏µÖ¡¡±‰ú§Å…ï—’…∏ÅÖ¡¡±ÂëŸÖπçïë)ÕΩ∏†§Ï(ÄÄÄÄÄÅ•òÄ°Öç—•Ω∏ÄÙÙÙÄù…ïŸ•Õ•ΩπÃú§Å…ï—’…∏Å±ΩÖëIïŸ•Õ•ΩπÃ†§Ï(ÄÄÄÅÙ§Ï((ÄÄÄÅëΩç’µïπ–πÖëëŸïπ—1•Õ—ïπï»†ù≠ïÂëΩ›∏ú∞ÅïŸïπ–ÄÙ¯ÅÏ(ÄÄÄÄÄÅ•òÄ°ïŸïπ–π≠ï‰ÄÙÙÙÄùÕçÖ¡îú§Åç±ΩÕï5ΩëÖ∞†ùâ’•±ëï…X…A…ïŸ•ï›5ΩëÖ∞ú§Ï(ÄÄÄÅÙ§Ï(ÄÅÙ((ÄÅô’πç—•Ω∏Å•π•—	’•±ëï…X…U§†§ÅÏ(ÄÄÄÅïπÕ’…ïAÖπï±ïô•π•—•Ω∏†§Ï(ÄÄÄÅïπÕ’…ïAÖπï∞†§Ï(ÄÄÄÅïπÕ’…ï5ΩëÖ∞†§Ï(ÄÄÄÅïπÕ’…ï9ÖŸ•ùÖ—•Ω∏†§Ï(ÄÄÄÅÕÂπç%πŸ•—ï=¡—•ΩπÃ†§Ï(ÄÄÄÅâ•πëŸïπ—Ã†§Ï(ÄÄÄÅ…ïπëï…5Ωëî†§Ï(ÄÄÄÅ…ïô…ïÕ°%çΩπÃ†§Ï(ÄÄÄÅÕï—Q•µïΩ’–°ÕÂπç%πŸ•—ï=¡—•ΩπÃ∞Ä‰¿¿§Ï(ÄÅÙ((ÄÅ•òÄ°ëΩç’µïπ–π…ïÖëÂM—Ö—îÄÙÙÙÄù±ΩÖë•πúú§ÅëΩç’µïπ–πÖëëŸïπ—1•Õ—ïπï»†ù=5Ωπ—ïπ—1ΩÖëïêú∞Å•π•—	’•±ëï…X…U§∞ÅÏÅΩπçîÈ—…’îÅÙ§Ï(ÄÅï±ÕîÅ•π•—	’•±ëï…X…U§†§Ï)Ù§†§Ï(
+    const value = getPath(state.draft, path);
+    const common = `data-builder-path="${escapeHtml(path)}" ${options.readonly ? 'readonly' : ''}`;
+    let control;
+    if (type === 'textarea') {
+      control = `<textarea ${common} placeholder="${escapeHtml(options.placeholder || '')}">${escapeHtml(value || '')}</textarea>`;
+    } else if (type === 'select') {
+      control = `<select ${common}>${(options.items || []).map(item => {
+        const itemValue = typeof item === 'string' ? item : item.value;
+        const itemLabel = typeof item === 'string' ? item : item.label;
+        return `<option value="${escapeHtml(itemValue)}" ${String(value) === String(itemValue) ? 'selected' : ''}>${escapeHtml(itemLabel)}</option>`;
+      }).join('')}</select>`;
+    } else {
+      control = `<input ${common} type="${escapeHtml(type)}" value="${escapeHtml(value ?? '')}" ${options.min != null ? `min="${escapeHtml(options.min)}"` : ''} placeholder="${escapeHtml(options.placeholder || '')}">`;
+    }
+    return `<div class="field ${options.span ? 'builder-span-2' : ''}"><label>${escapeHtml(label)}</label>${control}${options.hint ? `<small class="hint">${escapeHtml(options.hint)}</small>` : ''}</div>`;
+  };
+
+  function tabDefinitions() {
+    return [
+      ['identity', 'Identidade'], ['event', 'Evento'], ['story', 'Hist√≥ria'], ['access', 'Acesso'],
+      ['features', 'Features'], ['media', 'Media & SEO'], ['advanced', 'Avan√ßado'], ['revisions', 'Revis√µes']
+    ];
+  }
+
+  function renderTabs() {
+    const tabs = $('builderV2Tabs');
+    if (!tabs) return;
+    tabs.innerHTML = tabDefinitions().map(([id, label]) => `<button class="builder-v2-tab ${state.activeTab === id ? 'active' : ''}" type="button" data-builder-tab="${id}">${label}</button>`).join('');
+  }
+
+  function renderSchedule() {
+    const list = state.draft.schedule || [];
+    return `<div id="builderV2Schedule" class="builder-v2-repeaters">${list.length ? list.map((item, index) => `
+      <article class="builder-v2-repeater"><div class="builder-v2-repeater-head"><strong>Momento ${index + 1}</strong><button class="btn small danger" type="button" data-builder-schedule-remove="${index}"><i data-feather="trash-2"></i> Remover</button></div>
+      <div class="builder-v2-form-grid">
+        ${scheduleField(index, 'T√≠tulo', 'title')}${scheduleField(index, 'Tipo', 'type')}${scheduleField(index, 'Hora', 'time')}${scheduleField(index, 'Local', 'venue')}${scheduleField(index, 'Mapa', 'mapUrl', true)}${scheduleField(index, 'Nota', 'note', true)}
+      </div></article>`).join('') : '<div class="builder-v2-empty-mini">Sem momentos na agenda. Adicione pelo menos um antes de publicar.</div>'}</div>
+      <div class="builder-v2-inline-actions"><button class="btn small" type="button" id="builderV2AddSchedule"><i data-feather="plus"></i> Adicionar momento</button></div>`;
+  }
+
+  function scheduleField(index, label, key, span = false) {
+    const value = state.draft.schedule[index]?.[key] || '';
+    return `<div class="field ${span ? 'builder-span-2' : ''}"><label>${escapeHtml(label)}</label><input data-builder-schedule-index="${index}" data-builder-schedule-key="${key}" value="${escapeHtml(value)}"></div>`;
+  }
+
+  function renderChapters() {
+    const list = state.draft.story.chapters || [];
+    return `<div class="builder-v2-repeaters">${list.length ? list.map((item, index) => `
+      <article class="builder-v2-repeater"><div class="builder-v2-repeater-head"><strong>Cap√≠tulo ${index + 1}</strong><button class="btn small danger" type="button" data-builder-chapter-remove="${index}"><i data-feather="trash-2"></i> Remover</button></div>
+      <div class="builder-v2-form-grid"><div class="field"><label>T√≠tulo</label><input data-builder-chapter-index="${index}" data-builder-chapter-key="title" value="${escapeHtml(item.title || '')}"></div><div class="field builder-span-2"><label>Texto</label><textarea data-builder-chapter-index="${index}" data-builder-chapter-key="text">${escapeHtml(item.text || '')}</textarea></div></div>
+      </article>`).join('') : '<div class="builder-v2-empty-mini">Sem cap√≠tulos estruturados.</div>'}</div>
+      <div class="builder-v2-inline-actions"><button class="btn small" type="button" id="builderV2AddChapter"><i data-feather="plus"></i> Adicionar cap√≠tulo</button></div>`;
+  }
+
+  function renderFeatureToggles() {
+    const labels = {
+      story: 'Hist√≥ria', gallery: 'Galeria', rsvp: 'RSVP', dressCode: 'Dress code', gifts: 'Presentes',
+      contributions: 'Contribui√ß√µes', messages: 'Mensagens', checkin: 'Check-in', capsule: 'C√°psula', guestInfo: 'Info do convidado', menu: 'Menu'
+    };
+    return `<div id="builderV2FeatureToggles" class="builder-v2-toggle-list">${Object.entries(labels).map(([key, label]) => `
+      <label class="builder-v2-toggle"><input type="checkbox" data-builder-feature="${key}" ${state.draft.features[key] ? 'checked' : ''}><span><strong>${escapeHtml(label)}</strong><small>Controla a disponibilidade desta sec√ß√£o no conte√∫do V2.</small></span></label>`).join('')}</div>`;
+  }
+
+  function renderRevisions() {
+    if (!state.revisions.length) return '<div class="builder-v2-empty-mini">Ainda n√£o existem revis√µes.</div>';
+    return `<div class="builder-v2-revisions">${state.revisions.map(revision => `
+      <article class="builder-v2-revision"><div><span class="builder-v2-stage ${escapeHtml(revision.stage)}">${escapeHtml(revision.stage)}</span><strong>Revis√£o ${escapeHtml(revision.revision)}</strong><small>${escapeHtml(revision.createdAt ? new Date(revision.createdAt).toLocaleString('pt-PT') : '')}</small><p>${escapeHtml(revision.note || '')}</p></div>
+      ${revision.stage === 'published' && adminIsAdmin() ? `<button class="btn small" type="button" data-builder-rollback="${escapeHtml(revision.revision)}"><i data-feather="rotate-ccw"></i> Restaurar para Draft</button>` : ''}</article>`).join('')}</div>`;
+  }
+
+  function renderActiveTab() {
+    const editor = $('builderV2Editor');
+    if (!editor || !state.draft) return;
+    let html = '';
+    if (state.activeTab === 'identity') html = `<section class="panel-card"><div class="panel-head"><h2><i data-feather="heart"></i> Identidade</h2></div><div class="panel-body builder-v2-form-grid">
+      ${field('Slug', 'identity.slug', { readonly: true })}${field('Pacote', 'identity.packageKey', { readonly: true })}${field('Template', 'identity.templateKey')}${field('Tipo de evento', 'identity.eventType')}${field('Idioma', 'identity.language')}${field('Nome do casal / evento', 'people.coupleNames')}${field('Nomes de exibi√ß√£o', 'people.displayNames')}${field('Noiva', 'people.bride')}${field('Noivo', 'people.groom')}${field('Monograma', 'people.monogram')}${field('Pais da noiva', 'people.brideParents', { span: true })}${field('Pais do noivo', 'people.groomParents', { span: true })}
+      </div></section>`;
+    if (state.activeTab === 'event') html = `<div class="builder-v2-two-col"><section class="panel-card"><div class="panel-head"><h2><i data-feather="calendar"></i> Evento</h2></div><div class="panel-body builder-v2-form-grid">
+      ${field('Data ISO', 'event.dateISO', { type: 'date' })}${field('Data por extenso', 'event.dateLabel')}${field('Timezone', 'event.timezone')}${field('Prazo RSVP', 'event.rsvpDeadline', { type: 'date' })}${field('Vers√≠culo', 'event.verse', { type: 'textarea', span: true })}${field('Refer√™ncia', 'event.verseReference')}${field('Nota do convite', 'event.invitationNote', { type: 'textarea', span: true })}
+      </div></section><section class="panel-card"><div class="panel-head"><h2><i data-feather="clock"></i> Agenda</h2></div><div class="panel-body">${renderSchedule()}</div></section></div>`;
+    if (state.activeTab === 'story') html = `<section class="panel-card"><div class="panel-head"><h2><i data-feather="book-open"></i> Hist√≥ria</h2></div><div class="panel-body builder-v2-form-grid">${field('T√≠tulo', 'story.title')}${field('Introdu√ß√£o', 'story.text', { type: 'textarea', span: true })}${field('Carta', 'story.letter', { type: 'textarea', span: true })}</div><div class="panel-body builder-v2-subsection">${renderChapters()}</div></section>`;
+    if (state.activeTab === 'access') html = `<div class="builder-v2-two-col"><section class="panel-card"><div class="panel-head"><h2><i data-feather="lock"></i> Acesso & RSVP</h2></div><div class="panel-body builder-v2-form-grid">
+      ${field('Modo de acesso', 'access.mode', { type: 'select', items: [{ value: 'nominal', label: 'Nominal' }, { value: 'open', label: 'Aberto' }] })}${field('M√°x. pessoas por RSVP', 'access.maxGuestsPerRsvp', { type: 'number', min: 1 })}
+      <label class="builder-v2-toggle builder-span-2"><input type="checkbox" data-builder-path="access.requireNameOnActions" ${state.draft.access.requireNameOnActions ? 'checked' : ''}><span><strong>Exigir nome nas ac√ß√µes</strong><small>Recomendado para convites abertos.</small></span></label>
+      <label class="builder-v2-toggle builder-span-2"><input type="checkbox" data-builder-path="access.allowCompanionName" ${state.draft.access.allowCompanionName ? 'checked' : ''}><span><strong>Permitir nome do acompanhante</strong><small>Usado quando o RSVP admite acompanhante.</small></span></label>
+      </div></section><section class="panel-card"><div class="panel-head"><h2><i data-feather="gift"></i> Presentes</h2></div><div class="panel-body builder-v2-form-grid">${field('Modo', 'gifts.mode', { type: 'select', items: ['none','catalog','quantity_contributions','monetary'] })}${field('Loja / refer√™ncia', 'gifts.store', { span: true })}<div class="builder-v2-readonly-note builder-span-2"><strong>Cat√°logo operacional separado.</strong> A lista/reservas continua gerida no painel Presentes. O Builder define apenas o comportamento da sec√ß√£o.</div></div></section></div>`;
+    if (state.activeTab === 'features') html = `<section class="panel-card"><div class="panel-head"><h2><i data-feather="sliders"></i> Features</h2></div><div class="panel-body">${renderFeatureToggles()}</div></section>`;
+    if (state.activeTab === 'media') html = `<div class="builder-v2-two-col"><section class="panel-card"><div class="panel-head"><h2><i data-feather="image"></i> Media</h2></div><div class="panel-body builder-v2-form-grid one-col">${field('Hero image', 'media.heroImage')}${field('Cover image', 'media.coverImage')}${field('Story image', 'media.storyImage')}${field('M√∫sica', 'media.musicUrl')}</div></section><section class="panel-card"><div class="panel-head"><h2><i data-feather="search"></i> SEO</h2></div><div class="panel-body builder-v2-form-grid one-col">${field('T√≠tulo SEO', 'seo.title')}${field('Descri√ß√£o SEO', 'seo.description', { type: 'textarea' })}${field('Imagem SEO', 'seo.image')}</div></section></div>`;
+    if (state.activeTab === 'advanced') html = `<section class="panel-card"><div class="panel-head"><h2><i data-feather="code"></i> JSON avan√ßado</h2></div><div class="panel-body"><div class="builder-v2-danger-note"><strong>√Årea avan√ßada.</strong> O JSON nunca √© publicado directamente. Aplicar aqui altera apenas o Draft local; depois √© obrigat√≥rio Guardar Draft e validar.</div><textarea id="builderV2Json" class="builder-v2-json">${escapeHtml(JSON.stringify(state.draft, null, 2))}</textarea><div class="builder-v2-inline-actions"><button class="btn" id="builderV2ApplyJson" type="button"><i data-feather="check"></i> Aplicar JSON ao Draft local</button></div></div></section>`;
+    if (state.activeTab === 'revisions') html = `<section class="panel-card"><div class="panel-head"><h2><i data-feather="clock"></i> Hist√≥rico</h2><button class="btn small" id="builderV2RefreshRevisions" type="button"><i data-feather="refresh-cw"></i> Actualizar</button></div><div class="panel-body">${renderRevisions()}</div></section>`;
+    editor.innerHTML = html;
+    bindDynamicControls();
+    refreshIcons();
+  }
+
+  function renderWorkspace() {
+    const ready = Boolean(state.draft);
+    $('builderV2Empty')?.classList.toggle('hidden', ready);
+    $('builderV2Workspace')?.classList.toggle('hidden', !ready);
+    renderStatus();
+    if (!ready) return;
+    renderTabs();
+    renderActiveTab();
+  }
+
+  function valueFromControl(control) {
+    if (control.type === 'checkbox') return control.checked;
+    if (control.type === 'number') return Math.max(1, Number(control.value) || 1);
+    return control.value;
+  }
+
+  function bindDynamicControls() {
+    document.querySelectorAll('#builderV2Editor [data-builder-path]').forEach(control => {
+      control.addEventListener('input', () => {
+        setPath(state.draft, control.dataset.builderPath, valueFromControl(control));
+        markDirty();
+      });
+      control.addEventListener('change', () => {
+        setPath(state.draft, control.dataset.builderPath, valueFromControl(control));
+        if (control.dataset.builderPath === 'access.mode') {
+          state.draft.access.rsvpIdentity = control.value === 'open' ? 'name' : 'guest_token';
+          if (control.value === 'nominal') {
+            state.draft.access.autoCreateGuestOnRsvp = false;
+            state.draft.access.autoCreateGuestOnGift = false;
+          }
+        }
+        markDirty();
+      });
+    });
+    document.querySelectorAll('#builderV2Editor [data-builder-feature]').forEach(control => control.addEventListener('change', () => {
+      state.draft.features[control.dataset.builderFeature] = control.checked;
+      markDirty();
+    }));
+    document.querySelectorAll('#builderV2Editor [data-builder-schedule-index]').forEach(control => control.addEventListener('input', () => {
+      const item = state.draft.schedule[Number(control.dataset.builderScheduleIndex)];
+      if (item) item[control.dataset.builderScheduleKey] = control.value;
+      markDirty();
+    }));
+    document.querySelectorAll('#builderV2Editor [data-builder-chapter-index]').forEach(control => control.addEventListener('input', () => {
+      const item = state.draft.story.chapters[Number(control.dataset.builderChapterIndex)];
+      if (item) item[control.dataset.builderChapterKey] = control.value;
+      markDirty();
+    }));
+    $('builderV2AddSchedule')?.addEventListener('click', () => {
+      state.draft.schedule.push({ id: '', type: 'item', title: '', time: '', venue: '', mapUrl: '', note: '' });
+      markDirty(); renderActiveTab();
+    });
+    document.querySelectorAll('[data-builder-schedule-remove]').forEach(button => button.addEventListener('click', () => {
+      state.draft.schedule.splice(Number(button.dataset.builderScheduleRemove), 1);
+      markDirty(); renderActiveTab();
+    }));
+    $('builderV2AddChapter')?.addEventListener('click', () => {
+      state.draft.story.chapters.push({ id: '', title: '', text: '' });
+      markDirty(); renderActiveTab();
+    });
+    document.querySelectorAll('[data-builder-chapter-remove]').forEach(button => button.addEventListener('click', () => {
+      state.draft.story.chapters.splice(Number(button.dataset.builderChapterRemove), 1);
+      markDirty(); renderActiveTab();
+    }));
+    $('builderV2ApplyJson')?.addEventListener('click', applyJsonDraft);
+    $('builderV2RefreshRevisions')?.addEventListener('click', loadRevisions);
+    document.querySelectorAll('[data-builder-rollback]').forEach(button => button.addEventListener('click', () => rollbackRevision(Number(button.dataset.builderRollback))));
+  }
+
+  async function loadContent(inviteId, options = {}) {
+    if (!inviteId) {
+      state.inviteId = ''; state.invite = null; state.draft = null; state.contentDoc = null; state.revisions = [];
+      renderWorkspace(); return;
+    }
+    state.loading = true; renderStatus(); setFeedback('A carregar conte√∫do...');
+    try {
+      const out = await adminApi(`/manager/invites/${encodeURIComponent(inviteId)}/content`);
+      const data = out.data || {};
+      state.inviteId = inviteId;
+      state.invite = data.invite || null;
+      state.contentDoc = data.content || null;
+      state.draft = ensureDraftShape(data.content?.draft || data.suggestedDraft || {});
+      state.draftRevision = Number(data.content?.draftRevision || 0);
+      state.publishedRevision = Number(data.content?.publishedRevision || 0);
+      state.validation = null;
+      state.dirty = false;
+      renderWorkspace();
+      await loadRevisions({ silent: true });
+      setFeedback(options.reload ? 'Conte√∫do recarregado.' : 'Conte√∫do carregado. Altera√ß√µes s√≥ s√£o persistidas ao Guardar Draft.');
+    } catch (error) {
+      state.draft = null;
+      renderWorkspace();
+      setFeedback(error.message || 'Falha ao carregar o conte√∫do.', true);
+    } finally {
+      state.loading = false; renderStatus();
+    }
+  }
+
+  async function loadRevisions(options = {}) {
+    if (!state.inviteId) return;
+    try {
+      const out = await adminApi(`/manager/invites/${encodeURIComponent(state.inviteId)}/content/revisions?limit=50`);
+      state.revisions = Array.isArray(out.data) ? out.data : [];
+      if (state.activeTab === 'revisions') renderActiveTab();
+    } catch (error) {
+      if (!options.silent) setFeedback(error.message || 'Falha ao carregar revis√µes.', true);
+    }
+  }
+
+  async function saveDraft() {
+    if (!state.inviteId || !state.draft) return setFeedback('Seleccione um convite primeiro.', true);
+    state.loading = true; renderStatus(); setFeedback('A guardar Draft...');
+    try {
+      const out = await adminApi(`/manager/invites/${encodeURIComponent(state.inviteId)}/content/draft`, {
+        method: 'PUT',
+        body: JSON.stringify({ expectedDraftRevision: state.draftRevision, content: state.draft, note: 'Guardado pelo Admin Manager Builder V2' })
+      });
+      const data = out.data || {};
+      state.contentDoc = data.content || state.contentDoc;
+      state.draft = ensureDraftShape(data.content?.draft || state.draft);
+      state.draftRevision = Number(data.content?.draftRevision || state.draftRevision + 1);
+      state.publishedRevision = Number(data.content?.publishedRevision || state.publishedRevision);
+      state.validation = data.validation || null;
+      state.dirty = false;
+      await loadRevisions({ silent: true });
+      renderWorkspace();
+      setFeedback(`Draft guardado. Revis√£o ${state.draftRevision}.`);
+      toast('Draft Builder V2 guardado.');
+    } catch (error) {
+      setFeedback(error.message || 'Falha ao guardar Draft.', true);
+    } finally { state.loading = false; renderStatus(); }
+  }
+
+  async function validateDraft() {
+    if (!state.inviteId || !state.draft) return setFeedback('Seleccione um convite primeiro.', true);
+    try {
+      const out = await adminApi(`/manager/invites/${encodeURIComponent(state.inviteId)}/content/validate`, {
+        method: 'POST', body: JSON.stringify({ stage: 'publish', content: state.draft })
+      });
+      const data = out.data || {};
+      state.validation = data;
+      const warnings = Array.isArray(data.warnings) && data.warnings.length ? ` Avisos: ${data.warnings.join(' ¬∑ ')}` : '';
+      setFeedback(data.valid ? `Valida√ß√£o para publica√ß√£o: PASS.${warnings}` : `Valida√ß√£o falhou: ${(data.errors || []).join(' ¬∑ ')}`, !data.valid);
+    } catch (error) { setFeedback(error.message || 'Falha na valida√ß√£o.', true); }
+  }
+
+  async function publishDraft() {
+    if (!adminIsAdmin()) return setFeedback('Publicar exige perfil Administrador.', true);
+    if (!state.draft) return setFeedback('Seleccione um convite primeiro.', true);
+    if (state.dirty) return setFeedback('Existem altera√ß√µes locais por guardar. Guarde o Draft antes de publicar.', true);
+    if (!window.confirm('Publicar o Draft guardado? Isto cria uma revis√£o publicada, mas n√£o activa automaticamente o renderer V2.')) return;
+    try {
+      const out = await adminApi(`/manager/invites/${encodeURIComponent(state.inviteId)}/content/publish`, {
+        method: 'POST', body: JSON.stringify({ expectedDraftRevision: state.draftRevision, note: 'Publicado pelo Admin Manager Builder V2' })
+      });
+      const data = out.data || {};
+      state.contentDoc = data.content || state.contentDoc;
+      state.publishedRevision = Number(data.content?.publishedRevision || state.publishedRevision);
+      await loadRevisions({ silent: true });
+      renderWorkspace();
+      setFeedback(data.activationNote || 'Conte√∫do publicado.');
+      toast('Conte√∫do Builder V2 publicado.');
+    } catch (error) { setFeedback(error.message || 'Falha ao publicar.', true); }
+  }
+
+  async function rollbackRevision(revision) {
+    if (!adminIsAdmin()) return setFeedback('Rollback exige perfil Administrador.', true);
+    if (state.dirty) return setFeedback('Existem altera√ß√µes locais por guardar. Guarde ou recarregue antes do rollback.', true);
+    if (!window.confirm(`Restaurar a revis√£o publicada ${revision} para o Draft? O conte√∫do p√∫blico n√£o ser√° alterado.`)) return;
+    try {
+      const out = await adminApi(`/manager/invites/${encodeURIComponent(state.inviteId)}/content/rollback`, {
+        method: 'POST', body: JSON.stringify({ revision, expectedDraftRevision: state.draftRevision })
+      });
+      const data = out.data || {};
+      state.contentDoc = data.content || state.contentDoc;
+      state.draft = ensureDraftShape(data.content?.draft || state.draft);
+      state.draftRevision = Number(data.content?.draftRevision || state.draftRevision + 1);
+      state.dirty = false;
+      await loadRevisions({ silent: true });
+      renderWorkspace();
+      setFeedback(data.note || `Revis√£o ${revision} restaurada para Draft.`);
+    } catch (error) { setFeedback(error.message || 'Falha no rollback.', true); }
+  }
+
+  function applyJsonDraft() {
+    const input = $('builderV2Json');
+    if (!input) return;
+    try {
+      const parsed = JSON.parse(input.value);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('O JSON deve representar um objecto.');
+      state.draft = ensureDraftShape(parsed);
+      markDirty();
+      setFeedback('JSON aplicado ao Draft local. Ainda precisa de Guardar Draft antes de validar/publicar.');
+      renderActiveTab();
+    } catch (error) { setFeedback(`JSON inv√°lido: ${error.message}`, true); }
+  }
+
+  function openPreview() {
+    if (!state.draft) return setFeedback('Seleccione um convite primeiro.', true);
+    const d = state.draft;
+    const body = $('builderV2PreviewBody');
+    if (!body) return;
+    const schedule = (d.schedule || []).map(item => `<article><small>${escapeHtml(item.time || item.type || '')}</small><strong>${escapeHtml(item.title || 'Momento')}</strong><span>${escapeHtml(item.venue || '')}</span></article>`).join('');
+    body.innerHTML = `
+      <div class="builder-v2-preview-hero">${d.media.heroImage ? `<img class="builder-v2-preview-image" src="${escapeHtml(d.media.heroImage)}" alt="">` : '<div class="builder-v2-preview-image"></div>'}<div><small>PREVIEW EDITORIAL</small><h2>${escapeHtml(d.people.displayNames || d.people.coupleNames || 'Convite')}</h2><p>${escapeHtml(d.event.dateLabel || d.event.dateISO || '')}</p></div></div>
+      ${d.event.verse ? `<blockquote>${escapeHtml(d.event.verse)}${d.event.verseReference ? `<cite>${escapeHtml(d.event.verseReference)}</cite>` : ''}</blockquote>` : ''}
+      <div class="builder-v2-preview-grid">${schedule || '<article><strong>Agenda ainda vazia</strong></article>'}</div>
+      ${d.story.text ? `<div class="builder-v2-preview-copy"><h3>${escapeHtml(d.story.title || 'A Nossa Hist√≥ria')}</h3><p>${escapeHtml(d.story.text)}</p></div>` : ''}
+      <div class="builder-v2-preview-footer"><span>Preview editorial do Draft ¬∑ n√£o √© o HTML p√∫blico</span><span>Draft ${escapeHtml(state.draftRevision)}</span></div>`;
+    const modal = $('builderV2PreviewModal');
+    modal?.classList.add('open'); modal?.setAttribute('aria-hidden', 'false');
+    refreshIcons();
+  }
+
+  function closeModal(id) {
+    const modal = $(id);
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function bindEvents() {
+    $('builderV2InviteSelect')?.addEventListener('change', async event => {
+      const next = event.target.value;
+      if (state.dirty && state.inviteId && next !== state.inviteId) {
+        const ok = window.confirm('Existem altera√ß√µes locais por guardar. Trocar de convite ir√° descart√°-las. Continuar?');
+        if (!ok) { event.target.value = state.inviteId; return; }
+      }
+      await loadContent(next);
+    });
+    $('builderV2ReloadBtn')?.addEventListener('click', () => {
+      if (!state.inviteId) return;
+      if (state.dirty && !window.confirm('Existem altera√ß√µes locais por guardar. Recarregar ir√° descart√°-las. Continuar?')) return;
+      loadContent(state.inviteId, { reload: true });
+    });
+    $('builderV2ValidateBtn')?.addEventListener('click', validateDraft);
+    $('builderV2PreviewBtn')?.addEventListener('click', openPreview);
+    $('builderV2SaveBtn')?.addEventListener('click', saveDraft);
+    $('builderV2PublishBtn')?.addEventListener('click', publishDraft);
+    document.addEventListener('click', event => {
+      const tab = event.target.closest('[data-builder-tab]');
+      if (tab) { state.activeTab = tab.dataset.builderTab; renderTabs(); renderActiveTab(); }
+      const close = event.target.closest('[data-builder-close]');
+      if (close) closeModal(close.dataset.builderClose);
+    });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeModal('builderV2PreviewModal'); });
+  }
+
+  function initBuilderV2() {
+    ensurePanelDefinition();
+    ensurePanel();
+    ensurePreviewModal();
+    ensureNavigation();
+    syncInviteOptions();
+    bindEvents();
+    renderWorkspace();
+    refreshIcons();
+    setTimeout(syncInviteOptions, 900);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initBuilderV2, { once: true });
+  else initBuilderV2();
+})();
