@@ -3,9 +3,10 @@
 // Exemplo: window.LIRANDZO_MANAGER_API_BASE = 'https://lirandzo-manager.onrender.com';
 window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
 
-// Módulo de gestão de presentes.
-// É carregado de forma idempotente e só acrescenta a interface do catálogo;
-// não activa automaticamente o modo MongoDB em nenhum convite existente.
+// Módulos incrementais do AdminManager.
+// Preserva literalmente o loader histórico de Presentes e acrescenta o
+// Builder V2 de forma separada e idempotente. Nenhum destes loaders activa
+// automaticamente modos de produção.
 (() => {
   const MODULE_ATTR = 'data-lirandzo-module';
   const MODULE_VALUE = 'gifts';
@@ -19,9 +20,29 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
     document.body.appendChild(script);
   };
 
+  const loadBuilderV2 = () => {
+    if (!document.querySelector(`link[${MODULE_ATTR}="builder-v2-css"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'adminmanager-builder-v2.css';
+      link.setAttribute(MODULE_ATTR, 'builder-v2-css');
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector(`script[${MODULE_ATTR}="builder-v2"]`)) {
+      const script = document.createElement('script');
+      script.src = 'adminmanager-builder-v2.js';
+      script.defer = true;
+      script.setAttribute(MODULE_ATTR, 'builder-v2');
+      document.body.appendChild(script);
+    }
+  };
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadGiftManager, { once: true });
+    document.addEventListener('DOMContentLoaded', loadBuilderV2, { once: true });
   } else {
     loadGiftManager();
+    loadBuilderV2();
   }
 })();
