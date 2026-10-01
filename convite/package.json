@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "check": "node --check server.js && node --check gift-catalog-mode.js && node --check gift-catalog-admin.js && node --check adminmanager-gifts.js && node --check adminmanager-operator.js && node --check builder-v2/invite-content-v2.js && node --check builder-v2/template-registry-v2.js && node --check builder-v2/form-submission-v2.js && node --check builder-v2/mongo-models-v2.js && node tools/check-adminmanager-inline.js && node --check builder-v2/content-api-v2.js && node --check tools/apply-builder-v2-foundation2.js && node --check adminmanager-builder-v2.js && node --check builder-v2/legacy-bootstrap-v2.js && node --check tools/rosalina-builder-v2-bootstrap-dry-run.js",
+    "check": "node --check server.js && node --check gift-catalog-mode.js && node --check gift-catalog-admin.js && node --check adminmanager-gifts.js && node --check adminmanager-operator.js && node --check builder-v2/invite-content-v2.js && node --check builder-v2/template-registry-v2.js && node --check builder-v2/form-submission-v2.js && node --check builder-v2/mongo-models-v2.js && node tools/check-adminmanager-inline.js && node --check builder-v2/content-api-v2.js && node --check tools/apply-builder-v2-foundation2.js && node --check adminmanager-builder-v2.js && node --check builder-v2/legacy-bootstrap-v2.js && node --check tools/rosalina-builder-v2-bootstrap-dry-run.js && node --check tools/rosalina-builder-v2-bootstrap-db.js",
     "test:bot": "node tests/operator-v8.test.js",
     "test:gifts": "node --test tests/gifts-catalog.test.js",
     "test:gifts-admin": "node --test tests/gifts-admin.test.js",
@@ -15,7 +15,8 @@
     "test:builder-v2-api": "node --test tests/builder-v2-foundation2.test.js",
     "test:builder-v2-ui": "node --test tests/builder-v2-ui.test.js",
     "test:builder-v2-bootstrap": "node --test tests/builder-v2-legacy-bootstrap.test.js",
-    "dry-run:rosalina-bootstrap": "node tools/rosalina-builder-v2-bootstrap-dry-run.js"
+    "dry-run:rosalina-bootstrap": "node tools/rosalina-builder-v2-bootstrap-dry-run.js",
+    "check:rosalina-bootstrap-db": "node tools/rosalina-builder-v2-bootstrap-db.js"
   },
   "engines": {
     "node": ">=18"
