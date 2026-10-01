@@ -28,8 +28,14 @@ const TEMPLATE_REGISTRY = Object.freeze({
     accessModes: ['nominal','open'],
     capabilities: ['story','gallery','rsvp','dressCode','gifts','contributions','messages','checkin','capsule','guestInfo','menu']
   },
+  'esmeralda-rosalina': {
+    key: 'esmeralda-rosalina', packageKey: 'esmeralda', path: 'convite/templates/rubi-rosalina', label: 'Esmeralda · Rosalina',
+    accessModes: ['nominal'],
+    capabilities: ['story','gallery','rsvp','dressCode','gifts','contributions','messages','checkin','capsule','guestInfo','menu'],
+    legacyPathAlias: true
+  },
   'rubi-rosalina': {
-    key: 'rubi-rosalina', packageKey: 'rubi', path: 'convite/templates/rubi-rosalina', label: 'Rubi · Rosalina',
+    key: 'rubi-rosalina', packageKey: 'rubi', path: 'convite/templates/rubi-rosalina', label: 'Rubi · Rosalina · legado',
     accessModes: ['nominal'],
     capabilities: ['story','gallery','rsvp','dressCode','gifts','contributions','messages','checkin','capsule','guestInfo','menu']
   }
