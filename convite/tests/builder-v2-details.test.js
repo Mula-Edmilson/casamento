@@ -41,7 +41,9 @@ test('Builder detalhes: preserva chaves desconhecidas dos itens ao editar', () =
 
 test('config: carrega extensão de detalhes depois do Builder principal', () => {
   assert.match(config, /adminmanager-builder-v2-details\.js/);
-  assert.match(config, /script\.addEventListener\('load', loadBuilderDetails/);
+  assert.match(config, /const loadBuilderExtras = \(\) => \{/);
+  assert.match(config, /loadBuilderDetails\(\);/);
+  assert.match(config, /script\.addEventListener\('load', loadBuilderExtras/);
   assert.match(config, /builder-v2-details/);
 });
 
