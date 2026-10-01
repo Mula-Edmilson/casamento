@@ -90,7 +90,7 @@ try {
 
 Write-Host ''
 Write-Host 'A validar diff...'
-Invoke-Checked 'git' @('-C', $RepoRoot, 'diff', '--check')
+Invoke-Checked 'git' @('-c', 'core.whitespace=cr-at-eol', '-C', $RepoRoot, 'diff', '--check')
 
 $changedFiles = @(& git -C $RepoRoot diff --name-only)
 if ($LASTEXITCODE -ne 0) { throw 'git diff --name-only falhou.' }
@@ -109,7 +109,7 @@ if ($missing.Count -gt 0) {
 Write-Host 'Diff limitado a server.js + package.json: PASS'
 
 Invoke-Checked 'git' @('-C', $RepoRoot, 'add', '--', 'convite/server.js', 'convite/package.json')
-Invoke-Checked 'git' @('-C', $RepoRoot, 'diff', '--cached', '--check')
+Invoke-Checked 'git' @('-c', 'core.whitespace=cr-at-eol', '-C', $RepoRoot, 'diff', '--cached', '--check')
 
 $staged = @(& git -C $RepoRoot diff --cached --name-only)
 if ($LASTEXITCODE -ne 0) { throw 'git diff --cached falhou.' }
