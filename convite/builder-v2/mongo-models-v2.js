@@ -60,4 +60,19 @@ function createBuilderV2Schemas(mongoose) {
   return { InviteContentSchema, InviteContentRevisionSchema, FormSubmissionSchema };
 }
 
-module.exports = { INVITE_CONTENT_STAGES, FORM_SUBMISSION_STATUSES, createBuilderV2Schemas };
+function createBuilderV2Models(mongoose) {
+  if (!mongoose || typeof mongoose.model !== 'function') throw new Error('mongoose é obrigatório.');
+  const schemas = createBuilderV2Schemas(mongoose);
+  return {
+    InviteContent: mongoose.models.InviteContent || mongoose.model('InviteContent', schemas.InviteContentSchema),
+    InviteContentRevision: mongoose.models.InviteContentRevision || mongoose.model('InviteContentRevision', schemas.InviteContentRevisionSchema),
+    FormSubmission: mongoose.models.FormSubmission || mongoose.model('FormSubmission', schemas.FormSubmissionSchema)
+  };
+}
+
+module.exports = {
+  INVITE_CONTENT_STAGES,
+  FORM_SUBMISSION_STATUSES,
+  createBuilderV2Schemas,
+  createBuilderV2Models
+};
