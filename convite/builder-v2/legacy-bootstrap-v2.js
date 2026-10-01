@@ -9,6 +9,26 @@ function clone(value) {
   return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 }
 
+function normalizeFallbackScheduleOrder(draft, event = {}) {
+  const hasExplicitProgram = Array.isArray(event.program) && event.program.length;
+  const hasExplicitSchedule = Array.isArray(event.scheduleItems) && event.scheduleItems.length;
+  if (hasExplicitProgram || hasExplicitSchedule || !draft || !Array.isArray(draft.schedule)) return draft;
+
+  // Os campos legacy separados representam esta sequência editorial:
+  // cerimónia -> recepção/civil -> momento adicional -> celebração.
+  // Não alteramos program/scheduleItems explícitos, onde a ordem da fonte é autoritativa.
+  const rank = { religious: 0, reception: 1, additional: 2, celebration: 3 };
+  draft.schedule = draft.schedule
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => {
+      const ra = Object.prototype.hasOwnProperty.call(rank, a.item && a.item.type) ? rank[a.item.type] : 100;
+      const rb = Object.prototype.hasOwnProperty.call(rank, b.item && b.item.type) ? rank[b.item.type] : 100;
+      return ra - rb || a.index - b.index;
+    })
+    .map(entry => entry.item);
+  return draft;
+}
+
 function buildLegacyBootstrapDraft({ inviteMeta, seedData, templateKey = '' } = {}) {
   if (!inviteMeta || typeof inviteMeta !== 'object') throw new Error('inviteMeta é obrigatório.');
   if (!seedData || typeof seedData !== 'object') throw new Error('seedData é obrigatório.');
@@ -35,6 +55,8 @@ function buildLegacyBootstrapDraft({ inviteMeta, seedData, templateKey = '' } = 
     contentMode: 'legacy',
     rendererVersion: 'v1'
   });
+
+  normalizeFallbackScheduleOrder(draft, source.event);
 
   // Bootstrap nunca activa o renderer V2. A activação é uma fase separada.
   draft.runtime.contentMode = 'legacy';
@@ -83,5 +105,6 @@ function auditLegacyBootstrapDraft({ inviteMeta, seedData, draft } = {}) {
 
 module.exports = {
   buildLegacyBootstrapDraft,
-  auditLegacyBootstrapDraft
+  auditLegacyBootstrapDraft,
+  normalizeFallbackScheduleOrder
 };
