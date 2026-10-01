@@ -8,6 +8,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const ui = read('adminmanager-builder-v2.js');
+const previewAssets = read('adminmanager-builder-v2-preview-assets.js');
 const css = read('adminmanager-builder-v2.css');
 const config = read('adminmanager.config.js');
 const admin = read('adminmanager.html');
@@ -71,6 +72,19 @@ test('UI: preview é explicitamente editorial e não público', () => {
   assert.match(ui, /Preview editorial do Draft · não é o HTML público/);
 });
 
+test('UI: preview resolve media relativa dentro da pasta do convite seleccionado', () => {
+  assert.match(previewAssets, /function currentInviteSlug\(\)/);
+  assert.match(previewAssets, /const relative = alreadyScoped \? clean : `\$\{slug\}\/\$\{clean\}`/);
+  assert.match(previewAssets, /new URL\(relative, document\.baseURI\)\.href/);
+  assert.match(previewAssets, /img\.builder-v2-preview-image\[src\]/);
+});
+
+test('UI: preview preserva URLs absolutas e caminhos root-relative', () => {
+  assert.match(previewAssets, /https\?:\|data:\|blob:/);
+  assert.match(previewAssets, /raw\.startsWith\('\/\/'\)/);
+  assert.match(previewAssets, /raw\.startsWith\('\/'\)/);
+});
+
 test('UI: editor estruturado cobre identidade, evento, agenda, acesso, features, media e SEO', () => {
   for (const pathName of [
     'people.coupleNames','event.dateISO','access.mode','media.heroImage','seo.title','gifts.mode'
@@ -102,6 +116,12 @@ test('config: carrega Builder V2 JS e CSS de forma idempotente', () => {
   assert.match(config, /document\.querySelector\(`link\[\$\{MODULE_ATTR\}=/);
 });
 
+test('config: carrega o resolver de media do preview depois do Builder', () => {
+  assert.match(config, /adminmanager-builder-v2-preview-assets\.js/);
+  assert.match(config, /loadBuilderPreviewAssets/);
+  assert.match(config, /script\.addEventListener\('load', loadBuilderExtras/);
+});
+
 test('config: continua a carregar o gestor de presentes', () => {
   assert.match(config, /adminmanager-gifts\.js/);
 });
@@ -110,4 +130,5 @@ test('package: verify inclui a suite Builder V2 UI', () => {
   assert.equal(pkg.scripts['test:builder-v2-ui'], 'node --test tests/builder-v2-ui.test.js');
   assert.match(pkg.scripts.verify, /npm run test:builder-v2-ui/);
   assert.match(pkg.scripts.check, /node --check adminmanager-builder-v2\.js/);
+  assert.match(pkg.scripts.check, /node --check adminmanager-builder-v2-preview-assets\.js/);
 });
