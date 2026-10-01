@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lirandzo.com/schemas/invite-content-v2.schema.json",
+  "title": "Lirandzo Invite Content V2",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "identity",
+    "people",
+    "event",
+    "schedule",
+    "access",
+    "features",
+    "gifts",
+    "runtime"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "2.0" },
+    "identity": {
+      "type": "object",
+      "required": ["slug", "packageKey"],
+      "properties": {
+        "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "packageKey": { "enum": ["perola", "esmeralda", "rubi"] },
+        "templateKey": { "type": "string" },
+        "eventType": { "type": "string" },
+        "language": { "type": "string" }
+      }
+    },
+    "people": {
+      "type": "object",
+      "properties": {
+        "coupleNames": { "type": "string" },
+        "displayNames": { "type": "string" },
+        "bride": { "type": "string" },
+        "groom": { "type": "string" },
+        "monogram": { "type": "string" },
+        "brideParents": { "type": "string" },
+        "groomParents": { "type": "string" }
+      }
+    },
+    "event": {
+      "type": "object",
+      "properties": {
+        "dateISO": { "type": "string" },
+        "dateLabel": { "type": "string" },
+        "timezone": { "type": "string" },
+        "rsvpDeadline": { "type": "string" },
+        "verse": { "type": "string" },
+        "verseReference": { "type": "string" },
+        "invitationNote": { "type": "string" }
+      }
+    },
+    "schedule": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "title": { "type": "string" },
+          "time": { "type": "string" },
+          "venue": { "type": "string" },
+          "mapUrl": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "story": { "type": "object" },
+    "access": {
+      "type": "object",
+      "required": ["mode", "rsvpIdentity"],
+      "properties": {
+        "mode": { "enum": ["nominal", "open"] },
+        "rsvpIdentity": { "enum": ["guest_token", "name"] },
+        "requireNameOnActions": { "type": "boolean" },
+        "maxGuestsPerRsvp": { "type": "integer", "minimum": 1 },
+        "allowCompanionName": { "type": "boolean" },
+        "autoCreateGuestOnRsvp": { "type": "boolean" },
+        "autoCreateGuestOnGift": { "type": "boolean" }
+      }
+    },
+    "features": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    },
+    "gifts": {
+      "type": "object",
+      "required": ["mode", "catalogMode"],
+      "properties": {
+        "mode": { "enum": ["none", "catalog", "quantity_contributions", "monetary"] },
+        "catalogMode": { "enum": ["legacy", "mongo"] },
+        "store": { "type": "string" },
+        "options": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "payments": { "type": "object" },
+    "support": { "type": "object" },
+    "gallery": { "type": "object" },
+    "dressCode": { "type": "object" },
+    "menu": { "type": "object" },
+    "media": { "type": "object" },
+    "seo": { "type": "object" },
+    "runtime": {
+      "type": "object",
+      "required": ["contentMode", "rendererVersion"],
+      "properties": {
+        "contentMode": { "enum": ["legacy", "mongo-v2"] },
+        "rendererVersion": { "type": "string" }
+      }
+    }
+  },
+  "additionalProperties": false
+}
