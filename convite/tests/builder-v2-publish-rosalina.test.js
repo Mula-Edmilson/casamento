@@ -11,6 +11,7 @@ const {
   contentHash,
   classifyPublishState
 } = require('../tools/rosalina-builder-v2-publish-db');
+const { validateInviteContentV2 } = require('../builder-v2/invite-content-v2');
 
 function baseDraft() {
   return {
@@ -34,8 +35,14 @@ function baseDraft() {
   };
 }
 
+function normalizedDraft() {
+  const validation = validateInviteContentV2(baseDraft(), { stage: 'publish' });
+  assert.equal(validation.valid, true);
+  return validation.content;
+}
+
 function makeReadyState() {
-  const draft = baseDraft();
+  const draft = normalizedDraft();
   const hash = contentHash(draft);
   return {
     invite: { slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: { contentMode: 'legacy' } },
@@ -140,7 +147,7 @@ test('publish Rosalina: alteração do Draft após publicação não é tratada 
   state.revisions.push({ stage: 'published', revision: 1, contentHash: oldHash });
   state.content.draft.people.displayNames = 'Rosalina & Monteiro — alterado';
   state.content.draftRevision = 4;
-  state.revisions.push({ stage: 'draft', revision: 4, contentHash: contentHash(state.content.draft) });
+  state.revisions.push({ stage: 'draft', revision: 4, contentHash: contentHash(validateInviteContentV2(state.content.draft, { stage: 'publish' }).content) });
   const out = classifyPublishState(state);
   assert.equal(out.mode, 'blocked');
   assert.ok(out.blockers.includes('DRAFT_REVISION_UNEXPECTED'));
