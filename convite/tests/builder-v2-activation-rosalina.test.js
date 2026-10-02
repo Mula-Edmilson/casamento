@@ -13,6 +13,7 @@ const {
   ACTIVATE_CONFIRM,
   ROLLBACK_CONFIRM,
   contentHash,
+  configStateForInvite,
   rawContentModeForInvite,
   contentModeForInvite,
   isAllowedLegacyStorage,
@@ -88,8 +89,17 @@ test('activation guard: hash é determinístico', () => {
   assert.equal(contentHash(a), contentHash(b));
 });
 
-test('activation guard: legacy implícito por campo ausente continua seguro e gera filtro $exists:false', () => {
+test('activation guard: config ausente é legacy implícito e usa filtro exacto de ausência', () => {
+  const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE };
+  assert.deepEqual(configStateForInvite(invite), { kind: 'config-missing', raw: undefined });
+  assert.equal(contentModeForInvite(invite), 'legacy');
+  assert.equal(isAllowedLegacyStorage(invite), true);
+  assert.deepEqual(buildContentModeMatch(invite, 'legacy'), { config: { $exists: false } });
+});
+
+test('activation guard: contentMode ausente dentro de config continua seguro e gera filtro $exists:false', () => {
   const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: {} };
+  assert.deepEqual(configStateForInvite(invite), { kind: 'field-missing', raw: undefined });
   assert.equal(rawContentModeForInvite(invite), undefined);
   assert.equal(contentModeForInvite(invite), 'legacy');
   assert.equal(isAllowedLegacyStorage(invite), true);
@@ -117,6 +127,13 @@ test('activation guard: representação desconhecida não é promovida automatic
   const out = classifyActivationState(state);
   assert.ok(out.blockers.includes('CONTENT_MODE_STORAGE_UNEXPECTED'));
   assert.throws(() => buildContentModeMatch(state.invite, 'legacy'), /Representação legacy inesperada/);
+});
+
+test('activation guard: config inválido é bloqueado em vez de ser promovido', () => {
+  const state = makeState();
+  state.invite.config = null;
+  const out = classifyActivationState(state);
+  assert.ok(out.blockers.includes('CONTENT_MODE_STORAGE_UNEXPECTED'));
 });
 
 test('activation guard: bloqueia inviteId diferente', () => {
