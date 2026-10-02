@@ -157,9 +157,15 @@ test('ligação real: client-config carrega core + bridge só nas páginas públ
 
 test('ligação real: bridge preserva formulário de comprovativo ao actualizar pagamentos', () => {
   const source = read('rosalina-monteiro/renderer-v2-live-bridge.js');
-  assert.match(source, /qa\(box, '\.payment-method-block'\)/);
-  assert.match(source, /#comprovativoForm/);
-  assert.doesNotMatch(source, /box\.innerHTML\s*=/);
+  const start = source.indexOf('function applyPayments(');
+  const end = source.indexOf('function applySupport(', start);
+  assert.notEqual(start, -1);
+  assert.notEqual(end, -1);
+  const paymentSource = source.slice(start, end);
+  assert.match(paymentSource, /qa\(box, '\.payment-method-block'\)/);
+  assert.match(paymentSource, /#comprovativoForm/);
+  assert.match(paymentSource, /insertBefore\(paymentBlock/);
+  assert.doesNotMatch(paymentSource, /box\.innerHTML\s*=/);
 });
 
 test('ligação real: bridge cobre capítulos, menu, galeria, dress code, apoio e agenda', () => {
