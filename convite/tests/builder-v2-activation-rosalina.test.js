@@ -13,6 +13,10 @@ const {
   ACTIVATE_CONFIRM,
   ROLLBACK_CONFIRM,
   contentHash,
+  rawContentModeForInvite,
+  contentModeForInvite,
+  isAllowedLegacyStorage,
+  buildContentModeMatch,
   classifyActivationState
 } = require('../tools/rosalina-builder-v2-activation-db');
 const { validateInviteContentV2 } = require('../builder-v2/invite-content-v2');
@@ -47,8 +51,6 @@ function normalizedContent() {
 
 function makeState(mode = 'legacy') {
   const draft = normalizedContent();
-  // The production guard pins the real Rosalina hash. For pure classifier tests we
-  // replace the fixture content hash fields below with the expected production hash.
   return {
     invite: { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: { contentMode: mode } },
     content: {
@@ -68,12 +70,6 @@ function makeState(mode = 'legacy') {
   };
 }
 
-// For hash-pinned production state, the classifier compares the real content digest.
-// These helpers patch only the content payload so its digest equals the production hash
-// by stubbing contentHash through exported classifier is intentionally not possible.
-// Therefore source-level tests below cover the exact constant guards while behavioral
-// tests exercise all non-hash branches by accepting the hash blockers where appropriate.
-
 test('activation guard: alvo, revisões, hash e confirmações são literais', () => {
   assert.equal(TARGET_SLUG, 'rosalina-monteiro');
   assert.equal(TARGET_PACKAGE, 'esmeralda');
@@ -90,6 +86,27 @@ test('activation guard: hash é determinístico', () => {
   const a = { b: 2, a: 1 };
   const b = { a: 1, b: 2 };
   assert.equal(contentHash(a), contentHash(b));
+});
+
+test('activation guard: legacy implícito por campo ausente continua seguro e gera filtro $exists:false', () => {
+  const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: {} };
+  assert.equal(rawContentModeForInvite(invite), undefined);
+  assert.equal(contentModeForInvite(invite), 'legacy');
+  assert.equal(isAllowedLegacyStorage(invite), true);
+  assert.deepEqual(buildContentModeMatch(invite, 'legacy'), { 'config.contentMode': { $exists: false } });
+});
+
+test('activation guard: legacy explícito gera filtro exacto', () => {
+  const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: { contentMode: 'legacy' } };
+  assert.equal(rawContentModeForInvite(invite), 'legacy');
+  assert.deepEqual(buildContentModeMatch(invite, 'legacy'), { 'config.contentMode': 'legacy' });
+});
+
+test('activation guard: representação desconhecida não é promovida automaticamente', () => {
+  const state = makeState('valor-desconhecido');
+  const out = classifyActivationState(state);
+  assert.ok(out.blockers.includes('CONTENT_MODE_STORAGE_UNEXPECTED'));
+  assert.throws(() => buildContentModeMatch(state.invite, 'legacy'), /Representação legacy inesperada/);
 });
 
 test('activation guard: bloqueia inviteId diferente', () => {
@@ -167,6 +184,7 @@ test('activation guard source: escrita é confinada a config.contentMode e supor
   assert.match(source, /--rollback/);
   assert.match(source, /rosalina-monteiro-activate-mongo-v2/);
   assert.match(source, /rosalina-monteiro-rollback-legacy/);
+  assert.match(source, /matchedCount !== 1/);
   assert.doesNotMatch(source, /InviteContent\.updateOne\(/);
   assert.doesNotMatch(source, /deleteMany\(/);
 });
