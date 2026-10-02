@@ -5,14 +5,20 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const { createBuilderV2Models } = require('../builder-v2/mongo-models-v2');
 const { validateInviteContentV2 } = require('../builder-v2/invite-content-v2');
+const {
+  auditRosalinaLocationMaps,
+  stripRosalinaLocationMaps
+} = require('../builder-v2/rosalina-location-maps-v2');
 
 const TARGET_SLUG = 'rosalina-monteiro';
 const TARGET_PACKAGE = 'esmeralda';
 const TARGET_TEMPLATE = 'esmeralda-rosalina';
 const TARGET_INVITE_ID = '6a0ae58dc217acfcf34461f0';
-const EXPECTED_DRAFT_REVISION = 3;
-const EXPECTED_PUBLISHED_REVISION = 1;
-const EXPECTED_HASH = '033ca7eeaa8fe186495de16b7a54c07daaa3ed9e9bea0bbf8239d8a13634b0e1';
+const EXPECTED_DRAFT_REVISION = 4;
+const EXPECTED_PUBLISHED_REVISION = 2;
+const EXPECTED_BASE_DRAFT_REVISION = 3;
+const EXPECTED_BASE_PUBLISHED_REVISION = 1;
+const EXPECTED_BASE_HASH = '033ca7eeaa8fe186495de16b7a54c07daaa3ed9e9bea0bbf8239d8a13634b0e1';
 const ACTIVATE_CONFIRM = 'rosalina-monteiro-activate-mongo-v2';
 const ROLLBACK_CONFIRM = 'rosalina-monteiro-rollback-legacy';
 
@@ -23,10 +29,6 @@ const CONFIRM = CONFIRM_ARG ? CONFIRM_ARG.slice('--confirm='.length) : '';
 
 function norm(value) {
   return String(value || '').trim().toLowerCase();
-}
-
-function text(value) {
-  return String(value == null ? '' : value).trim();
 }
 
 function stableSerialize(value) {
@@ -103,34 +105,6 @@ function printCheck(label, ok, actual, expected = '') {
   console.log(`${ok ? 'PASS' : 'BLOCK'}  ${label}: ${suffix}`);
 }
 
-function scheduleItemLabel(item, index) {
-  return text(item?.id) || text(item?.type) || text(item?.title) || `schedule-${index + 1}`;
-}
-
-function inspectPublishedMaps(content) {
-  const schedule = Array.isArray(content?.schedule) ? content.schedule : [];
-  const required = schedule.filter(item => item && (text(item.venue) || text(item.place) || text(item.title)));
-  const missing = [];
-  const invalid = [];
-
-  required.forEach((item, index) => {
-    const mapUrl = text(item.mapUrl);
-    const label = scheduleItemLabel(item, index);
-    if (!mapUrl) {
-      missing.push(label);
-      return;
-    }
-    if (!/^https?:\/\//i.test(mapUrl)) invalid.push(label);
-  });
-
-  return {
-    ok: required.length > 0 && missing.length === 0 && invalid.length === 0,
-    requiredCount: required.length,
-    missing,
-    invalid
-  };
-}
-
 function buildModels() {
   const InviteSchema = new mongoose.Schema({
     slug: String,
@@ -186,32 +160,52 @@ function classifyActivationState(state) {
 
   const draftValidation = validateInviteContentV2(content.draft || {}, { stage: 'publish' });
   const publishedValidation = validateInviteContentV2(content.published || {}, { stage: 'publish' });
-  const draftHash = contentHash(draftValidation.content || {});
-  const publishedHash = contentHash(publishedValidation.content || {});
+  const draft = draftValidation.content || content.draft || {};
+  const published = publishedValidation.content || content.published || {};
+  const draftHash = contentHash(draft);
+  const publishedHash = contentHash(published);
+  const publishHash = String(content.publishHash || '');
   const draftRevision = Number(content.draftRevision || 0);
   const publishedRevision = Number(content.publishedRevision || 0);
-  const publishHash = String(content.publishHash || '');
   const draftRecord = (state.revisions || []).find(item => item.stage === 'draft' && Number(item.revision) === EXPECTED_DRAFT_REVISION);
   const publishedRecord = (state.revisions || []).find(item => item.stage === 'published' && Number(item.revision) === EXPECTED_PUBLISHED_REVISION);
+  const baseDraftRecord = (state.revisions || []).find(item => item.stage === 'draft' && Number(item.revision) === EXPECTED_BASE_DRAFT_REVISION);
+  const basePublishedRecord = (state.revisions || []).find(item => item.stage === 'published' && Number(item.revision) === EXPECTED_BASE_PUBLISHED_REVISION);
   const mode = contentModeForInvite(invite);
-  const publishedMaps = inspectPublishedMaps(publishedValidation.content || {});
+
+  let draftMaps = { valid: false, checks: [], failed: [], mapped: 0, required: 3 };
+  let publishedMaps = { valid: false, checks: [], failed: [], mapped: 0, required: 3 };
+  let strippedDraftHash = '';
+  let strippedPublishedHash = '';
+
+  try {
+    draftMaps = auditRosalinaLocationMaps(draft);
+    publishedMaps = auditRosalinaLocationMaps(published);
+    strippedDraftHash = contentHash(stripRosalinaLocationMaps(draft));
+    strippedPublishedHash = contentHash(stripRosalinaLocationMaps(published));
+  } catch (error) {
+    blockers.push(`LOCATION_CHECK_FAILED:${error.message}`);
+  }
 
   if (draftRevision !== EXPECTED_DRAFT_REVISION) blockers.push('DRAFT_REVISION_MISMATCH');
   if (publishedRevision !== EXPECTED_PUBLISHED_REVISION) blockers.push('PUBLISHED_REVISION_MISMATCH');
   if (!draftValidation.valid) blockers.push('DRAFT_NOT_PUBLISHABLE');
   if (!publishedValidation.valid) blockers.push('PUBLISHED_NOT_PUBLISHABLE');
-  if (draftHash !== EXPECTED_HASH) blockers.push('DRAFT_HASH_MISMATCH');
-  if (publishedHash !== EXPECTED_HASH) blockers.push('PUBLISHED_HASH_MISMATCH');
-  if (publishHash !== EXPECTED_HASH) blockers.push('PUBLISH_HASH_MISMATCH');
-  if (!draftRecord || draftRecord.contentHash !== EXPECTED_HASH) blockers.push('DRAFT_REVISION_RECORD_MISMATCH');
-  if (!publishedRecord || publishedRecord.contentHash !== EXPECTED_HASH) blockers.push('PUBLISHED_REVISION_RECORD_MISMATCH');
-  if (norm(publishedValidation.content?.identity?.slug) !== TARGET_SLUG) blockers.push('PUBLISHED_SLUG_MISMATCH');
-  if (norm(publishedValidation.content?.identity?.packageKey) !== TARGET_PACKAGE) blockers.push('PUBLISHED_PACKAGE_MISMATCH');
-  if (String(publishedValidation.content?.identity?.templateKey || '') !== TARGET_TEMPLATE) blockers.push('PUBLISHED_TEMPLATE_MISMATCH');
-  if (norm(publishedValidation.content?.runtime?.contentMode) !== 'legacy') blockers.push('PUBLISHED_RUNTIME_NOT_LEGACY');
-  if (publishedMaps.requiredCount < 1) blockers.push('PUBLISHED_SCHEDULE_MISSING');
-  if (publishedMaps.missing.length) blockers.push('PUBLISHED_MAP_URL_MISSING');
-  if (publishedMaps.invalid.length) blockers.push('PUBLISHED_MAP_URL_INVALID');
+  if (draftHash !== publishedHash) blockers.push('DRAFT_PUBLISHED_HASH_MISMATCH');
+  if (publishHash !== publishedHash) blockers.push('PUBLISH_HASH_MISMATCH');
+  if (!draftRecord || String(draftRecord.contentHash || '') !== publishHash) blockers.push('DRAFT_REVISION_RECORD_MISMATCH');
+  if (!publishedRecord || String(publishedRecord.contentHash || '') !== publishHash) blockers.push('PUBLISHED_REVISION_RECORD_MISMATCH');
+  if (!baseDraftRecord || String(baseDraftRecord.contentHash || '') !== EXPECTED_BASE_HASH) blockers.push('BASE_DRAFT_REVISION_RECORD_MISMATCH');
+  if (!basePublishedRecord || String(basePublishedRecord.contentHash || '') !== EXPECTED_BASE_HASH) blockers.push('BASE_PUBLISHED_REVISION_RECORD_MISMATCH');
+  if (strippedDraftHash !== EXPECTED_BASE_HASH) blockers.push('DRAFT_NOT_BASE_PLUS_MAPS');
+  if (strippedPublishedHash !== EXPECTED_BASE_HASH) blockers.push('PUBLISHED_NOT_BASE_PLUS_MAPS');
+  if (!draftMaps.valid) blockers.push('DRAFT_MAP_URL_MISMATCH');
+  if (!publishedMaps.valid) blockers.push('PUBLISHED_MAP_URL_MISMATCH');
+  if (norm(published?.identity?.slug) !== TARGET_SLUG) blockers.push('PUBLISHED_SLUG_MISMATCH');
+  if (norm(published?.identity?.packageKey) !== TARGET_PACKAGE) blockers.push('PUBLISHED_PACKAGE_MISMATCH');
+  if (String(published?.identity?.templateKey || '') !== TARGET_TEMPLATE) blockers.push('PUBLISHED_TEMPLATE_MISMATCH');
+  if (norm(draft?.runtime?.contentMode) !== 'legacy') blockers.push('DRAFT_RUNTIME_NOT_LEGACY');
+  if (norm(published?.runtime?.contentMode) !== 'legacy') blockers.push('PUBLISHED_RUNTIME_NOT_LEGACY');
 
   return {
     mode: blockers.length ? 'blocked' : (mode === 'mongo-v2' ? 'active' : 'ready'),
@@ -224,11 +218,16 @@ function classifyActivationState(state) {
     draftHash,
     publishedHash,
     publishHash,
+    strippedDraftHash,
+    strippedPublishedHash,
     draftValidation,
     publishedValidation,
+    draftMaps,
     publishedMaps,
     draftRecord,
-    publishedRecord
+    publishedRecord,
+    baseDraftRecord,
+    basePublishedRecord
   };
 }
 
@@ -323,13 +322,13 @@ async function main() {
     if (content) {
       printCheck('draftRevision', Number(content.draftRevision || 0) === EXPECTED_DRAFT_REVISION, Number(content.draftRevision || 0), EXPECTED_DRAFT_REVISION);
       printCheck('publishedRevision', Number(content.publishedRevision || 0) === EXPECTED_PUBLISHED_REVISION, Number(content.publishedRevision || 0), EXPECTED_PUBLISHED_REVISION);
-      printCheck('publishHash', String(content.publishHash || '') === EXPECTED_HASH, String(content.publishHash || ''), EXPECTED_HASH);
+      console.log(`INFO  publishHash actual: ${String(content.publishHash || '')}`);
       console.log(`INFO  hash Draft: ${activation.draftHash || '(indisponível)'}`);
       console.log(`INFO  hash Published: ${activation.publishedHash || '(indisponível)'}`);
-      console.log(`INFO  template Published: ${activation.publishedValidation?.content?.identity?.templateKey || '(indisponível)'}`);
-      if (activation.publishedMaps) {
-        console.log(`INFO  mapas Published: ${activation.publishedMaps.requiredCount} localizações; em falta=${activation.publishedMaps.missing.length}; inválidos=${activation.publishedMaps.invalid.length}`);
-      }
+      console.log(`INFO  hash Draft sem mapas: ${activation.strippedDraftHash || '(indisponível)'}`);
+      console.log(`INFO  hash Published sem mapas: ${activation.strippedPublishedHash || '(indisponível)'}`);
+      console.log(`INFO  mapas Draft: ${activation.draftMaps?.mapped || 0}/${activation.draftMaps?.required || 0}`);
+      console.log(`INFO  mapas Published: ${activation.publishedMaps?.mapped || 0}/${activation.publishedMaps?.required || 0}`);
     }
 
     if (!ACTIVATE && !ROLLBACK) {
@@ -447,7 +446,9 @@ module.exports = {
   TARGET_INVITE_ID,
   EXPECTED_DRAFT_REVISION,
   EXPECTED_PUBLISHED_REVISION,
-  EXPECTED_HASH,
+  EXPECTED_BASE_DRAFT_REVISION,
+  EXPECTED_BASE_PUBLISHED_REVISION,
+  EXPECTED_BASE_HASH,
   ACTIVATE_CONFIRM,
   ROLLBACK_CONFIRM,
   stableSerialize,
@@ -457,7 +458,6 @@ module.exports = {
   contentModeForInvite,
   isAllowedLegacyStorage,
   buildContentModeMatch,
-  inspectPublishedMaps,
   classifyActivationState,
   classifyRollbackState,
   contentCheckpoint
