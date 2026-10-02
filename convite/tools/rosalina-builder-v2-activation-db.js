@@ -36,10 +36,16 @@ function contentHash(content) {
   return crypto.createHash('sha256').update(stableSerialize(content)).digest('hex');
 }
 
+function configStateForInvite(invite) {
+  const config = invite ? invite.config : undefined;
+  if (config === undefined) return { kind: 'config-missing', raw: undefined };
+  if (config === null || typeof config !== 'object' || Array.isArray(config)) return { kind: 'config-invalid', raw: undefined };
+  if (!Object.prototype.hasOwnProperty.call(config, 'contentMode')) return { kind: 'field-missing', raw: undefined };
+  return { kind: 'field-present', raw: config.contentMode };
+}
+
 function rawContentModeForInvite(invite) {
-  const config = invite && invite.config && typeof invite.config === 'object' ? invite.config : null;
-  if (!config || !Object.prototype.hasOwnProperty.call(config, 'contentMode')) return undefined;
-  return config.contentMode;
+  return configStateForInvite(invite).raw;
 }
 
 function contentModeForInvite(invite) {
@@ -47,25 +53,33 @@ function contentModeForInvite(invite) {
 }
 
 function isAllowedLegacyStorage(invite) {
-  const raw = rawContentModeForInvite(invite);
+  const state = configStateForInvite(invite);
+  if (state.kind === 'config-invalid') return false;
+  const raw = state.raw;
   return raw === undefined || raw === null || String(raw).trim() === '' || norm(raw) === 'legacy';
 }
 
 function buildContentModeMatch(invite, expectedCurrent) {
-  const raw = rawContentModeForInvite(invite);
+  const state = configStateForInvite(invite);
+  const raw = state.raw;
   if (expectedCurrent === 'legacy') {
     if (!isAllowedLegacyStorage(invite)) {
-      throw new Error(`Representação legacy inesperada em config.contentMode: ${String(raw)}.`);
+      throw new Error(`Representação legacy inesperada em config.contentMode: ${state.kind}/${String(raw)}.`);
     }
-    if (raw === undefined) return { 'config.contentMode': { $exists: false } };
+    if (state.kind === 'config-missing') return { config: { $exists: false } };
+    if (state.kind === 'field-missing') return { 'config.contentMode': { $exists: false } };
+    if (raw === null) return { 'config.contentMode': { $type: 10 } };
     return { 'config.contentMode': raw };
   }
   return { 'config.contentMode': 'mongo-v2' };
 }
 
 function rawModeLabel(invite) {
-  const raw = rawContentModeForInvite(invite);
-  if (raw === undefined) return '(ausente — legacy implícito)';
+  const state = configStateForInvite(invite);
+  const raw = state.raw;
+  if (state.kind === 'config-missing') return '(config ausente — legacy implícito)';
+  if (state.kind === 'config-invalid') return '(config inválido)';
+  if (state.kind === 'field-missing') return '(contentMode ausente — legacy implícito)';
   if (raw === null) return '(null — legacy implícito)';
   if (String(raw).trim() === '') return '(vazio — legacy implícito)';
   return String(raw);
@@ -149,6 +163,7 @@ function classifyActivationState(state) {
     blockers,
     contentMode: mode,
     rawContentMode: rawContentModeForInvite(invite),
+    configState: configStateForInvite(invite).kind,
     draftRevision,
     publishedRevision,
     draftHash,
@@ -313,6 +328,7 @@ module.exports = {
   ROLLBACK_CONFIRM,
   stableSerialize,
   contentHash,
+  configStateForInvite,
   rawContentModeForInvite,
   contentModeForInvite,
   isAllowedLegacyStorage,
