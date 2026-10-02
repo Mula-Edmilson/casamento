@@ -36,9 +36,9 @@ function baseContent() {
     people: { coupleNames: 'Rosalina & Monteiro', displayNames: 'Rosalina & Monteiro', bride: 'Rosalina', groom: 'Monteiro' },
     event: { dateISO: '2026-08-08T09:00:00+02:00', rsvpDeadline: '2026-06-20' },
     schedule: [
-      { id: 'religious', type: 'religious', title: 'Cerimónia Religiosa', time: '09:00', venue: 'Paróquia São Gabriel Arcanjo', mapUrl: '', note: '' },
-      { id: 'civil', type: 'civil', title: 'Cerimónia Civil', time: '13:00', venue: 'Hotel Polana', mapUrl: '', note: '' },
-      { id: 'party', type: 'additional', title: 'Copo de Água', time: '14:30', venue: 'Hotel Glória', mapUrl: '', note: '' }
+      { id: 'religious-cerimonia-religiosa-09-00', type: 'religious', title: 'Cerimónia Religiosa', time: '09:00', venue: 'Paróquia São Gabriel Arcanjo, Cidade da Matola', mapUrl: '', note: '' },
+      { id: 'reception-cerimonia-civil-13-00', type: 'reception', title: 'Cerimónia Civil', time: '13:00', venue: 'Hotel Polana', mapUrl: '', note: '' },
+      { id: 'additional-copo-de-agua-14-30', type: 'additional', title: 'Copo de Água', time: '14:30', venue: 'Hotel Glória, Salão Ballroom', mapUrl: '', note: '' }
     ],
     story: { title: 'A nossa história', text: '', chapters: [] },
     access: { mode: 'nominal', rsvpIdentity: 'guest_token', requireNameOnActions: false, maxGuestsPerRsvp: 1, allowCompanionName: false, autoCreateGuestOnRsvp: false, autoCreateGuestOnGift: false },
@@ -232,6 +232,7 @@ test('activation guard source: escrita é confinada a config.contentMode', () =>
   assert.doesNotMatch(source, /deleteMany\(/);
 });
 
-test('activation guard: mapas de referência são os três IDs operacionais esperados', () => {
+test('activation guard: mapas de referência são os três momentos esperados', () => {
   assert.deepEqual(Object.keys(ROSALINA_LOCATION_MAPS), ['religious', 'civil', 'party']);
+  assert.deepEqual(Object.values(ROSALINA_LOCATION_MAPS).map(item => item.type), ['religious', 'reception', 'additional']);
 });
