@@ -96,6 +96,16 @@ test('activation guard: legacy implícito por campo ausente continua seguro e ge
   assert.deepEqual(buildContentModeMatch(invite, 'legacy'), { 'config.contentMode': { $exists: false } });
 });
 
+test('activation guard: estado legacy implícito continua classificável após tentativa sem match', () => {
+  const state = makeState();
+  delete state.invite.config.contentMode;
+  assert.equal(contentModeForInvite(state.invite), 'legacy');
+  assert.equal(isAllowedLegacyStorage(state.invite), true);
+  const out = classifyActivationState(state);
+  assert.equal(out.contentMode, 'legacy');
+  assert.ok(!out.blockers.includes('CONTENT_MODE_STORAGE_UNEXPECTED'));
+});
+
 test('activation guard: legacy explícito gera filtro exacto', () => {
   const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: { contentMode: 'legacy' } };
   assert.equal(rawContentModeForInvite(invite), 'legacy');
