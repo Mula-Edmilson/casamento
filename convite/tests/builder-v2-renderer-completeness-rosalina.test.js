@@ -166,6 +166,7 @@ test('ligação real: bridge preserva formulário de comprovativo ao actualizar 
   assert.match(paymentSource, /#comprovativoForm/);
   assert.match(paymentSource, /insertBefore\(paymentBlock/);
   assert.doesNotMatch(paymentSource, /box\.innerHTML\s*=/);
+  assert.doesNotMatch(paymentSource, /removeChild\([^)]*comprovativoForm/);
 });
 
 test('ligação real: bridge cobre capítulos, menu, galeria, dress code, apoio e agenda', () => {
