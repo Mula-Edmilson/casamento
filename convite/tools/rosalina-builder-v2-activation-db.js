@@ -36,8 +36,39 @@ function contentHash(content) {
   return crypto.createHash('sha256').update(stableSerialize(content)).digest('hex');
 }
 
+function rawContentModeForInvite(invite) {
+  const config = invite && invite.config && typeof invite.config === 'object' ? invite.config : null;
+  if (!config || !Object.prototype.hasOwnProperty.call(config, 'contentMode')) return undefined;
+  return config.contentMode;
+}
+
 function contentModeForInvite(invite) {
-  return norm(invite?.config?.contentMode) === 'mongo-v2' ? 'mongo-v2' : 'legacy';
+  return norm(rawContentModeForInvite(invite)) === 'mongo-v2' ? 'mongo-v2' : 'legacy';
+}
+
+function isAllowedLegacyStorage(invite) {
+  const raw = rawContentModeForInvite(invite);
+  return raw === undefined || raw === null || String(raw).trim() === '' || norm(raw) === 'legacy';
+}
+
+function buildContentModeMatch(invite, expectedCurrent) {
+  const raw = rawContentModeForInvite(invite);
+  if (expectedCurrent === 'legacy') {
+    if (!isAllowedLegacyStorage(invite)) {
+      throw new Error(`Representação legacy inesperada em config.contentMode: ${String(raw)}.`);
+    }
+    if (raw === undefined) return { 'config.contentMode': { $exists: false } };
+    return { 'config.contentMode': raw };
+  }
+  return { 'config.contentMode': 'mongo-v2' };
+}
+
+function rawModeLabel(invite) {
+  const raw = rawContentModeForInvite(invite);
+  if (raw === undefined) return '(ausente — legacy implícito)';
+  if (raw === null) return '(null — legacy implícito)';
+  if (String(raw).trim() === '') return '(vazio — legacy implícito)';
+  return String(raw);
 }
 
 function printCheck(label, ok, actual, expected = '') {
@@ -82,6 +113,7 @@ function classifyActivationState(state) {
   if (String(invite._id || '') !== TARGET_INVITE_ID) blockers.push('INVITE_ID_MISMATCH');
   if (norm(invite.slug) !== TARGET_SLUG) blockers.push('SLUG_MISMATCH');
   if (norm(invite.packageKey) !== TARGET_PACKAGE) blockers.push('PACKAGE_MISMATCH');
+  if (contentModeForInvite(invite) === 'legacy' && !isAllowedLegacyStorage(invite)) blockers.push('CONTENT_MODE_STORAGE_UNEXPECTED');
   if (!content) {
     blockers.push('INVITE_CONTENT_MISSING');
     return { mode: 'blocked', blockers };
@@ -116,6 +148,7 @@ function classifyActivationState(state) {
     mode: blockers.length ? 'blocked' : (mode === 'mongo-v2' ? 'active' : 'ready'),
     blockers,
     contentMode: mode,
+    rawContentMode: rawContentModeForInvite(invite),
     draftRevision,
     publishedRevision,
     draftHash,
@@ -137,16 +170,18 @@ async function setContentMode(models, targetMode, session) {
     throw new Error(`contentMode mudou antes da operação: ${fresh.contentMode}; esperado ${expectedCurrent}.`);
   }
 
+  const modeMatch = buildContentModeMatch(freshState.invite, expectedCurrent);
   const result = await models.Invite.updateOne(
     {
       _id: freshState.invite._id,
       slug: TARGET_SLUG,
       packageKey: TARGET_PACKAGE,
-      'config.contentMode': expectedCurrent
+      ...modeMatch
     },
     { $set: { 'config.contentMode': targetMode } },
     { session }
   );
+  if (result.matchedCount !== 1) throw new Error(`Guard de escrita falhou: Invite alvo deixou de corresponder ao estado ${expectedCurrent}.`);
   if (result.modifiedCount !== 1) throw new Error(`Guard de escrita falhou: contentMode não mudou exactamente uma vez para ${targetMode}.`);
 }
 
@@ -174,7 +209,8 @@ async function main() {
       printCheck('inviteId', String(invite._id) === TARGET_INVITE_ID, String(invite._id), TARGET_INVITE_ID);
       printCheck('slug', norm(invite.slug) === TARGET_SLUG, invite.slug, TARGET_SLUG);
       printCheck('packageKey', norm(invite.packageKey) === TARGET_PACKAGE, invite.packageKey || '(vazio)', TARGET_PACKAGE);
-      console.log(`INFO  contentMode actual: ${contentModeForInvite(invite)}`);
+      console.log(`INFO  contentMode raw: ${rawModeLabel(invite)}`);
+      console.log(`INFO  contentMode efectivo: ${contentModeForInvite(invite)}`);
     }
     if (content) {
       printCheck('draftRevision', Number(content.draftRevision || 0) === EXPECTED_DRAFT_REVISION, Number(content.draftRevision || 0), EXPECTED_DRAFT_REVISION);
@@ -244,7 +280,8 @@ async function main() {
     console.log('');
     console.log(ACTIVATE ? 'ACTIVAÇÃO V2 CONCLUÍDA.' : 'ROLLBACK PARA LEGACY CONCLUÍDO.');
     console.log(`Invite: ${String(after.invite._id)}`);
-    console.log(`contentMode: ${afterClass.contentMode}`);
+    console.log(`contentMode raw: ${rawModeLabel(after.invite)}`);
+    console.log(`contentMode efectivo: ${afterClass.contentMode}`);
     console.log(`draftRevision: ${Number(after.content.draftRevision || 0)}`);
     console.log(`publishedRevision: ${Number(after.content.publishedRevision || 0)}`);
     console.log(`publishHash: ${after.content.publishHash}`);
@@ -276,6 +313,9 @@ module.exports = {
   ROLLBACK_CONFIRM,
   stableSerialize,
   contentHash,
+  rawContentModeForInvite,
   contentModeForInvite,
+  isAllowedLegacyStorage,
+  buildContentModeMatch,
   classifyActivationState
 };
