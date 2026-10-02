@@ -38,10 +38,28 @@ window.LIRANDZO_CHECKIN_PASSWORD = window.LIRANDZO_CHECKIN_PASSWORD || 'checkin2
     });
   }
 
+  function renderLoaderUnavailable(error) {
+    window.LIRANDZO_V2_LIVE_STATE = {
+      active: false,
+      mode: 'loader-error',
+      slug: window.LIRANDZO_INVITE_SLUG,
+      error: String(error && error.message || error)
+    };
+    function show() {
+      if (!document.body || document.getElementById('lirandzoV2LoaderUnavailable')) return;
+      var box = document.createElement('div');
+      box.id = 'lirandzoV2LoaderUnavailable';
+      box.setAttribute('role', 'alert');
+      box.style.cssText = 'position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:#fff;color:#171717;font:16px/1.5 system-ui,sans-serif;text-align:center';
+      box.innerHTML = '<div><strong>Convite temporariamente indisponível</strong><p>Não foi possível validar a versão publicada. Tente novamente dentro de instantes.</p></div>';
+      document.body.appendChild(box);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show, { once: true });
+    else show();
+    return null;
+  }
+
   window.LIRANDZO_ROSALINA_V2_LINK_PROMISE = loadOnce('lirandzoPublicRendererV2', coreUrl)
     .then(function () { return loadOnce('lirandzoRosalinaV2Bridge', bridgeUrl); })
-    .catch(function (error) {
-      window.LIRANDZO_V2_LIVE_STATE = { active: false, mode: 'loader-error', slug: window.LIRANDZO_INVITE_SLUG, error: String(error && error.message || error) };
-      throw error;
-    });
+    .catch(renderLoaderUnavailable);
 })();
