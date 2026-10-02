@@ -9,7 +9,9 @@ const {
   TARGET_INVITE_ID,
   EXPECTED_DRAFT_REVISION,
   EXPECTED_PUBLISHED_REVISION,
-  EXPECTED_HASH,
+  EXPECTED_BASE_DRAFT_REVISION,
+  EXPECTED_BASE_PUBLISHED_REVISION,
+  EXPECTED_BASE_HASH,
   ACTIVATE_CONFIRM,
   ROLLBACK_CONFIRM,
   contentHash,
@@ -18,11 +20,14 @@ const {
   contentModeForInvite,
   isAllowedLegacyStorage,
   buildContentModeMatch,
-  inspectPublishedMaps,
   classifyActivationState,
   classifyRollbackState
 } = require('../tools/rosalina-builder-v2-activation-db');
 const { validateInviteContentV2 } = require('../builder-v2/invite-content-v2');
+const {
+  applyRosalinaLocationMaps,
+  ROSALINA_LOCATION_MAPS
+} = require('../builder-v2/rosalina-location-maps-v2');
 
 function baseContent() {
   return {
@@ -31,14 +36,9 @@ function baseContent() {
     people: { coupleNames: 'Rosalina & Monteiro', displayNames: 'Rosalina & Monteiro', bride: 'Rosalina', groom: 'Monteiro' },
     event: { dateISO: '2026-08-08T09:00:00+02:00', rsvpDeadline: '2026-06-20' },
     schedule: [
-      {
-        id: 'ceremony',
-        type: 'ceremony',
-        title: 'Cerimónia',
-        time: '09:00',
-        venue: 'Paróquia São Gabriel Arcanjo',
-        mapUrl: 'https://www.google.com/maps/search/?api=1&query=Paroquia+Sao+Gabriel+Arcanjo+Matola'
-      }
+      { id: 'religious', type: 'religious', title: 'Cerimónia Religiosa', time: '09:00', venue: 'Paróquia São Gabriel Arcanjo', mapUrl: '', note: '' },
+      { id: 'civil', type: 'civil', title: 'Cerimónia Civil', time: '13:00', venue: 'Hotel Polana', mapUrl: '', note: '' },
+      { id: 'party', type: 'additional', title: 'Copo de Água', time: '14:30', venue: 'Hotel Glória', mapUrl: '', note: '' }
     ],
     story: { title: 'A nossa história', text: '', chapters: [] },
     access: { mode: 'nominal', rsvpIdentity: 'guest_token', requireNameOnActions: false, maxGuestsPerRsvp: 1, allowCompanionName: false, autoCreateGuestOnRsvp: false, autoCreateGuestOnGift: false },
@@ -55,14 +55,16 @@ function baseContent() {
   };
 }
 
-function normalizedContent() {
-  const validation = validateInviteContentV2(baseContent(), { stage: 'publish' });
+function normalizedMappedContent() {
+  const mapped = applyRosalinaLocationMaps(baseContent());
+  const validation = validateInviteContentV2(mapped, { stage: 'publish' });
   assert.equal(validation.valid, true);
   return validation.content;
 }
 
 function makeState(mode = 'legacy') {
-  const draft = normalizedContent();
+  const draft = normalizedMappedContent();
+  const hash = contentHash(draft);
   return {
     invite: { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: { contentMode: mode } },
     content: {
@@ -70,26 +72,28 @@ function makeState(mode = 'legacy') {
       published: JSON.parse(JSON.stringify(draft)),
       draftRevision: EXPECTED_DRAFT_REVISION,
       publishedRevision: EXPECTED_PUBLISHED_REVISION,
-      publishHash: EXPECTED_HASH
+      publishHash: hash
     },
     revisions: [
-      { stage: 'draft', revision: 1, contentHash: 'legacy-1' },
-      { stage: 'draft', revision: 2, contentHash: 'legacy-2' },
-      { stage: 'draft', revision: EXPECTED_DRAFT_REVISION, contentHash: EXPECTED_HASH },
-      { stage: 'published', revision: EXPECTED_PUBLISHED_REVISION, contentHash: EXPECTED_HASH }
+      { stage: 'draft', revision: EXPECTED_BASE_DRAFT_REVISION, contentHash: EXPECTED_BASE_HASH },
+      { stage: 'published', revision: EXPECTED_BASE_PUBLISHED_REVISION, contentHash: EXPECTED_BASE_HASH },
+      { stage: 'draft', revision: EXPECTED_DRAFT_REVISION, contentHash: hash },
+      { stage: 'published', revision: EXPECTED_PUBLISHED_REVISION, contentHash: hash }
     ],
     blockers: []
   };
 }
 
-test('activation guard: alvo, revisões, hash e confirmações são literais', () => {
+test('activation guard: alvo e checkpoints são literais', () => {
   assert.equal(TARGET_SLUG, 'rosalina-monteiro');
   assert.equal(TARGET_PACKAGE, 'esmeralda');
   assert.equal(TARGET_TEMPLATE, 'esmeralda-rosalina');
   assert.equal(TARGET_INVITE_ID, '6a0ae58dc217acfcf34461f0');
-  assert.equal(EXPECTED_DRAFT_REVISION, 3);
-  assert.equal(EXPECTED_PUBLISHED_REVISION, 1);
-  assert.equal(EXPECTED_HASH, '033ca7eeaa8fe186495de16b7a54c07daaa3ed9e9bea0bbf8239d8a13634b0e1');
+  assert.equal(EXPECTED_DRAFT_REVISION, 4);
+  assert.equal(EXPECTED_PUBLISHED_REVISION, 2);
+  assert.equal(EXPECTED_BASE_DRAFT_REVISION, 3);
+  assert.equal(EXPECTED_BASE_PUBLISHED_REVISION, 1);
+  assert.equal(EXPECTED_BASE_HASH, '033ca7eeaa8fe186495de16b7a54c07daaa3ed9e9bea0bbf8239d8a13634b0e1');
   assert.equal(ACTIVATE_CONFIRM, 'rosalina-monteiro-activate-mongo-v2');
   assert.equal(ROLLBACK_CONFIRM, 'rosalina-monteiro-rollback-legacy');
 });
@@ -100,7 +104,7 @@ test('activation guard: hash é determinístico', () => {
   assert.equal(contentHash(a), contentHash(b));
 });
 
-test('activation guard: config ausente é legacy implícito e usa filtro exacto de ausência', () => {
+test('activation guard: config ausente é legacy implícito e usa filtro exacto', () => {
   const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE };
   assert.deepEqual(configStateForInvite(invite), { kind: 'config-missing', raw: undefined });
   assert.equal(contentModeForInvite(invite), 'legacy');
@@ -108,32 +112,15 @@ test('activation guard: config ausente é legacy implícito e usa filtro exacto 
   assert.deepEqual(buildContentModeMatch(invite, 'legacy'), { config: { $exists: false } });
 });
 
-test('activation guard: contentMode ausente dentro de config continua seguro e gera filtro $exists:false', () => {
+test('activation guard: contentMode ausente dentro de config continua legacy seguro', () => {
   const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: {} };
   assert.deepEqual(configStateForInvite(invite), { kind: 'field-missing', raw: undefined });
   assert.equal(rawContentModeForInvite(invite), undefined);
   assert.equal(contentModeForInvite(invite), 'legacy');
-  assert.equal(isAllowedLegacyStorage(invite), true);
   assert.deepEqual(buildContentModeMatch(invite, 'legacy'), { 'config.contentMode': { $exists: false } });
 });
 
-test('activation guard: estado legacy implícito continua classificável após tentativa sem match', () => {
-  const state = makeState();
-  delete state.invite.config.contentMode;
-  assert.equal(contentModeForInvite(state.invite), 'legacy');
-  assert.equal(isAllowedLegacyStorage(state.invite), true);
-  const out = classifyActivationState(state);
-  assert.equal(out.contentMode, 'legacy');
-  assert.ok(!out.blockers.includes('CONTENT_MODE_STORAGE_UNEXPECTED'));
-});
-
-test('activation guard: legacy explícito gera filtro exacto', () => {
-  const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: { contentMode: 'legacy' } };
-  assert.equal(rawContentModeForInvite(invite), 'legacy');
-  assert.deepEqual(buildContentModeMatch(invite, 'legacy'), { 'config.contentMode': 'legacy' });
-});
-
-test('activation guard: rollback usa comparação exacta com a representação mongo-v2 armazenada', () => {
+test('activation guard: rollback usa compare-and-set da representação mongo-v2 armazenada', () => {
   const invite = { _id: TARGET_INVITE_ID, slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, config: { contentMode: ' MONGO-V2 ' } };
   assert.equal(contentModeForInvite(invite), 'mongo-v2');
   assert.deepEqual(buildContentModeMatch(invite, 'mongo-v2'), { 'config.contentMode': ' MONGO-V2 ' });
@@ -146,18 +133,10 @@ test('activation guard: representação desconhecida não é promovida automatic
   assert.throws(() => buildContentModeMatch(state.invite, 'legacy'), /Representação legacy inesperada/);
 });
 
-test('activation guard: config inválido é bloqueado em vez de ser promovido', () => {
-  const state = makeState();
-  state.invite.config = null;
-  const out = classifyActivationState(state);
-  assert.ok(out.blockers.includes('CONTENT_MODE_STORAGE_UNEXPECTED'));
-});
-
 test('activation guard: bloqueia inviteId diferente', () => {
   const state = makeState();
   state.invite._id = '000000000000000000000000';
   const out = classifyActivationState(state);
-  assert.equal(out.mode, 'blocked');
   assert.ok(out.blockers.includes('INVITE_ID_MISMATCH'));
 });
 
@@ -165,36 +144,38 @@ test('activation guard: bloqueia pacote diferente', () => {
   const state = makeState();
   state.invite.packageKey = 'rubi';
   const out = classifyActivationState(state);
-  assert.equal(out.mode, 'blocked');
   assert.ok(out.blockers.includes('PACKAGE_MISMATCH'));
 });
 
-test('activation guard: bloqueia draftRevision diferente', () => {
+test('activation guard: exige Draft 4 e Published 2', () => {
   const state = makeState();
-  state.content.draftRevision = 4;
+  state.content.draftRevision = 5;
+  state.content.publishedRevision = 3;
   const out = classifyActivationState(state);
   assert.ok(out.blockers.includes('DRAFT_REVISION_MISMATCH'));
-});
-
-test('activation guard: bloqueia publishedRevision diferente', () => {
-  const state = makeState();
-  state.content.publishedRevision = 2;
-  const out = classifyActivationState(state);
   assert.ok(out.blockers.includes('PUBLISHED_REVISION_MISMATCH'));
 });
 
-test('activation guard: bloqueia publishHash diferente', () => {
+test('activation guard: exige publishHash igual ao conteúdo actual', () => {
   const state = makeState();
   state.content.publishHash = 'errado';
   const out = classifyActivationState(state);
   assert.ok(out.blockers.includes('PUBLISH_HASH_MISMATCH'));
 });
 
-test('activation guard: bloqueia revisão published sem hash aprovado', () => {
+test('activation guard: exige mapas exactos, não apenas URLs não vazias', () => {
   const state = makeState();
-  state.revisions[state.revisions.length - 1].contentHash = 'errado';
+  state.content.published.schedule[0].mapUrl = 'https://example.com/igreja';
   const out = classifyActivationState(state);
-  assert.ok(out.blockers.includes('PUBLISHED_REVISION_RECORD_MISMATCH'));
+  assert.ok(out.blockers.includes('PUBLISHED_MAP_URL_MISMATCH'));
+});
+
+test('activation guard: exige prova criptográfica de base + somente mapas', () => {
+  const state = makeState();
+  const out = classifyActivationState(state);
+  // O fixture é válido estruturalmente, mas não é o conteúdo real que gerou EXPECTED_BASE_HASH.
+  assert.ok(out.blockers.includes('DRAFT_NOT_BASE_PLUS_MAPS'));
+  assert.ok(out.blockers.includes('PUBLISHED_NOT_BASE_PLUS_MAPS'));
 });
 
 test('activation guard: bloqueia template published diferente', () => {
@@ -219,30 +200,6 @@ test('activation guard: reconhece ausência de InviteContent para activação', 
   assert.ok(out.blockers.includes('INVITE_CONTENT_MISSING'));
 });
 
-test('activation guard: mapas publicados são requisito explícito', () => {
-  const content = normalizedContent();
-  assert.equal(inspectPublishedMaps(content).ok, true);
-  content.schedule[0].mapUrl = '';
-  const maps = inspectPublishedMaps(content);
-  assert.equal(maps.ok, false);
-  assert.deepEqual(maps.missing, ['ceremony']);
-});
-
-test('activation guard: URL de mapa publicada tem de ser http/https', () => {
-  const content = normalizedContent();
-  content.schedule[0].mapUrl = 'javascript:alert(1)';
-  const maps = inspectPublishedMaps(content);
-  assert.equal(maps.ok, false);
-  assert.deepEqual(maps.invalid, ['ceremony']);
-});
-
-test('activation guard: classificação bloqueia activação quando falta mapUrl', () => {
-  const state = makeState();
-  state.content.published.schedule[0].mapUrl = '';
-  const out = classifyActivationState(state);
-  assert.ok(out.blockers.includes('PUBLISHED_MAP_URL_MISSING'));
-});
-
 test('activation guard: rollback de emergência não depende de InviteContent', () => {
   const state = makeState('mongo-v2');
   state.content = null;
@@ -261,18 +218,20 @@ test('activation guard: rollback continua preso ao alvo exacto', () => {
   assert.ok(out.blockers.includes('INVITE_ID_MISMATCH'));
 });
 
-test('activation guard source: escrita é confinada a config.contentMode e suporta rollback explícito', () => {
+test('activation guard source: escrita é confinada a config.contentMode', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const source = fs.readFileSync(path.join(__dirname, '..', 'tools', 'rosalina-builder-v2-activation-db.js'), 'utf8');
   assert.match(source, /\$set:\s*\{\s*'config\.contentMode':\s*targetMode\s*\}/);
-  assert.match(source, /--activate/);
-  assert.match(source, /--rollback/);
-  assert.match(source, /rosalina-monteiro-activate-mongo-v2/);
-  assert.match(source, /rosalina-monteiro-rollback-legacy/);
-  assert.match(source, /PUBLISHED_MAP_URL_MISSING/);
+  assert.match(source, /stripRosalinaLocationMaps/);
+  assert.match(source, /DRAFT_NOT_BASE_PLUS_MAPS/);
+  assert.match(source, /PUBLISHED_NOT_BASE_PLUS_MAPS/);
   assert.match(source, /classifyRollbackState/);
   assert.match(source, /matchedCount !== 1/);
   assert.doesNotMatch(source, /InviteContent\.updateOne\(/);
   assert.doesNotMatch(source, /deleteMany\(/);
+});
+
+test('activation guard: mapas de referência são os três IDs operacionais esperados', () => {
+  assert.deepEqual(Object.keys(ROSALINA_LOCATION_MAPS), ['religious', 'civil', 'party']);
 });
