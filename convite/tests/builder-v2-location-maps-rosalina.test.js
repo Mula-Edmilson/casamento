@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const {
   ROSALINA_LOCATION_MAPS,
   REQUIRED_LOCATION_IDS,
+  locationKeyForScheduleItem,
   applyRosalinaLocationMaps,
   stripRosalinaLocationMaps,
   auditRosalinaLocationMaps,
@@ -15,9 +16,9 @@ function fixture() {
   return {
     identity: { slug: 'rosalina-monteiro' },
     schedule: [
-      { id: 'religious', title: 'Cerimónia Religiosa', time: '09:00', venue: 'Paróquia São Gabriel Arcanjo', mapUrl: '', note: 'A' },
-      { id: 'civil', title: 'Cerimónia Civil', time: '13:00', venue: 'Hotel Polana', mapUrl: '', note: 'B' },
-      { id: 'party', title: 'Copo de Água', time: '14:30', venue: 'Hotel Glória', mapUrl: '', note: 'C' }
+      { id: 'religious-cerimonia-religiosa-09-00', type: 'religious', title: 'Cerimónia Religiosa', time: '09:00', venue: 'Paróquia São Gabriel Arcanjo, Cidade da Matola', mapUrl: '', note: 'A' },
+      { id: 'reception-cerimonia-civil-13-00', type: 'reception', title: 'Cerimónia Civil', time: '13:00', venue: 'Hotel Polana', mapUrl: '', note: 'B' },
+      { id: 'additional-copo-de-agua-14-30', type: 'additional', title: 'Copo de Água', time: '14:30', venue: 'Hotel Glória, Salão Ballroom', mapUrl: '', note: 'C' }
     ],
     untouched: { value: 42 }
   };
@@ -31,6 +32,11 @@ test('location maps: fonte autoritativa contém três destinos exactos', () => {
   for (const entry of Object.values(ROSALINA_LOCATION_MAPS)) {
     assert.match(entry.mapUrl, /^https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=/);
   }
+});
+
+test('location maps: resolve os três momentos pelos campos semânticos reais do bootstrap', () => {
+  const source = fixture();
+  assert.deepEqual(source.schedule.map(locationKeyForScheduleItem), ['religious', 'civil', 'party']);
 });
 
 test('location maps: aplica somente mapUrl aos três itens esperados', () => {
@@ -66,18 +72,25 @@ test('location maps: auditoria exige correspondência exacta', () => {
   assert.deepEqual(audit.failed.map(item => item.id), ['civil']);
 });
 
-test('location maps: mapsAreBlank só aceita os três IDs presentes e vazios', () => {
+test('location maps: alteração de tipo/título/hora/local bloqueia resolução em vez de fazer fuzzy match', () => {
+  const source = fixture();
+  source.schedule[1].type = 'civil';
+  assert.equal(locationKeyForScheduleItem(source.schedule[1]), '');
+  assert.throws(() => applyRosalinaLocationMaps(source), /Agenda Rosalina incompleta/);
+});
+
+test('location maps: mapsAreBlank só aceita os três momentos exactos presentes e vazios', () => {
   const source = fixture();
   assert.equal(mapsAreBlank(source), true);
   assert.equal(mapsAreBlank(applyRosalinaLocationMaps(source)), false);
 
-  source.schedule = source.schedule.filter(item => item.id !== 'party');
+  source.schedule = source.schedule.filter(item => item.type !== 'additional');
   assert.equal(mapsAreBlank(source), false);
 });
 
 test('location maps: aplicação bloqueia agenda incompleta', () => {
   const source = fixture();
-  source.schedule = source.schedule.filter(item => item.id !== 'civil');
+  source.schedule = source.schedule.filter(item => item.type !== 'reception');
   assert.throws(() => applyRosalinaLocationMaps(source), /Agenda Rosalina incompleta/);
 });
 
