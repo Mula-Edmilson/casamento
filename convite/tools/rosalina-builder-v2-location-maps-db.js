@@ -328,7 +328,7 @@ async function main() {
             note: 'Published V2 actualizado somente com mapUrl autoritativos; renderer permanece legacy.',
             createdByRole: 'rosalina-location-maps'
           }
-        ], { session });
+        ], { session, ordered: true });
       });
     } finally {
       await session.endSession();
