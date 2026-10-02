@@ -42,9 +42,9 @@ function scheduleWithoutMapUrls(schedule) {
   });
 }
 
-function applyRosalinaLocationMaps(content) {
+function transformRosalinaLocationMaps(content, resolver) {
   if (!content || typeof content !== 'object' || Array.isArray(content)) {
-    throw new Error('Conteúdo Rosalina obrigatório para aplicar mapas.');
+    throw new Error('Conteúdo Rosalina obrigatório para mapas.');
   }
   if (text(content.identity?.slug).toLowerCase() !== TARGET_SLUG) {
     throw new Error('Conteúdo não corresponde a rosalina-monteiro.');
@@ -59,7 +59,7 @@ function applyRosalinaLocationMaps(content) {
     const source = ROSALINA_LOCATION_MAPS[id];
     if (!source) return item;
     seen.add(id);
-    return { ...item, mapUrl: source.mapUrl };
+    return { ...item, mapUrl: resolver(source, item) };
   });
 
   const missing = REQUIRED_LOCATION_IDS.filter(id => !seen.has(id));
@@ -68,6 +68,14 @@ function applyRosalinaLocationMaps(content) {
   }
 
   return out;
+}
+
+function applyRosalinaLocationMaps(content) {
+  return transformRosalinaLocationMaps(content, source => source.mapUrl);
+}
+
+function stripRosalinaLocationMaps(content) {
+  return transformRosalinaLocationMaps(content, () => '');
 }
 
 function auditRosalinaLocationMaps(content) {
@@ -109,6 +117,7 @@ module.exports = {
   REQUIRED_LOCATION_IDS,
   scheduleWithoutMapUrls,
   applyRosalinaLocationMaps,
+  stripRosalinaLocationMaps,
   auditRosalinaLocationMaps,
   mapsAreBlank
 };
