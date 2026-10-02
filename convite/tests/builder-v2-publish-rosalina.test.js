@@ -17,7 +17,7 @@ function baseDraft() {
   return {
     schemaVersion: '2.0',
     identity: { slug: TARGET_SLUG, packageKey: TARGET_PACKAGE, templateKey: TARGET_TEMPLATE },
-    people: { bride: 'Rosalina', groom: 'Monteiro', displayNames: 'Rosalina & Monteiro' },
+    people: { coupleNames: 'Rosalina & Monteiro', bride: 'Rosalina', groom: 'Monteiro', displayNames: 'Rosalina & Monteiro' },
     event: { dateISO: '2026-08-08T09:00:00+02:00', rsvpDeadline: '2026-06-20' },
     schedule: [{ id: 'ceremony', type: 'ceremony', title: 'Cerimónia', time: '09:00', venue: 'Paróquia São Gabriel Arcanjo' }],
     story: { title: 'A nossa história', text: '', chapters: [] },
