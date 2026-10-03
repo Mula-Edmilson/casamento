@@ -173,13 +173,15 @@ test('feedback busy respeita tanto is-loading como data-loading', () => {
   assert.match(js, /removeAttribute\('aria-busy'\)/);
 });
 
-test('UI V6 oferece densidade persistente compacta/confortável no desktop', () => {
+test('UI V6 oferece densidade persistente compacta/confortável no desktop sem contaminar mobile', () => {
   assert.match(js, /lirandzo_admin_density/);
   assert.match(js, /comfortable/);
   assert.match(js, /compact/);
   assert.match(css, /html\[data-density="comfortable"\]/);
   assert.match(css, /--lz-control/);
   assert.match(polish, /data-density="comfortable"/);
+  assert.match(polish, /--lz-control:36px/);
+  assert.match(polish, /--lz-card-pad:11px/);
   assert.match(polish, /\.lz-density-toggle\{\s*display:none!important/);
 });
 
@@ -195,9 +197,19 @@ test('UI V6 cobre desktop, tablet, mobile e acessibilidade de motion', () => {
 test('consolidação mobile protege touch targets, Safari e modais especializados', () => {
   assert.match(polish, /\.btn\.icon-only\{\s*width:40px!important/);
   assert.match(polish, /\.nav-item\{\s*min-height:42px!important/);
+  assert.match(polish, /@media \(pointer:coarse\)/);
   assert.match(polish, /@supports \(-webkit-touch-callout:none\)/);
   assert.match(polish, /font-size:16px!important/);
   assert.match(polish, /\.gift-phase3-modal\{\s*align-items:flex-end!important/);
+});
+
+test('tema claro mantém tokens secundários legíveis para texto pequeno', () => {
+  assert.match(polish, /--muted:#71675f/);
+  assert.match(polish, /--green:#0f7152/);
+  assert.match(polish, /--orange:#925715/);
+  assert.match(polish, /--red:#a23e3e/);
+  assert.match(polish, /\.field label\{font-size:10px!important\}/);
+  assert.match(polish, /th\{font-size:9\.5px!important\}/);
 });
 
 test('UI V6 mantém hierarquia de camadas segura e sem overlap mobile', () => {
@@ -212,9 +224,11 @@ test('UI V6 mantém hierarquia de camadas segura e sem overlap mobile', () => {
   assert.match(polish, /\.app-loader\{z-index:5500!important\}/);
 });
 
-test('UI V6 preserva modais especializados em vez de os alargar genericamente', () => {
+test('UI V6 preserva proporções históricas dos modais em vez de os alargar genericamente', () => {
   assert.match(adminHtml, /class=\"modal-card narrow\"/);
+  assert.match(polish, /\.modal-card\{\s*width:min\(760px,100%\)!important/);
   assert.match(polish, /\.modal-card\.narrow\{\s*width:min\(620px,100%\)!important/);
+  assert.match(polish, /\.builder-v2-dialog\{\s*width:min\(900px,100%\)!important/);
   assert.match(polish, /\.gift-phase3-dialog\{/);
   assert.match(polish, /max-height:calc\(100dvh - 28px\)!important/);
 });
