@@ -7,10 +7,13 @@ const path = require('node:path');
 const {
   FACTORY_VERSION,
   FACTORY_TEMPLATES,
+  contentHash,
   getFactoryTemplate,
   listFactoryTemplates,
   buildStarterDraft,
   factoryMarker,
+  activationConfirm,
+  rollbackConfirm,
   activationBlockers,
   buildLegacyEventData,
   applyTemplateReplacements
@@ -62,9 +65,19 @@ function publishedDoc(overrides = {}) {
   return {
     publishedRevision: 1,
     published,
-    publishHash: 'hash-test',
+    publishHash: contentHash(published),
     ...overrides
   };
+}
+
+function textFilesRecursive(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...textFilesRecursive(full));
+    else if (/\.(html|css|js|json|md|txt|svg|xml|webmanifest|yml|yaml)$/i.test(entry.name)) out.push(full);
+  }
+  return out;
 }
 
 test('factory registry expõe apenas Rosalina como piloto e mantém package/path exactos', () => {
@@ -106,6 +119,14 @@ test('starter Rosalina é novo conteúdo limpo e não copia dados pessoais do pi
   ]) assert.equal(serialized.includes(forbidden.toLowerCase()), false, forbidden);
 });
 
+test('template físico Rosalina reutilizável não contém dados pessoais do piloto', () => {
+  const templateDir = path.join(root, 'templates', 'rubi-rosalina');
+  const files = textFilesRecursive(templateDir).filter(file => path.basename(file) !== 'TEMPLATE-LIRANDZO.txt');
+  assert.ok(files.length > 0);
+  const source = files.map(file => fs.readFileSync(file, 'utf8')).join('\n');
+  assert.doesNotMatch(source, /rosalina-monteiro|Rosalina\s*&\s*Monteiro|Rosalina\s+Monteiro|Clemente|Nelson|Polana Serena|AFECC Glória|Praça da Igreja|Julius Nyerere|Marginal 4441/i);
+});
+
 test('starter é válido como Draft mas exige agenda antes da publicação', () => {
   const draft = starter();
   const draftValidation = validateInviteContentV2(draft, { stage: 'draft' });
@@ -125,20 +146,25 @@ test('factory marker só reconhece convite explicitamente criado pelo Factory V2
   assert.equal(valid.managed, true);
   assert.equal(valid.templateKey, 'esmeralda-rosalina');
   assert.equal(valid.contentMode, 'legacy');
+  assert.equal(valid.rawContentMode, 'legacy');
 
   const noMarker = factoryMarker(factoryInvite({ config: { contentMode: 'legacy', templateKey: 'esmeralda-rosalina' } }));
   assert.equal(noMarker.managed, false);
-  const unknownMode = factoryMarker(factoryInvite({ config: { contentMode: 'qualquer-coisa', factoryV2: { version: 1, templateKey: 'esmeralda-rosalina' } } }));
+  const unknownModeInvite = factoryInvite({ config: { contentMode: 'qualquer-coisa', factoryV2: { version: 1, templateKey: 'esmeralda-rosalina' } } });
+  const unknownMode = factoryMarker(unknownModeInvite);
   assert.equal(unknownMode.contentMode, 'legacy');
+  assert.equal(unknownMode.rawContentMode, 'qualquer-coisa');
+  assert.ok(activationBlockers(unknownModeInvite, publishedDoc()).includes('CONTENT_MODE_STORAGE_UNEXPECTED'));
 });
 
-test('activation guard aprova somente Published válido do próprio template', () => {
+test('activation guard aprova somente Published válido, íntegro e do próprio template', () => {
   const invite = factoryInvite();
   const doc = publishedDoc();
   assert.deepEqual(activationBlockers(invite, doc), []);
 
   assert.ok(activationBlockers(invite, null).includes('INVITE_CONTENT_MISSING'));
   assert.ok(activationBlockers(invite, { ...doc, publishedRevision: 0 }).includes('PUBLISHED_REVISION_MISSING'));
+  assert.ok(activationBlockers(invite, { ...doc, publishHash: 'hash-adulterado' }).includes('PUBLISH_HASH_MISMATCH'));
 
   const wrongTemplate = publishedDoc();
   wrongTemplate.published.identity.templateKey = 'esmeralda-edma';
@@ -148,6 +174,12 @@ test('activation guard aprova somente Published válido do próprio template', (
     config: { contentMode: 'mongo-v2', templateKey: 'esmeralda-rosalina', factoryV2: { version: 1, templateKey: 'esmeralda-rosalina' } }
   });
   assert.ok(activationBlockers(activeInvite, doc).includes('CONTENT_MODE_NOT_LEGACY'));
+});
+
+test('confirmações de activação e rollback ficam presas ao slug exacto', () => {
+  assert.equal(activationConfirm('ana-joao'), 'activate:ana-joao');
+  assert.equal(rollbackConfirm('ana-joao'), 'rollback:ana-joao');
+  assert.notEqual(activationConfirm('outro-casal'), activationConfirm('ana-joao'));
 });
 
 test('event-data legacy gerado contém identidade do novo convite sem dados pessoais do piloto', () => {
@@ -174,29 +206,37 @@ test('replacements do template alteram placeholders sem injectar dados do piloto
   assert.doesNotMatch(output, /__COUPLE_NAMES__|__INVITE_SLUG__/);
 });
 
-test('backend factory: criação é Admin-only, começa legacy e activação fica separada', () => {
+test('backend factory: criação é Admin-only, compensação é completa e activação fica separada', () => {
   const source = read('builder-v2/template-factory-v2.js');
   assert.match(source, /app\.post\('\/manager\/template-factory\/invites', requireManager, requireAdmin/);
   assert.match(source, /contentMode:\s*LEGACY_MODE/);
   assert.match(source, /draftRevision:\s*1/);
   assert.match(source, /publishedRevision:\s*0/);
   assert.match(source, /copyFactoryTemplateToGitHub/);
+  assert.match(source, /Activity\.deleteMany/);
   assert.match(source, /InviteContentRevision\.deleteMany/);
   assert.match(source, /InviteContent\.deleteMany/);
   assert.match(source, /Invite\.deleteOne/);
+  assert.match(source, /FACTORY_ACTIVATION_CONFIRM_REQUIRED/);
+  assert.match(source, /FACTORY_ROLLBACK_CONFIRM_REQUIRED/);
+  assert.match(source, /PUBLISH_HASH_MISMATCH/);
   assert.match(source, /\/manager\/template-factory\/invites\/:id\/activate/);
   assert.match(source, /'config\.contentMode': ACTIVE_MODE/);
   assert.doesNotMatch(source, /rosalina-monteiro|6a0ae58dc217acfcf34461f0|033ca7ee|4ba24eb9/i);
 });
 
-test('Admin Manager Factory usa fluxo criar → Construtor → publicar → activar, sem auto-activação', () => {
+test('Admin Manager Factory usa fluxo criar → Construtor → publicar → activar, só para convites factory-managed', () => {
   const ui = read('adminmanager-template-factory-v2.js');
   const config = read('adminmanager.config.js');
   assert.match(ui, /Template Factory V2/);
   assert.match(ui, /\/manager\/template-factory\/invites'/);
   assert.match(ui, /showPanel\('builderV2'\)/);
   assert.match(ui, /publishedRevision < 1/);
-  assert.match(ui, /\/activate`/);
+  assert.match(ui, /function isFactoryManagedInvite/);
+  assert.match(ui, /config\?\.factoryV2/);
+  assert.match(ui, /factoryManaged/);
+  assert.match(ui, /confirm:`activate:\$\{state\.slug\}`/);
+  assert.match(ui, /confirm:`rollback:\$\{state\.slug\}`/);
   const createFn = ui.slice(ui.indexOf('async function createFactoryInvite'), ui.indexOf('function ensureBuilderControls'));
   assert.doesNotMatch(createFn, /\/activate|mongo-v2/);
   assert.match(config, /adminmanager-template-factory-v2\.js/);
