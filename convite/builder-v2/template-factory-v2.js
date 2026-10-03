@@ -140,12 +140,22 @@ function buildStarterDraft(input = {}) {
 function factoryMarker(invite) {
   const config = invite && invite.config && typeof invite.config === 'object' ? invite.config : {};
   const marker = config.factoryV2 && typeof config.factoryV2 === 'object' ? config.factoryV2 : {};
+  const rawContentMode = clean(config.contentMode);
   return {
     managed: Number(marker.version || 0) === FACTORY_VERSION && Boolean(getFactoryTemplate(marker.templateKey)),
     version: Number(marker.version || 0),
     templateKey: clean(marker.templateKey || config.templateKey),
-    contentMode: norm(config.contentMode) === ACTIVE_MODE ? ACTIVE_MODE : LEGACY_MODE
+    rawContentMode,
+    contentMode: norm(rawContentMode) === ACTIVE_MODE ? ACTIVE_MODE : LEGACY_MODE
   };
+}
+
+function activationConfirm(slug) {
+  return `activate:${clean(slug)}`;
+}
+
+function rollbackConfirm(slug) {
+  return `rollback:${clean(slug)}`;
 }
 
 function publicSiteBase() {
@@ -358,13 +368,17 @@ function activationBlockers(invite, content) {
   if (!marker.managed) blockers.push('FACTORY_MARKER_MISSING');
   if (!spec) blockers.push('FACTORY_TEMPLATE_UNSUPPORTED');
   if (marker.contentMode !== LEGACY_MODE) blockers.push('CONTENT_MODE_NOT_LEGACY');
+  if (marker.rawContentMode !== LEGACY_MODE) blockers.push('CONTENT_MODE_STORAGE_UNEXPECTED');
   if (!content) blockers.push('INVITE_CONTENT_MISSING');
   if (blockers.length) return blockers;
 
   const published = normalizeInviteContentV2(content.published || {});
   const validation = validateInviteContentV2(published, { stage: 'publish' });
+  const canonicalPublished = validation.content || published;
+  const calculatedPublishedHash = contentHash(canonicalPublished);
   if (Number(content.publishedRevision || 0) < 1) blockers.push('PUBLISHED_REVISION_MISSING');
   if (!validation.valid) blockers.push('PUBLISHED_NOT_VALID');
+  if (!clean(content.publishHash) || clean(content.publishHash) !== calculatedPublishedHash) blockers.push('PUBLISH_HASH_MISMATCH');
   if (norm(published?.identity?.slug) !== norm(invite.slug)) blockers.push('PUBLISHED_SLUG_MISMATCH');
   if (norm(published?.identity?.packageKey) !== spec.packageKey) blockers.push('PUBLISHED_PACKAGE_MISMATCH');
   if (clean(published?.identity?.templateKey) !== spec.key) blockers.push('PUBLISHED_TEMPLATE_MISMATCH');
@@ -493,6 +507,7 @@ function registerTemplateFactoryV2Routes(app, deps = {}) {
       github = await copyFactoryTemplateToGitHub(result.invite, spec);
     } catch (error) {
       await strictTransaction(mongoose, async session => {
+        if (Activity) await Activity.deleteMany({ inviteId: result.invite._id }).session(session);
         await InviteContentRevision.deleteMany({ inviteId: result.invite._id }).session(session);
         await InviteContent.deleteMany({ inviteId: result.invite._id }).session(session);
         await Invite.deleteOne({ _id: result.invite._id, slug }).session(session);
@@ -519,6 +534,9 @@ function registerTemplateFactoryV2Routes(app, deps = {}) {
   app.post('/manager/template-factory/invites/:id/activate', requireManager, requireAdmin, wrap(async (req, res) => {
     const result = await strictTransaction(mongoose, async session => {
       const invite = await resolveInviteById({ Invite, mongoose }, req.params.id, session);
+      if (clean(req.body?.confirm) !== activationConfirm(invite.slug)) {
+        throw httpError(400, 'FACTORY_ACTIVATION_CONFIRM_REQUIRED', `Confirmação inválida. Use ${activationConfirm(invite.slug)}.`);
+      }
       let contentQuery = InviteContent.findOne({ inviteId: invite._id });
       if (contentQuery && typeof contentQuery.session === 'function') contentQuery = contentQuery.session(session);
       const content = await contentQuery;
@@ -553,6 +571,9 @@ function registerTemplateFactoryV2Routes(app, deps = {}) {
   app.post('/manager/template-factory/invites/:id/rollback', requireManager, requireAdmin, wrap(async (req, res) => {
     const result = await strictTransaction(mongoose, async session => {
       const invite = await resolveInviteById({ Invite, mongoose }, req.params.id, session);
+      if (clean(req.body?.confirm) !== rollbackConfirm(invite.slug)) {
+        throw httpError(400, 'FACTORY_ROLLBACK_CONFIRM_REQUIRED', `Confirmação inválida. Use ${rollbackConfirm(invite.slug)}.`);
+      }
       const marker = factoryMarker(invite);
       if (!marker.managed) throw httpError(409, 'FACTORY_ROLLBACK_BLOCKED', 'Este convite não é gerido pelo Template Factory V2.');
       if (marker.contentMode === LEGACY_MODE) return { inviteId: invite._id, unchanged: true };
@@ -602,6 +623,8 @@ module.exports = {
   listFactoryTemplates,
   buildStarterDraft,
   factoryMarker,
+  activationConfirm,
+  rollbackConfirm,
   activationBlockers,
   buildLegacyEventData,
   applyTemplateReplacements,
