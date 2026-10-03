@@ -3,7 +3,6 @@
 
   const STORAGE_KEY = 'lirandzo_admin_density';
   const ROOT_CLASS = 'lz-ui-v6';
-  const TOOLBAR_SELECTOR = '.toolbar,.guest-crud-toolbar,.builder-v2-toolbar';
   const INCREMENTAL_INVITE_SELECT_IDS = ['builderV2InviteSelect', 'giftInviteSelect'];
   let refreshQueued = false;
 
@@ -53,22 +52,6 @@
 
   const setViewportUnit = () => {
     document.documentElement.style.setProperty('--lz-vh', `${window.innerHeight * 0.01}px`);
-  };
-
-  const isWrapped = (node) => {
-    const children = [...node.children].filter((child) => {
-      const style = getComputedStyle(child);
-      return style.display !== 'none' && style.position !== 'absolute';
-    });
-    if (children.length < 2) return false;
-    const firstTop = children[0].getBoundingClientRect().top;
-    return children.some(child => Math.abs(child.getBoundingClientRect().top - firstTop) > 4);
-  };
-
-  const updateToolbars = () => {
-    document.querySelectorAll(TOOLBAR_SELECTOR).forEach(toolbar => {
-      toolbar.classList.toggle('is-wrapped', isWrapped(toolbar));
-    });
   };
 
   const currentInviteCatalogue = () => {
@@ -171,7 +154,6 @@
     syncIncrementalInviteSelects();
     enhanceButtons();
     markBusyStates();
-    requestAnimationFrame(updateToolbars);
   };
 
   const queueRefresh = () => {
@@ -213,16 +195,8 @@
     observeDynamicUi();
 
     document.addEventListener('click', closeMobileSidebarAfterNavigation, true);
-    window.addEventListener('resize', () => {
-      setViewportUnit();
-      window.clearTimeout(window.__lzUiV6ResizeTimer);
-      window.__lzUiV6ResizeTimer = window.setTimeout(updateToolbars, 90);
-    }, { passive: true });
-
-    window.addEventListener('orientationchange', () => window.setTimeout(() => {
-      setViewportUnit();
-      updateToolbars();
-    }, 160));
+    window.addEventListener('resize', setViewportUnit, { passive: true });
+    window.addEventListener('orientationchange', () => window.setTimeout(setViewportUnit, 160));
   };
 
   if (document.readyState === 'loading') {
