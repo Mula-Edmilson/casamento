@@ -150,7 +150,7 @@ test('activation guard aprova somente Published válido do próprio template', (
   assert.ok(activationBlockers(activeInvite, doc).includes('CONTENT_MODE_NOT_LEGACY'));
 });
 
-test('event-data legacy gerado contém somente identidade do novo convite', () => {
+test('event-data legacy gerado contém identidade do novo convite sem dados pessoais do piloto', () => {
   const source = buildLegacyEventData({
     slug: 'ana-joao', packageKey: 'esmeralda', coupleNames: 'Ana & João', bride: 'Ana', groom: 'João',
     eventDateISO: '2026-12-12T10:00:00+02:00', rsvpDeadline: '2026-11-30'
@@ -158,9 +158,9 @@ test('event-data legacy gerado contém somente identidade do novo convite', () =
   assert.match(source, /window\.LIRANDZO_EVENT_DATA/);
   assert.match(source, /ana-joao/);
   assert.match(source, /Ana & João/);
-  assert.match(source, /esmeralda-rosalina/);
+  assert.match(source, /esmeralda-rosalina/); // nome técnico do template é permitido
   assert.match(source, /"contentMode": "legacy"/);
-  assert.doesNotMatch(source, /Rosalina|Monteiro|Clemente|Nelson|Polana Serena|AFECC Glória/i);
+  assert.doesNotMatch(source, /rosalina-monteiro|Rosalina\s*&\s*Monteiro|Rosalina\s+Monteiro|Clemente|Nelson|Polana Serena|AFECC Glória|Praça da Igreja|Julius Nyerere|Marginal 4441/i);
 });
 
 test('replacements do template alteram placeholders sem injectar dados do piloto', () => {
