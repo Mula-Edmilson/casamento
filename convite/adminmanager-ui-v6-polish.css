@@ -1,5 +1,31 @@
 /* UI V6 final polish — scoped micro-corrections after the main V6 layer. */
 
+/* Layering contract: navigation chrome < sidebar/overlay < operator < modals < feedback. */
+html.lz-ui-v6 .bottom-nav{z-index:900!important}
+html.lz-ui-v6 .overlay{z-index:1200!important}
+html.lz-ui-v6 .sidebar{z-index:1300!important}
+html.lz-ui-v6 .lz-operator,
+html.lz-ui-v6 .lz-operator.open{z-index:3200!important}
+html.lz-ui-v6 .modal{z-index:5000!important}
+html.lz-ui-v6 .gift-phase3-modal,
+html.lz-ui-v6 .builder-v2-modal{z-index:5100!important}
+html.lz-ui-v6 .confirm-modal{z-index:5200!important}
+html.lz-ui-v6 .toast-stack{z-index:5400!important}
+html.lz-ui-v6 .app-loader{z-index:5500!important}
+
+/* Preserve the intentionally narrower guest editor on desktop. */
+html.lz-ui-v6 .modal-card.narrow{
+  width:min(620px,100%)!important;
+}
+
+/* Keep specialised Gift CRUD dialogs inside the same sharp visual system. */
+html.lz-ui-v6 .gift-phase3-dialog{
+  max-width:calc(100vw - 28px)!important;
+  max-height:calc(100dvh - 28px)!important;
+  border-radius:8px!important;
+  box-shadow:var(--lz-shadow-float)!important;
+}
+
 html.lz-ui-v6 .confirm-card{
   width:min(430px,100%)!important;
   max-width:calc(100vw - 28px)!important;
@@ -11,6 +37,11 @@ html.lz-ui-v6 .confirm-actions{
 }
 
 @media (max-width:920px){
+  /* The sticky command tabs must use the same real topbar height as V6. */
+  html.lz-ui-v6 body.mobile-app .command-tabs{
+    top:calc(var(--lz-topbar) + var(--safe-top))!important;
+  }
+
   html.lz-ui-v6 body.mobile-app .bottom-nav{
     background:color-mix(in srgb,var(--surface) 96%,transparent)!important;
     border-top:1px solid var(--line)!important;
@@ -73,9 +104,15 @@ html.lz-ui-v6 .confirm-actions{
 }
 
 @media (max-width:760px){
-  html.lz-ui-v6 .confirm-card{
+  html.lz-ui-v6 .confirm-card,
+  html.lz-ui-v6 .gift-phase3-dialog{
     width:100%!important;
     max-width:100%!important;
+    max-height:88dvh!important;
     border-radius:9px 9px 0 0!important;
+  }
+
+  html.lz-ui-v6 .modal-card.narrow{
+    width:100%!important;
   }
 }
