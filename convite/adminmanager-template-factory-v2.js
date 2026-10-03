@@ -2,9 +2,9 @@
   'use strict';
 
   const TEMPLATE_KEY = 'esmeralda-rosalina';
+  const FACTORY_VERSION = 1;
   const RESUME_KEY = 'lirandzo_template_factory_open_invite';
   const $ = id => document.getElementById(id);
-  const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[ch]));
 
   function adminApi(path, options = {}) {
     if (typeof api !== 'function') return Promise.reject(new Error('API do AdminManager indisponível.'));
@@ -16,6 +16,11 @@
     catch { return false; }
   }
 
+  function currentInvites() {
+    try { return Array.isArray(invites) ? invites : []; }
+    catch { return []; }
+  }
+
   function toast(message, type = '') {
     try { if (typeof appToast === 'function') appToast(message, type || undefined); }
     catch { /* noop */ }
@@ -24,6 +29,11 @@
   function slugify(value) {
     return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
       .replace(/&/g, ' e ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+  }
+
+  function isFactoryManagedInvite(invite) {
+    const marker = invite?.config?.factoryV2;
+    return Number(marker?.version || 0) === FACTORY_VERSION && String(marker?.templateKey || '') === TEMPLATE_KEY;
   }
 
   function ensureStyles() {
@@ -148,11 +158,19 @@
     const select = $('builderV2InviteSelect');
     const inviteId = String(select?.value || '').trim();
     if (!inviteId) return null;
+
+    const listedInvite = currentInvites().find(item => String(item?.id || '') === inviteId) || null;
+    if (!isFactoryManagedInvite(listedInvite)) {
+      return { inviteId, factoryManaged: false };
+    }
+
     const out = await adminApi(`/manager/invites/${encodeURIComponent(inviteId)}/content`);
     const data = out?.data || {};
     const templateKey = String(data.content?.draft?.identity?.templateKey || data.content?.published?.identity?.templateKey || '').trim();
     return {
       inviteId,
+      slug: String(listedInvite?.slug || data.invite?.slug || '').trim(),
+      factoryManaged: true,
       templateKey,
       contentMode: String(data.invite?.contentMode || 'legacy'),
       draftRevision: Number(data.content?.draftRevision || 0),
@@ -166,8 +184,8 @@
     if (!controls) return;
     try {
       const state = await getSelectedFactoryState();
-      const managed = state && state.templateKey === TEMPLATE_KEY;
-      controls.classList.toggle('visible', Boolean(managed));
+      const managed = Boolean(state?.factoryManaged && state.templateKey === TEMPLATE_KEY);
+      controls.classList.toggle('visible', managed);
       if (!managed) return;
       const active = state.contentMode === 'mongo-v2';
       const status = $('factoryBuilderStatus');
@@ -183,7 +201,7 @@
 
   async function activateSelectedFactoryInvite() {
     const state = await getSelectedFactoryState();
-    if (!state || state.templateKey !== TEMPLATE_KEY) return;
+    if (!state?.factoryManaged || state.templateKey !== TEMPLATE_KEY) return;
     if (state.publishedRevision < 1) return toast('Publique primeiro o Draft no Construtor.', 'warning');
     if (!window.confirm('Activar o renderer V2 deste convite? O conteúdo Published passará a alimentar o convite público.')) return;
     try {
@@ -197,7 +215,7 @@
 
   async function rollbackSelectedFactoryInvite() {
     const state = await getSelectedFactoryState();
-    if (!state || state.templateKey !== TEMPLATE_KEY) return;
+    if (!state?.factoryManaged || state.templateKey !== TEMPLATE_KEY) return;
     if (!window.confirm('Voltar este convite para renderer Legacy? O Published V2 continuará guardado no MongoDB.')) return;
     try {
       await adminApi(`/manager/template-factory/invites/${encodeURIComponent(state.inviteId)}/rollback`, { method:'POST', body:'{}' });
@@ -208,11 +226,17 @@
     } catch (error) { toast(error.message || 'Falha no rollback.', 'error'); }
   }
 
+  function scheduleFactoryRefresh() {
+    window.setTimeout(refreshBuilderFactoryState, 500);
+    window.setTimeout(refreshBuilderFactoryState, 1400);
+  }
+
   function bind() {
     $('factoryCoupleNames')?.addEventListener('input', syncSlugFromNames);
     $('factorySlug')?.addEventListener('input', event => { event.currentTarget.dataset.manual = event.currentTarget.value ? '1' : '0'; });
     $('templateFactoryV2Form')?.addEventListener('submit', createFactoryInvite);
     $('builderV2InviteSelect')?.addEventListener('change', () => window.setTimeout(refreshBuilderFactoryState, 120));
+    $('builderV2PublishBtn')?.addEventListener('click', scheduleFactoryRefresh);
   }
 
   function resumeCreatedInvite() {
