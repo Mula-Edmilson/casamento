@@ -18,7 +18,7 @@ const builderJs = read('adminmanager-builder-v2.js');
 const giftsJs = read('adminmanager-gifts.js');
 const factoryJs = read('adminmanager-template-factory-v2.js');
 
-test('UI V6 é uma camada incremental carregada depois do Builder no runtime', () => {
+test('loader mantém contratos históricos e invoca Builder antes da UI V6', () => {
   assert.match(config, /adminmanager-builder-v2\.css/);
   assert.match(config, /adminmanager-ui-v6\.css/);
   assert.match(config, /adminmanager-ui-v6-polish\.css/);
@@ -36,6 +36,7 @@ test('UI V6 é uma camada incremental carregada depois do Builder no runtime', (
     config.lastIndexOf('})();')
   );
   assert.ok(readyBlock.indexOf('loadBuilderV2()') < readyBlock.indexOf('loadUiV6()'));
+  assert.match(config, /document\.addEventListener\('DOMContentLoaded', loadGiftManager/);
   assert.match(config, /script\.addEventListener\('load', loadBuilderExtras/);
 });
 
@@ -141,15 +142,11 @@ test('UI V6 sincroniza Builder e Presentes quando o catálogo chega depois da mo
   assert.equal(builderSelect.value, 'b2');
   assert.deepEqual(builderSelect.children.map(option => option.value), ['', 'a1', 'b2', 'c3']);
 
-  // Mesmo que outro módulo reescreva as opções sem alterar o catálogo,
-  // a V6 deve reparar o select e manter a selecção válida.
   builderSelect.children = [builderSelect.children[0]];
   mutationCallback([{ type: 'childList', addedNodes: [{ nodeType: 1 }] }]);
   assert.equal(builderSelect.value, 'b2');
   assert.deepEqual(builderSelect.children.map(option => option.value), ['', 'a1', 'b2', 'c3']);
 
-  // Se um filtro transitório omitir o convite actualmente seleccionado,
-  // a opção seleccionada é preservada para não desalinhar UI e state interno.
   context.invites = [{ id: 'a1', coupleNames: 'Ana & João', slug: 'ana-joao' }];
   mutationCallback([{ type: 'childList', addedNodes: [{ nodeType: 1 }] }]);
   assert.equal(builderSelect.value, 'b2');
@@ -164,6 +161,11 @@ test('UI V6 agrupa mutações dinâmicas e evita refresh síncrono em cascata', 
   assert.match(js, /if \(needsRefresh\) queueRefresh\(\)/);
 });
 
+test('toolbars dependem apenas de flex-wrap e não guardam estado visual após resize', () => {
+  assert.match(css, /flex-wrap:wrap!important/);
+  assert.doesNotMatch(js, /isWrapped|updateToolbars|is-wrapped/);
+});
+
 test('feedback busy respeita tanto is-loading como data-loading', () => {
   assert.match(js, /classList\?\.contains\?\.\('is-loading'\)/);
   assert.match(js, /dataset\?\.loading === 'true'/);
@@ -171,12 +173,14 @@ test('feedback busy respeita tanto is-loading como data-loading', () => {
   assert.match(js, /removeAttribute\('aria-busy'\)/);
 });
 
-test('UI V6 oferece densidade persistente compacta/confortável', () => {
+test('UI V6 oferece densidade persistente compacta/confortável no desktop', () => {
   assert.match(js, /lirandzo_admin_density/);
   assert.match(js, /comfortable/);
   assert.match(js, /compact/);
   assert.match(css, /html\[data-density="comfortable"\]/);
   assert.match(css, /--lz-control/);
+  assert.match(polish, /data-density="comfortable"/);
+  assert.match(polish, /\.lz-density-toggle\{\s*display:none!important/);
 });
 
 test('UI V6 cobre desktop, tablet, mobile e acessibilidade de motion', () => {
@@ -186,6 +190,14 @@ test('UI V6 cobre desktop, tablet, mobile e acessibilidade de motion', () => {
   assert.match(css, /prefers-reduced-motion:reduce/);
   assert.match(css, /pointer:coarse/);
   assert.match(polish, /\.command-tabs\{\s*top:calc\(var\(--lz-topbar\) \+ var\(--safe-top\)\)!important/);
+});
+
+test('consolidação mobile protege touch targets, Safari e modais especializados', () => {
+  assert.match(polish, /\.btn\.icon-only\{\s*width:40px!important/);
+  assert.match(polish, /\.nav-item\{\s*min-height:42px!important/);
+  assert.match(polish, /@supports \(-webkit-touch-callout:none\)/);
+  assert.match(polish, /font-size:16px!important/);
+  assert.match(polish, /\.gift-phase3-modal\{\s*align-items:flex-end!important/);
 });
 
 test('UI V6 mantém hierarquia de camadas segura e sem overlap mobile', () => {
