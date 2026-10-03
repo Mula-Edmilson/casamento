@@ -12,6 +12,10 @@ const {
   buildRosalinaCompletenessDraft,
   auditRosalinaCompleteness
 } = require('../builder-v2/rosalina-completeness-v2');
+const {
+  scheduleWithoutMapUrls,
+  auditRosalinaLocationMaps
+} = require('../builder-v2/rosalina-location-maps-v2');
 
 const ROOT = path.resolve(__dirname, '..');
 const INVITE_DIR = path.join(ROOT, 'rosalina-monteiro');
@@ -71,10 +75,14 @@ test('completeness: menu real é estruturado em quatro itens', () => {
   assert.match(inviteHtml, /Menu da Celebração/);
 });
 
-test('completeness: não altera agenda, história, acesso, pagamentos, apoio ou features', () => {
+test('completeness: preserva agenda excepto mapUrl e não altera restantes blocos operacionais', () => {
   const base = baseDraft();
   const out = buildRosalinaCompletenessDraft(base);
-  for (const key of ['people', 'schedule', 'story', 'access', 'gifts', 'payments', 'support', 'features']) {
+
+  assert.deepEqual(scheduleWithoutMapUrls(out.schedule), scheduleWithoutMapUrls(base.schedule));
+  assert.equal(auditRosalinaLocationMaps(out).valid, true);
+
+  for (const key of ['people', 'story', 'access', 'gifts', 'payments', 'support', 'features']) {
     assert.deepEqual(out[key], base[key], key);
   }
   assert.equal(out.runtime.contentMode, 'legacy');
@@ -88,12 +96,13 @@ test('completeness: divergências legacy ficam explícitas e structured mantém 
   assert.equal(baseDraft().schedule[0].time, '09:00');
 });
 
-test('completeness: auditoria final passa e renderer permanece legacy', () => {
+test('completeness: auditoria final passa, mapas ficam completos e renderer permanece legacy', () => {
   const base = baseDraft();
   const out = buildRosalinaCompletenessDraft(base);
   const audit = auditRosalinaCompleteness({ baseDraft: base, draft: out });
   assert.equal(audit.valid, true, JSON.stringify(audit, null, 2));
   assert.equal(audit.failed.length, 0);
+  assert.equal(audit.summary.mappedLocations, 3);
   assert.equal(audit.summary.contentMode, 'legacy');
 });
 

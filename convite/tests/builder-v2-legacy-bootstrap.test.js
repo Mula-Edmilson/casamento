@@ -41,11 +41,14 @@ test('Rosalina: bootstrap preserva pais, data e versículo', () => {
   assert.equal(out.event.verseReference, 'Eclesiastes 4:9 e 12');
 });
 
-test('Rosalina: agenda completa mantém três momentos', () => {
+test('Rosalina: agenda completa mantém três momentos e semântica legacy estável', () => {
   const out = draft();
   assert.equal(out.schedule.length, 3);
   assert.deepEqual(out.schedule.map(item => item.time), ['09:00', '13:00', '14:30']);
+  assert.deepEqual(out.schedule.map(item => item.type), ['religious', 'reception', 'additional']);
+  assert.deepEqual(out.schedule.map(item => item.title), ['Cerimónia Religiosa', 'Cerimónia Civil', 'Copo de Água']);
   assert.equal(out.schedule[0].venue, 'Paróquia São Gabriel Arcanjo, Cidade da Matola');
+  assert.equal(out.schedule[1].venue, 'Hotel Polana');
   assert.equal(out.schedule[2].venue, 'Hotel Glória, Salão Ballroom');
 });
 

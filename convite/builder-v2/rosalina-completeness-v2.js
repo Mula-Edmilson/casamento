@@ -1,6 +1,11 @@
 'use strict';
 
 const { validateInviteContentV2 } = require('./invite-content-v2');
+const {
+  applyRosalinaLocationMaps,
+  auditRosalinaLocationMaps,
+  scheduleWithoutMapUrls
+} = require('./rosalina-location-maps-v2');
 
 const TARGET_SLUG = 'rosalina-monteiro';
 const TARGET_PACKAGE = 'esmeralda';
@@ -75,7 +80,7 @@ function assertBaseDraft(draft) {
 
 function buildRosalinaCompletenessDraft(baseDraft) {
   assertBaseDraft(baseDraft);
-  const out = clone(baseDraft);
+  let out = clone(baseDraft);
 
   out.identity = { ...(out.identity || {}), templateKey: TEMPLATE_KEY };
   out.event = { ...(out.event || {}), rsvpDeadline: ROSALINA_PRESENTATION_SOURCE.rsvpDeadline };
@@ -84,6 +89,9 @@ function buildRosalinaCompletenessDraft(baseDraft) {
   out.gallery = clone(ROSALINA_PRESENTATION_SOURCE.gallery);
   out.dressCode = clone(ROSALINA_PRESENTATION_SOURCE.dressCode);
   out.menu = clone(ROSALINA_PRESENTATION_SOURCE.menu);
+
+  // Localizações são a única evolução operacional autorizada nesta pass.
+  out = applyRosalinaLocationMaps(out);
 
   // Guard final: a Completeness Pass nunca activa V2.
   out.runtime = { ...(out.runtime || {}), contentMode: 'legacy', rendererVersion: 'v1' };
@@ -105,8 +113,21 @@ function auditRosalinaCompleteness({ baseDraft, draft } = {}) {
   check('dressCode.image', draft.dressCode?.image === ROSALINA_PRESENTATION_SOURCE.dressCode.image, ROSALINA_PRESENTATION_SOURCE.dressCode.image, draft.dressCode?.image);
   check('menu.items', Array.isArray(draft.menu?.items) && draft.menu.items.length === 4, 4, draft.menu?.items?.length);
 
-  // Conteúdo operacional/estruturado deve permanecer byte-equivalent ao Draft base.
-  ['people', 'schedule', 'story', 'access', 'gifts', 'payments', 'support', 'features'].forEach(key => {
+  const mapAudit = auditRosalinaLocationMaps(draft);
+  mapAudit.checks.forEach(item => {
+    check(`schedule.mapUrl.${item.id}`, item.ok, item.expected, item.actual);
+  });
+
+  // A estrutura/semântica da agenda permanece idêntica; somente mapUrl pode evoluir.
+  check(
+    'preserve.schedule-structure',
+    JSON.stringify(scheduleWithoutMapUrls(draft.schedule)) === JSON.stringify(scheduleWithoutMapUrls(baseDraft.schedule)),
+    'preservado excepto mapUrl',
+    JSON.stringify(scheduleWithoutMapUrls(draft.schedule)) === JSON.stringify(scheduleWithoutMapUrls(baseDraft.schedule)) ? 'preservado' : 'alterado'
+  );
+
+  // Restante conteúdo operacional/estruturado deve permanecer byte-equivalent ao Draft base.
+  ['people', 'story', 'access', 'gifts', 'payments', 'support', 'features'].forEach(key => {
     check(`preserve.${key}`, JSON.stringify(draft[key]) === JSON.stringify(baseDraft[key]), 'preservado', JSON.stringify(draft[key]) === JSON.stringify(baseDraft[key]) ? 'preservado' : 'alterado');
   });
   check('runtime.contentMode', draft.runtime?.contentMode === 'legacy', 'legacy', draft.runtime?.contentMode);
@@ -130,6 +151,7 @@ function auditRosalinaCompleteness({ baseDraft, draft } = {}) {
       bankAccounts: draft.payments.bankAccounts.length,
       mobilePayments: draft.payments.mobilePayments.length,
       supportContacts: draft.support.contacts.length,
+      mappedLocations: mapAudit.mapped,
       contentMode: draft.runtime.contentMode
     }
   };
