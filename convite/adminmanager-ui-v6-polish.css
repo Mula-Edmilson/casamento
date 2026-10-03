@@ -1,0 +1,81 @@
+/* UI V6 final polish — scoped micro-corrections after the main V6 layer. */
+
+html.lz-ui-v6 .confirm-card{
+  width:min(430px,100%)!important;
+  max-width:calc(100vw - 28px)!important;
+  padding:14px!important;
+}
+
+html.lz-ui-v6 .confirm-actions{
+  gap:6px!important;
+}
+
+@media (max-width:920px){
+  html.lz-ui-v6 body.mobile-app .bottom-nav{
+    background:color-mix(in srgb,var(--surface) 96%,transparent)!important;
+    border-top:1px solid var(--line)!important;
+    box-shadow:0 -8px 24px rgba(0,0,0,.06)!important;
+    backdrop-filter:blur(18px) saturate(120%)!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-inner{
+    height:58px!important;
+    gap:2px!important;
+    padding:0 5px!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn{
+    min-width:44px!important;
+    max-width:62px!important;
+    height:50px!important;
+    color:var(--muted)!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn .nav-icon-wrap{
+    width:36px!important;
+    height:36px!important;
+    border-radius:6px!important;
+    border:1px solid transparent!important;
+    box-shadow:none!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn .feather{
+    width:18px!important;
+    height:18px!important;
+    stroke-width:1.8!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn.active{
+    color:var(--accent-2)!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn.active .nav-icon-wrap{
+    background:var(--accent-soft)!important;
+    border-color:color-mix(in srgb,var(--accent) 30%,var(--line))!important;
+    box-shadow:none!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn:active .nav-icon-wrap{
+    transform:translateY(1px)!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .main{
+    padding-bottom:calc(80px + var(--safe-bottom))!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .toast-stack{
+    bottom:calc(72px + var(--safe-bottom))!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .lz-operator{
+    bottom:calc(74px + var(--safe-bottom,0px))!important;
+  }
+}
+
+@media (max-width:760px){
+  html.lz-ui-v6 .confirm-card{
+    width:100%!important;
+    max-width:100%!important;
+    border-radius:9px 9px 0 0!important;
+  }
+}
