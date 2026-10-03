@@ -91,10 +91,7 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
     script.src = 'adminmanager-builder-v2.js';
     script.defer = true;
     script.setAttribute(MODULE_ATTR, 'builder-v2');
-    script.addEventListener('load', () => {
-      loadBuilderExtras();
-      loadUiV6();
-    }, { once: true });
+    script.addEventListener('load', loadBuilderExtras, { once: true });
     document.body.appendChild(script);
   };
 
