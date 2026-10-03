@@ -47,6 +47,24 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
     document.body.appendChild(script);
   };
 
+  const loadUiV6 = () => {
+    if (!document.querySelector(`link[${MODULE_ATTR}="ui-v6-css"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'adminmanager-ui-v6.css';
+      link.setAttribute(MODULE_ATTR, 'ui-v6-css');
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector(`script[${MODULE_ATTR}="ui-v6"]`)) {
+      const script = document.createElement('script');
+      script.src = 'adminmanager-ui-v6.js';
+      script.defer = true;
+      script.setAttribute(MODULE_ATTR, 'ui-v6');
+      document.body.appendChild(script);
+    }
+  };
+
   const loadBuilderExtras = () => {
     loadBuilderDetails();
     loadBuilderPreviewAssets();
@@ -65,6 +83,7 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
     const existing = document.querySelector(`script[${MODULE_ATTR}="builder-v2"]`);
     if (existing) {
       loadBuilderExtras();
+      loadUiV6();
       return;
     }
 
@@ -72,15 +91,24 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
     script.src = 'adminmanager-builder-v2.js';
     script.defer = true;
     script.setAttribute(MODULE_ATTR, 'builder-v2');
-    script.addEventListener('load', loadBuilderExtras, { once: true });
+    script.addEventListener('load', () => {
+      loadBuilderExtras();
+      loadUiV6();
+    }, { once: true });
     document.body.appendChild(script);
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadGiftManager, { once: true });
-    document.addEventListener('DOMContentLoaded', loadBuilderV2, { once: true });
-  } else {
+  const boot = () => {
     loadGiftManager();
     loadBuilderV2();
+    // O Builder CSS é anexado sincronamente dentro de loadBuilderV2; a V6
+    // fica sempre depois dele na cascata, mesmo se o script Builder atrasar.
+    loadUiV6();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
+  } else {
+    boot();
   }
 })();
