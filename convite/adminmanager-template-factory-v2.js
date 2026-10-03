@@ -205,7 +205,10 @@
     if (state.publishedRevision < 1) return toast('Publique primeiro o Draft no Construtor.', 'warning');
     if (!window.confirm('Activar o renderer V2 deste convite? O conteúdo Published passará a alimentar o convite público.')) return;
     try {
-      await adminApi(`/manager/template-factory/invites/${encodeURIComponent(state.inviteId)}/activate`, { method:'POST', body:'{}' });
+      await adminApi(`/manager/template-factory/invites/${encodeURIComponent(state.inviteId)}/activate`, {
+        method:'POST',
+        body:JSON.stringify({ confirm:`activate:${state.slug}` })
+      });
       toast('Renderer V2 activado.');
       const select = $('builderV2InviteSelect');
       if (select) select.dispatchEvent(new Event('change', { bubbles:true }));
@@ -218,7 +221,10 @@
     if (!state?.factoryManaged || state.templateKey !== TEMPLATE_KEY) return;
     if (!window.confirm('Voltar este convite para renderer Legacy? O Published V2 continuará guardado no MongoDB.')) return;
     try {
-      await adminApi(`/manager/template-factory/invites/${encodeURIComponent(state.inviteId)}/rollback`, { method:'POST', body:'{}' });
+      await adminApi(`/manager/template-factory/invites/${encodeURIComponent(state.inviteId)}/rollback`, {
+        method:'POST',
+        body:JSON.stringify({ confirm:`rollback:${state.slug}` })
+      });
       toast('Renderer devolvido a Legacy.');
       const select = $('builderV2InviteSelect');
       if (select) select.dispatchEvent(new Event('change', { bubbles:true }));
