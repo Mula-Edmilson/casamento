@@ -13,9 +13,15 @@ html.lz-ui-v6 .confirm-modal{z-index:5200!important}
 html.lz-ui-v6 .toast-stack{z-index:5400!important}
 html.lz-ui-v6 .app-loader{z-index:5500!important}
 
-/* Preserve the intentionally narrower guest editor on desktop. */
+/* Preserve the proven modal proportions instead of making every dialog oversized. */
+html.lz-ui-v6 .modal-card{
+  width:min(760px,100%)!important;
+}
 html.lz-ui-v6 .modal-card.narrow{
   width:min(620px,100%)!important;
+}
+html.lz-ui-v6 .builder-v2-dialog{
+  width:min(900px,100%)!important;
 }
 
 /* Keep specialised Gift CRUD dialogs inside the same sharp visual system. */
@@ -157,6 +163,7 @@ html.lz-ui-v6 .confirm-actions{
     padding:8px!important;
   }
 
+  html.lz-ui-v6 .modal-card,
   html.lz-ui-v6 .confirm-card,
   html.lz-ui-v6 .gift-phase3-dialog{
     width:100%!important;
