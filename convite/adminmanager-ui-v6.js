@@ -82,9 +82,27 @@
     String(invite?.slug || '')
   ].join('\u001f')).join('\u001e');
 
+  const selectOptions = select => Array.from(select?.options || select?.children || []);
+
   const syncInviteSelect = (select, list, signature) => {
-    if (!select || select.dataset.lzInviteSignature === signature) return;
+    if (!select) return;
+
     const previous = String(select.value || '');
+    const previousOption = selectOptions(select).find(option => String(option?.value || '') === previous) || null;
+    const hasPreviousInCatalogue = previous && list.some(invite => String(invite?.id || '') === previous);
+    const preserveDetachedSelection = Boolean(previous && !hasPreviousInCatalogue && previousOption);
+    const preservedLabel = preserveDetachedSelection ? String(previousOption.textContent || previous) : '';
+    const effectiveSignature = `${signature}\u001d${preserveDetachedSelection ? `${previous}\u001f${preservedLabel}` : ''}`;
+    const expectedValues = ['', ...list.map(invite => String(invite?.id || ''))];
+    if (preserveDetachedSelection) expectedValues.push(previous);
+    const actualValues = selectOptions(select).map(option => String(option?.value || ''));
+
+    if (
+      select.dataset.lzInviteSignature === effectiveSignature &&
+      actualValues.length === expectedValues.length &&
+      actualValues.every((value, index) => value === expectedValues[index])
+    ) return;
+
     const placeholder = document.createElement('option');
     placeholder.value = '';
     placeholder.textContent = 'Seleccione um convite...';
@@ -99,10 +117,18 @@
       select.appendChild(option);
     });
 
-    if (previous && list.some(invite => String(invite?.id || '') === previous)) {
+    if (preserveDetachedSelection) {
+      const option = document.createElement('option');
+      option.value = previous;
+      option.textContent = preservedLabel;
+      option.dataset.lzPreservedSelection = '1';
+      select.appendChild(option);
+      select.value = previous;
+    } else if (hasPreviousInCatalogue) {
       select.value = previous;
     }
-    select.dataset.lzInviteSignature = signature;
+
+    select.dataset.lzInviteSignature = effectiveSignature;
   };
 
   const syncIncrementalInviteSelects = () => {
@@ -124,8 +150,11 @@
   };
 
   const markBusyStates = (root = document) => {
-    root.querySelectorAll?.('.btn.is-loading,[data-loading="true"]').forEach(el => el.setAttribute('aria-busy', 'true'));
-    root.querySelectorAll?.('.btn:not(.is-loading)[aria-busy="true"]').forEach(el => el.removeAttribute('aria-busy'));
+    root.querySelectorAll?.('.btn,[data-loading]').forEach(el => {
+      const busy = Boolean(el.classList?.contains?.('is-loading') || el.dataset?.loading === 'true' || el.getAttribute?.('data-loading') === 'true');
+      if (busy) el.setAttribute('aria-busy', 'true');
+      else if (el.getAttribute?.('aria-busy') === 'true') el.removeAttribute('aria-busy');
+    });
   };
 
   const closeMobileSidebarAfterNavigation = (event) => {
