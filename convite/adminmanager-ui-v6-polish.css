@@ -1,0 +1,200 @@
+/* UI V6 final polish — scoped micro-corrections after the main V6 layer. */
+
+/* Accessibility consolidation for the light theme: small secondary text stays AA-safe. */
+html.lz-ui-v6[data-theme="light"]{
+  --accent:#87583c;
+  --muted:#71675f;
+  --green:#0f7152;
+  --orange:#925715;
+  --red:#a23e3e;
+}
+
+html.lz-ui-v6 .field label{font-size:10px!important}
+html.lz-ui-v6 th{font-size:9.5px!important}
+
+/* Layering contract: navigation chrome < sidebar/overlay < operator < modals < feedback. */
+html.lz-ui-v6 .bottom-nav{z-index:900!important}
+html.lz-ui-v6 .overlay{z-index:1200!important}
+html.lz-ui-v6 .sidebar{z-index:1300!important}
+html.lz-ui-v6 .lz-operator,
+html.lz-ui-v6 .lz-operator.open{z-index:3200!important}
+html.lz-ui-v6 .modal{z-index:5000!important}
+html.lz-ui-v6 .gift-phase3-modal,
+html.lz-ui-v6 .builder-v2-modal{z-index:5100!important}
+html.lz-ui-v6 .confirm-modal{z-index:5200!important}
+html.lz-ui-v6 .toast-stack{z-index:5400!important}
+html.lz-ui-v6 .app-loader{z-index:5500!important}
+
+/* Preserve the proven modal proportions instead of making every dialog oversized. */
+html.lz-ui-v6 .modal-card{
+  width:min(760px,100%)!important;
+}
+html.lz-ui-v6 .modal-card.narrow{
+  width:min(620px,100%)!important;
+}
+html.lz-ui-v6 .builder-v2-dialog{
+  width:min(900px,100%)!important;
+}
+
+/* Keep specialised Gift CRUD dialogs inside the same sharp visual system. */
+html.lz-ui-v6 .gift-phase3-dialog{
+  max-width:calc(100vw - 28px)!important;
+  max-height:calc(100dvh - 28px)!important;
+  border-radius:8px!important;
+  box-shadow:var(--lz-shadow-float)!important;
+}
+
+html.lz-ui-v6 .confirm-card{
+  width:min(430px,100%)!important;
+  max-width:calc(100vw - 28px)!important;
+  padding:14px!important;
+}
+
+html.lz-ui-v6 .confirm-actions{
+  gap:6px!important;
+}
+
+/* On roomy desktop the topbar should not clip focus rings/tooltips. */
+@media (min-width:1181px){
+  html.lz-ui-v6 .topbar-actions{
+    max-width:none!important;
+    overflow:visible!important;
+  }
+}
+
+@media (max-width:920px){
+  /* Mobile has a single tuned density; don't let a desktop preference inflate it. */
+  html.lz-ui-v6[data-density="comfortable"]{
+    --lz-control:36px;
+    --lz-card-pad:11px;
+    --lz-space-3:12px;
+    --lz-space-4:16px;
+  }
+
+  html.lz-ui-v6 body.mobile-app .lz-density-toggle{
+    display:none!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .btn.icon-only{
+    width:40px!important;
+    min-width:40px!important;
+    height:40px!important;
+    flex:0 0 40px!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .nav-item{
+    min-height:42px!important;
+    font-size:12px!important;
+  }
+
+  /* The sticky command tabs must use the same real topbar height as V6. */
+  html.lz-ui-v6 body.mobile-app .command-tabs{
+    top:calc(var(--lz-topbar) + var(--safe-top))!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .gift-phase3-modal{
+    align-items:flex-end!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav{
+    background:color-mix(in srgb,var(--surface) 96%,transparent)!important;
+    border-top:1px solid var(--line)!important;
+    box-shadow:0 -8px 24px rgba(0,0,0,.06)!important;
+    backdrop-filter:blur(18px) saturate(120%)!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-inner{
+    height:58px!important;
+    gap:2px!important;
+    padding:0 5px!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn{
+    min-width:44px!important;
+    max-width:62px!important;
+    height:50px!important;
+    color:var(--muted)!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn .nav-icon-wrap{
+    width:36px!important;
+    height:36px!important;
+    border-radius:6px!important;
+    border:1px solid transparent!important;
+    box-shadow:none!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn .feather{
+    width:18px!important;
+    height:18px!important;
+    stroke-width:1.8!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn.active{
+    color:var(--accent-2)!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn.active .nav-icon-wrap{
+    background:var(--accent-soft)!important;
+    border-color:color-mix(in srgb,var(--accent) 30%,var(--line))!important;
+    box-shadow:none!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .bottom-nav-btn:active .nav-icon-wrap{
+    transform:translateY(1px)!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .main{
+    padding-bottom:calc(80px + var(--safe-bottom))!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .toast-stack{
+    bottom:calc(72px + var(--safe-bottom))!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .lz-operator{
+    bottom:calc(74px + var(--safe-bottom,0px))!important;
+  }
+}
+
+/* Touch devices keep usable controls even when they use the desktop shell (e.g. tablet landscape). */
+@media (pointer:coarse){
+  html.lz-ui-v6 body.mobile-app .btn.icon-only{
+    min-width:40px!important;
+    min-height:40px!important;
+  }
+  html.lz-ui-v6 body.mobile-app .nav-item{
+    min-height:42px!important;
+  }
+}
+
+/* Prevent Safari/iOS from auto-zooming form controls. */
+@supports (-webkit-touch-callout:none){
+  html.lz-ui-v6 body.mobile-app .field input,
+  html.lz-ui-v6 body.mobile-app .field select,
+  html.lz-ui-v6 body.mobile-app .field textarea,
+  html.lz-ui-v6 body.mobile-app .search-input,
+  html.lz-ui-v6 body.mobile-app .lz-operator-form input,
+  html.lz-ui-v6 body.mobile-app .lz-operator-scope select{
+    font-size:16px!important;
+  }
+}
+
+@media (max-width:760px){
+  html.lz-ui-v6 .gift-phase3-modal{
+    padding:8px!important;
+  }
+
+  html.lz-ui-v6 .modal-card,
+  html.lz-ui-v6 .confirm-card,
+  html.lz-ui-v6 .gift-phase3-dialog{
+    width:100%!important;
+    max-width:100%!important;
+    max-height:88dvh!important;
+    border-radius:9px 9px 0 0!important;
+  }
+
+  html.lz-ui-v6 .modal-card.narrow{
+    width:100%!important;
+  }
+}
