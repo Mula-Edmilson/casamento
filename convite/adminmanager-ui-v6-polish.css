@@ -36,7 +36,41 @@ html.lz-ui-v6 .confirm-actions{
   gap:6px!important;
 }
 
+/* On roomy desktop the topbar should not clip focus rings/tooltips. */
+@media (min-width:1181px){
+  html.lz-ui-v6 .topbar-actions{
+    max-width:none!important;
+    overflow:visible!important;
+  }
+}
+
 @media (max-width:920px){
+  /* Mobile has a single tuned density; don't let a desktop preference inflate it. */
+  html.lz-ui-v6[data-density="comfortable"]{
+    --lz-control:36px;
+    --lz-card-pad:11px;
+  }
+
+  html.lz-ui-v6 body.mobile-app .lz-density-toggle{
+    display:none!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .btn.icon-only{
+    width:40px!important;
+    min-width:40px!important;
+    height:40px!important;
+    flex:0 0 40px!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .nav-item{
+    min-height:42px!important;
+    font-size:12px!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .field label{
+    font-size:10px!important;
+  }
+
   /* The sticky command tabs must use the same real topbar height as V6. */
   html.lz-ui-v6 body.mobile-app .command-tabs{
     top:calc(var(--lz-topbar) + var(--safe-top))!important;
@@ -103,7 +137,26 @@ html.lz-ui-v6 .confirm-actions{
   }
 }
 
+/* Prevent Safari/iOS from auto-zooming form controls while keeping Android/desktop compact. */
+@supports (-webkit-touch-callout:none){
+  @media (max-width:920px){
+    html.lz-ui-v6 body.mobile-app .field input,
+    html.lz-ui-v6 body.mobile-app .field select,
+    html.lz-ui-v6 body.mobile-app .field textarea,
+    html.lz-ui-v6 body.mobile-app .search-input,
+    html.lz-ui-v6 body.mobile-app .lz-operator-form input,
+    html.lz-ui-v6 body.mobile-app .lz-operator-scope select{
+      font-size:16px!important;
+    }
+  }
+}
+
 @media (max-width:760px){
+  html.lz-ui-v6 .gift-phase3-modal{
+    align-items:flex-end!important;
+    padding:8px!important;
+  }
+
   html.lz-ui-v6 .confirm-card,
   html.lz-ui-v6 .gift-phase3-dialog{
     width:100%!important;
