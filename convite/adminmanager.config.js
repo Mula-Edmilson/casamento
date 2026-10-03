@@ -98,17 +98,13 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
     document.body.appendChild(script);
   };
 
-  const boot = () => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiftManager, { once: true });
+    document.addEventListener('DOMContentLoaded', loadBuilderV2, { once: true });
+    document.addEventListener('DOMContentLoaded', loadUiV6, { once: true });
+  } else {
     loadGiftManager();
     loadBuilderV2();
-    // O Builder CSS é anexado sincronamente dentro de loadBuilderV2; a V6
-    // fica sempre depois dele na cascata, mesmo se o script Builder atrasar.
     loadUiV6();
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot, { once: true });
-  } else {
-    boot();
   }
 })();
