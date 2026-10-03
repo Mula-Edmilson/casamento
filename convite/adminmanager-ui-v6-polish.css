@@ -1,5 +1,17 @@
 /* UI V6 final polish — scoped micro-corrections after the main V6 layer. */
 
+/* Accessibility consolidation for the light theme: small secondary text stays AA-safe. */
+html.lz-ui-v6[data-theme="light"]{
+  --accent:#87583c;
+  --muted:#71675f;
+  --green:#0f7152;
+  --orange:#925715;
+  --red:#a23e3e;
+}
+
+html.lz-ui-v6 .field label{font-size:10px!important}
+html.lz-ui-v6 th{font-size:9.5px!important}
+
 /* Layering contract: navigation chrome < sidebar/overlay < operator < modals < feedback. */
 html.lz-ui-v6 .bottom-nav{z-index:900!important}
 html.lz-ui-v6 .overlay{z-index:1200!important}
@@ -55,6 +67,8 @@ html.lz-ui-v6 .confirm-actions{
   html.lz-ui-v6[data-density="comfortable"]{
     --lz-control:36px;
     --lz-card-pad:11px;
+    --lz-space-3:12px;
+    --lz-space-4:16px;
   }
 
   html.lz-ui-v6 body.mobile-app .lz-density-toggle{
@@ -73,13 +87,13 @@ html.lz-ui-v6 .confirm-actions{
     font-size:12px!important;
   }
 
-  html.lz-ui-v6 body.mobile-app .field label{
-    font-size:10px!important;
-  }
-
   /* The sticky command tabs must use the same real topbar height as V6. */
   html.lz-ui-v6 body.mobile-app .command-tabs{
     top:calc(var(--lz-topbar) + var(--safe-top))!important;
+  }
+
+  html.lz-ui-v6 body.mobile-app .gift-phase3-modal{
+    align-items:flex-end!important;
   }
 
   html.lz-ui-v6 body.mobile-app .bottom-nav{
@@ -143,23 +157,31 @@ html.lz-ui-v6 .confirm-actions{
   }
 }
 
-/* Prevent Safari/iOS from auto-zooming form controls while keeping Android/desktop compact. */
+/* Touch devices keep usable controls even when they use the desktop shell (e.g. tablet landscape). */
+@media (pointer:coarse){
+  html.lz-ui-v6 body.mobile-app .btn.icon-only{
+    min-width:40px!important;
+    min-height:40px!important;
+  }
+  html.lz-ui-v6 body.mobile-app .nav-item{
+    min-height:42px!important;
+  }
+}
+
+/* Prevent Safari/iOS from auto-zooming form controls. */
 @supports (-webkit-touch-callout:none){
-  @media (max-width:920px){
-    html.lz-ui-v6 body.mobile-app .field input,
-    html.lz-ui-v6 body.mobile-app .field select,
-    html.lz-ui-v6 body.mobile-app .field textarea,
-    html.lz-ui-v6 body.mobile-app .search-input,
-    html.lz-ui-v6 body.mobile-app .lz-operator-form input,
-    html.lz-ui-v6 body.mobile-app .lz-operator-scope select{
-      font-size:16px!important;
-    }
+  html.lz-ui-v6 body.mobile-app .field input,
+  html.lz-ui-v6 body.mobile-app .field select,
+  html.lz-ui-v6 body.mobile-app .field textarea,
+  html.lz-ui-v6 body.mobile-app .search-input,
+  html.lz-ui-v6 body.mobile-app .lz-operator-form input,
+  html.lz-ui-v6 body.mobile-app .lz-operator-scope select{
+    font-size:16px!important;
   }
 }
 
 @media (max-width:760px){
   html.lz-ui-v6 .gift-phase3-modal{
-    align-items:flex-end!important;
     padding:8px!important;
   }
 
