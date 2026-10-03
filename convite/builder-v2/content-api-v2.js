@@ -7,6 +7,7 @@ const {
   mapLegacyInviteToV2,
   slugify
 } = require('./invite-content-v2');
+const { registerTemplateFactoryV2Routes } = require('./template-factory-v2');
 
 const BUILDER_V2_ACTIVE_MODE = 'mongo-v2';
 const LEGACY_CONTENT_MODE = 'legacy';
@@ -573,6 +574,17 @@ function registerBuilderV2ContentRoutes(app, deps = {}) {
     return res.json({ status: 'success', data: publicContentEnvelope(invite, doc) });
   }));
 
+  const factoryManifest = registerTemplateFactoryV2Routes(app, {
+    mongoose,
+    Invite,
+    InviteContent,
+    InviteContentRevision,
+    Activity,
+    requireManager,
+    requireAdmin,
+    asyncRoute
+  });
+
   return {
     managerRoutes: [
       'GET /manager/invites/:id/content',
@@ -580,7 +592,8 @@ function registerBuilderV2ContentRoutes(app, deps = {}) {
       'POST /manager/invites/:id/content/validate',
       'POST /manager/invites/:id/content/publish',
       'GET /manager/invites/:id/content/revisions',
-      'POST /manager/invites/:id/content/rollback'
+      'POST /manager/invites/:id/content/rollback',
+      ...(factoryManifest.managerRoutes || [])
     ],
     publicRoutes: ['GET /api/public/invites/:slug/content']
   };
