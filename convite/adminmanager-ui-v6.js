@@ -4,6 +4,8 @@
   const STORAGE_KEY = 'lirandzo_admin_density';
   const ROOT_CLASS = 'lz-ui-v6';
   const TOOLBAR_SELECTOR = '.toolbar,.guest-crud-toolbar,.builder-v2-toolbar';
+  const INCREMENTAL_INVITE_SELECT_IDS = ['builderV2InviteSelect', 'giftInviteSelect'];
+  let refreshQueued = false;
 
   const getDensity = () => {
     try {
@@ -69,6 +71,46 @@
     });
   };
 
+  const currentInviteCatalogue = () => {
+    try { return Array.isArray(invites) ? invites : []; }
+    catch { return []; }
+  };
+
+  const inviteCatalogueSignature = list => list.map(invite => [
+    String(invite?.id || ''),
+    String(invite?.coupleNames || ''),
+    String(invite?.slug || '')
+  ].join('\u001f')).join('\u001e');
+
+  const syncInviteSelect = (select, list, signature) => {
+    if (!select || select.dataset.lzInviteSignature === signature) return;
+    const previous = String(select.value || '');
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Seleccione um convite...';
+    select.replaceChildren(placeholder);
+
+    list.forEach(invite => {
+      const option = document.createElement('option');
+      option.value = String(invite?.id || '');
+      const label = String(invite?.coupleNames || invite?.slug || 'Convite');
+      const slug = String(invite?.slug || '');
+      option.textContent = slug ? `${label} · ${slug}` : label;
+      select.appendChild(option);
+    });
+
+    if (previous && list.some(invite => String(invite?.id || '') === previous)) {
+      select.value = previous;
+    }
+    select.dataset.lzInviteSignature = signature;
+  };
+
+  const syncIncrementalInviteSelects = () => {
+    const list = currentInviteCatalogue();
+    const signature = inviteCatalogueSignature(list);
+    INCREMENTAL_INVITE_SELECT_IDS.forEach(id => syncInviteSelect(document.getElementById(id), list, signature));
+  };
+
   const enhanceButtons = (root = document) => {
     root.querySelectorAll?.('button,.btn').forEach(button => {
       if (button.dataset.lzUiV6Bound === '1') return;
@@ -97,9 +139,19 @@
 
   const refresh = () => {
     ensureDensityToggle();
+    syncIncrementalInviteSelects();
     enhanceButtons();
     markBusyStates();
     requestAnimationFrame(updateToolbars);
+  };
+
+  const queueRefresh = () => {
+    if (refreshQueued) return;
+    refreshQueued = true;
+    requestAnimationFrame(() => {
+      refreshQueued = false;
+      refresh();
+    });
   };
 
   const observeDynamicUi = () => {
@@ -114,7 +166,7 @@
           needsRefresh = true;
         }
       }
-      if (needsRefresh) refresh();
+      if (needsRefresh) queueRefresh();
     });
     observer.observe(document.body, {
       childList: true,
