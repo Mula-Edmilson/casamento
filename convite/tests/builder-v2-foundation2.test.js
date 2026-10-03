@@ -137,7 +137,7 @@ test('endpoint público activo devolve apenas published + metadados', () => {
   assert.equal(Object.prototype.hasOwnProperty.call(envelope, 'draft'), false);
 });
 
-test('registo de rotas cobre Draft/Validate/Publish/Revisions/Rollback/Public e protege publish/rollback com Admin', () => {
+test('registo de rotas cobre Builder V2 + Template Factory e mantém protecções Admin', () => {
   const routes = [];
   const app = {
     get(path, ...handlers) { routes.push({ method: 'GET', path, handlers }); },
@@ -158,19 +158,26 @@ test('registo de rotas cobre Draft/Validate/Publish/Revisions/Rollback/Public e 
     asyncRoute: fn => fn
   };
   const manifest = registerBuilderV2ContentRoutes(app, deps);
-  assert.equal(routes.length, 7);
+  assert.equal(routes.length, 11);
   assert.deepEqual(manifest.managerRoutes, [
     'GET /manager/invites/:id/content',
     'PUT /manager/invites/:id/content/draft',
     'POST /manager/invites/:id/content/validate',
     'POST /manager/invites/:id/content/publish',
     'GET /manager/invites/:id/content/revisions',
-    'POST /manager/invites/:id/content/rollback'
+    'POST /manager/invites/:id/content/rollback',
+    'GET /manager/template-factory/templates',
+    'POST /manager/template-factory/invites',
+    'POST /manager/template-factory/invites/:id/activate',
+    'POST /manager/template-factory/invites/:id/rollback'
   ]);
   assert.deepEqual(manifest.publicRoutes, ['GET /api/public/invites/:slug/content']);
-  const publish = routes.find(r => r.path.endsWith('/publish'));
-  const rollback = routes.find(r => r.path.endsWith('/rollback'));
-  const draft = routes.find(r => r.path.endsWith('/draft'));
+  const publish = routes.find(r => r.path.endsWith('/content/publish'));
+  const rollback = routes.find(r => r.path.endsWith('/content/rollback'));
+  const draft = routes.find(r => r.path.endsWith('/content/draft'));
+  const factoryCreate = routes.find(r => r.path === '/manager/template-factory/invites');
+  const factoryActivate = routes.find(r => r.path.endsWith('/template-factory/invites/:id/activate'));
+  const factoryRollback = routes.find(r => r.path.endsWith('/template-factory/invites/:id/rollback'));
   const publicRoute = routes.find(r => r.path.startsWith('/api/public/'));
   assert.equal(publish.handlers[0], requireManager);
   assert.equal(publish.handlers[1], requireAdmin);
@@ -178,6 +185,10 @@ test('registo de rotas cobre Draft/Validate/Publish/Revisions/Rollback/Public e 
   assert.equal(rollback.handlers[1], requireAdmin);
   assert.equal(draft.handlers[0], requireManager);
   assert.notEqual(draft.handlers[1], requireAdmin);
+  assert.equal(factoryCreate.handlers[0], requireManager);
+  assert.equal(factoryCreate.handlers[1], requireAdmin);
+  assert.equal(factoryActivate.handlers[1], requireAdmin);
+  assert.equal(factoryRollback.handlers[1], requireAdmin);
   assert.equal(publicRoute.handlers.length, 1);
 });
 
@@ -237,13 +248,13 @@ test('patchPackageObject adiciona check + teste Foundation 2 ao verify sem dupli
   assert.equal(second.scripts.verify, first.scripts.verify);
 });
 
-test('fonte da API não contém endpoint de activação automática nem mutação de Invite.config', () => {
+test('fonte da API base delega activação ao Factory e não muta Invite.config directamente', () => {
   const fs = require('node:fs');
   const path = require('node:path');
   const source = fs.readFileSync(path.join(__dirname, '..', 'builder-v2', 'content-api-v2.js'), 'utf8');
-  assert.equal(/\/activate\b/i.test(source), false);
   assert.equal(/config\.contentMode\s*=/i.test(source), false);
   assert.equal(/Invite\.(updateOne|findByIdAndUpdate|findOneAndUpdate)/.test(source), false);
+  assert.match(source, /registerTemplateFactoryV2Routes/);
   assert.match(source, /publishedChanged:\s*false/);
   assert.match(source, /withTransaction/);
 });
