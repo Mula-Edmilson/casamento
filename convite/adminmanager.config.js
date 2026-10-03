@@ -56,6 +56,14 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
       document.head.appendChild(link);
     }
 
+    if (!document.querySelector(`link[${MODULE_ATTR}="ui-v6-polish-css"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'adminmanager-ui-v6-polish.css';
+      link.setAttribute(MODULE_ATTR, 'ui-v6-polish-css');
+      document.head.appendChild(link);
+    }
+
     if (!document.querySelector(`script[${MODULE_ATTR}="ui-v6"]`)) {
       const script = document.createElement('script');
       script.src = 'adminmanager-ui-v6.js';
