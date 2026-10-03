@@ -12,12 +12,23 @@ const css = read('adminmanager-ui-v6.css');
 const js = read('adminmanager-ui-v6.js');
 const config = read('adminmanager.config.js');
 
-test('UI V6 é uma camada incremental carregada depois do Builder CSS', () => {
+test('UI V6 é uma camada incremental carregada depois do Builder no runtime', () => {
   assert.match(config, /adminmanager-builder-v2\.css/);
   assert.match(config, /adminmanager-ui-v6\.css/);
   assert.match(config, /adminmanager-ui-v6\.js/);
-  assert.ok(config.indexOf('adminmanager-builder-v2.css') < config.indexOf('adminmanager-ui-v6.css'));
-  assert.match(config, /loadUiV6\(\)/);
+
+  const loadingBlock = config.slice(
+    config.indexOf("if (document.readyState === 'loading')"),
+    config.indexOf('} else {', config.indexOf("if (document.readyState === 'loading')"))
+  );
+  assert.ok(loadingBlock.indexOf('loadBuilderV2') < loadingBlock.indexOf('loadUiV6'));
+
+  const readyBlock = config.slice(
+    config.indexOf('} else {', config.indexOf("if (document.readyState === 'loading')")),
+    config.lastIndexOf('})();')
+  );
+  assert.ok(readyBlock.indexOf('loadBuilderV2()') < readyBlock.indexOf('loadUiV6()'));
+  assert.match(config, /script\.addEventListener\('load', loadBuilderExtras/);
 });
 
 test('UI V6 mantém isolamento funcional e não executa rede/API', () => {
