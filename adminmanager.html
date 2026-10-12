@@ -1,0 +1,1353 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <title>AdminManager · Lirandzo</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script src="adminmanager.config.js"></script>
+  <script>
+    /* Aplica o shell de aplicação (html.mobile-app) ANTES da primeira pintura,
+       com exactamente o mesmo critério de detectMobileApp(), para que não haja
+       salto visual entre o carregamento e o primeiro resize. */
+    (function () {
+      try {
+        var coarse = window.matchMedia && (window.matchMedia('(hover: none)').matches || window.matchMedia('(pointer: coarse)').matches);
+        var narrow = Math.min((window.screen && window.screen.width) || window.innerWidth, window.innerWidth) <= 920;
+        var mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+        if (coarse || narrow || mobileUA) document.documentElement.classList.add('mobile-app');
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="adminmanager.css">
+  <link rel="stylesheet" href="adminmanager-operator.css">
+</head>
+<body>
+  <section class="login-screen" id="loginScreen">
+    <form class="login-card" id="loginForm">
+      <div class="brand"><div class="brand-mark">L</div><div><h1>AdminManager</h1><p>Centro de gestão de convites Lirandzo.</p></div></div>
+      <div class="field"><label for="passwordInput">Senha de acesso</label><input id="passwordInput" type="password" placeholder="Senha do perfil seleccionado" autocomplete="current-password" required autofocus></div>
+      <div class="field"><label>Tipo de acesso</label><div class="role-switch"><label class="role-option"><input type="radio" name="accessType" value="admin" checked> <span>Admin</span></label><label class="role-option"><input type="radio" name="accessType" value="editor"> <span>Editor</span></label></div><p class="role-note">Bem vindo de volta!</p></div>
+      <button id="loginSubmitBtn" class="btn primary full" type="submit"><span class="btn-loader" aria-hidden="true"></span><i class="login-icon" data-feather="lock"></i><span class="login-btn-text">Entrar no centro de gestão</span></button>
+      <div id="loginError" class="feedback error hidden" role="alert"></div>
+    </form>
+  </section>
+
+  <div class="app" id="app">
+    <div id="overlay" class="overlay"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><div class="brand-mark">L</div><div><h1>Admin</h1><p>Centro de gestão</p></div></div>
+      <nav id="sideNav" class="nav"></nav>
+      <div class="sidebar-footer">
+        <button class="btn ghost" id="themeBtn" type="button" title="Mudar tema"><i data-feather="sun"></i> Tema claro</button>
+        <button class="btn danger" id="logoutBtn" type="button" title="Sair do painel"><i data-feather="log-out"></i> Sair</button>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="menuBtn" class="btn icon-only menu-trigger" type="button" aria-label="Abrir menu" title="Abrir menu"><i data-feather="menu"></i></button>
+        <button id="backBtn" class="btn icon-only back-trigger hidden" type="button" aria-label="Voltar" title="Voltar"><i data-feather="arrow-left"></i></button>
+        <div class="topbar-title"><strong id="topbarTitle">Dashboard</strong><span id="connectionLabel">Sistema protegido</span></div>
+      </div>
+      <div class="topbar-actions">
+        <div class="sync-pill"><span id="syncDot" class="sync-dot"></span><span id="syncText">Offline</span></div>
+        <button class="btn icon-only" id="refreshBtn" type="button" aria-label="Actualizar" title="Actualizar dados"><i data-feather="refresh-cw"></i></button>
+        <a class="btn icon-only" href="/" target="_blank" aria-label="Site principal" title="Abrir site principal"><i data-feather="external-link"></i></a>
+        <button class="btn icon-only topbar-logout" id="topbarLogoutBtn" type="button" aria-label="Sair" title="Sair"><i data-feather="log-out"></i></button>
+      </div>
+    </header>
+
+    <main class="main"><div class="content"><div id="mobileTabs" class="mobile-tabs"></div>
+      <section class="section active" id="dashboardPanel">
+        <div class="section-title"><div><h1>Visão geral</h1><p>Resumo operacional dos convites Lirandzo ligados ao sistema central.</p></div><span class="badge blue">Multi-cliente</span></div>
+        <div class="metrics-grid" id="metricsGrid"></div>
+        <div class="dashboard-grid">
+          <div>
+            <section class="panel-card"><div class="panel-head"><h2><i data-feather="activity"></i> Actividade recente</h2><span id="activityBadge" class="badge blue">0 registos</span></div><div class="panel-body"><div id="activityList" class="activity-list"></div></div></section>
+          </div>
+          <aside>
+            <section class="panel-card"><div class="panel-head"><h2><i data-feather="shield"></i> Estado técnico</h2></div><div class="panel-body"><div id="systemInfo" class="info-list"></div></div></section>
+            <section class="panel-card"><div class="panel-head"><h2><i data-feather="info"></i> Regra central</h2></div><div class="panel-body"><div class="feedback">Todos os convites usam o mesmo Render e o mesmo MongoDB. A separação é feita por <b>slug</b> e <b>inviteId</b>.</div></div></section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="invitesPanel">
+        <div class="section-title"><div><h1>Convites</h1><p>Clientes criados ou conectados ao centro de gestão.</p></div><button class="btn primary" data-goto="newInvite" data-admin-only><i data-feather="plus"></i> Novo cliente</button></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="folder"></i> Lista de convites</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="searchInput" class="search-input" placeholder="Pesquisar casal, cliente ou slug"><select id="statusFilter" class="search-input"><option value="all">Todos activos</option><option value="draft">Rascunho</option><option value="published">Publicado</option></select><select id="packageFilter" class="search-input"><option value="all">Todos pacotes</option><option value="perola">Pérola</option><option value="esmeralda">Esmeralda</option><option value="rubi">Rubi</option></select></div><div class="toolbar-right"><button class="btn" id="filterBtn" type="button" title="Filtrar convites"><i data-feather="search"></i> Filtrar</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Cliente</th><th>Pacote</th><th>Estado</th><th>Slug / URL</th><th>Convidados</th><th>RSVP</th><th>Acções</th></tr></thead><tbody id="invitesTbody"></tbody></table></div><div id="invitesMobile" class="mobile-list"></div></div></section>
+      </section>
+
+      <section class="section" id="archivedPanel">
+        <div class="section-title"><div><h1>Convites arquivados</h1><p>Convites ocultos do painel principal. Pode restaurar para rascunho ou eliminar definitivamente.</p></div><button class="btn" id="reloadArchivedBtn" type="button" title="Actualizar arquivados"><i data-feather="refresh-cw"></i> Actualizar</button></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="archive"></i> Arquivo</h2></div><div class="panel-body"><div class="toolbar"><div class="toolbar-left"><input id="archivedSearchInput" class="search-input" placeholder="Pesquisar arquivados por casal, cliente ou slug"></div><div class="toolbar-right"><button class="btn" id="archivedFilterBtn" type="button" title="Filtrar arquivados"><i data-feather="search"></i> Filtrar</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Cliente</th><th>Pacote</th><th>Slug / URL</th><th>Convidados</th><th>RSVP</th><th>Acções</th></tr></thead><tbody id="archivedTbody"></tbody></table></div><div id="archivedMobile" class="mobile-list"></div></div></section>
+      </section>
+
+      <section class="section" id="newInvitePanel">
+        <div class="section-title"><div><h1>Novo cliente</h1><p>Cria um convite novo a partir de um pacote existente no GitHub.</p></div></div>
+        <form class="panel-card" id="newInviteForm"><div class="panel-head"><h2><i data-feather="plus-circle"></i> Dados do convite</h2></div><div class="panel-body form-grid"><div class="field"><label>Nome do cliente / referência interna</label><input name="clientName" placeholder="Maria João" required></div><div class="field"><label>Nomes do casal</label><input name="coupleNames" placeholder="Maria & João" required></div><div class="field"><label>Noiva</label><input name="bride" placeholder="Maria"></div><div class="field"><label>Noivo</label><input name="groom" placeholder="João"></div><div class="field"><label>Pacote</label><select name="packageKey" required><option value="perola">Pérola</option><option value="esmeralda">Esmeralda</option><option value="rubi">Rubi</option></select></div><div class="field"><label>Slug / pasta</label><input name="slug" placeholder="maria-joao"><p class="hint">Será usado em /convite/<b>slug</b>/</p></div><div class="field"><label>Data do evento</label><input name="eventDateISO" type="datetime-local"></div><div class="field"><label>Prazo RSVP</label><input name="rsvpDeadline" placeholder="20 de Junho de 2026"></div><div class="field span-2"><label>Opções de criação</label><div style="display:flex;gap:9px;flex-wrap:wrap"><label class="badge"><input type="checkbox" name="createAsPublished"> Criar como publicado</label><label class="badge"><input type="checkbox" name="copyToGithub" checked> Copiar template para GitHub</label></div></div><div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="reset">Limpar</button><button class="btn primary" type="submit"><i data-feather="plus-circle"></i> Criar convite</button></div><div id="createResult" class="feedback hidden span-2"></div></div></form>
+      </section>
+
+      <section class="section" id="managePanel">
+        <div class="section-title"><div><h1>Gestão por convite</h1><p>Reset de acesso, limpeza de presentes e eliminação controlada por cliente.</p></div></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="settings"></i> Seleccionar convite</h2><button class="btn small" id="loadManageBtn" type="button" title="Carregar dados do convite"><i data-feather="refresh-cw"></i> Carregar</button></div><div class="panel-body"><div class="field"><label>Convite</label><select id="manageInviteSelect"></select></div><div id="manageStats" class="metrics-grid"></div><div class="action-grid">
+          <article class="action-card"><strong>Reset de acesso</strong><p>Limpa o deviceToken dos convidados deste convite. Quem abriu noutro dispositivo poderá abrir novamente.</p><button class="btn primary" id="resetAccessBtn" type="button" title="Resetar acesso dos convidados"><i data-feather="unlock"></i> Resetar acessos</button></article>
+          <article class="action-card"><strong>Reset de presentes</strong><p>Remove reservas dos presentes, mas mantém a lista de presentes registada.</p><button class="btn" id="resetGiftsBtn" type="button" title="Resetar reservas de presentes"><i data-feather="rotate-ccw"></i> Resetar reservas</button></article>
+          <article class="action-card"><strong>Limpar presentes</strong><p>Elimina todos os presentes deste convite no MongoDB. Pode restaurar os presentes padrão depois.</p><button class="btn danger" id="clearGiftsBtn" type="button" title="Eliminar todos os presentes deste convite"><i data-feather="trash-2"></i> Limpar presentes</button></article>
+          <article class="action-card"><strong>Restaurar presentes padrão</strong><p>Recria a lista padrão de presentes para este convite.</p><button class="btn" id="seedGiftsBtn" type="button" title="Restaurar presentes padrão"><i data-feather="gift"></i> Restaurar padrão</button></article>
+          <article class="action-card"><strong>Estado do convite</strong><p>Altera o estado operacional do convite seleccionado.</p><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" id="publishInviteBtn" type="button" title="Marcar como publicado"><i data-feather="check-circle"></i> Publicar</button><button class="btn" id="draftInviteBtn" type="button" title="Voltar para rascunho"><i data-feather="edit-3"></i> Rascunho</button></div></article>
+          <article class="action-card"><strong>Arquivar convite</strong><p>Oculta o convite do painel sem apagar dados do MongoDB.</p><button class="btn" id="archiveBtn" type="button" title="Arquivar convite"><i data-feather="archive"></i> Arquivar</button></article>
+          <article class="action-card"><strong>Erase de dados</strong><p>Apaga dados do convite no MongoDB, mas mantém o registo do convite. Ideal quando o evento já saiu do ar.</p><button class="btn danger" id="eraseInviteDataBtn" type="button" title="Apagar dados mantendo o convite"><i data-feather="database"></i> Erase dados</button></article><article class="action-card"><strong>Eliminar definitivamente</strong><p>Apaga convite e dados relacionados do MongoDB. Não apaga a pasta no GitHub.</p><button class="btn danger" id="purgeInviteBtn" type="button" title="Eliminar definitivamente convite e dados"><i data-feather="x-circle"></i> Eliminar convite</button></article>
+        </div><div id="manageResult" class="feedback hidden"></div></div></section>
+      </section>
+
+      <section class="section" id="guestsPanel">
+        <div class="section-title"><div><h1>Convidados</h1><p>Importação em massa para Admin e reparação/gestão directa para Editor.</p></div></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="users"></i> Base de convidados / reparação</h2></div><div class="panel-body"><form id="guestForm"><div class="field"><label>Convite</label><select id="guestInviteSelect" required></select></div><div class="grid-two" data-bulk-import-only><label class="dropzone" for="guestFile"><i data-feather="upload-cloud"></i><strong>Importar ficheiro</strong><p>CSV, TXT ou TSV. O conteúdo será colocado no campo para conferência antes de enviar.</p><input id="guestFile" type="file" accept=".csv,.txt,.tsv,text/csv,text/plain"></label><div class="preview-box" id="guestPreview">Formato recomendado:<br><b>Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo</b><br><br>Exemplo:<br>Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel</div></div><div class="field" data-bulk-import-only><label>Lista de convidados</label><textarea id="guestBulkText" placeholder="Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo&#10;Prísca Daniel;A definir;0;;Nº 152;Single;152;rm-2026-152-prisca-daniel"></textarea><p class="hint">Também aceita ficheiros com cabeçalho: nome, mesa, acompanhantes, telefone, notas, categoria, número, token antigo.</p></div><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="sampleGuestsBtn" data-bulk-import-only title="Inserir exemplo de convidados"><i data-feather="file-text"></i> Inserir exemplo</button><button class="btn" type="button" id="repairGuestsBtn" title="Reparar normalizedName dos convidados deste convite"><i data-feather="tool"></i> Reparar nomes</button><button class="btn primary" type="submit" id="importGuestsBtn" data-bulk-import-only title="Importar ou actualizar convidados"><span class="btn-loader"></span><i data-feather="upload-cloud" class="guest-import-icon"></i> <span class="guest-import-label">Importar / actualizar convidados</span></button></div><div id="guestImportProgress" class="import-progress" aria-live="polite"><div class="import-progress-top"><div class="import-progress-title"><span class="mini-spinner"></span><span id="guestImportStage">A preparar importação...</span></div><span id="guestImportPercent" class="import-progress-percent">0%</span></div><div class="import-progress-track"><div id="guestImportBar" class="import-progress-bar"></div></div><div id="guestImportNote" class="import-progress-note">Estamos a validar o ficheiro e a enviar os convidados para o MongoDB.</div></div><div id="guestResult" class="feedback hidden"></div></form></div></section>
+        <section class="panel-card" id="guestCrudCard"><div class="panel-head"><h2><i data-feather="database"></i> Gestão directa de convidados</h2><button class="btn small primary" id="addGuestBtn" type="button" title="Adicionar convidado"><i data-feather="user-plus"></i> Novo convidado</button></div><div class="panel-body"><div class="guest-crud-toolbar"><div class="toolbar-left"><select id="guestCrudInviteSelect" class="search-input" title="Filtrar convidados por convite"><option value="">Seleccione um convite...</option></select><input id="guestSearchInput" class="search-input" placeholder="Pesquisar nome, mesa, telefone, token ou categoria"></div><div class="toolbar-right"><button class="btn" id="refreshGuestCrudBtn" type="button" title="Actualizar lista"><i data-feather="refresh-cw"></i> Actualizar</button></div></div><div class="desktop-table table-wrap"><table><thead><tr><th>Nº</th><th>Convidado</th><th>Mesa</th><th>Acompanhantes</th><th>Estado</th><th>Categoria</th><th>Acções</th></tr></thead><tbody id="guestCrudTbody"><tr><td colspan="7">Seleccione um convite para carregar os convidados.</td></tr></tbody></table></div><div id="guestCrudMobile" class="mobile-list"></div><div id="guestCrudResult" class="feedback hidden"></div></div></section>
+      </section>
+
+
+
+      <section class="section" id="clientsPanel" data-admin-only>
+        <div class="section-title"><div><h1>Clientes</h1><p>Base comercial Lirandzo para contactos, histórico e mail marketing em massa via Resend.</p></div><span class="badge red">Admin only</span></div>
+        <div class="metrics-grid" id="clientsMetrics"></div>
+        <div class="grid-two clients-grid">
+          <section class="panel-card">
+            <div class="panel-head"><h2><i data-feather="user-plus"></i> Cliente</h2><button class="btn small" id="clientClearFormBtn" type="button"><i data-feather="plus"></i> Novo</button></div>
+            <div class="panel-body">
+              <form id="clientForm" class="form-grid">
+                <input type="hidden" id="clientId">
+                <div class="field"><label>Nome do cliente</label><input id="clientName" class="search-input" required placeholder="Nome do cliente / referência"></div>
+                <div class="field"><label>Email</label><input id="clientEmail" class="search-input" type="email" placeholder="cliente@dominio.com"></div>
+                <div class="field"><label>Telefone</label><input id="clientPhone" class="search-input" placeholder="+258..."></div>
+                <div class="field"><label>WhatsApp</label><input id="clientWhatsapp" class="search-input" placeholder="+258..."></div>
+                <div class="field"><label>Empresa / organização</label><input id="clientCompany" class="search-input" placeholder="Opcional"></div>
+                <div class="field"><label>Pessoa de contacto</label><input id="clientContactPerson" class="search-input" placeholder="Opcional"></div>
+                <div class="field"><label>Tipo</label><input id="clientType" class="search-input" value="Casamento" placeholder="Casamento, Corporate, Aniversário..."></div>
+                <div class="field"><label>Estado</label><select id="clientStatus" class="search-input"><option value="active">Activo</option><option value="paused">Pausado</option><option value="unsubscribed">Removido da lista</option><option value="archived">Arquivado</option></select></div>
+                <div class="field"><label>Convite ligado</label><select id="clientInviteSelect" class="search-input"><option value="">Sem convite ligado</option></select></div>
+                <div class="field"><label>Tags</label><input id="clientTags" class="search-input" placeholder="VIP, antigo cliente, corporate"></div>
+                <div class="field span-2"><label>Notas internas</label><textarea id="clientNotes" rows="4" placeholder="Preferências, observações, contexto comercial..."></textarea></div>
+                <div class="field span-2"><label class="badge"><input type="checkbox" id="clientConsent" checked> Pode receber comunicados e campanhas por email</label></div>
+                <div id="clientFormResult" class="feedback hidden span-2"></div>
+                <div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="clientArchiveBtn"><i data-feather="archive"></i> Arquivar</button><button class="btn primary" type="submit"><i data-feather="save"></i> Guardar cliente</button></div>
+              </form>
+            </div>
+          </section>
+          <section class="panel-card">
+            <div class="panel-head"><h2><i data-feather="send"></i> Mail marketing</h2><span id="resendStatusBadge" class="badge">Resend</span></div>
+            <div class="panel-body">
+              <form id="campaignForm" class="form-grid">
+                <div class="field"><label>Público</label><select id="campaignScope" class="search-input"><option value="active">Todos clientes activos com consentimento</option><option value="selected">Clientes seleccionados na lista</option></select></div>
+                <div class="field"><label>Pré-header</label><input id="campaignPreview" class="search-input" placeholder="Resumo curto que aparece no email"></div>
+                <div class="field span-2"><label>Assunto</label><input id="campaignSubject" class="search-input" placeholder="Ex: Nova actualização Lirandzo" required></div>
+                <div class="field span-2"><label>Mensagem</label><textarea id="campaignBody" rows="10" placeholder="Escreve a mensagem. Podes usar parágrafos simples; o sistema formata como email limpo." required></textarea></div>
+                <div class="span-2"><div class="feedback">Antes de enviar, o sistema confirma a quantidade de destinatários. O envio exige a confirmação forte: <b>ENVIAR EMAILS</b>.</div></div>
+                <div id="campaignResult" class="feedback hidden span-2"></div>
+                <div class="span-2" style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button class="btn" type="button" id="campaignHistoryBtn"><i data-feather="clock"></i> Histórico</button><button class="btn primary" type="submit"><i data-feather="send"></i> Enviar campanha</button></div>
+              </form>
+            </div>
+          </section>
+        </div>
+        <section class="panel-card">
+          <div class="panel-head"><h2><i data-feather="users"></i> Base de clientes</h2><button class="btn small" id="clientsRefreshBtn" type="button"><i data-feather="refresh-cw"></i> Actualizar</button></div>
+          <div class="panel-body">
+            <div class="toolbar"><div class="toolbar-left"><input id="clientsSearchInput" class="search-input" placeholder="Pesquisar por nome, email, telefone, tag ou convite"><select id="clientsStatusFilter" class="search-input"><option value="active">Activos</option><option value="paused">Pausados</option><option value="unsubscribed">Removidos da lista</option><option value="archived">Arquivados</option><option value="all">Todos</option></select></div><div class="toolbar-right"><button class="btn" id="clientsFilterBtn" type="button"><i data-feather="search"></i> Filtrar</button></div></div>
+            <div class="desktop-table table-wrap"><table><thead><tr><th><input type="checkbox" id="clientsSelectAll"></th><th>Cliente</th><th>Contacto</th><th>Estado</th><th>Convite</th><th>Marketing</th><th>Acções</th></tr></thead><tbody id="clientsTbody"></tbody></table></div>
+            <div id="clientsMobile" class="mobile-list"></div>
+          </div>
+        </section>
+        <section class="panel-card">
+          <div class="panel-head"><h2><i data-feather="upload"></i> Importar clientes</h2></div>
+          <div class="panel-body">
+            <form id="clientsImportForm" class="form-grid">
+              <div class="field span-2"><label>CSV/TXT</label><textarea id="clientsImportText" rows="6" placeholder="Nome;Email;Telefone;Empresa;Tags;Notas"></textarea><p class="hint">Formato recomendado: Nome;Email;Telefone;Empresa;Tags;Notas. Um cliente por linha.</p></div>
+              <div id="clientsImportResult" class="feedback hidden span-2"></div>
+              <div class="span-2" style="display:flex;justify-content:flex-end"><button class="btn primary" type="submit"><i data-feather="upload"></i> Importar clientes</button></div>
+            </form>
+          </div>
+        </section>
+        <section class="panel-card">
+          <div class="panel-head"><h2><i data-feather="mail"></i> Histórico de campanhas</h2><button class="btn small" id="campaignsRefreshBtn" type="button"><i data-feather="refresh-cw"></i> Actualizar</button></div>
+          <div class="panel-body"><div id="campaignList" class="backup-card-list"><div class="feedback">A carregar campanhas...</div></div></div>
+        </section>
+      </section>
+
+      <section class="section" id="backupsPanel" data-admin-only>
+        <div class="section-title"><div><h1>Backups</h1><p>Gestão completa de cópias de segurança: criar, descarregar, importar e restaurar convites.</p></div><span class="badge red">Admin only</span></div>
+        <div class="backup-kpis" id="backupKpis">
+          <div class="backup-kpi"><span>Total</span><strong>0</strong></div>
+          <div class="backup-kpi"><span>Gerais</span><strong>0</strong></div>
+          <div class="backup-kpi"><span>Por convite</span><strong>0</strong></div>
+          <div class="backup-kpi"><span>Restaurados</span><strong>0</strong></div>
+        </div>
+        <div class="backup-grid">
+          <section class="panel-card">
+            <div class="panel-head"><h2><i data-feather="hard-drive"></i> Criar backup</h2><span class="badge blue">Restore-ready</span></div>
+            <div class="panel-body">
+              <form id="backupCreateForm">
+                <div class="field"><label>Tipo de backup</label><select id="backupScope" class="search-input"><option value="invite">Backup de um convite específico</option><option value="all">Backup geral de todos os convites</option></select></div>
+                <div class="field" id="backupInviteWrap"><label>Convite</label><select id="backupInviteSelect" class="search-input"><option value="">Seleccione um convite...</option></select></div>
+                <div class="field"><label>Nome/observação do backup</label><input id="backupLabel" class="search-input" placeholder="Ex.: Antes de importar nova lista de convidados"></div>
+                <label class="role-option" style="margin-bottom:12px"><input id="backupIncludeArchived" type="checkbox" checked> <span>Incluir convites arquivados no backup geral</span></label>
+                <div class="backup-danger-note"><b>Regra de segurança:</b> backups e restores só estão disponíveis para Administrador. O Editor não consegue aceder a esta página nem executar estas rotas pelo bot.</div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px"><button class="btn primary" type="submit"><i data-feather="save"></i> Criar backup</button></div>
+                <div id="backupCreateResult" class="feedback hidden"></div>
+              </form>
+            </div>
+          </section>
+          <section class="panel-card">
+            <div class="panel-head"><h2><i data-feather="upload-cloud"></i> Importar backup</h2></div>
+            <div class="panel-body">
+              <form id="backupImportForm">
+                <label class="dropzone" for="backupImportFile"><i data-feather="file-plus"></i><strong>Importar ficheiro JSON</strong><p>Use um backup descarregado anteriormente pelo AdminManager.</p><input id="backupImportFile" type="file" accept=".json,application/json"></label>
+                <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px"><button class="btn" type="submit"><i data-feather="upload"></i> Importar para a lista</button></div>
+                <div id="backupImportResult" class="feedback hidden"></div>
+              </form>
+            </div>
+          </section>
+        </div>
+        <section class="panel-card">
+          <div class="panel-head"><h2><i data-feather="database"></i> Backups disponíveis</h2><button class="btn small" id="backupRefreshBtn" type="button"><i data-feather="refresh-cw"></i> Actualizar</button></div>
+          <div class="panel-body">
+            <div class="toolbar"><div class="toolbar-left"><input id="backupSearchInput" class="search-input" placeholder="Pesquisar por slug, casal, etiqueta ou hash"><select id="backupScopeFilter" class="search-input"><option value="all">Backup geral</option><option value="invite">Backup por convite</option><option value="todos">Todos os tipos</option></select></div><div class="toolbar-right"><button class="btn" id="backupFilterBtn" type="button"><i data-feather="search"></i> Filtrar</button></div></div>
+            <div id="backupList" class="backup-card-list"><div class="feedback">A carregar backups...</div></div>
+          </div>
+        </section>
+      </section>
+
+
+      <section class="section" id="commandPanel">
+        <div class="section-title"><div><h1>Lirandzo Command Center</h1><p>Ficha operacional por convite: visão, dados, saúde, operações e actividade num só lugar.</p></div><span class="badge blue">V7</span></div>
+        <div class="command-shell">
+          <aside class="command-sidebar">
+            <div class="command-select-card">
+              <div class="field" style="margin-bottom:0"><label>Convite</label><select id="commandInviteSelect" class="search-input"><option value="">Seleccione um convite...</option></select></div>
+              <button class="btn primary full" id="commandLoadBtn" type="button"><i data-feather="zap"></i> Abrir ficha</button>
+              <div class="command-mini-actions">
+                <button class="btn small" id="commandGuestsBtn" type="button"><i data-feather="users"></i> Lista</button>
+                <button class="btn small" id="commandManageBtn" type="button"><i data-feather="settings"></i> Gestão</button>
+                <button class="btn small" id="commandCopySlugBtn" type="button"><i data-feather="copy"></i> Slug</button>
+                <button class="btn small" id="commandOpenInviteBtn" type="button"><i data-feather="external-link"></i> Abrir</button>
+              </div>
+            </div>
+            <div class="command-context" id="commandContext"><strong>Nenhum convite seleccionado</strong><span>Escolhe um convite para abrir a ficha operacional.</span></div>
+          </aside>
+          <div class="command-main">
+            <div class="command-tabs" id="commandTabs">
+              <button class="command-tab active" data-command-tab="overview" type="button"><i data-feather="layout"></i> Resumo</button>
+              <button class="command-tab" data-command-tab="health" type="button"><i data-feather="shield"></i> Saúde</button>
+              <button class="command-tab" data-command-tab="data" type="button"><i data-feather="database"></i> Dados</button>
+              <button class="command-tab" data-command-tab="ops" type="button"><i data-feather="tool"></i> Operações</button>
+              <button class="command-tab" data-command-tab="activity" type="button"><i data-feather="activity"></i> Actividade</button>
+            </div>
+            <div id="commandBody"><div class="command-empty">Seleccione um convite para carregar o Command Center.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="githubPanel">
+        <div class="section-title"><div><h1>Ligação GitHub</h1><p>Estado da conexão usada para criar pastas dos clientes a partir dos templates.</p></div></div>
+        <section class="panel-card"><div class="panel-head"><h2><i data-feather="git-branch"></i> Configuração</h2><button class="btn small" id="reloadGithubBtn" type="button" title="Actualizar estado do GitHub"><i data-feather="refresh-cw"></i> Actualizar</button></div><div class="panel-body"><div id="githubStatus" class="feedback">A carregar estado do GitHub...</div></div></section>
+      </section>
+    </div></main>
+    <nav id="bottomNav" class="bottom-nav" aria-label="Navegação móvel">
+      <div id="bottomNavInner" class="bottom-nav-inner"></div>
+    </nav>
+  </div>
+
+  <div class="modal" id="detailsModal"><div class="modal-card"><div class="modal-head"><h3 id="modalTitle">Detalhes</h3><button class="btn icon-only" id="closeModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body" id="modalBody"></div></div></div>
+  <div class="modal" id="guestEditModal"><div class="modal-card narrow"><div class="modal-head"><h3 id="guestEditTitle">Convidado</h3><button class="btn icon-only" id="closeGuestEditModal" type="button"><i data-feather="x"></i></button></div><div class="modal-body"><form id="guestEditForm"><input type="hidden" id="guestEditId"><div class="field"><label>Nome do convidado</label><input id="guestEditName" class="search-input" required placeholder="Nome completo"></div><div class="grid-two"><div class="field"><label>Mesa</label><input id="guestEditTable" class="search-input" placeholder="A indicar na entrada"></div><div class="field"><label>Acompanhantes</label><input id="guestEditCompanions" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Telefone</label><input id="guestEditPhone" class="search-input" placeholder="+258..."></div><div class="field"><label>Número</label><input id="guestEditNumber" class="search-input" type="number" min="0" value="0"></div></div><div class="grid-two"><div class="field"><label>Categoria</label><input id="guestEditCategory" class="search-input" placeholder="Família, amigos, etc."></div><div class="field"><label>Estado</label><select id="guestEditStatus" class="search-input"><option value="Não aberto">Não aberto</option><option value="Convite Aberto">Aberto</option><option value="Ainda por confirmar">Pendente</option><option value="Confirmado">Confirmado</option></select></div></div><div class="field"><label>Token antigo / referência</label><input id="guestEditLegacyToken" class="search-input" placeholder="Opcional"></div><div class="field"><label>Notas internas</label><textarea id="guestEditNotes" rows="3" placeholder="Observações internas"></textarea></div><div class="field"><label>Token público actual</label><input id="guestEditInviteToken" class="search-input" readonly placeholder="Gerado automaticamente"></div><div id="guestEditResult" class="feedback hidden"></div><div class="form-actions-sticky"><button class="btn" type="button" id="guestResetAccessSingleBtn" title="Limpar acesso e marcar como não aberto"><i data-feather="rotate-ccw"></i> Repor estado</button><button class="btn danger" type="button" id="guestDeleteBtn"><i data-feather="trash-2"></i> Eliminar</button><button class="btn primary" type="submit"><i data-feather="save"></i> Guardar</button></div></form></div></div></div>
+
+
+  <div class="modal confirm-modal" id="confirmModal" aria-hidden="true">
+    <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div id="confirmIcon" class="confirm-icon"><i data-feather="alert-circle"></i></div>
+      <h3 id="confirmTitle" class="confirm-title">Confirmar acção</h3>
+      <p id="confirmMessage" class="confirm-message"></p>
+      <div id="confirmInputWrap" class="field confirm-input-wrap hidden">
+        <label id="confirmInputLabel" for="confirmInput">Confirmação</label>
+        <input id="confirmInput" class="search-input" autocomplete="off">
+      </div>
+      <div class="confirm-actions">
+        <button class="btn" id="confirmCancelBtn" type="button"><i data-feather="x"></i> Cancelar</button>
+        <button class="btn primary" id="confirmOkBtn" type="button"><i data-feather="check"></i> Confirmar</button>
+      </div>
+    </div>
+  </div>
+  <div id="appLoader" class="app-loader" aria-live="polite"><span class="app-loader-dot"></span><span id="appLoaderText">A carregar...</span></div>
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+  <script>
+    const panels = [
+      { id:'dashboard', label:'Dashboard', icon:'layout' }, { id:'invites', label:'Convites', icon:'folder' }, { id:'clients', label:'Clientes', icon:'briefcase', adminOnly:true }, { id:'command', label:'Ficha', icon:'command' }, { id:'backups', label:'Backups', icon:'hard-drive', adminOnly:true }, { id:'archived', label:'Arquivados', icon:'archive' }, { id:'newInvite', label:'Novo cliente', icon:'plus-circle', adminOnly:true }, { id:'manage', label:'Gestão', icon:'settings' }, { id:'guests', label:'Convidados', icon:'users' }, { id:'github', label:'GitHub', icon:'git-branch' }
+    ];
+    const DEFAULT_API = window.LIRANDZO_MANAGER_API_BASE || localStorage.getItem('lirandzo_manager_api') || 'https://SEU-BACKEND-RENDER.onrender.com';
+    let API_BASE = DEFAULT_API.replace(/\/+$/, '');
+    let token = sessionStorage.getItem('lirandzo_manager_token') || '';
+    let managerRole = sessionStorage.getItem('lirandzo_manager_role') || '';
+    const isAdmin = () => managerRole === 'admin' || !managerRole;
+    const isEditor = () => managerRole === 'editor';
+    let invites = [];
+    let archivedInvites = [];
+    let backups = [];
+    let clients = [];
+    let campaigns = [];
+    let selectedInviteDetails = null;
+    let currentGuests = [];
+    let editingGuestId = null;
+    let currentPanel = 'dashboard';
+    let panelStack = [];
+    let routeLoaderTimer = null;
+    let activeApiRequests = 0;
+    let apiLoaderStartedAt = 0;
+    const primaryMobilePanels = ['dashboard','invites','clients','command','guests','backups'];
+    let confirmResolver = null;
+    const $ = id => document.getElementById(id);
+    const esc = v => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    const fmtDate = value => { if(!value) return '-'; const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString('pt-PT',{dateStyle:'short',timeStyle:'short'}); };
+    const iconRefresh = () => { if (window.feather) feather.replace(); enhanceButtonTooltips(); };
+    const showMsg = (el, msg, error=false) => { el.className = 'feedback' + (error ? ' error' : ''); el.innerHTML = msg; el.classList.remove('hidden'); };
+    const hideMsg = el => el.classList.add('hidden');
+
+    async function api(path, options = {}) {
+      const shouldShowLoader = !!token && detectMobileApp();
+      if (shouldShowLoader) {
+        activeApiRequests += 1;
+        apiLoaderStartedAt = apiLoaderStartedAt || Date.now();
+        document.body.classList.add('api-loading');
+        showRouteLoader((options.method && options.method !== 'GET') ? 'A guardar...' : 'A carregar...');
+      }
+      try {
+        const res = await fetch(`${API_BASE}${path}`, { ...options, headers:{ 'Content-Type':'application/json', ...(token ? { Authorization:`Bearer ${token}` } : {}), ...(options.headers || {}) } });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.message || `Erro ${res.status}`);
+        return data;
+      } finally {
+        if (shouldShowLoader) {
+          activeApiRequests = Math.max(0, activeApiRequests - 1);
+          if (activeApiRequests === 0) {
+            const elapsed = Date.now() - apiLoaderStartedAt;
+            const wait = Math.max(180 - elapsed, 60);
+            setTimeout(() => {
+              if (activeApiRequests === 0) {
+                document.body.classList.remove('api-loading');
+                apiLoaderStartedAt = 0;
+                hideRouteLoader(90);
+              }
+            }, wait);
+          }
+        }
+      }
+    }
+    function detectMobileApp(){
+      const coarse = window.matchMedia && (window.matchMedia('(hover: none)').matches || window.matchMedia('(pointer: coarse)').matches);
+      const narrowScreen = Math.min(window.screen?.width || window.innerWidth, window.innerWidth) <= 920;
+      const mobileUA = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+      const active = !!(coarse || narrowScreen || mobileUA);
+      document.documentElement.classList.toggle('mobile-app', active);
+      document.body.classList.toggle('mobile-app', active);
+      return active;
+    }
+    function showRouteLoader(label='A carregar...'){
+      const el = $('appLoaderText');
+      if (el) el.textContent = label;
+      document.body.classList.add('route-loading');
+      clearTimeout(routeLoaderTimer);
+    }
+    function hideRouteLoader(delay=180){
+      clearTimeout(routeLoaderTimer);
+      routeLoaderTimer = setTimeout(()=>document.body.classList.remove('route-loading'), delay);
+    }
+    function setLoading(on) {
+      document.body.classList.toggle('is-loading', !!on);
+      if (on && detectMobileApp()) showRouteLoader('A sincronizar...');
+      if (!on) hideRouteLoader(160);
+    }
+    function renderSkeletons() {
+      $('metricsGrid').innerHTML = Array.from({length:4}).map(()=>'<article class="metric-card"><span class="skeleton-line" style="width:70%"></span><strong class="skeleton-line" style="width:38%;height:28px;margin-top:9px"></strong><small class="skeleton-line" style="width:56%;height:12px;margin-top:8px"></small></article>').join('');
+      $('activityList').innerHTML = Array.from({length:5}).map(()=>'<article class="activity-item"><div class="skeleton-card" style="width:34px;min-height:34px"></div><div style="display:grid;gap:7px"><span class="skeleton-line" style="width:72%"></span><span class="skeleton-line" style="width:92%;height:12px"></span></div></article>').join('');
+      $('invitesTbody').innerHTML = Array.from({length:5}).map(()=>'<tr>'+Array.from({length:7}).map(()=>'<td><span class="skeleton-cell"></span></td>').join('')+'</tr>').join('');
+    }
+    function appCardSkeleton(type='cards', count=4) {
+      if (type === 'list') {
+        return `<div class="app-skeleton-card">${Array.from({length:count}).map(()=>`<div class="app-skeleton-row"><span class="skeleton-card" style="width:27px;min-height:27px;border-radius:10px"></span><div style="display:grid;gap:5px"><span class="skeleton-line" style="width:64%;height:11px"></span><span class="skeleton-line" style="width:88%;height:9px"></span></div></div>`).join('')}</div>`;
+      }
+      return `<div class="app-skeleton-card"><div class="skeleton-line" style="width:54%;height:12px"></div><div class="app-skeleton-grid">${Array.from({length:count}).map(()=>'<div class="app-skeleton-tile"></div>').join('')}</div></div>`;
+    }
+    function visiblePanels(){ return panels.filter(p => !(p.adminOnly && isEditor())); }
+    function buildNav() {
+      const navPanels = visiblePanels();
+      $('sideNav').innerHTML = navPanels.map(p=>`<button class="nav-item ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
+      const mobilePanels = navPanels.filter(p => primaryMobilePanels.includes(p.id));
+      $('mobileTabs').innerHTML = mobilePanels.map(p=>`<button class="mobile-tab ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button"><i data-feather="${p.icon}"></i><span>${p.label}</span></button>`).join('');
+      const bottomNav = $('bottomNavInner');
+      if (bottomNav) {
+        /* Dock flutuante centrado: apenas as páginas mais visitadas.
+           O acesso ao restante continua pelo menu hamburger. */
+        const quickNavPanels = (window.MANAGER_QUICK_PANELS || ['invites','guests','manage'])
+          .map(id => navPanels.find(p => p.id === id))
+          .filter(Boolean);
+        bottomNav.innerHTML = quickNavPanels.map(p=>`<button class="bottom-nav-btn ${p.id==='dashboard'?'active':''}" data-panel="${p.id}" type="button" aria-label="${esc(p.label)}"><span class="nav-icon-wrap"><i data-feather="${p.icon}"></i></span><span>${p.label}</span></button>`).join('');
+      }
+      document.querySelectorAll('[data-panel]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.panel)));
+      iconRefresh();
+    }
+    function updateBackButton(){
+      const btn = $('backBtn');
+      if (!btn) return;
+      btn.classList.toggle('hidden', panelStack.length === 0);
+    }
+    function showPanel(id, options = {}) {
+      const targetPanel = panels.find(p => p.id === id);
+      if (!targetPanel || (targetPanel.adminOnly && isEditor())) id = 'dashboard';
+      const previous = currentPanel || 'dashboard';
+      if (options.push !== false && previous && previous !== id) {
+        panelStack.push(previous);
+        if (panelStack.length > 12) panelStack.shift();
+      }
+      currentPanel = id;
+      document.body.classList.add('navigating-soft');
+      if (detectMobileApp()) showRouteLoader('A abrir ' + ((panels.find(p=>p.id===id)||{}).label || 'página') + '...');
+      document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active', s.id === `${id}Panel`));
+      document.querySelectorAll('[data-panel]').forEach(b=>b.classList.toggle('active', b.dataset.panel === id));
+      const p = panels.find(x=>x.id===id);
+      $('topbarTitle').textContent = p ? p.label : 'AdminManager';
+      $('sidebar').classList.remove('open');
+      $('overlay').classList.remove('active');
+      updateBackButton();
+      window.scrollTo({ top: 0, behavior: options.instant ? 'auto' : 'smooth' });
+      setTimeout(()=>{ document.body.classList.remove('navigating-soft'); hideRouteLoader(80); }, 280);
+      iconRefresh();
+      if (id === 'manage') renderManageSelect();
+      if (id === 'command') { renderCommandSelect(); if (commandSelectedId()) loadCommandCenter(); }
+      if (id === 'clients') { renderClientInviteSelect(); loadClientsPage(); }
+      if (id === 'backups') { renderBackupInviteSelect(); loadBackups(); }
+      if (id === 'guests') { renderGuestSelect(); loadGuestCrudList(); }
+      if (id === 'archived') loadArchivedInvites();
+    }
+    function goBackPanel(){
+      const previous = panelStack.pop() || 'dashboard';
+      showPanel(previous, { push:false });
+    }
+    
+    function loginView(){ document.body.classList.remove('role-admin','role-editor'); $('loginScreen').classList.remove('hidden'); $('app').classList.remove('active'); buildNav(); iconRefresh(); }
+    function applyRoleUi(){ document.body.classList.toggle('role-editor', isEditor()); document.body.classList.toggle('role-admin', isAdmin()); $('connectionLabel').textContent = 'Sistema protegido'; }
+    function appView(){ detectMobileApp(); $('loginScreen').classList.add('hidden'); $('app').classList.add('active'); applyRoleUi(); buildNav(); loadAll(); iconRefresh(); }
+    async function loadAll(){
+      renderSkeletons();
+      setLoading(true);
+      try {
+        const results = await Promise.allSettled([loadSummary(), loadInvites(), loadArchivedInvites(), loadGithubStatus()]);
+        const failures = results.filter(r => r.status === 'rejected');
+        $('syncDot').classList.toggle('ok', failures.length === 0);
+        $('syncText').textContent = failures.length ? 'Parcial' : 'Online';
+        $('connectionLabel').textContent = failures.length ? `${failures.length} módulo(s) com falha` : 'Sistema protegido';
+        if (failures.length) console.warn('[AdminManager] Falhas ao carregar módulos:', failures.map(f => f.reason?.message || f.reason));
+      } finally {
+        setLoading(false);
+        iconRefresh();
+      }
+    }
+    async function loadSummary(){
+      if (detectMobileApp()) {
+        $('metricsGrid').innerHTML = appCardSkeleton('cards',4).replace('app-skeleton-card','app-skeleton-card span-2');
+        $('activityList').innerHTML = appCardSkeleton('list',4);
+      }
+      const out = await api('/manager/summary');
+      const d = out.data || {};
+      renderMetrics(d);
+      renderActivity((d.activities || []).slice(0,5));
+      renderSystemInfo(d);
+    }
+    function renderMetrics(d){ const items=[['Total de convites',d.totalInvites||0,'activos','folder'],['Publicados',d.published||0,'online','check-circle'],['Convidados',d.guests||0,'geral','users'],['RSVP',d.rsvps||0,'confirmados','heart']]; $('metricsGrid').innerHTML = items.map(([label,value,small,icon])=>`<article class="metric-card"><span>${esc(label)}</span><strong>${esc(value)}</strong><small><i data-feather="${icon}"></i> ${esc(small)}</small></article>`).join(''); }
+    function renderActivity(list){ $('activityBadge').textContent = `${list.length} registos`; $('activityList').innerHTML = list.length ? list.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.type==='warning'?'alert-triangle':a.type==='github'?'git-commit':a.type==='gift'?'gift':a.type==='guests'?'users':'activity'}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail||'')} · ${fmtDate(a.timestamp)}</p></div></article>`).join('') : '<div class="feedback">Ainda não há actividade registada.</div>'; }
+    function renderSystemInfo(d){ $('systemInfo').innerHTML = `<div class="info-row"><span>Sistema</span><strong>${$('syncText')?.textContent === 'Parcial' ? 'Online com avisos' : 'Online e protegido'}</strong></div><div class="info-row"><span>Convites</span><strong>${esc(d.totalInvites||0)} activos · ${esc(d.draft||0)} rascunho(s)</strong></div><div class="info-row"><span>Dados activos</span><strong>${esc(d.messages||0)} mensagens · ${esc(d.contributions||0)} contribuições</strong></div>`; }
+    async function loadInvites(){
+      const q=encodeURIComponent($('searchInput')?.value||'');
+      const status=encodeURIComponent($('statusFilter')?.value||'all');
+      const packageKey=encodeURIComponent($('packageFilter')?.value||'all');
+      if (detectMobileApp() && $('invitesMobile')) $('invitesMobile').innerHTML = appCardSkeleton('list',4);
+      const out=await api(`/manager/invites?q=${q}&status=${status}&packageKey=${packageKey}`);
+      invites=out.data||[];
+      renderInvites(); renderGuestSelect(); renderManageSelect(); renderCommandSelect(); renderBackupInviteSelect();
+      if (document.getElementById('guestsPanel')?.classList.contains('active')) loadGuestCrudList();
+      if (document.getElementById('commandPanel')?.classList.contains('active')) loadCommandCenter();
+    }
+    async function loadArchivedInvites(){
+      const el=$('archivedTbody'); if(!el) return;
+      const q=encodeURIComponent($('archivedSearchInput')?.value||'');
+      if (detectMobileApp() && $('archivedMobile')) $('archivedMobile').innerHTML = appCardSkeleton('list',3);
+      const out=await api(`/manager/invites?q=${q}&status=archived&packageKey=all`);
+      archivedInvites=out.data||[];
+      renderArchivedInvites();
+    }
+    function renderArchivedInvites(){
+      const desktopActions = inv => `<button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button>` + adminOnlyHtml(`<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho"><i data-feather="rotate-ccw"></i> Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente"><i data-feather="trash-2"></i> Eliminar</button>`);
+      const mobileActions = inv => `<button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button>` + adminOnlyHtml(`<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','draft')" title="Restaurar para rascunho"><i data-feather="rotate-ccw"></i> Restaurar</button><button class="btn small danger" onclick="purgeInviteStrict('${inv.id}')" title="Eliminar definitivamente"><i data-feather="trash-2"></i> Eliminar</button>`);
+      const rows = archivedInvites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl||'')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions">${desktopActions(inv)}</div></td></tr>`).join('');
+      $('archivedTbody').innerHTML = rows || '<tr><td colspan="6">Nenhum convite arquivado.</td></tr>';
+      $('archivedMobile').innerHTML = archivedInvites.length ? archivedInvites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div class="table-actions">${mobileActions(inv)}</div></article>`).join('') : '<div class="feedback">Nenhum convite arquivado.</div>';
+      iconRefresh();
+    }
+
+    function adminOnlyHtml(html){ return isAdmin() ? html : ''; }
+    function editorSafeButton(label, onclick, title='Ver detalhes'){ return `<button class="btn small" onclick="${onclick}" title="${title}">${label}</button>`; }
+    function badgeStatus(s){ if(s==='published') return '<span class="badge ok">Publicado</span>'; if(s==='draft') return '<span class="badge warn">Rascunho</span>'; if(s==='archived') return '<span class="badge red">Arquivado</span>'; return `<span class="badge">${esc(s)}</span>`; }
+    function pkgLabel(p){ return p==='perola'?'Pérola':p==='esmeralda'?'Esmeralda':'Rubi'; }
+    function inviteStatusActions(inv){
+      if (!isAdmin()) return '';
+      if (inv.status === 'draft') return `<button class="btn small primary" onclick="updateInviteStatus('${inv.id}','published')" title="Publicar convite"><i data-feather="check-circle"></i> Publicar</button>`;
+      if (inv.status === 'published') return `<button class="btn small" onclick="updateInviteStatus('${inv.id}','draft')" title="Voltar para rascunho"><i data-feather="edit-3"></i> Rascunho</button>`;
+      return '';
+    }
+    function renderInvites(){
+      const rows = invites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td>${badgeStatus(inv.status)}</td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional"><i data-feather="command"></i> Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><i data-feather="git-branch"></i></button>`)}<button class="btn small" onclick="copyUrl('${esc(inv.publicUrl||'')}')" title="Copiar URL pública"><i data-feather="copy"></i></button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i></button></div></td></tr>`).join('');
+      $('invitesTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convite encontrado.</td></tr>';
+      $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional"><i data-feather="command"></i> Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><i data-feather="git-branch"></i> GitHub</button>`)}<button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i> Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
+      iconRefresh();
+    }
+    function renderGuestSelect(){
+      const selects = [$('guestInviteSelect'), $('guestCrudInviteSelect')].filter(Boolean);
+      if(!selects.length) return;
+      const previous = selectedGuestInviteId() || selects.find(s=>s.value)?.value || '';
+      const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>';
+      selects.forEach(select => { select.innerHTML = html; });
+      const valid = previous && invites.some(inv=>inv.id===previous);
+      const next = valid ? previous : (invites[0]?.id || '');
+      selects.forEach(select => { if(next) select.value = next; });
+    }
+    function renderManageSelect(){ const html = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>'; $('manageInviteSelect').innerHTML = html; if(invites.length && !selectedInviteDetails) loadManageDetails(); }
+    async function loadGithubStatus(){ try { const out = await api('/manager/github/status'); const d=out.data||{}; $('githubStatus').innerHTML = d.configured ? `<b>GitHub configurado correctamente.</b><br><br>Repositório: <b>${esc(d.owner)}/${esc(d.repo)}</b><br>Branch: <b>${esc(d.branch)}</b><br>Base dos convites: <b>${esc(d.invitesBasePath)}</b><br><br>Templates:<br>Pérola: <b>${esc(d.templates?.perola||'-')}</b><br>Esmeralda: <b>${esc(d.templates?.esmeralda||'-')}</b><br>Rubi: <b>${esc(d.templates?.rubi||'-')}</b>` : `<b>GitHub ainda não está configurado.</b><br><br>Configure no Render: <b>GITHUB_TOKEN</b>, <b>GITHUB_OWNER</b>, <b>GITHUB_REPO</b>, <b>GITHUB_BRANCH</b> e os caminhos dos templates.`; } catch(e){ $('githubStatus').textContent = e.message; } }
+    async function loadManageDetails(){
+      const id=$('manageInviteSelect').value;
+      if(!id) return;
+      if (detectMobileApp()) $('manageStats').innerHTML = appCardSkeleton('cards',4).replace('app-skeleton-card','app-skeleton-card span-2');
+      const out=await api(`/manager/invites/${id}`);
+      selectedInviteDetails=out.data;
+      const d=out.data;
+      $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small><i data-feather="users"></i> ${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small><i data-feather="heart"></i> confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small><i data-feather="gift"></i> ${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small><i data-feather="credit-card"></i> registos</small></article>`;
+      iconRefresh();
+    }
+    async function managerAction(path, method, confirmText, successMsg){ if(confirmText && !await appConfirm({ title:'Confirmar operação', message:confirmText, confirmLabel:'Continuar', variant:method==='DELETE'?'danger':'' })) return; hideMsg($('manageResult')); try { const out=await api(path,{method,body:JSON.stringify({})}); const msg = out.message || successMsg || 'Operação concluída.'; showMsg($('manageResult'), msg); appToast(msg); await Promise.allSettled([loadManageDetails(),loadSummary(),loadInvites(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]); } catch(e){ showMsg($('manageResult'), e.message, true); appToast(e.message,'error','Erro'); } }
+    function selectedManageId(){ return $('manageInviteSelect').value; }
+    function setLoginLoading(active){
+      const btn = $('loginSubmitBtn');
+      const label = btn?.querySelector('.login-btn-text');
+      if (!btn) return;
+      btn.disabled = !!active;
+      btn.classList.toggle('is-loading', !!active);
+      if (label) label.textContent = active ? 'A entrar...' : 'Entrar no centro de gestão';
+      iconRefresh();
+    }
+
+    function enhanceButtonTooltips(){
+      document.querySelectorAll('.btn').forEach(btn => {
+        if (btn.dataset.tooltip) return;
+        const label = btn.getAttribute('title') || btn.getAttribute('aria-label') || btn.textContent.trim().replace(/\s+/g,' ');
+        if (label) btn.dataset.tooltip = label;
+      });
+    }
+    function setGuestImportLoading(active, stage = 'A preparar importação...', percent = 0, done = false) {
+      const progress = $('guestImportProgress');
+      const bar = $('guestImportBar');
+      const pct = $('guestImportPercent');
+      const label = $('guestImportStage');
+      const note = $('guestImportNote');
+      const btn = $('importGuestsBtn');
+      const btnLabel = btn?.querySelector('.guest-import-label');
+      const controls = [$('guestInviteSelect'), $('guestFile'), $('guestBulkText'), $('sampleGuestsBtn'), $('repairGuestsBtn')].filter(Boolean);
+      const cleanPercent = Math.max(0, Math.min(100, Number(percent) || 0));
+
+      if (progress) {
+        progress.classList.toggle('active', !!active || !!done);
+        progress.classList.toggle('done', !!done);
+      }
+      if (bar) bar.style.width = `${cleanPercent}%`;
+      if (pct) pct.textContent = `${Math.round(cleanPercent)}%`;
+      if (label) label.textContent = stage;
+      if (note) note.textContent = done ? 'Importação concluída. O campo foi limpo e a lista foi actualizada.' : 'Não feche esta página enquanto os convidados estão a ser enviados.';
+
+      if (btn) {
+        btn.disabled = !!active;
+        btn.classList.toggle('is-loading', !!active);
+      }
+      if (btnLabel) btnLabel.textContent = active ? 'A importar convidados...' : 'Importar / actualizar convidados';
+      controls.forEach(el => { el.disabled = !!active; });
+      iconRefresh();
+    }
+    function appToast(message, type = 'success', title = ''){
+      const stack = $('toastStack');
+      if (!stack) return;
+      const item = document.createElement('div');
+      item.className = `toast-item ${type === 'error' ? 'error' : ''}`;
+      item.innerHTML = `<div class="toast-ico"><i data-feather="${type === 'error' ? 'alert-triangle' : 'check-circle'}"></i></div><div><strong>${esc(title || (type === 'error' ? 'Atenção' : 'Concluído'))}</strong><span>${esc(message)}</span></div>`;
+      stack.appendChild(item);
+      iconRefresh();
+      setTimeout(()=>{ item.style.opacity='0'; item.style.transform='translateY(8px)'; setTimeout(()=>item.remove(), 220); }, 3600);
+    }
+    function closeConfirmModal(result){
+      const modal = $('confirmModal');
+      if (modal) modal.classList.remove('open');
+      if (confirmResolver) confirmResolver(result);
+      confirmResolver = null;
+    }
+    function appConfirm({ title='Confirmar acção', message='', confirmLabel='Confirmar', cancelLabel='Cancelar', variant='', requireText='', inputLabel='' } = {}){
+      return new Promise(resolve => {
+        const modal = $('confirmModal');
+        const ok = $('confirmOkBtn');
+        const cancel = $('confirmCancelBtn');
+        const input = $('confirmInput');
+        const wrap = $('confirmInputWrap');
+        const icon = $('confirmIcon');
+        confirmResolver = resolve;
+        $('confirmTitle').textContent = title;
+        $('confirmMessage').textContent = message;
+        ok.innerHTML = `<i data-feather="check"></i> ${esc(confirmLabel)}`;
+        cancel.innerHTML = `<i data-feather="x"></i> ${esc(cancelLabel)}`;
+        ok.className = 'btn primary' + (variant === 'danger' ? ' danger' : '');
+        icon.className = 'confirm-icon' + (variant === 'danger' ? ' danger' : '');
+        icon.innerHTML = `<i data-feather="${variant === 'danger' ? 'alert-triangle' : 'alert-circle'}"></i>`;
+        if (requireText) {
+          wrap.classList.remove('hidden');
+          $('confirmInputLabel').textContent = inputLabel || `Escreva exactamente: ${requireText}`;
+          input.value = '';
+          input.placeholder = requireText;
+          ok.disabled = true;
+          input.oninput = () => { ok.disabled = input.value.trim() !== requireText; };
+          setTimeout(()=>input.focus(), 80);
+        } else {
+          wrap.classList.add('hidden');
+          input.oninput = null;
+          ok.disabled = false;
+        }
+        ok.onclick = () => closeConfirmModal(true);
+        cancel.onclick = () => closeConfirmModal(false);
+        modal.onclick = e => { if (e.target === modal) closeConfirmModal(false); };
+        modal.classList.add('open');
+        iconRefresh();
+      });
+    }
+
+    document.addEventListener('click', event => {
+      const btn = event.target.closest('.btn');
+      if (!btn) return;
+      btn.classList.remove('pulse-click');
+      void btn.offsetWidth;
+      btn.classList.add('pulse-click');
+      setTimeout(() => btn.classList.remove('pulse-click'), 260);
+    });
+    async function requireEliminatePhrase(message, phrase = 'ELIMINAR'){
+      return appConfirm({ title:'Confirmação obrigatória', message, confirmLabel:'Confirmar', variant:'danger', requireText:phrase });
+    }
+    async function setInviteStatus(id, status){
+      if(!id) return;
+      const label = status === 'published' ? 'publicado' : status === 'draft' ? 'rascunho' : status;
+      if (!await appConfirm({ title:'Alterar estado do convite', message:`Alterar o estado deste convite para ${label}?`, confirmLabel:'Alterar' })) return;
+      try {
+        const out = await api(`/manager/invites/${id}`, { method:'PATCH', body:JSON.stringify({ status }) });
+        appToast(out.message || `Estado alterado para ${label}.`);
+        await Promise.allSettled([loadSummary(), loadInvites(), loadArchivedInvites(), selectedManageId() ? loadManageDetails() : Promise.resolve(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]);
+      } catch(e) { appToast('Erro ao alterar estado: ' + e.message, 'error', 'Erro'); }
+    }
+    window.updateInviteStatus = setInviteStatus;
+    window.purgeInviteStrict = async function(id){
+      const inv = [...invites, ...archivedInvites].find(i=>i.id===id);
+      if(!await requireEliminatePhrase(`Esta acção vai eliminar definitivamente ${inv?.slug || 'este convite'} e dados relacionados do MongoDB. Não apaga a pasta no GitHub.`)) return;
+      await managerAction(`/manager/invites/${id}/purge`,'DELETE',null,'Convite eliminado definitivamente.');
+    };
+
+    window.openInvite = async function(id){ const out=await api(`/manager/invites/${id}`); const d=out.data; $('modalTitle').textContent=d.invite.coupleNames; $('modalBody').innerHTML=`<div class="info-list"><div class="info-row"><span>Slug</span><strong>${esc(d.invite.slug)}</strong></div><div class="info-row"><span>URL</span><strong>${esc(d.invite.publicUrl)}</strong></div><div class="info-row"><span>GitHub</span><strong>${esc(d.invite.githubPath || '-')}</strong></div></div><div class="metrics-grid" style="margin-top:12px"><article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>MongoDB</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmados</small></article><article class="metric-card"><span>Mensagens</span><strong>${d.messages.length}</strong><small>mural</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article></div>`; $('detailsModal').classList.add('open'); iconRefresh(); };
+    window.copyUrl = async function(url){ if(!url) return; await navigator.clipboard.writeText(url); appToast('Copiado para a área de transferência.'); };
+    window.syncGithub = async function(id){
+      if(!await appConfirm({ title:'Sincronizar GitHub', message:'Criar/sincronizar a pasta deste convite no GitHub?', confirmLabel:'Sincronizar' })) return;
+      const allowOverwrite = await appConfirm({ title:'Sobrescrever ficheiros?', message:'Se a pasta já existir no GitHub, quer actualizar/sobrescrever os ficheiros do template?', confirmLabel:'Actualizar', cancelLabel:'Só criar se não existir' });
+      try {
+        const out=await api(`/manager/invites/${id}/github-sync`,{method:'POST',body:JSON.stringify({ allowOverwrite })});
+        appToast(out.message || 'GitHub sincronizado com sucesso.');
+        await loadAll();
+      } catch(e){ appToast('Erro GitHub: '+e.message, 'error', 'Erro'); } };
+    window.selectManageInvite = function(id){ showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); };
+
+
+
+
+    let commandDetails = null;
+    let commandActiveTab = 'overview';
+    function commandSelectedId(){ return $('commandInviteSelect')?.value || ''; }
+    function normalizeManagerText(value){ return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
+    function renderCommandSelect(){
+      const select = $('commandInviteSelect');
+      if(!select) return;
+      const previous = select.value || selectedGuestInviteId() || $('manageInviteSelect')?.value || '';
+      select.innerHTML = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Crie primeiro um convite</option>';
+      const next = previous && invites.some(inv=>inv.id===previous) ? previous : (invites[0]?.id || '');
+      if(next) select.value = next;
+      renderCommandContext(invites.find(inv=>inv.id===select.value));
+    }
+    function renderCommandContext(inv){
+      const el = $('commandContext');
+      if(!el) return;
+      if(!inv){ el.innerHTML = '<strong>Nenhum convite seleccionado</strong><span>Escolhe um convite para abrir a ficha operacional.</span>'; return; }
+      el.innerHTML = `<strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.clientName || '-')}</span><span>${esc(inv.slug)}</span><div class="command-status-row">${badgeStatus(inv.status)}<span class="badge blue">${pkgLabel(inv.packageKey)}</span></div>`;
+    }
+    function setCommandTab(tab){
+      commandActiveTab = tab || 'overview';
+      document.querySelectorAll('[data-command-tab]').forEach(btn=>btn.classList.toggle('active', btn.dataset.commandTab === commandActiveTab));
+      if(commandDetails) renderCommandCenter(commandDetails);
+      iconRefresh();
+    }
+    window.openCommandCenter = function(id){ showPanel('command'); setTimeout(()=>{ renderCommandSelect(); if($('commandInviteSelect')) $('commandInviteSelect').value = id; loadCommandCenter(); }, 0); };
+    async function loadCommandCenter(){
+      const id = commandSelectedId();
+      renderCommandContext(invites.find(inv=>inv.id===id));
+      if(!id){ $('commandBody').innerHTML = '<div class="command-empty">Seleccione um convite para carregar o Command Center.</div>'; return; }
+      $('commandBody').innerHTML = detectMobileApp()
+        ? `<div class="v7-mobile-command">${appCardSkeleton('cards',4)}${appCardSkeleton('list',3)}</div>`
+        : '<div class="command-empty">A carregar ficha operacional...</div>';
+      try{
+        const out = await api(`/manager/invites/${id}`);
+        commandDetails = out.data;
+        renderCommandCenter(commandDetails);
+      }catch(err){
+        $('commandBody').innerHTML = `<div class="feedback error">${esc(err.message)}</div>`;
+      }
+    }
+    function commandIssueCount(d){ return computeCommandHealth(d).filter(item=>item.level !== 'ok').length; }
+    function getBadNormalizedGuests(d){
+      const guests = Array.isArray(d?.guests) ? d.guests : [];
+      return guests
+        .map(g => {
+          const expected = normalizeManagerText(g.name);
+          const current = String(g.normalizedName || '').trim().toLowerCase();
+          return { guest:g, expected, current, token:String(g.inviteToken || g.token || '').trim() };
+        })
+        .filter(x => x.expected && x.expected !== x.current);
+    }
+    function computeCommandHealth(d){
+      const inv = d.invite || {};
+      const guests = Array.isArray(d.guests) ? d.guests : [];
+      const gifts = Array.isArray(d.gifts) ? d.gifts : [];
+      const messages = Array.isArray(d.messages) ? d.messages : [];
+      const badNames = getBadNormalizedGuests(d);
+      const withoutToken = guests.filter(g => !String(g.inviteToken || g.token || '').trim());
+      const reservedGifts = gifts.filter(g => g.reserved || g.reservedBy || g.reserved_by);
+      const giftsWithoutOwner = reservedGifts.filter(g => !String(g.reservedBy || g.reserved_by || g.guestName || '').trim());
+      const orphanMessages = messages.filter(m => !String(m.nome || m.name || m.guestName || '').trim());
+      return [
+        { level: inv.publicUrl ? 'ok' : 'warn', icon:'globe', title:'URL pública', text: inv.publicUrl ? 'Convite com URL pública registada.' : 'Este convite ainda não tem URL pública registada.' },
+        { level: inv.githubPath ? 'ok' : 'warn', icon:'git-branch', title:'GitHub', text: inv.githubPath ? 'Pasta GitHub ligada ao convite.' : 'Pasta GitHub ausente ou não registada.' },
+        { level: badNames.length ? 'red' : 'ok', icon:'user-check', title:'Normalização de nomes', text: badNames.length ? `${badNames.length} convidado(s) com normalizedName inconsistente. Toque para ver e corrigir.` : 'Nomes normalizados sem inconsistências detectadas.', action:'badNames', count:badNames.length },
+        { level: withoutToken.length ? 'warn' : 'ok', icon:'key', title:'Tokens de convite', text: withoutToken.length ? `${withoutToken.length} convidado(s) sem token público detectado.` : 'Todos os convidados carregados possuem token.' },
+        { level: giftsWithoutOwner.length ? 'warn' : 'ok', icon:'gift', title:'Presentes reservados', text: giftsWithoutOwner.length ? `${giftsWithoutOwner.length} presente(s) reservado(s) sem convidado associado.` : `${reservedGifts.length} presente(s) reservado(s) com dados consistentes.` },
+        { level: orphanMessages.length ? 'warn' : 'ok', icon:'message-square', title:'Mensagens', text: orphanMessages.length ? `${orphanMessages.length} mensagem(ns) sem autor identificável.` : 'Mensagens com autor identificável.' }
+      ];
+    }
+    function renderBadNamesInspector(d){
+      const badNames = getBadNormalizedGuests(d);
+      if(!badNames.length) return '';
+      const mobile = detectMobileApp();
+      const rows = badNames.map(({guest, expected, current, token}, index) => {
+        const guestId = esc(guest.id || guest._id || '');
+        const number = guest.number ? `Nº ${esc(guest.number)}` : `#${index + 1}`;
+        return `<article class="bad-name-row ${mobile ? 'v7-bad-row' : ''}"><div><strong>${esc(guest.name || 'Sem nome')}</strong><small>${number} · ${esc(guest.mesa || guest.table || 'Mesa não definida')}</small><small>Actual: <mark>${esc(current || 'vazio')}</mark></small><small>Correcto: <code>${esc(expected)}</code></small><small>Token: ${esc(token || '-')}</small></div><div class="v7-row-actions"><button class="btn small" onclick="goCommandGuestEditor('${guestId}')"><i data-feather="edit-3"></i> Ver</button><button class="btn small primary" onclick="repairCommandNames()"><i data-feather="tool"></i> Corrigir</button></div></article>`;
+      }).join('');
+      return `<section class="command-inspector v7-inspector" id="badNamesInspector"><div class="command-inspector-head"><h3><i data-feather="alert-triangle"></i> Normalização inconsistente <span class="badge red">${badNames.length}</span></h3><div class="toolbar-right"><button class="btn primary" onclick="repairCommandNames()"><i data-feather="tool"></i> Corrigir todos</button><button class="btn" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button><button class="btn" onclick="copyBadNamesList()"><i data-feather="copy"></i> Copiar</button></div></div><div class="bad-name-list">${rows}</div></section>`;
+    }
+    function renderHealthItems(items){
+      return `<div class="command-health-grid">${items.map(item=>`<article class="health-item ${item.level} ${item.action ? 'actionable' : ''}" ${item.action ? `onclick="handleHealthAction('${item.action}')"` : ''}><div class="health-icon"><i data-feather="${item.icon}"></i></div><div><strong>${esc(item.title)}</strong><p>${esc(item.text)}</p></div></article>`).join('')}</div>`;
+    }
+    function handleHealthAction(action){ if(action === 'badNames') { commandActiveTab = 'health'; renderCommandCenter(commandDetails); setTimeout(()=>document.getElementById('badNamesInspector')?.scrollIntoView({behavior:'smooth',block:'start'}), 80); } }
+    function renderCommandMobileKpi(label, value, small, icon){
+      return `<article class="v7-kpi"><div class="v7-kpi-icon"><i data-feather="${icon}"></i></div><span>${esc(label)}</span><strong>${esc(value)}</strong><small>${esc(small)}</small></article>`;
+    }
+    function renderCommandMobileHeader(inv, issues){
+      return `<section class="v7-command-hero"><div class="v7-command-hero-top"><div><span class="v7-eyebrow">Ficha activa</span><h2>${esc(inv.coupleNames || inv.slug || 'Convite')}</h2><p>${esc(inv.slug || '-')}</p></div><span class="v7-health-pill ${issues ? 'warn' : 'ok'}">${issues ? `${issues} alerta(s)` : 'OK'}</span></div><div class="v7-chip-row">${badgeStatus(inv.status)}<span class="badge blue">${pkgLabel(inv.packageKey)}</span></div><div class="v7-action-grid"><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i><span>Lista</span></button><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i><span>Gestão</span></button><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i><span>Abrir</span></button><button class="btn" onclick="copyUrl('${esc(inv.slug || '')}')"><i data-feather="copy"></i><span>Slug</span></button><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="link"></i><span>URL</span></button><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i><span>GitHub</span></button></div></section>`;
+    }
+    function renderCommandCenterMobile(d){
+      const inv = d.invite || {};
+      const guests = d.guests || [];
+      const rsvps = d.rsvps || [];
+      const gifts = d.gifts || [];
+      const messages = d.messages || [];
+      const contributions = d.contributions || [];
+      const health = computeCommandHealth(d);
+      const issues = health.filter(x=>x.level !== 'ok').length;
+      const badNames = getBadNormalizedGuests(d);
+      const reserved = gifts.filter(g=>g.reserved || g.reservedBy || g.reserved_by).length;
+      const header = renderCommandMobileHeader(inv, issues);
+      const badNamesInspector = renderBadNamesInspector(d);
+      const critical = health.filter(h=>h.level !== 'ok');
+      let body = '';
+      if(commandActiveTab === 'overview'){
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Resumo</strong><span>${esc(inv.slug || '')}</span></div><div class="v7-kpi-grid">${renderCommandMobileKpi('Convidados', guests.length, 'base', 'users')}${renderCommandMobileKpi('RSVP', rsvps.length, 'confirmados', 'heart')}${renderCommandMobileKpi('Presentes', reserved, 'reservados', 'gift')}${renderCommandMobileKpi('Mensagens', messages.length, 'mural', 'message-square')}</div></section>${critical.length ? `<section class="v7-section-card"><div class="v7-section-head"><strong>Atenção</strong><span>${critical.length} ponto(s)</span></div>${renderHealthItems(critical.slice(0,3))}</section>` : `<section class="v7-ok-card"><i data-feather="check-circle"></i><div><strong>Saúde operacional OK</strong><span>Não há inconsistências críticas visíveis neste convite.</span></div></section>`}${badNamesInspector}`;
+      } else if(commandActiveTab === 'health'){
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Diagnóstico</strong><span>${issues ? `${issues} alerta(s)` : 'sem alertas'}</span></div>${renderHealthItems(health)}</section>${badNamesInspector}`;
+      } else if(commandActiveTab === 'data'){
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Dados do convite</strong><span>MongoDB</span></div><div class="command-data-grid"><div class="command-data-box"><span>ID</span><strong>${esc(inv.id || inv._id || '-')}</strong></div><div class="command-data-box"><span>Slug</span><strong>${esc(inv.slug || '-')}</strong></div><div class="command-data-box"><span>Cliente</span><strong>${esc(inv.clientName || '-')}</strong></div><div class="command-data-box"><span>Casal</span><strong>${esc(inv.coupleNames || '-')}</strong></div><div class="command-data-box"><span>Pacote</span><strong>${pkgLabel(inv.packageKey)}</strong></div><div class="command-data-box"><span>Estado</span><strong>${esc(inv.status || '-')}</strong></div><div class="command-data-box"><span>URL pública</span><strong>${esc(inv.publicUrl || '-')}</strong></div><div class="command-data-box"><span>GitHub</span><strong>${esc(inv.githubPath || '-')}</strong></div></div></section>`;
+      } else if(commandActiveTab === 'ops'){
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Operações rápidas</strong><span>Acções seguras</span></div><div class="command-ops-grid"><article class="command-op"><strong>Convidados</strong><p>Gestão filtrada neste convite.</p><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button></article><article class="command-op"><strong>Manutenção</strong><p>Reset, presentes e estado.</p><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i> Gestão</button></article><article class="command-op"><strong>Reparar nomes</strong><p>Corrige normalizedName.</p><button class="btn" onclick="handleHealthAction('badNames')"><i data-feather="tool"></i> Corrigir</button></article><article class="command-op"><strong>Convite</strong><p>Abre o convite público.</p><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button></article><article class="command-op"><strong>Copiar</strong><p>Copia URL pública.</p><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="copy"></i> URL</button></article><article class="command-op"><strong>GitHub</strong><p>Diagnóstico GitHub.</p><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i> GitHub</button></article></div></section>`;
+      } else {
+        const acts = [...rsvps.slice(0,6).map(r=>({title:'Presença confirmada', detail:`${r.nome || r.name || 'Convidado'} · ${fmtDate(r.timestamp || r.createdAt)}`, icon:'check-circle'})), ...messages.slice(0,6).map(m=>({title:'Mensagem recebida', detail:`${m.nome || m.name || 'Convidado'} · ${fmtDate(m.timestamp || m.createdAt)}`, icon:'message-square'})), ...contributions.slice(0,6).map(c=>({title:'Contribuição registada', detail:`${c.nome || c.name || 'Convidado'} · ${fmtDate(c.timestamp || c.createdAt)}`, icon:'credit-card'}))].slice(0,12);
+        body = `${header}<section class="v7-section-card"><div class="v7-section-head"><strong>Actividade</strong><span>${acts.length} registos</span></div><div class="command-activity">${acts.length ? acts.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.icon}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail)}</p></div></article>`).join('') : '<div class="command-empty">Ainda não há actividade detalhada para este convite.</div>'}</div></section>`;
+      }
+      $('commandBody').innerHTML = `<div class="v7-mobile-command">${body}</div>`;
+      iconRefresh();
+    }
+    function renderCommandCenter(d){
+      if (detectMobileApp() || window.matchMedia('(max-width: 860px)').matches) return renderCommandCenterMobile(d);
+      const inv = d.invite || {};
+      const guests = d.guests || [];
+      const rsvps = d.rsvps || [];
+      const gifts = d.gifts || [];
+      const messages = d.messages || [];
+      const contributions = d.contributions || [];
+      const health = computeCommandHealth(d);
+      const badNamesInspector = renderBadNamesInspector(d);
+      const issues = health.filter(x=>x.level !== 'ok').length;
+      const hero = `<div class="command-hero"><div><h2>${esc(inv.coupleNames || inv.slug || 'Convite')}</h2><p>${esc(inv.publicUrl || inv.githubPath || inv.slug || '')}</p><div class="command-status-row" style="margin-top:8px">${badgeStatus(inv.status)}<span class="badge blue">${pkgLabel(inv.packageKey)}</span><span class="badge ${issues ? 'warn' : 'ok'}">${issues ? `${issues} alerta(s)` : 'Saúde OK'}</span></div></div><div class="command-hero-actions"><button class="btn" onclick="copyUrl('${esc(inv.slug || '')}')"><i data-feather="copy"></i> Slug</button><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button></div></div>`;
+      let body = '';
+      if(commandActiveTab === 'overview'){
+        body = `${hero}<div class="command-kpi-grid"><article class="command-kpi"><span>Convidados</span><strong>${guests.length}</strong><small>base carregada</small></article><article class="command-kpi"><span>RSVP</span><strong>${rsvps.length}</strong><small>confirmações</small></article><article class="command-kpi"><span>Presentes</span><strong>${gifts.length}</strong><small>${gifts.filter(g=>g.reserved || g.reservedBy || g.reserved_by).length} reservados</small></article><article class="command-kpi"><span>Mensagens</span><strong>${messages.length}</strong><small>mural</small></article></div>${renderHealthItems(health.slice(0,4))}${badNamesInspector}`;
+      } else if(commandActiveTab === 'health'){
+        body = `${hero}${renderHealthItems(health)}${badNamesInspector}`;
+      } else if(commandActiveTab === 'data'){
+        body = `${hero}<div class="command-data-grid"><div class="command-data-box"><span>ID</span><strong>${esc(inv.id || inv._id || '-')}</strong></div><div class="command-data-box"><span>Slug</span><strong>${esc(inv.slug || '-')}</strong></div><div class="command-data-box"><span>Cliente</span><strong>${esc(inv.clientName || '-')}</strong></div><div class="command-data-box"><span>Casal</span><strong>${esc(inv.coupleNames || '-')}</strong></div><div class="command-data-box"><span>Pacote</span><strong>${pkgLabel(inv.packageKey)}</strong></div><div class="command-data-box"><span>Estado</span><strong>${esc(inv.status || '-')}</strong></div><div class="command-data-box"><span>URL pública</span><strong>${esc(inv.publicUrl || '-')}</strong></div><div class="command-data-box"><span>GitHub</span><strong>${esc(inv.githubPath || '-')}</strong></div><div class="command-data-box"><span>Criado em</span><strong>${fmtDate(inv.createdAt)}</strong></div><div class="command-data-box"><span>Actualizado em</span><strong>${fmtDate(inv.updatedAt)}</strong></div></div>`;
+      } else if(commandActiveTab === 'ops'){
+        body = `${hero}<div class="command-ops-grid"><article class="command-op"><strong>Convidados</strong><p>Abre a gestão directa filtrada neste convite.</p><button class="btn primary" onclick="goCommandGuests()"><i data-feather="users"></i> Lista</button></article><article class="command-op"><strong>Manutenção</strong><p>Abre reset de acessos, presentes, estado e erase controlado.</p><button class="btn" onclick="goCommandManage()"><i data-feather="settings"></i> Gestão</button></article><article class="command-op"><strong>Reparar nomes</strong><p>Mostra os convidados afectados e corrige normalizedName deste convite.</p><button class="btn" onclick="handleHealthAction('badNames')"><i data-feather="list"></i> Ver lista</button></article><article class="command-op"><strong>Copiar URL</strong><p>Copia a URL pública para partilhar ou testar.</p><button class="btn" onclick="copyUrl('${esc(inv.publicUrl || '')}')"><i data-feather="copy"></i> URL</button></article><article class="command-op"><strong>Abrir convite</strong><p>Testa a página pública do convite.</p><button class="btn" onclick="window.open('${esc(inv.publicUrl || '#')}','_blank')"><i data-feather="external-link"></i> Abrir</button></article><article class="command-op"><strong>GitHub</strong><p>Abre a área de ligação GitHub para diagnóstico.</p><button class="btn" onclick="showPanel('github')"><i data-feather="git-branch"></i> GitHub</button></article></div>`;
+      } else {
+        const acts = [...rsvps.slice(0,6).map(r=>({title:'Presença confirmada', detail:`${r.nome || r.name || 'Convidado'} · ${fmtDate(r.timestamp || r.createdAt)}`, icon:'check-circle'})), ...messages.slice(0,6).map(m=>({title:'Mensagem recebida', detail:`${m.nome || m.name || 'Convidado'} · ${fmtDate(m.timestamp || m.createdAt)}`, icon:'message-square'})), ...contributions.slice(0,6).map(c=>({title:'Contribuição registada', detail:`${c.nome || c.name || 'Convidado'} · ${fmtDate(c.timestamp || c.createdAt)}`, icon:'credit-card'}))].slice(0,12);
+        body = `${hero}<div class="command-activity">${acts.length ? acts.map(a=>`<article class="activity-item"><div class="activity-icon"><i data-feather="${a.icon}"></i></div><div><strong>${esc(a.title)}</strong><p>${esc(a.detail)}</p></div></article>`).join('') : '<div class="command-empty">Ainda não há actividade detalhada para este convite.</div>'}</div>`;
+      }
+      $('commandBody').innerHTML = body;
+      iconRefresh();
+    }
+    function goCommandGuests(){ const id=commandSelectedId(); showPanel('guests'); setTimeout(()=>{ renderGuestSelect(); syncGuestInviteSelects(id); loadGuestCrudList(); }, 0); }
+    function goCommandManage(){ const id=commandSelectedId(); showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); }
+    async function goCommandGuestEditor(guestId){ const id=commandSelectedId(); showPanel('guests'); setTimeout(async()=>{ renderGuestSelect(); syncGuestInviteSelects(id); await loadGuestCrudList(); if(guestId) openGuestEditor(guestId); }, 0); }
+    async function repairCommandNames(){
+      const id=commandSelectedId();
+      if(!id) return;
+      const badCount = getBadNormalizedGuests(commandDetails || {}).length;
+      const msg = badCount ? `Foram detectados ${badCount} convidado(s) com normalizedName inconsistente. A reparação vai recalcular o normalizedName a partir do nome real do convidado.` : 'Não foram detectadas inconsistências, mas pode executar a reparação para garantir que a base está consistente.';
+      if(!await appConfirm({ title:'Reparar normalização de nomes', message:msg, confirmLabel:'Reparar agora' })) return;
+      try{
+        const out = await api(`/manager/invites/${id}/guests/repair-normalized`, { method:'POST', body:JSON.stringify({}) });
+        appToast(out.message || 'Reparação concluída.');
+        await Promise.allSettled([loadCommandCenter(), loadGuestCrudList(), loadSummary(), loadInvites()]);
+      }catch(e){ appToast('Erro: '+e.message, 'error', 'Erro'); }
+    }
+    function copyBadNamesList(){
+      const badNames = getBadNormalizedGuests(commandDetails || {});
+      const text = badNames.map(({guest, expected, current, token}) => `${guest.name || 'Sem nome'} | actual: ${current || 'vazio'} | correcto: ${expected} | token: ${token || '-'}`).join('\n');
+      navigator.clipboard.writeText(text || 'Sem inconsistências').then(()=>appToast('Lista de inconsistências copiada.'));
+    }
+
+    function selectedGuestInviteId(){ return $('guestCrudInviteSelect')?.value || $('guestInviteSelect')?.value || ''; }
+    function syncGuestInviteSelects(id){
+      ['guestInviteSelect','guestCrudInviteSelect'].forEach(key => { const el=$(key); if(el && id && el.value !== id) el.value = id; });
+    }
+    function selectedGuestInvite(){ const id=selectedGuestInviteId(); return invites.find(inv=>inv.id===id) || null; }
+    function canonicalGuestStatus(raw){
+      const value = String(raw || '').trim();
+      const low = value.toLowerCase();
+      if (!value) return 'Não aberto';
+      // IMPORTANTE: “Não aberto” também contém a palavra “aberto”.
+      // Por isso, este caso tem de ser validado antes de “Convite Aberto”.
+      if (low.includes('não aberto') || low.includes('nao aberto')) return 'Não aberto';
+      if (low === 'aberto' || low.includes('convite aberto')) return 'Convite Aberto';
+      if (low.includes('pendente') || low.includes('confirmar')) return 'Ainda por confirmar';
+      if (low.startsWith('confirmado')) return value;
+      if (low.includes('aberto')) return 'Convite Aberto';
+      return value;
+    }
+    function statusLabelForSelect(value){
+      const low = String(value || '').toLowerCase();
+      if (low.includes('convite aberto') || low === 'aberto') return 'Aberto';
+      if (low.includes('confirmado')) return String(value || 'Confirmado');
+      if (low.includes('confirmar') || low.includes('pendente')) return 'Pendente';
+      if (!value || low.includes('não aberto') || low.includes('nao aberto')) return 'Não aberto';
+      return String(value);
+    }
+    function setGuestStatusSelect(raw){
+      const select = $('guestEditStatus');
+      if (!select) return;
+      const value = canonicalGuestStatus(raw);
+      const hasOption = Array.from(select.options).some(opt => opt.value === value);
+      if (!hasOption) select.add(new Option(statusLabelForSelect(value), value));
+      select.value = value;
+    }
+    function guestPayloadFromExisting(g={}, overrides={}){
+      return {
+        name: String(overrides.name ?? g.name ?? '').trim(),
+        table: String(overrides.table ?? overrides.mesa ?? g.table ?? g.mesa ?? 'A indicar na entrada').trim(),
+        companions: Number(overrides.companions ?? g.companions ?? 0) || 0,
+        phone: String(overrides.phone ?? g.phone ?? '').trim(),
+        number: Number(overrides.number ?? g.number ?? 0) || 0,
+        category: String(overrides.category ?? g.category ?? '').trim(),
+        status: canonicalGuestStatus(overrides.status ?? g.status ?? 'Não aberto'),
+        legacyToken: String(overrides.legacyToken ?? g.legacyToken ?? '').trim(),
+        notes: String(overrides.notes ?? g.notes ?? '').trim(),
+        inviteToken: String(overrides.inviteToken ?? g.inviteToken ?? g.token ?? '').trim()
+      };
+    }
+    function updateCurrentGuest(updated){
+      if (!updated || !updated.id) return;
+      currentGuests = currentGuests.map(item => String(item.id) === String(updated.id) ? { ...item, ...updated } : item);
+      renderGuestCrudList();
+    }
+    function guestPayloadFromForm(){
+      return {
+        name: $('guestEditName').value.trim(),
+        table: $('guestEditTable').value.trim(),
+        companions: Number($('guestEditCompanions').value || 0),
+        phone: $('guestEditPhone').value.trim(),
+        number: Number($('guestEditNumber').value || 0),
+        category: $('guestEditCategory').value.trim(),
+        status: canonicalGuestStatus($('guestEditStatus').value.trim()),
+        legacyToken: $('guestEditLegacyToken').value.trim(),
+        notes: $('guestEditNotes').value.trim(),
+        inviteToken: $('guestEditInviteToken').value.trim()
+      };
+    }
+    async function loadGuestCrudList(){
+      const id=selectedGuestInviteId();
+      syncGuestInviteSelects(id);
+      const tbody=$('guestCrudTbody');
+      if(!tbody) return;
+      if(!id){ tbody.innerHTML='<tr><td colspan="7">Seleccione um convite.</td></tr>'; $('guestCrudMobile').innerHTML=''; return; }
+      const q=encodeURIComponent($('guestSearchInput')?.value || '');
+      try{
+        tbody.innerHTML='<tr><td colspan="7">A carregar convidados...</td></tr>';
+        if (detectMobileApp()) $('guestCrudMobile').innerHTML = appCardSkeleton('list',5);
+        const out=await api(`/manager/invites/${id}/guests?q=${q}`);
+        currentGuests=out.data||[];
+        renderGuestCrudList();
+      }catch(e){
+        tbody.innerHTML=`<tr><td colspan="7">${esc(e.message)}</td></tr>`;
+        $('guestCrudMobile').innerHTML=`<div class="feedback error">${esc(e.message)}</div>`;
+      }
+    }
+    function renderGuestCrudList(){
+      const rows=currentGuests.map(g=>`<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Repor estado"><i data-feather="rotate-ccw"></i></button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button>`)}</div></td></tr>`).join('');
+      $('guestCrudTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convidado encontrado.</td></tr>';
+      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')"><i data-feather="rotate-ccw"></i> Repor</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')"><i data-feather="trash-2"></i> Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
+      iconRefresh();
+    }
+    function badgeStatusFromGuest(status){ const s=String(status||'').toLowerCase(); if(s.includes('confirmado')) return '<span class="badge ok">Confirmado</span>'; if(s.includes('não aberto') || s.includes('nao aberto')) return '<span class="badge">Não aberto</span>'; if(s.includes('aberto')) return '<span class="badge blue">Aberto</span>'; if(s.includes('pendente') || s.includes('confirmar')) return '<span class="badge warn">Pendente</span>'; return '<span class="badge">Não aberto</span>'; }
+    function openGuestModal(){ $('guestEditModal').classList.add('open'); iconRefresh(); }
+    function closeGuestModal(){ $('guestEditModal').classList.remove('open'); hideMsg($('guestEditResult')); }
+    function fillGuestForm(g={}){
+      editingGuestId = g.id || '';
+      $('guestEditId').value = editingGuestId;
+      $('guestEditTitle').textContent = editingGuestId ? 'Editar convidado' : 'Novo convidado';
+      $('guestEditName').value = g.name || '';
+      $('guestEditTable').value = g.table || g.mesa || 'A indicar na entrada';
+      $('guestEditCompanions').value = Number(g.companions||0);
+      $('guestEditPhone').value = g.phone || '';
+      $('guestEditNumber').value = Number(g.number||0);
+      $('guestEditCategory').value = g.category || '';
+      setGuestStatusSelect(g.status || 'Não aberto');
+      $('guestEditLegacyToken').value = g.legacyToken || '';
+      $('guestEditNotes').value = g.notes || '';
+      $('guestEditInviteToken').value = g.inviteToken || g.token || '';
+      $('guestDeleteBtn').style.display = (editingGuestId && isAdmin()) ? '' : 'none';
+      $('guestResetAccessSingleBtn').style.display = editingGuestId ? '' : 'none';
+      hideMsg($('guestEditResult'));
+    }
+    window.openGuestEditor = function(id){ const g=currentGuests.find(item=>String(item.id)===String(id)); if(!g) return appToast('Convidado não encontrado na lista carregada.', 'error', 'Atenção'); fillGuestForm(g); openGuestModal(); };
+    function openNewGuest(){ const inv=selectedGuestInvite(); if(!inv) return showMsg($('guestCrudResult'), 'Seleccione primeiro um convite.', true); fillGuestForm({ table:'A indicar na entrada', status:'Não aberto' }); openGuestModal(); }
+    async function saveGuestFromModal(e){
+      e.preventDefault();
+      const inviteId=selectedGuestInviteId();
+      if(!inviteId) return showMsg($('guestEditResult'), 'Seleccione primeiro um convite.', true);
+      const payload=guestPayloadFromForm();
+      if(!payload.name) return showMsg($('guestEditResult'), 'Nome obrigatório.', true);
+      try{
+        const method=editingGuestId ? 'PATCH' : 'POST';
+        const path=editingGuestId ? `/manager/invites/${inviteId}/guests/${editingGuestId}` : `/manager/invites/${inviteId}/guests`;
+        const out=await api(path,{method,body:JSON.stringify(payload)});
+        const saved = out.data || null;
+        if (saved && String(canonicalGuestStatus(saved.status || '')) !== String(canonicalGuestStatus(payload.status || ''))) {
+          throw new Error(`A alteração de estado não foi gravada no servidor. Estado pedido: ${payload.status}; estado recebido: ${saved.status || 'vazio'}.`);
+        }
+        const savedId = saved?.id || editingGuestId;
+        await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]);
+        if (savedId) {
+          const fresh = currentGuests.find(item => String(item.id) === String(savedId));
+          if (fresh && String(canonicalGuestStatus(fresh.status || '')) !== String(canonicalGuestStatus(payload.status || ''))) {
+            throw new Error(`O servidor não confirmou o estado “${payload.status}”. Estado actual: ${fresh.status || 'vazio'}.`);
+          }
+        }
+        showMsg($('guestEditResult'), out.message || 'Guardado com sucesso.');
+        setTimeout(()=>closeGuestModal(), 750);
+      }catch(err){ showMsg($('guestEditResult'), err.message, true); }
+    }
+    window.resetSingleGuestAccess = async function(id){
+      const inviteId=selectedGuestInviteId();
+      if(!inviteId || !id) return;
+      const g=currentGuests.find(item=>String(item.id)===String(id));
+      if(!g) return appToast('Convidado não encontrado na lista carregada.', 'error', 'Atenção');
+      if(!await appConfirm({ title:'Repor estado do convidado', message:'Isto vai limpar o acesso do dispositivo e marcar este convidado como “Não aberto”.', confirmLabel:'Repor estado' })) return;
+      try{
+        const out = await api(`/manager/invites/${inviteId}/guests/${id}/reset-state`,{method:'POST',body:JSON.stringify({ targetStatus:'Não aberto' })});
+        const updated = out.data || null;
+        if (!updated || String(canonicalGuestStatus(updated.status || '')) !== 'Não aberto') {
+          throw new Error(`O servidor não gravou o estado “Não aberto”. Estado actual: ${updated?.status || 'vazio'}.`);
+        }
+        updateCurrentGuest(updated);
+        await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]);
+        const fresh = currentGuests.find(item => String(item.id) === String(id));
+        if (fresh && String(canonicalGuestStatus(fresh.status || '')) !== 'Não aberto') {
+          throw new Error(`O servidor não confirmou o estado “Não aberto”. Estado actual: ${fresh.status || 'vazio'}.`);
+        }
+        showMsg($('guestCrudResult'), 'Convidado reposto para “Não aberto”.');
+        appToast('Convidado reposto para “Não aberto”.');
+      }catch(e){ showMsg($('guestCrudResult'), e.message, true); appToast(e.message, 'error', 'Erro'); }
+    };
+    window.deleteGuestFromManager = async function(id){
+      const inviteId=selectedGuestInviteId();
+      const g=currentGuests.find(item=>String(item.id)===String(id));
+      if(!inviteId || !id || !g) return;
+      if(!await appConfirm({ title:'Eliminar convidado', message:`Eliminar definitivamente o convidado "${g.name}"?
+
+Isto remove o convidado e os seus RSVP/check-ins associados.`, confirmLabel:'Eliminar', variant:'danger', requireText:'ELIMINAR' })) return;
+      try{ const out=await api(`/manager/invites/${inviteId}/guests/${id}`,{method:'DELETE'}); showMsg($('guestCrudResult'), out.message || 'Convidado eliminado.'); await Promise.allSettled([loadGuestCrudList(), loadSummary(), loadInvites(), loadManageDetails()]); }catch(e){ showMsg($('guestCrudResult'), e.message, true); }
+    };
+    async function eraseInviteData(){
+      const id=selectedManageId();
+      if(!id) return showMsg($('manageResult'), 'Seleccione primeiro um convite.', true);
+      const inv=[...invites,...archivedInvites].find(x=>x.id===id);
+      if(!await appConfirm({ title:'Erase de dados do convite', message:`Convite: ${inv?.coupleNames || id}
+Slug: ${inv?.slug || ''}
+
+Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, check-ins, cápsula e actividades deste convite, mas mantém o registo do convite.`, confirmLabel:'Apagar dados', variant:'danger', requireText:'APAGAR DADOS' })) return;
+      hideMsg($('manageResult'));
+      try{
+        const out=await api(`/manager/invites/${id}/data`,{method:'DELETE',body:JSON.stringify({collections:['all']})});
+        const d=out.data?.deleted || {};
+        showMsg($('manageResult'), `${esc(out.message || 'Dados apagados.')}<br>${Object.entries(d).map(([k,v])=>`${esc(k)}: <b>${esc(v)}</b>`).join(' · ')}`);
+        await Promise.allSettled([loadAll(), loadManageDetails(), loadGuestCrudList()]);
+      }catch(e){ showMsg($('manageResult'), e.message, true); }
+    }
+
+
+    function formatBytes(bytes){
+      const n = Number(bytes || 0);
+      if (!n) return '0 B';
+      const units=['B','KB','MB','GB'];
+      let v=n, i=0;
+      while(v>=1024 && i<units.length-1){ v/=1024; i++; }
+      return `${v.toFixed(v>=10||i===0?0:1)} ${units[i]}`;
+    }
+    function backupCountBadges(counts={}){
+      const map=[['invites','convites'],['guests','convidados'],['rsvps','RSVP'],['messages','mensagens'],['gifts','presentes'],['contributions','contrib.'],['checkins','check-ins'],['photos','fotos']];
+      return `<div class="backup-counts">${map.map(([k,l])=>`<span class="badge ${k==='invites'?'blue':''}">${esc(counts[k]||0)} ${esc(l)}</span>`).join('')}</div>`;
+    }
+    function renderBackupInviteSelect(){
+      const select=$('backupInviteSelect');
+      if(!select) return;
+      const current=select.value;
+      select.innerHTML = invites.length ? invites.map(inv=>`<option value="${inv.id}">${esc(inv.coupleNames)} · ${esc(inv.slug)}</option>`).join('') : '<option value="">Nenhum convite activo</option>';
+      if(current && invites.some(inv=>inv.id===current)) select.value=current;
+    }
+    function renderBackupKpis(){
+      const el=$('backupKpis'); if(!el) return;
+      const total=backups.length;
+      const general=backups.filter(b=>b.scope==='all').length;
+      const invite=backups.filter(b=>b.scope==='invite').length;
+      const restored=backups.filter(b=>b.status==='restored').length;
+      el.innerHTML = [['Total',total],['Gerais',general],['Por convite',invite],['Restaurados',restored]].map(([l,v])=>`<div class="backup-kpi"><span>${esc(l)}</span><strong>${esc(v)}</strong></div>`).join('');
+    }
+
+    function renderClientInviteSelect(){
+      const sel=$('clientInviteSelect');
+      if(!sel) return;
+      const current=sel.value;
+      sel.innerHTML='<option value="">Sem convite ligado</option>'+invites.map(inv=>`<option value="${esc(inv.id)}" data-slug="${esc(inv.slug)}">${esc(inv.coupleNames || inv.clientName)} · ${esc(inv.slug)}</option>`).join('');
+      if(current) sel.value=current;
+    }
+    function selectedClientIds(){ return Array.from(document.querySelectorAll('.client-select:checked')).map(cb=>cb.value).filter(Boolean); }
+    async function loadClientsPage(){ await Promise.allSettled([loadClientStats(), loadClients(), loadCampaigns()]); }
+    async function loadClientStats(){
+      const out=await api('/manager/clients/stats');
+      const d=out.data||{};
+      $('resendStatusBadge').className='badge '+(d.resendConfigured?'ok':'warn');
+      $('resendStatusBadge').textContent=d.resendConfigured?'Resend activo':'Resend por configurar';
+      $('clientsMetrics').innerHTML=[['Clientes',d.total||0,'total','briefcase'],['Activos',d.active||0,'base comercial','users'],['Com email',d.withEmail||0,'contactáveis','mail'],['Campanhas',d.campaigns||0,'histórico','send']].map(([label,value,small,icon])=>`<article class="metric-card"><span>${esc(label)}</span><strong>${esc(value)}</strong><small><i data-feather="${icon}"></i> ${esc(small)}</small></article>`).join('');
+      iconRefresh();
+    }
+    async function loadClients(){
+      const q=encodeURIComponent($('clientsSearchInput')?.value||'');
+      const status=encodeURIComponent($('clientsStatusFilter')?.value||'active');
+      const out=await api(`/manager/clients?q=${q}&status=${status}`);
+      clients=out.data||[];
+      renderClients();
+    }
+    function renderClients(){
+      const rows = clients.map(c=>{
+        const inviteLabel = c.slug ? c.slug : '-';
+        const consent = c.marketingConsent && c.status==='active' && c.email ? '<span class="badge ok">Elegível</span>' : '<span class="badge warn">Bloqueado</span>';
+        return `<tr><td><input type="checkbox" class="client-select" value="${esc(c.id)}" ${(!c.email || c.status!=='active' || !c.marketingConsent)?'disabled':''}></td><td><strong>${esc(c.name)}</strong><br><small>${esc(c.company||c.type||'')}</small></td><td><small>${esc(c.email||'-')}<br>${esc(c.phone||c.whatsapp||'-')}</small></td><td>${clientStatusBadge(c.status)}</td><td><small>${esc(inviteLabel)}</small></td><td>${consent}<br><small>${c.emailsSent||0} envio(s)</small></td><td><div class="table-actions"><button class="btn small" type="button" onclick="editClient('${esc(c.id)}')"><i data-feather="edit-2"></i> Editar</button><button class="btn small" type="button" onclick="copyClientEmail('${esc(c.email||'')}')"><i data-feather="copy"></i> Email</button></div></td></tr>`;
+      }).join('');
+      $('clientsTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum cliente encontrado.</td></tr>';
+      $('clientsMobile').innerHTML = clients.length ? clients.map(c=>`<article class="mobile-card"><strong>${esc(c.name)}</strong><span>${esc(c.email||'-')} · ${esc(c.phone||c.whatsapp||'-')}</span><span>${esc(c.slug||'Sem convite')} · ${esc(c.type||'')}</span><div class="table-actions"><button class="btn small" type="button" onclick="editClient('${esc(c.id)}')"><i data-feather="edit-2"></i> Editar</button></div></article>`).join('') : '<div class="feedback">Nenhum cliente encontrado.</div>';
+      const all=$('clientsSelectAll'); if(all) all.checked=false;
+      iconRefresh();
+    }
+    function clientStatusBadge(status){ const s=String(status||'active'); if(s==='active') return '<span class="badge ok">Activo</span>'; if(s==='paused') return '<span class="badge warn">Pausado</span>'; if(s==='unsubscribed') return '<span class="badge red">Removido</span>'; if(s==='archived') return '<span class="badge">Arquivado</span>'; return `<span class="badge">${esc(s)}</span>`; }
+    function resetClientForm(){ ['clientId','clientName','clientEmail','clientPhone','clientWhatsapp','clientCompany','clientContactPerson','clientTags','clientNotes'].forEach(id=>{ if($(id)) $(id).value=''; }); if($('clientType')) $('clientType').value='Casamento'; if($('clientStatus')) $('clientStatus').value='active'; if($('clientInviteSelect')) $('clientInviteSelect').value=''; if($('clientConsent')) $('clientConsent').checked=true; hideMsg($('clientFormResult')); }
+    window.editClient = function(id){ const c=clients.find(x=>x.id===id); if(!c) return; $('clientId').value=c.id; $('clientName').value=c.name||''; $('clientEmail').value=c.email||''; $('clientPhone').value=c.phone||''; $('clientWhatsapp').value=c.whatsapp||''; $('clientCompany').value=c.company||''; $('clientContactPerson').value=c.contactPerson||''; $('clientType').value=c.type||'Casamento'; $('clientStatus').value=c.status||'active'; $('clientInviteSelect').value=c.inviteId||''; $('clientTags').value=(c.tags||[]).join(', '); $('clientNotes').value=c.notes||''; $('clientConsent').checked=c.marketingConsent!==false; hideMsg($('clientFormResult')); window.scrollTo({top:0,behavior:'smooth'}); };
+    window.copyClientEmail = function(email){ if(!email) return appToast('Este cliente não tem email.','warning'); copyUrl(email); };
+    async function saveClient(e){
+      e.preventDefault();
+      const inviteId=$('clientInviteSelect').value; const inv=invites.find(x=>x.id===inviteId);
+      const payload={ name:$('clientName').value, email:$('clientEmail').value, phone:$('clientPhone').value, whatsapp:$('clientWhatsapp').value, company:$('clientCompany').value, contactPerson:$('clientContactPerson').value, type:$('clientType').value, status:$('clientStatus').value, inviteId, slug:inv?.slug||'', tags:$('clientTags').value, notes:$('clientNotes').value, marketingConsent:$('clientConsent').checked };
+      const id=$('clientId').value;
+      hideMsg($('clientFormResult'));
+      try{ const out=await api(id?`/manager/clients/${id}`:'/manager/clients',{method:id?'PUT':'POST',body:JSON.stringify(payload)}); showMsg($('clientFormResult'), out.message||'Cliente guardado.'); appToast(out.message||'Cliente guardado.'); await Promise.allSettled([loadClients(),loadClientStats()]); if(!id) resetClientForm(); }
+      catch(err){ showMsg($('clientFormResult'),err.message,true); appToast(err.message,'error','Erro'); }
+    }
+    async function archiveClient(){
+      const id=$('clientId').value; if(!id) return appToast('Seleccione um cliente para arquivar.','warning');
+      if(!await appConfirm({title:'Arquivar cliente',message:'Este cliente sairá da lista activa, mas ficará guardado no histórico.',confirmLabel:'Arquivar',variant:'danger',requireText:'ARQUIVAR CLIENTE'})) return;
+      try{ const out=await api(`/manager/clients/${id}`,{method:'DELETE',body:JSON.stringify({confirmation:'ARQUIVAR CLIENTE'})}); showMsg($('clientFormResult'),out.message||'Cliente arquivado.'); appToast(out.message||'Cliente arquivado.'); resetClientForm(); await Promise.allSettled([loadClients(),loadClientStats()]); } catch(err){ showMsg($('clientFormResult'),err.message,true); appToast(err.message,'error','Erro'); }
+    }
+    async function importClients(e){
+      e.preventDefault();
+      const text=$('clientsImportText').value;
+      if(!text.trim()) return appToast('Cole a lista de clientes para importar.','warning');
+      if(!await appConfirm({title:'Importar clientes',message:'Importar esta lista para a base comercial?',confirmLabel:'Importar'})) return;
+      try{ const out=await api('/manager/clients/import',{method:'POST',body:JSON.stringify({text})}); showMsg($('clientsImportResult'),out.message||'Importação concluída.'); appToast(out.message||'Importação concluída.'); $('clientsImportText').value=''; await Promise.allSettled([loadClients(),loadClientStats()]); } catch(err){ showMsg($('clientsImportResult'),err.message,true); appToast(err.message,'error','Erro'); }
+    }
+    async function sendCampaign(e){
+      e.preventDefault();
+      const scope=$('campaignScope').value; const ids=selectedClientIds();
+      if(scope==='selected' && !ids.length) return appToast('Seleccione clientes na lista antes de enviar.','warning');
+      const subject=$('campaignSubject').value.trim(); const body=$('campaignBody').value.trim();
+      const count = scope==='selected' ? ids.length : (clients.filter(c=>c.status==='active' && c.marketingConsent && c.email).length || 'todos elegíveis');
+      if(!await appConfirm({title:'Enviar campanha por email',message:`Enviar “${subject}” para ${count} cliente(s)?\n\nEsta acção usa Resend e não deve ser feita como teste em massa.`,confirmLabel:'Enviar',variant:'danger',requireText:'ENVIAR EMAILS'})) return;
+      const payload={scope, clientIds:ids, subject, previewText:$('campaignPreview').value, bodyText:body, confirmation:'ENVIAR EMAILS'};
+      hideMsg($('campaignResult'));
+      try{ const out=await api('/manager/marketing/send',{method:'POST',body:JSON.stringify(payload)}); showMsg($('campaignResult'),out.message||'Campanha enviada.'); appToast(out.message||'Campanha enviada.'); await Promise.allSettled([loadCampaigns(),loadClientStats(),loadClients()]); } catch(err){ showMsg($('campaignResult'),err.message,true); appToast(err.message,'error','Erro'); }
+    }
+    async function loadCampaigns(){
+      const out=await api('/manager/marketing/campaigns?limit=30');
+      campaigns=out.data||[];
+      $('campaignList').innerHTML = campaigns.length ? campaigns.map(c=>`<article class="backup-item"><div class="backup-item-top"><div><strong>${esc(c.subject)}</strong><small>${esc(c.status)} · ${fmtDate(c.createdAt)}<br>${esc(c.totals?.sent||0)} enviado(s) · ${esc(c.totals?.failed||0)} falha(s)</small></div><span class="badge ${c.status==='sent'?'ok':c.status==='partial'?'warn':c.status==='failed'?'red':''}">${esc(c.status)}</span></div></article>`).join('') : '<div class="feedback">Ainda não existem campanhas registadas.</div>';
+      iconRefresh();
+    }
+
+    async function loadBackups(){
+      if(!isAdmin()) return;
+      const list=$('backupList'); if(list) list.innerHTML = appCardSkeleton('list',4);
+      const rawScope=$('backupScopeFilter')?.value || 'todos';
+      const scope = rawScope === 'todos' ? '' : rawScope;
+      const q=encodeURIComponent($('backupSearchInput')?.value || '');
+      const params = new URLSearchParams();
+      if(scope) params.set('scope', scope);
+      if(q) params.set('q', $('backupSearchInput')?.value || '');
+      const out=await api(`/manager/backups?${params.toString()}`);
+      backups=out.data||[];
+      renderBackups();
+    }
+    function renderBackups(){
+      renderBackupKpis();
+      const el=$('backupList'); if(!el) return;
+      if(!backups.length){ el.innerHTML='<div class="feedback">Nenhum backup encontrado. Crie o primeiro backup antes de fazer alterações críticas.</div>'; iconRefresh(); return; }
+      el.innerHTML = backups.map(b=>{
+        const required = b.scope === 'all' ? 'RESTAURAR TODOS OS CONVITES' : `RESTAURAR ${String(b.slug||'').toUpperCase()}`;
+        const statusBadge = b.status === 'restored' ? '<span class="badge warn">Já restaurado</span>' : '<span class="badge ok">Disponível</span>';
+        const title = b.scope === 'all' ? 'Backup geral de todos os convites' : `${b.coupleNames || b.slug} · ${b.slug}`;
+        return `<article class="backup-item">
+          <div class="backup-item-top"><div><strong>${esc(title)}</strong><small>${esc(b.label || 'Sem etiqueta')} · ${fmtDate(b.createdAt)} · ${formatBytes(b.payloadBytes)} bruto / ${formatBytes(b.compressedBytes)} comprimido<br>Hash: ${esc(String(b.hash||'').slice(0,18))}...</small></div><div>${statusBadge}</div></div>
+          ${backupCountBadges(b.counts||{})}
+          <div class="backup-actions">
+            <button class="btn small" onclick="downloadBackup('${b.id}')" title="Descarregar JSON"><i data-feather="download"></i> Descarregar</button>
+            <button class="btn small primary" onclick="restoreBackup('${b.id}','${esc(required)}')" title="Restaurar backup"><i data-feather="rotate-ccw"></i> Restaurar</button>
+            <button class="btn small danger" onclick="deleteBackup('${b.id}')" title="Eliminar backup"><i data-feather="trash-2"></i> Eliminar</button>
+          </div>
+        </article>`;
+      }).join('');
+      iconRefresh();
+    }
+    async function createBackupFromForm(e){
+      e.preventDefault();
+      if(!isAdmin()) return showMsg($('backupCreateResult'), 'Esta acção exige perfil Administrador.', true);
+      const scope=$('backupScope').value === 'all' ? 'all' : 'invite';
+      const inviteId=$('backupInviteSelect').value;
+      if(scope==='invite' && !inviteId) return showMsg($('backupCreateResult'), 'Seleccione o convite para backup.', true);
+      const inv=invites.find(x=>x.id===inviteId);
+      const msg = scope==='all' ? 'Criar backup geral de todos os convites? Este ficheiro poderá restaurar toda a base operacional.' : `Criar backup completo do convite ${inv?.coupleNames || inviteId}?`;
+      if(!await appConfirm({ title:'Criar backup', message:msg, confirmLabel:'Criar backup' })) return;
+      hideMsg($('backupCreateResult'));
+      try{
+        const out=await api('/manager/backups',{method:'POST',body:JSON.stringify({scope, inviteId, label:$('backupLabel').value, includeArchived:$('backupIncludeArchived').checked})});
+        showMsg($('backupCreateResult'), out.message || 'Backup criado.');
+        appToast(out.message || 'Backup criado.');
+        $('backupLabel').value='';
+        await loadBackups();
+      }catch(e){ showMsg($('backupCreateResult'), e.message, true); appToast(e.message,'error','Erro'); }
+    }
+    window.downloadBackup = async function(id){
+      try{
+        const res = await fetch(`${API_BASE}/manager/backups/${id}/download`, { headers:{ ...(token ? { Authorization:`Bearer ${token}` } : {}) } });
+        if(!res.ok){ const data=await res.json().catch(()=>({})); throw new Error(data.message || `Erro ${res.status}`); }
+        const blob=await res.blob();
+        const disposition=res.headers.get('Content-Disposition') || '';
+        const match=disposition.match(/filename="?([^";]+)"?/i);
+        const filename=match?.[1] || `lirandzo-backup-${Date.now()}.json`;
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        appToast('Backup descarregado.');
+      }catch(e){ appToast(e.message,'error','Erro'); }
+    };
+    window.restoreBackup = async function(id, requiredText){
+      const backup=backups.find(b=>String(b.id)===String(id));
+      if(!backup) return appToast('Backup não encontrado na lista carregada.','error','Erro');
+      const isAll=backup.scope==='all';
+      const message = isAll ? `Esta acção vai substituir TODOS os convites e dados operacionais pelo conteúdo deste backup.
+
+Backup: ${backup.label || 'Backup geral'}
+Data: ${fmtDate(backup.createdAt)}
+Convites no backup: ${backup.counts?.invites || 0}` : `Esta acção vai substituir os dados actuais do convite pelo conteúdo deste backup.
+
+Convite: ${backup.coupleNames || backup.slug}
+Slug: ${backup.slug}
+Data: ${fmtDate(backup.createdAt)}`;
+      if(!await appConfirm({ title:isAll?'Restaurar backup geral':'Restaurar backup do convite', message, confirmLabel:'Restaurar', variant:'danger', requireText:requiredText })) return;
+      try{
+        const out=await api(`/manager/backups/${id}/restore`,{method:'POST',body:JSON.stringify({confirmation:requiredText})});
+        appToast(out.message || 'Backup restaurado.');
+        await Promise.allSettled([loadBackups(), loadAll(), loadGuestCrudList(), loadManageDetails(), currentPanel==='command'?loadCommandCenter():Promise.resolve()]);
+      }catch(e){ appToast(e.message,'error','Erro'); }
+    };
+    window.deleteBackup = async function(id){
+      const backup=backups.find(b=>String(b.id)===String(id));
+      if(!backup) return;
+      if(!await appConfirm({ title:'Eliminar backup', message:`Eliminar este backup da lista?
+
+${backup.label || backup.slug || 'Backup geral'}
+${fmtDate(backup.createdAt)}`, confirmLabel:'Eliminar backup', variant:'danger', requireText:'ELIMINAR BACKUP' })) return;
+      try{
+        const out=await api(`/manager/backups/${id}`,{method:'DELETE',body:JSON.stringify({confirmation:'ELIMINAR BACKUP'})});
+        appToast(out.message || 'Backup eliminado.');
+        await loadBackups();
+      }catch(e){ appToast(e.message,'error','Erro'); }
+    };
+    async function importBackupFromForm(e){
+      e.preventDefault();
+      if(!isAdmin()) return showMsg($('backupImportResult'), 'Esta acção exige perfil Administrador.', true);
+      const file=$('backupImportFile').files?.[0];
+      if(!file) return showMsg($('backupImportResult'), 'Seleccione um ficheiro JSON de backup.', true);
+      if(!await appConfirm({ title:'Importar backup', message:`Importar o ficheiro ${file.name} para a lista de backups disponíveis?`, confirmLabel:'Importar' })) return;
+      const fd=new FormData(); fd.append('backup', file);
+      hideMsg($('backupImportResult'));
+      try{
+        const res=await fetch(`${API_BASE}/manager/backups/import`,{method:'POST',headers:{ ...(token ? { Authorization:`Bearer ${token}` } : {}) },body:fd});
+        const out=await res.json().catch(()=>({}));
+        if(!res.ok) throw new Error(out.message || `Erro ${res.status}`);
+        showMsg($('backupImportResult'), out.message || 'Backup importado.');
+        $('backupImportFile').value='';
+        await loadBackups();
+      }catch(e){ showMsg($('backupImportResult'), e.message, true); }
+    }
+
+    function bindEvents(){
+      $('loginForm').addEventListener('submit', async e=>{ e.preventDefault(); hideMsg($('loginError')); API_BASE=(window.LIRANDZO_MANAGER_API_BASE || API_BASE || '').trim().replace(/\/+$/,''); const accessType = document.querySelector('input[name="accessType"]:checked')?.value || 'admin'; setLoginLoading(true); try{ const out=await api('/manager/login',{method:'POST',body:JSON.stringify({password:$('passwordInput').value, accessType})}); token=out.token; managerRole=out.role || accessType; sessionStorage.setItem('lirandzo_manager_token',token); sessionStorage.setItem('lirandzo_manager_role',managerRole); appView(); }catch(err){ showMsg($('loginError'),err.message,true); } finally { setLoginLoading(false); } });
+      $('menuBtn').addEventListener('click',()=>{ $('sidebar').classList.add('open'); $('overlay').classList.add('active'); }); $('backBtn')?.addEventListener('click',goBackPanel); $('overlay').addEventListener('click',()=>{ $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); });
+      $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); sessionStorage.removeItem('lirandzo_manager_role'); token=''; managerRole=''; loginView(); }); $('topbarLogoutBtn')?.addEventListener('click',()=>$('logoutBtn')?.click()); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); $('commandInviteSelect')?.addEventListener('change',()=>{ renderCommandContext(invites.find(inv=>inv.id===commandSelectedId())); loadCommandCenter(); }); $('commandLoadBtn')?.addEventListener('click',loadCommandCenter); $('commandGuestsBtn')?.addEventListener('click',goCommandGuests); $('commandManageBtn')?.addEventListener('click',goCommandManage); $('commandCopySlugBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); copyUrl(inv?.slug||''); }); $('commandOpenInviteBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); if(inv?.publicUrl) window.open(inv.publicUrl,'_blank'); }); document.querySelectorAll('[data-command-tab]').forEach(btn=>btn.addEventListener('click',()=>setCommandTab(btn.dataset.commandTab))); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto))); $('clientForm')?.addEventListener('submit', saveClient); $('clientClearFormBtn')?.addEventListener('click', resetClientForm); $('clientArchiveBtn')?.addEventListener('click', archiveClient); $('clientsRefreshBtn')?.addEventListener('click', loadClientsPage); $('clientsFilterBtn')?.addEventListener('click', loadClients); $('clientsSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadClients(); }); $('clientsStatusFilter')?.addEventListener('change', loadClients); $('clientsSelectAll')?.addEventListener('change', e=>{ document.querySelectorAll('.client-select:not(:disabled)').forEach(cb=>cb.checked=e.target.checked); }); $('clientsImportForm')?.addEventListener('submit', importClients); $('campaignForm')?.addEventListener('submit', sendCampaign); $('campaignHistoryBtn')?.addEventListener('click', ()=>document.getElementById('campaignList')?.scrollIntoView({behavior:'smooth'})); $('campaignsRefreshBtn')?.addEventListener('click', loadCampaigns); $('backupScope')?.addEventListener('change',()=>{ const all=$('backupScope').value==='all'; $('backupInviteWrap')?.classList.toggle('hidden', all); }); $('backupCreateForm')?.addEventListener('submit', createBackupFromForm); $('backupRefreshBtn')?.addEventListener('click', loadBackups); $('backupFilterBtn')?.addEventListener('click', loadBackups); $('backupSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadBackups(); }); $('backupScopeFilter')?.addEventListener('change', loadBackups); $('backupImportForm')?.addEventListener('submit', importBackupFromForm);
+      $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
+      $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('guestEditModal')?.classList.remove('open'); $('confirmModal')?.classList.remove('open'); if(confirmResolver){ confirmResolver(false); confirmResolver=null; } $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
+      $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); if(!isAdmin()) return showMsg($('createResult'), 'Perfil Editor não pode criar convites.', true); const fd=new FormData(e.currentTarget); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); showMsg($('createResult'), out.message || `Convite criado: ${out.data.publicUrl}`); e.currentTarget.reset(); await loadAll(); }catch(err){ showMsg($('createResult'),err.message,true); } });
+      $('manageInviteSelect').addEventListener('change',loadManageDetails); $('loadManageBtn').addEventListener('click',loadManageDetails);
+      $('resetAccessBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/guests/reset-access`,'POST','Resetar o acesso de todos os convidados deste convite?','Acessos reiniciados.'));
+      $('resetGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/reset-reservations`,'POST','Remover todas as reservas de presentes deste convite?','Reservas reiniciadas.'));
+      $('clearGiftsBtn').addEventListener('click',async ()=>{ if(!await requireEliminatePhrase('Esta acção vai eliminar todos os presentes registados deste convite no MongoDB.')) return; await managerAction(`/manager/invites/${selectedManageId()}/gifts`,'DELETE',null,'Presentes eliminados.'); });
+      $('seedGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/seed-defaults`,'POST','Restaurar presentes padrão deste convite?','Presentes padrão restaurados.'));
+      $('archiveBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}`,'DELETE','Arquivar este convite? Ele ficará disponível na página Arquivados.','Convite arquivado.'));
+      $('publishInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'published')); $('draftInviteBtn').addEventListener('click',()=>setInviteStatus(selectedManageId(),'draft')); $('purgeInviteBtn').addEventListener('click',()=>purgeInviteStrict(selectedManageId()));
+      
+      $('guestInviteSelect')?.addEventListener('change', e=>{ syncGuestInviteSelects(e.currentTarget.value); hideMsg($('guestCrudResult')); loadGuestCrudList(); });
+      $('guestCrudInviteSelect')?.addEventListener('change', e=>{ syncGuestInviteSelects(e.currentTarget.value); hideMsg($('guestCrudResult')); loadGuestCrudList(); });
+      $('guestSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadGuestCrudList(); });
+      $('refreshGuestCrudBtn')?.addEventListener('click', loadGuestCrudList);
+      $('addGuestBtn')?.addEventListener('click', openNewGuest);
+      $('closeGuestEditModal')?.addEventListener('click', closeGuestModal);
+      $('guestEditModal')?.addEventListener('click', e=>{ if(e.target===$('guestEditModal')) closeGuestModal(); });
+      $('guestEditForm')?.addEventListener('submit', saveGuestFromModal);
+      $('guestDeleteBtn')?.addEventListener('click',()=> editingGuestId && deleteGuestFromManager(editingGuestId));
+      $('guestResetAccessSingleBtn')?.addEventListener('click',()=> editingGuestId && resetSingleGuestAccess(editingGuestId));
+      $('eraseInviteDataBtn')?.addEventListener('click', eraseInviteData);
+      $('guestFile').addEventListener('change', async e=>{ const file=e.target.files?.[0]; if(!file) return; const text=await file.text(); $('guestBulkText').value=text; $('guestPreview').innerHTML=`Ficheiro carregado: <b>${esc(file.name)}</b><br>${text.split(/\r?\n/).filter(Boolean).length} linha(s) detectada(s). Confere o campo abaixo antes de importar.`; });
+      $('sampleGuestsBtn').addEventListener('click',()=>{ $('guestBulkText').value='Nome;Mesa;Acompanhantes;Telefone;Notas;Categoria;Número;Token antigo\nPrísca Daniel;A definir;0;;Observação interna;Single;152;rm-2026-152-prisca-daniel\nAna Manuel;Mesa 3;1;+258840000000;Família da noiva;Família;153;'; });
+      $('repairGuestsBtn').addEventListener('click', async ()=>{
+        const id = selectedGuestInviteId();
+        syncGuestInviteSelects(id);
+        if (!id) return showMsg($('guestResult'), 'Seleccione primeiro o convite que pretende reparar.', true);
+        if (!await appConfirm({ title:'Reparar nomes', message:'Reparar normalizedName dos convidados deste convite?\n\nIsto corrige nomes antigos mal normalizados e ajuda a resolver erro 401 no login.', confirmLabel:'Reparar agora' })) return;
+        hideMsg($('guestResult'));
+        setGuestImportLoading(true, 'A reparar nomes normalizados...', 35);
+        try {
+          const out = await api(`/manager/invites/${id}/guests/repair-normalized`, { method:'POST', body:JSON.stringify({}) });
+          setGuestImportLoading(true, 'A actualizar listas...', 82);
+          await loadAll();
+          const d = out.data || {};
+          setGuestImportLoading(false, 'Reparação concluída', 100, true);
+          showMsg($('guestResult'), `${esc(out.message || 'Reparação concluída.')}<br>Verificados: <b>${esc(d.checked || 0)}</b> · Reparados: <b>${esc(d.repaired || 0)}</b> · Falhas: <b>${esc((d.failed || []).length)}</b>`);
+          setTimeout(() => {
+            const progress = $('guestImportProgress');
+            if (progress && progress.classList.contains('done')) progress.classList.remove('active', 'done');
+          }, 4200);
+        } catch(err) {
+          setGuestImportLoading(false, 'Reparação interrompida', 100, false);
+          showMsg($('guestResult'), err.message, true);
+        }
+      });
+      $('guestForm').addEventListener('submit', async e=>{ if(!isAdmin()) { e.preventDefault(); return showMsg($('guestResult'), 'Perfil Editor não pode importar listas em massa. Use o botão Novo convidado para adicionar manualmente.', true); }
+        e.preventDefault();
+        const id = selectedGuestInviteId();
+        syncGuestInviteSelects(id);
+        const text = $('guestBulkText').value.trim();
+        if (!id) return showMsg($('guestResult'), 'Seleccione primeiro o convite onde pretende importar os convidados.', true);
+        if (!text) return showMsg($('guestResult'), 'Adicione um ficheiro ou escreva a lista de convidados antes de importar.', true);
+        hideMsg($('guestResult'));
+        setGuestImportLoading(true, 'A validar lista de convidados...', 18);
+        try {
+          await new Promise(resolve => setTimeout(resolve, 120));
+          setGuestImportLoading(true, 'A enviar convidados para o MongoDB...', 46);
+          const out = await api(`/manager/invites/${id}/guests/bulk`, {
+            method: 'POST',
+            body: JSON.stringify({ text })
+          });
+          setGuestImportLoading(true, 'A actualizar resumo e tabelas...', 78);
+          await loadAll();
+          const d = out.data || {};
+          const fail = d.failed?.length || 0;
+          $('guestBulkText').value = '';
+          $('guestFile').value = '';
+          $('guestPreview').innerHTML = 'Importação concluída com sucesso.<br>O campo foi limpo e já pode importar uma nova lista.';
+          setGuestImportLoading(false, 'Importação concluída', 100, true);
+          showMsg($('guestResult'), `Importação concluída: <b>${d.inserted || 0}</b> novos, <b>${d.updated || 0}</b> actualizados, <b>${fail}</b> falha(s).`);
+          setTimeout(() => {
+            const progress = $('guestImportProgress');
+            if (progress && progress.classList.contains('done')) progress.classList.remove('active', 'done');
+          }, 4200);
+        } catch(err) {
+          setGuestImportLoading(false, 'Importação interrompida', 100, false);
+          showMsg($('guestResult'), err.message, true);
+        }
+      });
+    }
+    function applyTheme(theme){ const selected=theme==='light'?'light':'dark'; document.documentElement.setAttribute('data-theme',selected); localStorage.setItem('lirandzo_manager_theme',selected); $('themeBtn').innerHTML=`<i data-feather="${selected==='light'?'moon':'sun'}"></i> ${selected==='light'?'Tema escuro':'Tema claro'}`; iconRefresh(); }
+    function init(){ detectMobileApp(); applyTheme(localStorage.getItem('lirandzo_manager_theme')||'dark'); buildNav(); bindEvents(); window.addEventListener('resize', detectMobileApp); window.addEventListener('orientationchange', () => setTimeout(detectMobileApp, 180)); token ? appView() : loginView(); iconRefresh(); }
+    init();
+  </script>
+  <script src="adminmanager-operator.js"></script>
+</body>
+</html>
