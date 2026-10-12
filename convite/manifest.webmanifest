@@ -1,0 +1,21 @@
+{
+  "name": "Lirandzo · Admin Manager",
+  "short_name": "Admin Lirandzo",
+  "description": "Gestão de convites, convidados, clientes e campanhas Lirandzo.",
+  "id": "/convite/adminmanager.html",
+  "start_url": "/convite/adminmanager.html",
+  "scope": "/convite/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14100d",
+  "theme_color": "#c08b5f",
+  "lang": "pt-PT",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/convite/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/convite/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/convite/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/convite/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

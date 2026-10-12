@@ -5,11 +5,24 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
   <title>AdminManager · Lirandzo</title>
   <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#c08b5f">
+  <link rel="manifest" href="/convite/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="/convite/icon-192.png">
+  <link rel="apple-touch-icon" href="/convite/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/feather-icons"></script>
   <script src="adminmanager.config.js"></script>
+  <script>
+    /* PWA: registo do service worker (shell em cache; dados nunca em cache).
+       Falhas de registo são silenciosas — a app funciona normalmente sem SW. */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/convite/sw.js', { scope: '/convite/' }).catch(function () {});
+      });
+    }
+  </script>
   <script>
     /* Aplica o shell de aplicação (html.mobile-app) ANTES da primeira pintura,
        com exactamente o mesmo critério de detectMobileApp(), para que não haja
@@ -297,9 +310,11 @@
     let archivedInvites = [];
     let backups = [];
     let clients = [];
+    let clientRenderLimit = 0; const CLIENT_PAGE_SIZE = 30;
     let campaigns = [];
     let selectedInviteDetails = null;
     let currentGuests = [];
+    let guestRenderLimit = 0; const GUEST_PAGE_SIZE = 30;
     let editingGuestId = null;
     let currentPanel = 'dashboard';
     let panelStack = [];
@@ -530,8 +545,9 @@
       if (detectMobileApp()) $('manageStats').innerHTML = appCardSkeleton('cards',4).replace('app-skeleton-card','app-skeleton-card span-2');
       const out=await api(`/manager/invites/${id}`);
       selectedInviteDetails=out.data;
-      const d=out.data;
-      $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small><i data-feather="users"></i> ${esc(d.invite.slug)}</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small><i data-feather="heart"></i> confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small><i data-feather="gift"></i> ${d.gifts.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${d.contributions.length}</strong><small><i data-feather="credit-card"></i> registos</small></article>`;
+      const d=out.data||{};
+      const gs=d.guests||[], rs=d.rsvps||[], gfs=d.gifts||[], cs=d.contributions||[];
+      $('manageStats').innerHTML = `<article class="metric-card"><span>Convidados</span><strong>${gs.length}</strong><small><i data-feather="users"></i> ${esc(d.invite?.slug || '-')}</small></article><article class="metric-card"><span>RSVP</span><strong>${rs.length}</strong><small><i data-feather="heart"></i> confirmações</small></article><article class="metric-card"><span>Presentes</span><strong>${gfs.length}</strong><small><i data-feather="gift"></i> ${gfs.filter(g=>g.reserved).length} reservados</small></article><article class="metric-card"><span>Contribuições</span><strong>${cs.length}</strong><small><i data-feather="credit-card"></i> registos</small></article>`;
       iconRefresh();
     }
     async function managerAction(path, method, confirmText, successMsg){ if(confirmText && !await appConfirm({ title:'Confirmar operação', message:confirmText, confirmLabel:'Continuar', variant:method==='DELETE'?'danger':'' })) return; hideMsg($('manageResult')); try { const out=await api(path,{method,body:JSON.stringify({})}); const msg = out.message || successMsg || 'Operação concluída.'; showMsg($('manageResult'), msg); appToast(msg); await Promise.allSettled([loadManageDetails(),loadSummary(),loadInvites(), currentPanel==='command' ? loadCommandCenter() : Promise.resolve()]); } catch(e){ showMsg($('manageResult'), e.message, true); appToast(e.message,'error','Erro'); } }
@@ -662,7 +678,7 @@
       await managerAction(`/manager/invites/${id}/purge`,'DELETE',null,'Convite eliminado definitivamente.');
     };
 
-    window.openInvite = async function(id){ const out=await api(`/manager/invites/${id}`); const d=out.data; $('modalTitle').textContent=d.invite.coupleNames; $('modalBody').innerHTML=`<div class="info-list"><div class="info-row"><span>Slug</span><strong>${esc(d.invite.slug)}</strong></div><div class="info-row"><span>URL</span><strong>${esc(d.invite.publicUrl)}</strong></div><div class="info-row"><span>GitHub</span><strong>${esc(d.invite.githubPath || '-')}</strong></div></div><div class="metrics-grid" style="margin-top:12px"><article class="metric-card"><span>Convidados</span><strong>${d.guests.length}</strong><small>MongoDB</small></article><article class="metric-card"><span>RSVP</span><strong>${d.rsvps.length}</strong><small>confirmados</small></article><article class="metric-card"><span>Mensagens</span><strong>${d.messages.length}</strong><small>mural</small></article><article class="metric-card"><span>Presentes</span><strong>${d.gifts.length}</strong><small>${d.gifts.filter(g=>g.reserved).length} reservados</small></article></div>`; $('detailsModal').classList.add('open'); iconRefresh(); };
+    window.openInvite = async function(id){ const out=await api(`/manager/invites/${id}`); const d=out.data||{}; $('modalTitle').textContent=d.invite?.coupleNames || '-'; $('modalBody').innerHTML=`<div class="info-list"><div class="info-row"><span>Slug</span><strong>${esc(d.invite?.slug || '-')}</strong></div><div class="info-row"><span>URL</span><strong>${esc(d.invite?.publicUrl || '-')}</strong></div><div class="info-row"><span>GitHub</span><strong>${esc(d.invite?.githubPath || '-')}</strong></div></div><div class="metrics-grid" style="margin-top:12px"><article class="metric-card"><span>Convidados</span><strong>${(d.guests||[]).length}</strong><small>MongoDB</small></article><article class="metric-card"><span>RSVP</span><strong>${(d.rsvps||[]).length}</strong><small>confirmados</small></article><article class="metric-card"><span>Mensagens</span><strong>${(d.messages||[]).length}</strong><small>mural</small></article><article class="metric-card"><span>Presentes</span><strong>${(d.gifts||[]).length}</strong><small>${(d.gifts||[]).filter(g=>g.reserved).length} reservados</small></article></div>`; $('detailsModal').classList.add('open'); iconRefresh(); };
     window.copyUrl = async function(url){ if(!url) return; await navigator.clipboard.writeText(url); appToast('Copiado para a área de transferência.'); };
     window.syncGithub = async function(id){
       if(!await appConfirm({ title:'Sincronizar GitHub', message:'Criar/sincronizar a pasta deste convite no GitHub?', confirmLabel:'Sincronizar' })) return;
@@ -927,18 +943,27 @@
         if (detectMobileApp()) $('guestCrudMobile').innerHTML = appCardSkeleton('list',5);
         const out=await api(`/manager/invites/${id}/guests?q=${q}`);
         currentGuests=out.data||[];
+        guestRenderLimit = GUEST_PAGE_SIZE;
         renderGuestCrudList();
       }catch(e){
         tbody.innerHTML=`<tr><td colspan="7">${esc(e.message)}</td></tr>`;
         $('guestCrudMobile').innerHTML=`<div class="feedback error">${esc(e.message)}</div>`;
       }
     }
+    function guestRowHtml(g){ return `<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Repor estado"><i data-feather="rotate-ccw"></i></button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button>`)}</div></td></tr>`; }
+    function guestCardHtml(g){ return `<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')"><i data-feather="rotate-ccw"></i> Repor</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')"><i data-feather="trash-2"></i> Eliminar</button>`)}</div></article>`; }
     function renderGuestCrudList(){
-      const rows=currentGuests.map(g=>`<tr><td>${esc(g.number||'-')}</td><td><div class="guest-name-main"><strong>${esc(g.name)}</strong><small>${esc(g.normalizedName||'')}</small><small>${esc(g.inviteToken||g.token||'')}</small></div></td><td>${esc(g.mesa||g.table||'A definir')}</td><td>${esc(g.companions||0)}</td><td>${badgeStatusFromGuest(g.status)}</td><td>${esc(g.category||'-')}</td><td><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')" title="Editar convidado"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')" title="Repor estado"><i data-feather="rotate-ccw"></i></button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')" title="Eliminar convidado"><i data-feather="trash-2"></i></button>`)}</div></td></tr>`).join('');
-      $('guestCrudTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convidado encontrado.</td></tr>';
-      $('guestCrudMobile').innerHTML = currentGuests.length ? currentGuests.map(g=>`<article class="mobile-card"><strong>${esc(g.name)}</strong><span>${esc(g.mesa||g.table||'A definir')} · ${esc(g.companions||0)} acompanhante(s) · ${esc(g.category||'-')}</span><div style="margin-top:7px">${badgeStatusFromGuest(g.status)}</div><div class="table-actions"><button class="btn small" onclick="openGuestEditor('${g.id}')"><i data-feather="edit-3"></i> Editar</button><button class="btn small" onclick="resetSingleGuestAccess('${g.id}')"><i data-feather="rotate-ccw"></i> Repor</button>${adminOnlyHtml(`<button class="btn small danger" onclick="deleteGuestFromManager('${g.id}')"><i data-feather="trash-2"></i> Eliminar</button>`)}</div></article>`).join('') : '<div class="feedback">Nenhum convidado encontrado.</div>';
+      const visible = currentGuests.slice(0, guestRenderLimit > 0 ? guestRenderLimit : GUEST_PAGE_SIZE);
+      const remaining = currentGuests.length - visible.length;
+      const rows = visible.map(guestRowHtml).join('');
+      const moreRow = remaining > 0 ? `<tr><td colspan="7" style="text-align:center;padding:14px"><button class="btn" type="button" onclick="loadMoreGuests()" title="Carregar mais convidados"><i data-feather="plus-circle"></i> Carregar mais (${remaining} restantes)</button></td></tr>` : '';
+      $('guestCrudTbody').innerHTML = (rows ? rows + moreRow : '') || '<tr><td colspan="7">Nenhum convidado encontrado.</td></tr>';
+      const cards = visible.map(guestCardHtml).join('');
+      const moreCard = remaining > 0 ? `<div style="text-align:center;padding:6px 0 2px"><button class="btn" type="button" onclick="loadMoreGuests()" title="Carregar mais convidados"><i data-feather="plus-circle"></i> Carregar mais (${remaining} restantes)</button></div>` : '';
+      $('guestCrudMobile').innerHTML = (cards ? cards + moreCard : '') || '<div class="feedback">Nenhum convidado encontrado.</div>';
       iconRefresh();
     }
+    window.loadMoreGuests = function(){ guestRenderLimit += GUEST_PAGE_SIZE; renderGuestCrudList(); };
     function badgeStatusFromGuest(status){ const s=String(status||'').toLowerCase(); if(s.includes('confirmado')) return '<span class="badge ok">Confirmado</span>'; if(s.includes('não aberto') || s.includes('nao aberto')) return '<span class="badge">Não aberto</span>'; if(s.includes('aberto')) return '<span class="badge blue">Aberto</span>'; if(s.includes('pendente') || s.includes('confirmar')) return '<span class="badge warn">Pendente</span>'; return '<span class="badge">Não aberto</span>'; }
     function openGuestModal(){ $('guestEditModal').classList.add('open'); iconRefresh(); }
     function closeGuestModal(){ $('guestEditModal').classList.remove('open'); hideMsg($('guestEditResult')); }
@@ -1087,19 +1112,26 @@ Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, chec
       const status=encodeURIComponent($('clientsStatusFilter')?.value||'active');
       const out=await api(`/manager/clients?q=${q}&status=${status}`);
       clients=out.data||[];
+      clientRenderLimit = CLIENT_PAGE_SIZE;
       renderClients();
     }
     function renderClients(){
-      const rows = clients.map(c=>{
+      const visibleClients = clients.slice(0, clientRenderLimit > 0 ? clientRenderLimit : CLIENT_PAGE_SIZE);
+      const remainingClients = clients.length - visibleClients.length;
+      const rows = visibleClients.map(c=>{
         const inviteLabel = c.slug ? c.slug : '-';
         const consent = c.marketingConsent && c.status==='active' && c.email ? '<span class="badge ok">Elegível</span>' : '<span class="badge warn">Bloqueado</span>';
         return `<tr><td><input type="checkbox" class="client-select" value="${esc(c.id)}" ${(!c.email || c.status!=='active' || !c.marketingConsent)?'disabled':''}></td><td><strong>${esc(c.name)}</strong><br><small>${esc(c.company||c.type||'')}</small></td><td><small>${esc(c.email||'-')}<br>${esc(c.phone||c.whatsapp||'-')}</small></td><td>${clientStatusBadge(c.status)}</td><td><small>${esc(inviteLabel)}</small></td><td>${consent}<br><small>${c.emailsSent||0} envio(s)</small></td><td><div class="table-actions"><button class="btn small" type="button" onclick="editClient('${esc(c.id)}')"><i data-feather="edit-2"></i> Editar</button><button class="btn small" type="button" onclick="copyClientEmail('${esc(c.email||'')}')"><i data-feather="copy"></i> Email</button></div></td></tr>`;
       }).join('');
-      $('clientsTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum cliente encontrado.</td></tr>';
-      $('clientsMobile').innerHTML = clients.length ? clients.map(c=>`<article class="mobile-card"><strong>${esc(c.name)}</strong><span>${esc(c.email||'-')} · ${esc(c.phone||c.whatsapp||'-')}</span><span>${esc(c.slug||'Sem convite')} · ${esc(c.type||'')}</span><div class="table-actions"><button class="btn small" type="button" onclick="editClient('${esc(c.id)}')"><i data-feather="edit-2"></i> Editar</button></div></article>`).join('') : '<div class="feedback">Nenhum cliente encontrado.</div>';
+      const moreClientsRow = remainingClients > 0 ? `<tr><td colspan="7" style="text-align:center;padding:14px"><button class="btn" type="button" onclick="loadMoreClients()" title="Carregar mais clientes"><i data-feather="plus-circle"></i> Carregar mais (${remainingClients} restantes)</button></td></tr>` : '';
+      $('clientsTbody').innerHTML = (rows ? rows + moreClientsRow : '') || '<tr><td colspan="7">Nenhum cliente encontrado.</td></tr>';
+      const clientCards = visibleClients.map(c=>`<article class="mobile-card"><strong>${esc(c.name)}</strong><span>${esc(c.email||'-')} · ${esc(c.phone||c.whatsapp||'-')}</span><span>${esc(c.slug||'Sem convite')} · ${esc(c.type||'')}</span><div class="table-actions"><button class="btn small" type="button" onclick="editClient('${esc(c.id)}')"><i data-feather="edit-2"></i> Editar</button></div></article>`).join('');
+      const moreClientsCard = remainingClients > 0 ? `<div style="text-align:center;padding:6px 0 2px"><button class="btn" type="button" onclick="loadMoreClients()" title="Carregar mais clientes"><i data-feather="plus-circle"></i> Carregar mais (${remainingClients} restantes)</button></div>` : '';
+      $('clientsMobile').innerHTML = (clientCards ? clientCards + moreClientsCard : '') || '<div class="feedback">Nenhum cliente encontrado.</div>';
       const all=$('clientsSelectAll'); if(all) all.checked=false;
       iconRefresh();
     }
+    window.loadMoreClients = function(){ clientRenderLimit += CLIENT_PAGE_SIZE; renderClients(); };
     function clientStatusBadge(status){ const s=String(status||'active'); if(s==='active') return '<span class="badge ok">Activo</span>'; if(s==='paused') return '<span class="badge warn">Pausado</span>'; if(s==='unsubscribed') return '<span class="badge red">Removido</span>'; if(s==='archived') return '<span class="badge">Arquivado</span>'; return `<span class="badge">${esc(s)}</span>`; }
     function resetClientForm(){ ['clientId','clientName','clientEmail','clientPhone','clientWhatsapp','clientCompany','clientContactPerson','clientTags','clientNotes'].forEach(id=>{ if($(id)) $(id).value=''; }); if($('clientType')) $('clientType').value='Casamento'; if($('clientStatus')) $('clientStatus').value='active'; if($('clientInviteSelect')) $('clientInviteSelect').value=''; if($('clientConsent')) $('clientConsent').checked=true; hideMsg($('clientFormResult')); }
     window.editClient = function(id){ const c=clients.find(x=>x.id===id); if(!c) return; $('clientId').value=c.id; $('clientName').value=c.name||''; $('clientEmail').value=c.email||''; $('clientPhone').value=c.phone||''; $('clientWhatsapp').value=c.whatsapp||''; $('clientCompany').value=c.company||''; $('clientContactPerson').value=c.contactPerson||''; $('clientType').value=c.type||'Casamento'; $('clientStatus').value=c.status||'active'; $('clientInviteSelect').value=c.inviteId||''; $('clientTags').value=(c.tags||[]).join(', '); $('clientNotes').value=c.notes||''; $('clientConsent').checked=c.marketingConsent!==false; hideMsg($('clientFormResult')); window.scrollTo({top:0,behavior:'smooth'}); };
@@ -1264,7 +1296,7 @@ ${fmtDate(backup.createdAt)}`, confirmLabel:'Eliminar backup', variant:'danger',
       $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); sessionStorage.removeItem('lirandzo_manager_role'); token=''; managerRole=''; loginView(); }); $('topbarLogoutBtn')?.addEventListener('click',()=>$('logoutBtn')?.click()); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); $('commandInviteSelect')?.addEventListener('change',()=>{ renderCommandContext(invites.find(inv=>inv.id===commandSelectedId())); loadCommandCenter(); }); $('commandLoadBtn')?.addEventListener('click',loadCommandCenter); $('commandGuestsBtn')?.addEventListener('click',goCommandGuests); $('commandManageBtn')?.addEventListener('click',goCommandManage); $('commandCopySlugBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); copyUrl(inv?.slug||''); }); $('commandOpenInviteBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); if(inv?.publicUrl) window.open(inv.publicUrl,'_blank'); }); document.querySelectorAll('[data-command-tab]').forEach(btn=>btn.addEventListener('click',()=>setCommandTab(btn.dataset.commandTab))); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto))); $('clientForm')?.addEventListener('submit', saveClient); $('clientClearFormBtn')?.addEventListener('click', resetClientForm); $('clientArchiveBtn')?.addEventListener('click', archiveClient); $('clientsRefreshBtn')?.addEventListener('click', loadClientsPage); $('clientsFilterBtn')?.addEventListener('click', loadClients); $('clientsSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadClients(); }); $('clientsStatusFilter')?.addEventListener('change', loadClients); $('clientsSelectAll')?.addEventListener('change', e=>{ document.querySelectorAll('.client-select:not(:disabled)').forEach(cb=>cb.checked=e.target.checked); }); $('clientsImportForm')?.addEventListener('submit', importClients); $('campaignForm')?.addEventListener('submit', sendCampaign); $('campaignHistoryBtn')?.addEventListener('click', ()=>document.getElementById('campaignList')?.scrollIntoView({behavior:'smooth'})); $('campaignsRefreshBtn')?.addEventListener('click', loadCampaigns); $('backupScope')?.addEventListener('change',()=>{ const all=$('backupScope').value==='all'; $('backupInviteWrap')?.classList.toggle('hidden', all); }); $('backupCreateForm')?.addEventListener('submit', createBackupFromForm); $('backupRefreshBtn')?.addEventListener('click', loadBackups); $('backupFilterBtn')?.addEventListener('click', loadBackups); $('backupSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadBackups(); }); $('backupScopeFilter')?.addEventListener('change', loadBackups); $('backupImportForm')?.addEventListener('submit', importBackupFromForm);
       $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
       $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('guestEditModal')?.classList.remove('open'); $('confirmModal')?.classList.remove('open'); if(confirmResolver){ confirmResolver(false); confirmResolver=null; } $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
-      $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); if(!isAdmin()) return showMsg($('createResult'), 'Perfil Editor não pode criar convites.', true); const fd=new FormData(e.currentTarget); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); showMsg($('createResult'), out.message || `Convite criado: ${out.data.publicUrl}`); e.currentTarget.reset(); await loadAll(); }catch(err){ showMsg($('createResult'),err.message,true); } });
+      $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); if(!isAdmin()) return showMsg($('createResult'), 'Perfil Editor não pode criar convites.', true); const fd=new FormData(e.currentTarget); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); showMsg($('createResult'), out.message || (out.data?.publicUrl ? `Convite criado: ${out.data.publicUrl}` : 'Convite criado com sucesso.')); e.currentTarget.reset(); await loadAll(); }catch(err){ showMsg($('createResult'),err.message,true); } });
       $('manageInviteSelect').addEventListener('change',loadManageDetails); $('loadManageBtn').addEventListener('click',loadManageDetails);
       $('resetAccessBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/guests/reset-access`,'POST','Resetar o acesso de todos os convidados deste convite?','Acessos reiniciados.'));
       $('resetGiftsBtn').addEventListener('click',()=>managerAction(`/manager/invites/${selectedManageId()}/gifts/reset-reservations`,'POST','Remover todas as reservas de presentes deste convite?','Reservas reiniciadas.'));
