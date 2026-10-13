@@ -14,6 +14,7 @@
   <script src="event-data.js"></script>
   <script src="client-config.js"></script>
   <script src="lirandzo-api.js"></script>
+  <link rel="stylesheet" href="operator-bot.css">
   <script>window.feather = window.feather || { replace: function(){} }; window.LIRANDZO_ADMIN_FIX_VERSION = "V16_VISUAL_RESPONSIVE_SAFE";</script>
 
   <style>
@@ -1390,9 +1391,19 @@
         try { return raw ? JSON.parse(raw) : {}; }
         catch (err) { return { status: 'error', message: raw || 'Resposta inválida do servidor.' }; }
       }
+      /* O painel tenta primeiro o login do Admin Manager para obter um token
+         (perfil admin/editor). Se este backend não tiver esse login
+         configurado, responde 401 e caímos no caminho alternativo — validar a
+         senha directamente no /admin-api, que é o que faz o login funcionar.
+         Para não repetir um pedido condenado (e o 401 vermelho na consola) a
+         cada tentativa, memorizamos o resultado nesta sessão do browser. */
+      const MANAGER_LOGIN_KEY = 'rm_manager_login_unsupported';
       async function managerLogin(password) {
         const base = apiBase();
         if (!base) return null;
+        let skip = false;
+        try { skip = sessionStorage.getItem(MANAGER_LOGIN_KEY) === '1'; } catch (e) { skip = false; }
+        if (skip) throw new Error('Login do Admin Manager indisponível neste servidor.');
         const res = await fetch(`${base}/manager/login`, {
           method: 'POST',
           mode: 'cors',
@@ -1400,7 +1411,11 @@
           body: JSON.stringify({ password })
         });
         const data = await readJsonResponse(res);
+        if (res.status === 401) {
+          try { sessionStorage.setItem(MANAGER_LOGIN_KEY, '1'); } catch (e) {}
+        }
         if (!res.ok || data.status === 'error') throw new Error(data.message || `Erro HTTP ${res.status}`);
+        try { sessionStorage.removeItem(MANAGER_LOGIN_KEY); } catch (e) {}
         return data.token || '';
       }
       async function validateAdminPasswordFallback(password) {
@@ -1544,6 +1559,9 @@
           sessionStorage.removeItem('rm_admin_logged');
           sessionStorage.removeItem('rm_admin_password');
           sessionStorage.removeItem('rm_admin_token');
+          // Nota: a marca MANAGER_LOGIN_KEY fica de propósito — evita repetir o
+          // 401 condenado a cada login dentro do mesmo separador. Numa sessão
+          // nova (outro separador) volta a ser tentado uma vez.
           location.reload();
         });
         $('topbarLogoutBtn')?.addEventListener('click', () => logoutBtn.click());
@@ -2013,5 +2031,6 @@
   </script>
 
   <script>window.LIRANDZO_ADMIN_FIX_VERSION = 'V17_BOTTOM_NAV_ICONS_FIXED';</script>
+  <script src="operator-bot.js"></script>
 </body>
 </html>
