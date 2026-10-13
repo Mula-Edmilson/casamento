@@ -2584,6 +2584,9 @@ app.post('/admin-api', async (req, res) => {
       return res.json({ status: 'success', message: 'Check-in restaurado. O convidado volta a ficar pendente na entrada.', data: result });
     }
 
+    if (data.action === 'bot_prepare') return inviteBotPrepareAction(req, res, invite, inviteBotRole(req));
+    if (data.action === 'bot_apply') return inviteBotApplyAction(req, res, invite, inviteBotRole(req));
+
     return res.status(400).json({ status: 'error', message: 'Ação de admin não reconhecida.' });
   } catch (err) {
     console.error('[admin-api]', err);
@@ -4699,6 +4702,210 @@ app.post('/manager/bot/apply-action', requireManager, asyncRoute(async (req, res
   BOT_PENDING_ACTIONS.delete(actionId);
   res.json({ status: 'success', message: `${botActionLabel(actionType)} executado com sucesso.`, data: { actionId, actionType, actionLabel: botActionLabel(actionType), role: req.manager.role, roleLabel: botRoleLabel(req.manager.role), invite: cleanInviteDoc(invite), before, result } });
 }));
+
+// -----------------------------------------------------------------------------
+// Operator Bot · modo Admin do Convite (usado pelo painel de cada convite)
+// Reaproveita EXACTAMENTE o mesmo motor do bot do AdminManager (parsing,
+// preview antes/depois, avisos, confirmação forte, execução), mas:
+//   · limitado ao convite do slug autenticado — nunca toca noutros convites;
+//   · mapa de acções pendentes próprio (BOT_GUEST_PENDING_ACTIONS);
+//   · vínculo extra à sessão do bot (botSession gerado pelo painel);
+//   · perfil: token de manager quando existir; senão, administrador do evento.
+// Nenhuma rota ou lógica existente é modificada.
+// -----------------------------------------------------------------------------
+const BOT_GUEST_PENDING_ACTIONS = new Map();
+
+function pruneBotGuestPendingActions() {
+  const now = Date.now();
+  for (const [actionId, pending] of BOT_GUEST_PENDING_ACTIONS.entries()) {
+    if (!pending || now > pending.expiresAt) BOT_GUEST_PENDING_ACTIONS.delete(actionId);
+  }
+}
+
+function inviteBotRole(req) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
+  const payload = verifyToken(token);
+  const role = normalizeManagerRole(payload);
+  return role === 'editor' ? 'editor' : 'admin';
+}
+
+async function inviteBotPrepareAction(req, res, invite, role) {
+  pruneBotGuestPendingActions();
+  const raw = String(req.body?.message || '').trim();
+  const explicitGuestId = String(req.body?.guestId || '').trim();
+  const explicitActionType = String(req.body?.actionType || '').trim();
+  const explicitName = String(req.body?.name || '').trim();
+  const botSession = String(req.body?.botSession || '').trim();
+  const explicitGuestIds = Array.isArray(req.body?.guestIds) ? req.body.guestIds.map(String).filter(Boolean) : [];
+  if (!raw && !explicitActionType) return res.status(400).json({ status: 'error', message: 'Comando vazio.' });
+
+  const actionType = explicitActionType || botDetectActionType(raw);
+  if (!actionType) return res.status(400).json({ status: 'error', message: 'Não reconheci uma acção operacional. Exemplos: repor acesso do João; alterar mesa da Ana para 8; adicionar convidado Maria.' });
+
+  const permission = botPermissionCheck(role, actionType);
+  if (!permission.ok) return res.status(403).json({ status: 'error', code: 'BOT_PERMISSION_DENIED', role, message: permission.message });
+
+  let payload = botParseGuestPayload(raw);
+  if (explicitName) payload.name = explicitName;
+  const forceSingle = Boolean(explicitGuestId);
+  const addItems = actionType === 'add_guest' ? botBuildAddItems(raw, invite) : [];
+  const names = actionType === 'add_guest' ? addItems.map(x => x.requestedName) : botExtractGuestNames(raw, invite, actionType);
+  const shouldBulk = !forceSingle && actionType !== 'reset_invite_operational_data' && (explicitGuestIds.length > 1 || names.length > 1 || addItems.length > 1);
+
+  if (shouldBulk) {
+    if (actionType !== 'add_guest' && !names.length && !explicitGuestIds.length) return res.status(400).json({ status: 'error', message: 'Não consegui identificar os nomes para a acção em massa.' });
+    if (Math.max(names.length, explicitGuestIds.length, addItems.length) > BOT_BULK_SAFE_LIMIT) return res.status(400).json({ status: 'error', message: `Acção em massa bloqueada: limite seguro de ${BOT_BULK_SAFE_LIMIT} registos por comando.` });
+
+    let bulkItems = [];
+    if (actionType === 'add_guest') {
+      if (!addItems.length) return res.status(400).json({ status: 'error', message: 'Não consegui identificar os nomes dos novos convidados.' });
+      const duplicates = [];
+      for (const item of addItems) {
+        const normalizedName = normalizeText(item.payload.name);
+        const existing = await Guest.findOne({ inviteId: invite._id, normalizedName });
+        if (existing) duplicates.push({ requestedName: item.payload.name, existing: botCleanGuestSummary(existing) });
+        bulkItems.push({ requestedName: item.payload.name, before: null, after: botAfterPreview(actionType, null, item.payload), payload: item.payload });
+      }
+      if (duplicates.length) return res.json({ status: 'selection_required', selectionType: 'bulk_conflict', actionType, invite: cleanInviteDoc(invite), message: 'Alguns nomes já existem neste convite. A acção em massa foi bloqueada para evitar duplicados.', conflicts: duplicates });
+    } else if (explicitGuestIds.length > 1) {
+      const validExplicitIds = explicitGuestIds.filter(id => mongoose.Types.ObjectId.isValid(id));
+      if (!validExplicitIds.length) return res.status(404).json({ status: 'error', message: 'Nem todos os convidados seleccionados foram encontrados neste convite.' });
+      const guests = await Guest.find({ _id: { $in: validExplicitIds }, inviteId: invite._id }).sort({ number: 1, name: 1 });
+      if (guests.length !== validExplicitIds.length) return res.status(404).json({ status: 'error', message: 'Nem todos os convidados seleccionados foram encontrados neste convite.' });
+      bulkItems = guests.map(g => ({ requestedName: g.name, before: botCleanGuestSummary(g), after: botAfterPreview(actionType, botCleanGuestSummary(g), payload), guestId: String(g._id) }));
+    } else {
+      const resolved = await botResolveGuestNames(invite, names);
+      if (resolved.missing.length || resolved.ambiguous.length) return res.json({
+        status: 'selection_required', selectionType: 'bulk_guests', actionType, invite: cleanInviteDoc(invite),
+        message: 'A acção em massa precisa de nomes exactos. Resolva os nomes em falta/ambíguos antes de continuar.',
+        resolved: resolved.resolved.map(x => ({ requestedName: x.requestedName, guest: x.before })),
+        missing: resolved.missing,
+        ambiguous: resolved.ambiguous
+      });
+      bulkItems = resolved.resolved.map(x => ({ requestedName: x.requestedName, before: x.before, after: botAfterPreview(actionType, x.before, payload), guestId: String(x.guest._id) }));
+    }
+
+    if (actionType === 'edit_guest') {
+      if (!Object.keys(payload).length) return res.status(400).json({ status: 'error', message: 'Não identifiquei o campo a editar. Exemplo: mover João, Maria para mesa 8.' });
+      if (role === 'editor') payload = Object.fromEntries(Object.entries(payload).filter(([key]) => BOT_EDITOR_ALLOWED_FIELDS.includes(key)));
+      if (!Object.keys(payload).length) return res.status(403).json({ status: 'error', code: 'BOT_PERMISSION_DENIED', role, message: 'Está logado como Editor. O campo pedido não está permitido para Editor.' });
+      bulkItems = bulkItems.map(x => ({ ...x, after: botAfterPreview(actionType, x.before, payload) }));
+    }
+
+    const guestIds = bulkItems.map(x => x.guestId).filter(Boolean);
+    const relationCounts = await botCountGuestRelations(invite, guestIds);
+    const meta = botPrepareSummary({ actionType, role, invite, payload, bulk: true, bulkCount: bulkItems.length, ...relationCounts });
+    const actionId = crypto.randomBytes(16).toString('hex');
+    BOT_GUEST_PENDING_ACTIONS.set(actionId, { actionId, actionType, role, botSession, inviteId: String(invite._id), guestIds, payload, bulk: true, bulkItems: bulkItems.map(x => ({ requestedName: x.requestedName, guestId: x.guestId || '', payload: x.payload || payload })), createdAt: Date.now(), expiresAt: Date.now() + BOT_ACTION_TTL_MS, confirmationPhrase: meta.confirmationPhrase });
+
+    return res.json({
+      status: 'success',
+      message: 'Acção em massa preparada. Confirme antes de executar.',
+      data: { actionId, actionType, actionLabel: `${botActionLabel(actionType)} em massa`, bulk: true, bulkCount: bulkItems.length, role, roleLabel: botRoleLabel(role), invite: cleanInviteDoc(invite), before: null, after: null, payload, bulkItems, expiresInSeconds: Math.round(BOT_ACTION_TTL_MS / 1000), ...meta }
+    });
+  }
+
+  let guest = null;
+  if (actionType === 'add_guest') {
+    const name = explicitName || (addItems[0]?.payload?.name) || botExtractGuestName(raw, invite, actionType);
+    if (!name) return res.status(400).json({ status: 'error', message: 'Não consegui identificar o nome do novo convidado.' });
+    payload.name = name.trim();
+  } else if (actionType !== 'reset_invite_operational_data') {
+    if (explicitGuestId && mongoose.Types.ObjectId.isValid(explicitGuestId)) guest = await Guest.findOne({ _id: explicitGuestId, inviteId: invite._id });
+    if (!guest) {
+      const guestQuery = botExtractGuestName(raw, invite, actionType);
+      const matches = await botFindGuests(invite, guestQuery);
+      if (!matches.length) return res.status(404).json({ status: 'error', message: `Não encontrei convidado correspondente a “${guestQuery || raw}” neste convite.` });
+      if (matches.length > 1) return res.json({
+        status: 'selection_required', selectionType: 'guest', actionType, invite: cleanInviteDoc(invite), message: 'Encontrei mais de um convidado possível. Escolha o registo correcto antes de avançar.',
+        candidates: matches.map(botCleanGuestSummary)
+      });
+      guest = matches[0];
+    }
+    if (actionType === 'edit_guest') {
+      if (!Object.keys(payload).length) return res.status(400).json({ status: 'error', message: 'Não identifiquei o campo a editar. Exemplos: alterar mesa de João para 8; mudar telefone de Ana para 84xxxxxxx.' });
+      if (role === 'editor') payload = Object.fromEntries(Object.entries(payload).filter(([key]) => BOT_EDITOR_ALLOWED_FIELDS.includes(key)));
+      if (!Object.keys(payload).length) return res.status(403).json({ status: 'error', code: 'BOT_PERMISSION_DENIED', role, message: 'Está logado como Editor. O campo pedido não está permitido para Editor.' });
+    }
+  }
+
+  const before = guest ? botCleanGuestSummary(guest) : null;
+  const after = botAfterPreview(actionType, before, payload);
+
+  const [rsvpsCount, checkinsCount] = guest ? await Promise.all([
+    Rsvp.countDocuments({ inviteId: invite._id, guestId: guest._id }),
+    CheckIn.countDocuments({ inviteId: invite._id, guestId: guest._id })
+  ]) : [0, 0];
+  const meta = botPrepareSummary({ actionType, role, invite, guest, payload, before, after, rsvpsCount, checkinsCount });
+  const actionId = crypto.randomBytes(16).toString('hex');
+  BOT_GUEST_PENDING_ACTIONS.set(actionId, { actionId, actionType, role, botSession, inviteId: String(invite._id), guestId: guest ? String(guest._id) : '', payload, createdAt: Date.now(), expiresAt: Date.now() + BOT_ACTION_TTL_MS, confirmationPhrase: meta.confirmationPhrase });
+
+  return res.json({
+    status: 'success',
+    message: 'Acção preparada. Confirme antes de executar.',
+    data: { actionId, actionType, actionLabel: botActionLabel(actionType), role, roleLabel: botRoleLabel(role), invite: cleanInviteDoc(invite), guest: before, before, after, payload, expiresInSeconds: Math.round(BOT_ACTION_TTL_MS / 1000), ...meta }
+  });
+}
+
+async function inviteBotApplyAction(req, res, invite, role) {
+  pruneBotGuestPendingActions();
+  const actionId = String(req.body?.actionId || '').trim();
+  const confirmText = String(req.body?.confirmText || '').trim();
+  const botSession = String(req.body?.botSession || '').trim();
+  const pending = BOT_GUEST_PENDING_ACTIONS.get(actionId);
+  if (!pending) return res.status(404).json({ status: 'error', message: 'Acção pendente não encontrada, expirada ou já executada.' });
+  if (String(pending.inviteId) !== String(invite._id)) return res.status(403).json({ status: 'error', message: 'Esta acção pertence a outro convite.' });
+  if (pending.botSession && pending.botSession !== botSession) {
+    return res.status(403).json({ status: 'error', message: 'Esta acção foi preparada noutra sessão. Prepare o comando novamente nesta sessão.' });
+  }
+  if (Date.now() > pending.expiresAt) { BOT_GUEST_PENDING_ACTIONS.delete(actionId); return res.status(410).json({ status: 'error', message: 'A confirmação expirou. Prepare a acção novamente.' }); }
+  const permission = botPermissionCheck(role, pending.actionType);
+  if (!permission.ok) return res.status(403).json({ status: 'error', code: 'BOT_PERMISSION_DENIED', role, message: permission.message });
+  if (pending.confirmationPhrase && confirmText !== pending.confirmationPhrase) return res.status(400).json({ status: 'error', message: `Confirmação forte inválida. Escreva exactamente: ${pending.confirmationPhrase}` });
+
+  const actionType = pending.actionType;
+  const payload = pending.payload || {};
+
+  if (pending.bulk) {
+    const items = [];
+    let success = 0;
+    let failed = 0;
+    for (const item of pending.bulkItems || []) {
+      try {
+        const guest = item.guestId && mongoose.Types.ObjectId.isValid(item.guestId) ? await Guest.findOne({ _id: item.guestId, inviteId: invite._id }) : null;
+        const before = guest ? botCleanGuestSummary(guest) : null;
+        const itemPayload = item.payload || payload;
+        const result = await botApplySingleAction({ actionType, invite, guest, payload: itemPayload, role, actionId });
+        success += 1;
+        items.push({ requestedName: item.requestedName, status: 'success', before, result });
+      } catch (err) {
+        failed += 1;
+        items.push({ requestedName: item.requestedName, status: 'error', error: err.message || 'Falha ao executar este item.' });
+      }
+    }
+    await logActivity({ invite, type: actionType === 'delete_guest' ? 'warning' : 'guests', title: `${botActionLabel(actionType)} em massa pelo Operator Bot (admin do convite)`, detail: `${success} sucesso · ${failed} falha(s)`, meta: { role, actionId, actionType } });
+    BOT_GUEST_PENDING_ACTIONS.delete(actionId);
+    return res.json({ status: failed ? 'partial_success' : 'success', message: `${botActionLabel(actionType)} em massa concluído: ${success} sucesso · ${failed} falha(s).`, data: { actionId, actionType, actionLabel: `${botActionLabel(actionType)} em massa`, role, roleLabel: botRoleLabel(role), invite: cleanInviteDoc(invite), result: { bulk: true, success, failed, items } } });
+  }
+
+  let guest = pending.guestId && mongoose.Types.ObjectId.isValid(pending.guestId) ? await Guest.findOne({ _id: pending.guestId, inviteId: invite._id }) : null;
+  const before = guest ? botCleanGuestSummary(guest) : null;
+  let result = {};
+
+  if (actionType === 'reset_invite_operational_data') {
+    const guests = await Guest.find({ inviteId: invite._id });
+    for (const g of guests) { g.status = 'Não aberto'; g.deviceToken = ''; g.inviteToken = generateGuestPublicToken(); g.checkedIn = false; g.checkedInAt = undefined; await g.save(); }
+    const [rsvps, checkins] = await Promise.all([Rsvp.deleteMany({ inviteId: invite._id }), CheckIn.deleteMany({ inviteId: invite._id })]);
+    await logActivity({ invite, type: 'warning', title: 'Dados operacionais do convite repostos pelo Operator Bot (admin do convite)', detail: `${guests.length} convidados reiniciados · RSVP ${rsvps.deletedCount || 0} · Check-in ${checkins.deletedCount || 0}`, meta: { role, actionId } });
+    result = { guestsReset: guests.length, rsvpsDeleted: rsvps.deletedCount || 0, checkinsDeleted: checkins.deletedCount || 0 };
+  } else {
+    result = await botApplySingleAction({ actionType, invite, guest, payload, role, actionId });
+  }
+
+  BOT_GUEST_PENDING_ACTIONS.delete(actionId);
+  res.json({ status: 'success', message: `${botActionLabel(actionType)} executado com sucesso.`, data: { actionId, actionType, actionLabel: botActionLabel(actionType), role, roleLabel: botRoleLabel(role), invite: cleanInviteDoc(invite), before, result } });
+}
 
 app.get('/api/capsule/:id/file', async (req, res) => {
   const doc = await CapsulePhoto.findById(req.params.id);
