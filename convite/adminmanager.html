@@ -203,13 +203,13 @@
           <section class="panel-card">
             <div class="panel-head"><h2><i data-feather="hard-drive"></i> Criar backup</h2><span class="badge blue">Restore-ready</span></div>
             <div class="panel-body">
-              <form id="backupCreateForm">
+              <form id="backupCreateForm" data-slow-form="backup-create">
                 <div class="field"><label>Tipo de backup</label><select id="backupScope" class="search-input"><option value="invite">Backup de um convite específico</option><option value="all">Backup geral de todos os convites</option></select></div>
                 <div class="field" id="backupInviteWrap"><label>Convite</label><select id="backupInviteSelect" class="search-input"><option value="">Seleccione um convite...</option></select></div>
                 <div class="field"><label>Nome/observação do backup</label><input id="backupLabel" class="search-input" placeholder="Ex.: Antes de importar nova lista de convidados"></div>
                 <label class="role-option" style="margin-bottom:12px"><input id="backupIncludeArchived" type="checkbox" checked> <span>Incluir convites arquivados no backup geral</span></label>
                 <div class="backup-danger-note"><b>Regra de segurança:</b> backups e restores só estão disponíveis para Administrador. O Editor não consegue aceder a esta página nem executar estas rotas pelo bot.</div>
-                <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px"><button class="btn primary" type="submit"><i data-feather="save"></i> Criar backup</button></div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px"><button class="btn primary" type="submit" data-slow-action="backup-create"><span class="btn-loader" aria-hidden="true"></span><i data-feather="save"></i> <span class="slow-btn-text">Criar backup</span></button></div>
                 <div id="backupCreateResult" class="feedback hidden"></div>
               </form>
             </div>
@@ -217,9 +217,9 @@
           <section class="panel-card">
             <div class="panel-head"><h2><i data-feather="upload-cloud"></i> Importar backup</h2></div>
             <div class="panel-body">
-              <form id="backupImportForm">
+              <form id="backupImportForm" data-slow-form="backup-import">
                 <label class="dropzone" for="backupImportFile"><i data-feather="file-plus"></i><strong>Importar ficheiro JSON</strong><p>Use um backup descarregado anteriormente pelo AdminManager.</p><input id="backupImportFile" type="file" accept=".json,application/json"></label>
-                <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px"><button class="btn" type="submit"><i data-feather="upload"></i> Importar para a lista</button></div>
+                <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px"><button class="btn primary" type="submit" data-slow-action="backup-import"><span class="btn-loader" aria-hidden="true"></span><i data-feather="upload"></i> <span class="slow-btn-text">Importar para a lista</span></button></div>
                 <div id="backupImportResult" class="feedback hidden"></div>
               </form>
             </div>
@@ -522,9 +522,9 @@
       return '';
     }
     function renderInvites(){
-      const rows = invites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td>${badgeStatus(inv.status)}</td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional"><i data-feather="command"></i> Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><i data-feather="git-branch"></i></button>`)}<button class="btn small" onclick="copyUrl('${esc(inv.publicUrl||'')}')" title="Copiar URL pública"><i data-feather="copy"></i></button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i></button></div></td></tr>`).join('');
+      const rows = invites.map(inv=>`<tr><td><strong>${esc(inv.coupleNames)}</strong><br><small>${esc(inv.clientName)}</small></td><td><span class="badge blue">${pkgLabel(inv.packageKey)}</span></td><td>${badgeStatus(inv.status)}</td><td><strong>${esc(inv.slug)}</strong><br><small>${esc(inv.publicUrl || inv.githubPath || '')}</small></td><td>${inv.stats?.guests||0}</td><td>${inv.stats?.rsvps||0}</td><td><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional"><i data-feather="command"></i> Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" data-slow-action="github-sync" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><span class="btn-loader" aria-hidden="true"></span><i data-feather="git-branch"></i></button>`)}<button class="btn small" onclick="copyUrl('${esc(inv.publicUrl||'')}')" title="Copiar URL pública"><i data-feather="copy"></i></button><button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i></button></div></td></tr>`).join('');
       $('invitesTbody').innerHTML = rows || '<tr><td colspan="7">Nenhum convite encontrado.</td></tr>';
-      $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional"><i data-feather="command"></i> Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><i data-feather="git-branch"></i> GitHub</button>`)}<button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i> Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
+      $('invitesMobile').innerHTML = invites.length ? invites.map(inv=>`<article class="mobile-card"><strong>${esc(inv.coupleNames)}</strong><span>${esc(inv.slug)} · ${pkgLabel(inv.packageKey)} · ${inv.stats?.guests||0} convidados</span><div style="margin-top:7px">${badgeStatus(inv.status)}</div><div class="table-actions"><button class="btn small" onclick="openInvite('${inv.id}')" title="Ver detalhes"><i data-feather="eye"></i> Ver</button><button class="btn small" onclick="openCommandCenter('${inv.id}')" title="Abrir ficha operacional"><i data-feather="command"></i> Ficha</button>${inviteStatusActions(inv)}${adminOnlyHtml(`<button class="btn small" data-slow-action="github-sync" onclick="syncGithub('${inv.id}')" title="Sincronizar pasta no GitHub"><span class="btn-loader" aria-hidden="true"></span><i data-feather="git-branch"></i> <span class="slow-btn-text">GitHub</span></button>`)}<button class="btn small" onclick="selectManageInvite('${inv.id}')" title="Gerir este convite"><i data-feather="settings"></i> Gerir</button></div></article>`).join('') : '<div class="feedback">Nenhum convite encontrado.</div>';
       iconRefresh();
     }
     function renderGuestSelect(){
@@ -570,6 +570,98 @@
       if (label) label.textContent = active ? 'A criar convite...' : 'Criar convite';
     }
 
+    /* --- Operações lentas: wrapper genérico + escudo anti duplo-clique ---
+       Qualquer acção marcada com data-slow-action="chave" (botão) ou
+       data-slow-form="chave" (formulário) fica protegida: enquanto uma
+       operação da mesma chave (ou de outra chave) estiver em curso, novos
+       toques nesses elementos são bloqueados com aviso. */
+    const slowActions = {};
+    let lastSlowBlockToast = 0;
+    function isSlowActionBusy(){ return Object.keys(slowActions).some(k=>slowActions[k]); }
+    function slowBlockFeedback(){
+      const now = Date.now();
+      if(now - lastSlowBlockToast > 2000){
+        lastSlowBlockToast = now;
+        appToast('Aguarda — outra operação ainda está em curso.', 'error', 'Operação em curso');
+      }
+    }
+    function runSlowAction(key, task, options = {}){
+      if(slowActions[key]){
+        slowBlockFeedback();
+        return slowActions[key];
+      }
+      const opts = Object.assign({
+        busyLabel:'A processar...',
+        slowLabel:'Esta operação pode levar até um minuto. Por favor aguarda, não repitas o toque.',
+        slowAfter:8000,
+        onSuccess:null,
+        onError:null
+      }, options || {});
+      const buttons = Array.from(document.querySelectorAll('[data-slow-action="' + key + '"]'));
+      const forms = Array.from(document.querySelectorAll('[data-slow-form="' + key + '"]'));
+      const restore = [];
+      buttons.forEach(btn=>{
+        if(!btn.querySelector('.btn-loader')){
+          const loader = document.createElement('span');
+          loader.className = 'btn-loader';
+          loader.setAttribute('aria-hidden','true');
+          btn.prepend(loader);
+        }
+        const label = btn.querySelector('.slow-btn-text');
+        if(label){
+          if(label.dataset.labelOrig === undefined) label.dataset.labelOrig = label.textContent;
+          restore.push(()=>{ label.textContent = label.dataset.labelOrig; });
+          label.textContent = opts.busyLabel;
+        }
+        restore.push(()=>{ btn.classList.remove('is-loading'); btn.disabled = false; btn.removeAttribute('aria-busy'); });
+        btn.classList.add('is-loading');
+        btn.disabled = true;
+        btn.setAttribute('aria-busy','true');
+      });
+      forms.forEach(form=>{
+        Array.from(form.querySelectorAll('input,select,textarea')).forEach(el=>{
+          restore.push(()=>{ el.disabled = false; });
+          el.disabled = true;
+        });
+      });
+      const slowTimer = setTimeout(()=>{ appToast(opts.slowLabel, 'info', 'Um momento...'); }, opts.slowAfter);
+      const promise = (async ()=>{
+        try{
+          const result = await task();
+          if(opts.onSuccess) opts.onSuccess(result);
+          return result;
+        }catch(e){
+          if(opts.onError) opts.onError(e);
+          throw e;
+        }finally{
+          clearTimeout(slowTimer);
+          restore.forEach(fn=>{ try{ fn(); }catch(_){} });
+          if(slowActions[key] === promise) delete slowActions[key];
+        }
+      })();
+      slowActions[key] = promise;
+      promise.catch(()=>{});
+      return promise;
+    }
+    function slowActionGuardClick(e){
+      if(!isSlowActionBusy()) return;
+      const target = e.target;
+      if(!(target instanceof Element)) return;
+      if(!target.closest('[data-slow-action],[data-slow-form]')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      slowBlockFeedback();
+    }
+    function slowActionGuardSubmit(e){
+      if(!isSlowActionBusy()) return;
+      const form = e.target;
+      if(!(form instanceof Element)) return;
+      if(!form.closest('[data-slow-action],[data-slow-form]')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      slowBlockFeedback();
+    }
+
     function enhanceButtonTooltips(){
       document.querySelectorAll('.btn').forEach(btn => {
         if (btn.dataset.tooltip) return;
@@ -609,8 +701,8 @@
       const stack = $('toastStack');
       if (!stack) return;
       const item = document.createElement('div');
-      item.className = `toast-item ${type === 'error' ? 'error' : ''}`;
-      item.innerHTML = `<div class="toast-ico"><i data-feather="${type === 'error' ? 'alert-triangle' : 'check-circle'}"></i></div><div><strong>${esc(title || (type === 'error' ? 'Atenção' : 'Concluído'))}</strong><span>${esc(message)}</span></div>`;
+      item.className = `toast-item ${type === 'error' ? 'error' : type === 'info' ? 'info' : ''}`;
+      item.innerHTML = `<div class="toast-ico"><i data-feather="${type === 'error' ? 'alert-triangle' : type === 'info' ? 'info' : 'check-circle'}"></i></div><div><strong>${esc(title || (type === 'error' ? 'Atenção' : type === 'info' ? 'Um momento...' : 'Concluído'))}</strong><span>${esc(message)}</span></div>`;
       stack.appendChild(item);
       iconRefresh();
       setTimeout(()=>{ item.style.opacity='0'; item.style.transform='translateY(8px)'; setTimeout(()=>item.remove(), 220); }, 3600);
@@ -689,13 +781,19 @@
     window.openInvite = async function(id){ const out=await api(`/manager/invites/${id}`); const d=out.data||{}; $('modalTitle').textContent=d.invite?.coupleNames || '-'; $('modalBody').innerHTML=`<div class="info-list"><div class="info-row"><span>Slug</span><strong>${esc(d.invite?.slug || '-')}</strong></div><div class="info-row"><span>URL</span><strong>${esc(d.invite?.publicUrl || '-')}</strong></div><div class="info-row"><span>GitHub</span><strong>${esc(d.invite?.githubPath || '-')}</strong></div></div><div class="metrics-grid" style="margin-top:12px"><article class="metric-card"><span>Convidados</span><strong>${(d.guests||[]).length}</strong><small>MongoDB</small></article><article class="metric-card"><span>RSVP</span><strong>${(d.rsvps||[]).length}</strong><small>confirmados</small></article><article class="metric-card"><span>Mensagens</span><strong>${(d.messages||[]).length}</strong><small>mural</small></article><article class="metric-card"><span>Presentes</span><strong>${(d.gifts||[]).length}</strong><small>${(d.gifts||[]).filter(g=>g.reserved).length} reservados</small></article></div>`; $('detailsModal').classList.add('open'); iconRefresh(); };
     window.copyUrl = async function(url){ if(!url) return; await navigator.clipboard.writeText(url); appToast('Copiado para a área de transferência.'); };
     window.syncGithub = async function(id){
+      if(slowActions['github-sync']) return slowBlockFeedback();
       if(!await appConfirm({ title:'Sincronizar GitHub', message:'Criar/sincronizar a pasta deste convite no GitHub?', confirmLabel:'Sincronizar' })) return;
       const allowOverwrite = await appConfirm({ title:'Sobrescrever ficheiros?', message:'Se a pasta já existir no GitHub, quer actualizar/sobrescrever os ficheiros do template?', confirmLabel:'Actualizar', cancelLabel:'Só criar se não existir' });
-      try {
+      return runSlowAction('github-sync', async ()=>{
         const out=await api(`/manager/invites/${id}/github-sync`,{method:'POST',body:JSON.stringify({ allowOverwrite })});
         appToast(out.message || 'GitHub sincronizado com sucesso.');
         await loadAll();
-      } catch(e){ appToast('Erro GitHub: '+e.message, 'error', 'Erro'); } };
+      }, {
+        busyLabel:'A sincronizar...',
+        slowLabel:'A copiar os ficheiros do template para o GitHub pode levar até um minuto. Por favor aguarda, não repitas o toque.',
+        onError: e=>appToast('Erro GitHub: '+e.message, 'error', 'Erro')
+      });
+    };
     window.selectManageInvite = function(id){ showPanel('manage'); setTimeout(()=>{ $('manageInviteSelect').value=id; loadManageDetails(); }, 0); };
 
 
@@ -1208,9 +1306,9 @@ Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, chec
           <div class="backup-item-top"><div><strong>${esc(title)}</strong><small>${esc(b.label || 'Sem etiqueta')} · ${fmtDate(b.createdAt)} · ${formatBytes(b.payloadBytes)} bruto / ${formatBytes(b.compressedBytes)} comprimido<br>Hash: ${esc(String(b.hash||'').slice(0,18))}...</small></div><div>${statusBadge}</div></div>
           ${backupCountBadges(b.counts||{})}
           <div class="backup-actions">
-            <button class="btn small" onclick="downloadBackup('${b.id}')" title="Descarregar JSON"><i data-feather="download"></i> Descarregar</button>
-            <button class="btn small primary" onclick="restoreBackup('${b.id}','${esc(required)}')" title="Restaurar backup"><i data-feather="rotate-ccw"></i> Restaurar</button>
-            <button class="btn small danger" onclick="deleteBackup('${b.id}')" title="Eliminar backup"><i data-feather="trash-2"></i> Eliminar</button>
+            <button class="btn small" data-slow-action="backup-download" onclick="downloadBackup('${b.id}')" title="Descarregar JSON"><span class="btn-loader" aria-hidden="true"></span><i data-feather="download"></i> <span class="slow-btn-text">Descarregar</span></button>
+            <button class="btn small primary" data-slow-action="backup-restore" onclick="restoreBackup('${b.id}','${esc(required)}')" title="Restaurar backup"><span class="btn-loader" aria-hidden="true"></span><i data-feather="rotate-ccw"></i> <span class="slow-btn-text">Restaurar</span></button>
+            <button class="btn small danger" data-slow-action="backup-delete" onclick="deleteBackup('${b.id}')" title="Eliminar backup"><span class="btn-loader" aria-hidden="true"></span><i data-feather="trash-2"></i> <span class="slow-btn-text">Eliminar</span></button>
           </div>
         </article>`;
       }).join('');
@@ -1219,6 +1317,7 @@ Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, chec
     async function createBackupFromForm(e){
       e.preventDefault();
       if(!isAdmin()) return showMsg($('backupCreateResult'), 'Esta acção exige perfil Administrador.', true);
+      if(slowActions['backup-create']) return slowBlockFeedback();
       const scope=$('backupScope').value === 'all' ? 'all' : 'invite';
       const inviteId=$('backupInviteSelect').value;
       if(scope==='invite' && !inviteId) return showMsg($('backupCreateResult'), 'Seleccione o convite para backup.', true);
@@ -1226,16 +1325,21 @@ Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, chec
       const msg = scope==='all' ? 'Criar backup geral de todos os convites? Este ficheiro poderá restaurar toda a base operacional.' : `Criar backup completo do convite ${inv?.coupleNames || inviteId}?`;
       if(!await appConfirm({ title:'Criar backup', message:msg, confirmLabel:'Criar backup' })) return;
       hideMsg($('backupCreateResult'));
-      try{
+      return runSlowAction('backup-create', async ()=>{
         const out=await api('/manager/backups',{method:'POST',body:JSON.stringify({scope, inviteId, label:$('backupLabel').value, includeArchived:$('backupIncludeArchived').checked})});
         showMsg($('backupCreateResult'), out.message || 'Backup criado.');
         appToast(out.message || 'Backup criado.');
         $('backupLabel').value='';
         await loadBackups();
-      }catch(e){ showMsg($('backupCreateResult'), e.message, true); appToast(e.message,'error','Erro'); }
+      }, {
+        busyLabel:'A criar backup...',
+        slowLabel:'A criar o backup — num backup geral isto pode levar até um minuto. Por favor aguarda, não repitas o toque.',
+        onError: err=>{ showMsg($('backupCreateResult'), err.message, true); appToast(err.message,'error','Erro'); }
+      });
     }
-    window.downloadBackup = async function(id){
-      try{
+    window.downloadBackup = function(id){
+      if(slowActions['backup-download']) return slowBlockFeedback();
+      return runSlowAction('backup-download', async ()=>{
         const res = await fetch(`${API_BASE}/manager/backups/${id}/download`, { headers:{ ...(token ? { Authorization:`Bearer ${token}` } : {}) } });
         if(!res.ok){ const data=await res.json().catch(()=>({})); throw new Error(data.message || `Erro ${res.status}`); }
         const blob=await res.blob();
@@ -1245,11 +1349,12 @@ Esta acção apaga convidados, RSVP, mensagens, presentes, contribuições, chec
         const url=URL.createObjectURL(blob);
         const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
         appToast('Backup descarregado.');
-      }catch(e){ appToast(e.message,'error','Erro'); }
+      }, { busyLabel:'A descarregar...' });
     };
     window.restoreBackup = async function(id, requiredText){
       const backup=backups.find(b=>String(b.id)===String(id));
       if(!backup) return appToast('Backup não encontrado na lista carregada.','error','Erro');
+      if(slowActions['backup-restore']) return slowBlockFeedback();
       const isAll=backup.scope==='all';
       const message = isAll ? `Esta acção vai substituir TODOS os convites e dados operacionais pelo conteúdo deste backup.
 
@@ -1261,41 +1366,55 @@ Convite: ${backup.coupleNames || backup.slug}
 Slug: ${backup.slug}
 Data: ${fmtDate(backup.createdAt)}`;
       if(!await appConfirm({ title:isAll?'Restaurar backup geral':'Restaurar backup do convite', message, confirmLabel:'Restaurar', variant:'danger', requireText:requiredText })) return;
-      try{
+      return runSlowAction('backup-restore', async ()=>{
         const out=await api(`/manager/backups/${id}/restore`,{method:'POST',body:JSON.stringify({confirmation:requiredText})});
         appToast(out.message || 'Backup restaurado.');
         await Promise.allSettled([loadBackups(), loadAll(), loadGuestCrudList(), loadManageDetails(), currentPanel==='command'?loadCommandCenter():Promise.resolve()]);
-      }catch(e){ appToast(e.message,'error','Erro'); }
+      }, {
+        busyLabel:'A restaurar...',
+        slowAfter:5000,
+        slowLabel:'A restaurar os dados — esta operação pode levar até um minuto. Não feches a página nem repitas o toque.',
+        onError: err=>appToast(err.message,'error','Erro')
+      });
     };
     window.deleteBackup = async function(id){
       const backup=backups.find(b=>String(b.id)===String(id));
       if(!backup) return;
+      if(slowActions['backup-delete']) return slowBlockFeedback();
       if(!await appConfirm({ title:'Eliminar backup', message:`Eliminar este backup da lista?
 
 ${backup.label || backup.slug || 'Backup geral'}
 ${fmtDate(backup.createdAt)}`, confirmLabel:'Eliminar backup', variant:'danger', requireText:'ELIMINAR BACKUP' })) return;
-      try{
+      return runSlowAction('backup-delete', async ()=>{
         const out=await api(`/manager/backups/${id}`,{method:'DELETE',body:JSON.stringify({confirmation:'ELIMINAR BACKUP'})});
         appToast(out.message || 'Backup eliminado.');
         await loadBackups();
-      }catch(e){ appToast(e.message,'error','Erro'); }
+      }, {
+        busyLabel:'A eliminar...',
+        onError: err=>appToast(err.message,'error','Erro')
+      });
     };
     async function importBackupFromForm(e){
       e.preventDefault();
       if(!isAdmin()) return showMsg($('backupImportResult'), 'Esta acção exige perfil Administrador.', true);
+      if(slowActions['backup-import']) return slowBlockFeedback();
       const file=$('backupImportFile').files?.[0];
       if(!file) return showMsg($('backupImportResult'), 'Seleccione um ficheiro JSON de backup.', true);
       if(!await appConfirm({ title:'Importar backup', message:`Importar o ficheiro ${file.name} para a lista de backups disponíveis?`, confirmLabel:'Importar' })) return;
       const fd=new FormData(); fd.append('backup', file);
       hideMsg($('backupImportResult'));
-      try{
+      return runSlowAction('backup-import', async ()=>{
         const res=await fetch(`${API_BASE}/manager/backups/import`,{method:'POST',headers:{ ...(token ? { Authorization:`Bearer ${token}` } : {}) },body:fd});
         const out=await res.json().catch(()=>({}));
         if(!res.ok) throw new Error(out.message || `Erro ${res.status}`);
         showMsg($('backupImportResult'), out.message || 'Backup importado.');
         $('backupImportFile').value='';
         await loadBackups();
-      }catch(e){ showMsg($('backupImportResult'), e.message, true); }
+      }, {
+        busyLabel:'A importar...',
+        slowLabel:'A importar e validar o ficheiro pode levar alguns instantes. Por favor aguarda, não repitas o toque.',
+        onError: err=>showMsg($('backupImportResult'), err.message, true)
+      });
     }
 
     function bindEvents(){
@@ -1303,6 +1422,8 @@ ${fmtDate(backup.createdAt)}`, confirmLabel:'Eliminar backup', variant:'danger',
       $('menuBtn').addEventListener('click',()=>{ $('sidebar').classList.add('open'); $('overlay').classList.add('active'); }); $('backBtn')?.addEventListener('click',goBackPanel); $('overlay').addEventListener('click',()=>{ $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); });
       $('logoutBtn').addEventListener('click',()=>{ sessionStorage.removeItem('lirandzo_manager_token'); sessionStorage.removeItem('lirandzo_manager_role'); token=''; managerRole=''; loginView(); }); $('topbarLogoutBtn')?.addEventListener('click',()=>$('logoutBtn')?.click()); $('refreshBtn').addEventListener('click',loadAll); $('filterBtn').addEventListener('click',loadInvites); $('archivedFilterBtn')?.addEventListener('click',loadArchivedInvites); $('reloadArchivedBtn')?.addEventListener('click',loadArchivedInvites); $('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') loadInvites(); }); $('archivedSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadArchivedInvites(); }); $('reloadGithubBtn').addEventListener('click',loadGithubStatus); $('commandInviteSelect')?.addEventListener('change',()=>{ renderCommandContext(invites.find(inv=>inv.id===commandSelectedId())); loadCommandCenter(); }); $('commandLoadBtn')?.addEventListener('click',loadCommandCenter); $('commandGuestsBtn')?.addEventListener('click',goCommandGuests); $('commandManageBtn')?.addEventListener('click',goCommandManage); $('commandCopySlugBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); copyUrl(inv?.slug||''); }); $('commandOpenInviteBtn')?.addEventListener('click',()=>{ const inv=invites.find(x=>x.id===commandSelectedId()); if(inv?.publicUrl) window.open(inv.publicUrl,'_blank'); }); document.querySelectorAll('[data-command-tab]').forEach(btn=>btn.addEventListener('click',()=>setCommandTab(btn.dataset.commandTab))); document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.goto))); $('clientForm')?.addEventListener('submit', saveClient); $('clientClearFormBtn')?.addEventListener('click', resetClientForm); $('clientArchiveBtn')?.addEventListener('click', archiveClient); $('clientsRefreshBtn')?.addEventListener('click', loadClientsPage); $('clientsFilterBtn')?.addEventListener('click', loadClients); $('clientsSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadClients(); }); $('clientsStatusFilter')?.addEventListener('change', loadClients); $('clientsSelectAll')?.addEventListener('change', e=>{ document.querySelectorAll('.client-select:not(:disabled)').forEach(cb=>cb.checked=e.target.checked); }); $('clientsImportForm')?.addEventListener('submit', importClients); $('campaignForm')?.addEventListener('submit', sendCampaign); $('campaignHistoryBtn')?.addEventListener('click', ()=>document.getElementById('campaignList')?.scrollIntoView({behavior:'smooth'})); $('campaignsRefreshBtn')?.addEventListener('click', loadCampaigns); $('backupScope')?.addEventListener('change',()=>{ const all=$('backupScope').value==='all'; $('backupInviteWrap')?.classList.toggle('hidden', all); }); $('backupCreateForm')?.addEventListener('submit', createBackupFromForm); $('backupRefreshBtn')?.addEventListener('click', loadBackups); $('backupFilterBtn')?.addEventListener('click', loadBackups); $('backupSearchInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') loadBackups(); }); $('backupScopeFilter')?.addEventListener('change', loadBackups); $('backupImportForm')?.addEventListener('submit', importBackupFromForm);
       $('themeBtn').addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'dark'; applyTheme(current==='light'?'dark':'light'); });
+      document.addEventListener('click', slowActionGuardClick, true);
+      document.addEventListener('submit', slowActionGuardSubmit, true);
       $('closeModal').addEventListener('click',()=>$('detailsModal').classList.remove('open')); $('detailsModal').addEventListener('click',e=>{ if(e.target===$('detailsModal')) $('detailsModal').classList.remove('open'); }); document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('detailsModal').classList.remove('open'); $('guestEditModal')?.classList.remove('open'); $('confirmModal')?.classList.remove('open'); if(confirmResolver){ confirmResolver(false); confirmResolver=null; } $('sidebar').classList.remove('open'); $('overlay').classList.remove('active'); } });
       $('newInviteForm').addEventListener('submit', async e=>{ e.preventDefault(); if(!isAdmin()) return showMsg($('createResult'), 'Perfil Editor não pode criar convites.', true); const btn=$('createInviteBtn'); if(btn && btn.disabled) return; const form=e.currentTarget; const fd=new FormData(form); const payload=Object.fromEntries(fd.entries()); payload.copyToGithub=fd.get('copyToGithub')==='on'; payload.createAsPublished=fd.get('createAsPublished')==='on'; hideMsg($('createResult')); setCreateLoading(true); const slowTimer=setTimeout(()=>{ showMsg($('createResult'), 'A criar o convite e a copiar o template para o GitHub — esta etapa pode levar até um minuto. Por favor aguarda, não repitas o toque.', false); }, 8000); try{ const out=await api('/manager/invites',{method:'POST',body:JSON.stringify(payload)}); clearTimeout(slowTimer); const url=out.data?.publicUrl; showMsg($('createResult'), out.message || (url ? `Convite criado com sucesso: ${url}` : 'Convite criado com sucesso.'), out.status==='warning'); form.reset(); loadAll().catch(()=>{}); }catch(err){ clearTimeout(slowTimer); showMsg($('createResult'),err.message,true); }finally{ setCreateLoading(false); } });
       $('manageInviteSelect').addEventListener('change',loadManageDetails); $('loadManageBtn').addEventListener('click',loadManageDetails);
