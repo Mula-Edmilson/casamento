@@ -12,6 +12,15 @@ const { createBuilderV2Models } = require('./builder-v2/mongo-models-v2');
 const { registerBuilderV2ContentRoutes } = require('./builder-v2/content-api-v2');
 
 const app = express();
+// NOVO: rota principal para verificar se a API está online
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: 'Lirandzo AdminManager API',
+    status: 'online',
+    message: 'API disponível.'
+  });
+});
 const PORT = process.env.PORT || 3000;
 const PUBLIC_API_BASE_URL = stripTrailingSlash(process.env.PUBLIC_API_BASE_URL || `http://localhost:${PORT}`);
 
