@@ -1,1 +1,2094 @@
-<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Check-in · Louren & Acácio</title><link rel="icon" href="assets/media/lirandzo-logo.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><script src="https://unpkg.com/feather-icons"></script><script src="https://unpkg.com/html5-qrcode"></script><script src="event-data.js"></script><script src="client-config.js"></script><script src="lirandzo-api.js"></script><style>:root{--bg:#17191b;--card:#25282c;--line:#43484e;--text:#f4f6f7;--muted:#b9c0c7;--accent:#b7bdc5;--ok:#55c58b;--danger:#ef6461;--font-h:'Cormorant Garamond',serif;--font-b:'Inter',sans-serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,rgba(183,189,197,.16),transparent 30%),var(--bg);font-family:var(--font-b);color:var(--text);min-height:100vh}.wrap{max-width:760px;margin:auto;padding:22px 16px 60px}.head{text-align:center;margin:20px 0}.head img{width:62px}.head h1{font-family:var(--font-h);font-size:38px;margin:10px 0 4px}.card{background:var(--card);border:1px solid var(--line);border-radius:30px;padding:20px;box-shadow:0 22px 70px rgba(0,0,0,.28);margin-bottom:16px}.input{width:100%;background:#121416;border:1px solid var(--line);border-radius:999px;color:var(--text);padding:15px 18px;font-size:16px}.btn{border:0;border-radius:999px;background:var(--accent);color:#17191b;padding:14px 18px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}.btn.secondary{background:#2d3135;color:var(--text);border:1px solid var(--line)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.result{display:none}.result.show{display:block}.guest-name{font-family:var(--font-h);font-size:34px;color:#fff;margin:8px 0}.status{padding:12px 14px;border-radius:18px;margin-top:14px}.status.ok{background:rgba(85,197,139,.15);color:var(--ok)}.status.danger{background:rgba(239,100,97,.15);color:var(--danger)}#reader{border-radius:24px;overflow:hidden;background:#111;min-height:260px}.small{color:var(--muted);font-size:14px;line-height:1.5}@media(max-width:520px){.actions .btn{width:100%}.head h1{font-size:31px}}</style></head><body><main class="wrap"><header class="head"><img src="assets/media/lirandzo-logo.svg" alt="Lirandzo"><h1>Check-in do Evento</h1><p class="small">Louren & Acácio · 31 de outubro de 2026</p></header><section class="card" id="loginCard"><p>Insira a senha da equipa de recepção.</p><input class="input" type="password" id="pass" placeholder="Senha de check-in"><div class="actions"><button class="btn" id="enter"><i data-feather="lock"></i>Entrar</button><a class="btn secondary" href="admin.html">Painel do cliente</a></div><p id="err" style="color:var(--danger)"></p></section><section class="card" id="scannerCard" style="display:none"><h2 style="font-family:var(--font-h);margin:0 0 12px">Scanner QR</h2><div id="reader"></div><div class="actions"><button class="btn secondary" id="startScan"><i data-feather="camera"></i>Iniciar câmara</button><button class="btn secondary" id="stopScan"><i data-feather="camera-off"></i>Parar</button></div><p class="small">Também pode inserir o token manualmente.</p><input class="input" id="manualToken" placeholder="Token do convidado"><div class="actions"><button class="btn" id="manualBtn"><i data-feather="check-circle"></i>Confirmar entrada</button></div></section><section class="card result" id="result"><small class="small" id="guestNumber"></small><div class="guest-name" id="guestName">Convidado</div><p id="guestInfo" class="small"></p><div class="status" id="status"></div></section></main><script>feather.replace();let scanner=null;function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}function extractToken(value){let v=String(value||'').trim();try{let u=new URL(v);v=u.searchParams.get('t')||v;}catch(e){}return v;}async function processToken(raw){const token=extractToken(raw); if(!token){showError('Token vazio.');return;} const res=await LirandzoAPI.get('get_guest',{token}); if(!res||res.status!=='success'){showError('Convidado não encontrado.');return;} const g=res.data||res; await LirandzoAPI.post({action:'checkin_guest',token, nome:g.name||g.nome, guests:g.maxGuests||1, mesa:g.mesa||'A definir', operator:'Recepção', timestamp:new Date().toISOString()}); result.classList.add('show'); guestNumber.textContent='#'+(g.number||'')+' · '+(g.category==='Couple'?'Casal':'Individual'); guestName.textContent=g.name||g.nome; guestInfo.textContent='Mesa: '+(g.mesa||'A definir')+' · Pessoas autorizadas: '+(g.maxGuests||1); status.className='status ok'; status.textContent='Entrada confirmada com sucesso.';}function showError(msg){result.classList.add('show');guestNumber.textContent='';guestName.textContent='Atenção';guestInfo.textContent='';status.className='status danger';status.textContent=msg;}enter.onclick=()=>{if(pass.value===(window.LIRANDZO_CHECKIN_PASSWORD||'checkin2026')){loginCard.style.display='none';scannerCard.style.display='block';let t=new URLSearchParams(location.search).get('t'); if(t) processToken(t);}else err.textContent='Senha incorrecta.'};manualBtn.onclick=()=>processToken(manualToken.value);startScan.onclick=async()=>{if(!window.Html5Qrcode){showError('Biblioteca de scanner não carregou. Use o token manual.');return;} if(scanner) return; scanner=new Html5Qrcode('reader'); try{await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250}},txt=>processToken(txt));}catch(e){showError('Não foi possível iniciar a câmara. Autorize o acesso ou use o token manual.');scanner=null;}};stopScan.onclick=async()=>{if(scanner){await scanner.stop();scanner=null;}};pass.addEventListener('keydown',e=>{if(e.key==='Enter') enter.click()});</script></body></html>
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex,nofollow">
+<title>Check-in · Louren &amp; Acácio</title>
+<link rel="icon" href="assets/media/lirandzo-logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Parisienne&display=swap" rel="stylesheet">
+<!-- Biblioteca QR servida localmente para o scanner funcionar sem internet.
+     Se o ficheiro local faltar, ensureQrLib() recorre ao CDN como reserva. -->
+<script src="assets/vendor/html5-qrcode.min.js"></script>
+<script src="event-data.js"></script>
+<script src="client-config.js"></script>
+<script src="lirandzo-api.js"></script>
+<style>
+  /* ============ Tokens do convite · body.convite-white-silver-theme ============ */
+  :root{
+    --white-pure:#ffffff; --white-soft:#fefefe; --white-paper:#fbfcfd;
+    --surface:#ffffff;
+    --bg:#f7f8fa;
+    --card-bg:rgba(255,255,255,.86);
+    --ink:#171717; --ink-soft:#424242; --ink-muted:#6a6a6a;
+    --silver-main:#aeb4bd; --silver-light:#dce0e4; --silver-dark:#505761;
+    --silver-deep:#747b84; --silver-shine:#f8fafc;
+    --silver-line:rgba(174,180,189,.48);
+    --card-border:rgba(48,42,39,.28);
+    --card-inner:rgba(48,42,39,.15);
+    --card-shadow:0 16px 38px rgba(44,62,79,.07);
+    --halo:0 0 0 7px rgba(248,250,252,.55);
+    --silver-metal:linear-gradient(135deg,#4f5660 0%,#7b828b 18%,#b9bec5 34%,#ffffff 49%,#c7cbd0 62%,#777e87 80%,#e0e3e7 100%);
+    --green:#1a9e6f; --green-s:rgba(26,158,111,.09);
+    --orange:#a9720a; --orange-s:rgba(169,114,10,.09);
+    --red:#c94a4a; --red-s:rgba(201,74,74,.09);
+    --font-h:'Cormorant Garamond',serif; --font-b:'Inter',sans-serif; --font-s:'Parisienne',cursive;
+    --decor-flower:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20220%20220%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23737a83%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20opacity%3D%22.55%22%3E%3Cpath%20d%3D%22M186%2018c-5%2019-12%2035-24%2048-13%2014-28%2024-52%2032%22/%3E%3Cpath%20d%3D%22M147%2031c13%206%2024%2017%2030%2031%22/%3E%3Cpath%20d%3D%22M124%2041c6%209%2010%2020%2010%2031%22/%3E%3Cpath%20d%3D%22M92%2098c-10-10-22-16-38-18%22/%3E%3Cpath%20d%3D%22M55%2080c6%208%2010%2018%2011%2029%22/%3E%3Cpath%20d%3D%22M102%20107c-10%2011-17%2023-22%2037%22/%3E%3Cpath%20d%3D%22M80%20144c10%200%2018%203%2025%208%22/%3E%3Cpath%20d%3D%22M184%2018c6%2018%2014%2031%2028%2043%22/%3E%3Ccircle%20cx%3D%22148%22%20cy%3D%2231%22%20r%3D%228%22/%3E%3Ccircle%20cx%3D%22124%22%20cy%3D%2241%22%20r%3D%2210%22/%3E%3Ccircle%20cx%3D%2255%22%20cy%3D%2280%22%20r%3D%229%22/%3E%3Ccircle%20cx%3D%2280%22%20cy%3D%22144%22%20r%3D%2211%22/%3E%3C/g%3E%3C/svg%3E");
+    --ease:all .4s cubic-bezier(.25,.8,.25,1);
+    --safe-top:env(safe-area-inset-top); --safe-bottom:env(safe-area-inset-bottom);
+  }
+  /* ============ Tema escuro (persistido) ============ */
+  body.theme-dark{
+    --white-pure:#1c1f24; --white-soft:#1c1f24; --white-paper:#22262c;
+    --surface:#232830;
+    --bg:#12151a;
+    --card-bg:rgba(28,32,38,.88);
+    --ink:#f2f4f7; --ink-soft:#cfd4da; --ink-muted:#98a0aa;
+    --silver-main:#6b7480; --silver-light:#333941; --silver-dark:#c3cad3;
+    --silver-deep:#a9b1bb; --silver-shine:#1a1e24;
+    --silver-line:rgba(140,150,163,.26);
+    --card-border:rgba(255,255,255,.14);
+    --card-inner:rgba(255,255,255,.08);
+    --card-shadow:0 16px 38px rgba(0,0,0,.42);
+    --halo:0 0 0 7px rgba(255,255,255,.03);
+    --silver-metal:linear-gradient(135deg,#8b939e 0%,#5d646e 22%,#aab1ba 46%,#e8ebef 60%,#7d848e 80%,#5a616a 100%);
+    --green:#3ddc97; --green-s:rgba(61,220,151,.12);
+    --orange:#e0a940; --orange-s:rgba(224,169,64,.12);
+    --red:#ef6b6b; --red-s:rgba(239,107,107,.12);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(120% 46% at 50% -8%,rgba(174,180,189,.14),transparent 60%),
+      linear-gradient(180deg,#ffffff 0%,var(--bg) 30%,var(--bg) 100%);
+    color:var(--ink-soft); font-family:var(--font-b); min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:calc(132px + var(--safe-bottom));
+    transition:background .4s ease,color .4s ease,padding-top .45s cubic-bezier(.25,.8,.25,1);
+  }
+  /* quando o cabeçalho fixo entra, reserva-lhe espaço (sem tapar conteúdo) */
+  body.topbar-on{padding-top:calc(58px + var(--safe-top))}
+  body.theme-dark{
+    background:
+      radial-gradient(120% 46% at 50% -8%,rgba(120,130,145,.18),transparent 60%),
+      linear-gradient(180deg,#15181d 0%,var(--bg) 30%,var(--bg) 100%);
+  }
+  body.modal-open{overflow:hidden}
+  .page{max-width:520px;margin:0 auto;padding:calc(26px + var(--safe-top)) 16px 10px;position:relative;z-index:1}
+  .is-hidden{display:none !important}
+
+  /* decor do convite (line-art) */
+  .page-decor{position:fixed;width:300px;height:300px;background-image:var(--decor-flower);background-repeat:no-repeat;background-size:contain;opacity:.5;pointer-events:none;z-index:0}
+  .page-decor.tr{top:-130px;right:-130px;transform:rotate(90deg)}
+  .page-decor.bl{bottom:-130px;left:-130px;transform:rotate(-90deg)}
+
+  /* ============ Cabeçalho fixo (aparece ao rolar) ============ */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:150;
+    background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--silver-line);
+    padding:calc(7px + var(--safe-top)) 16px 7px;
+    transform:translateY(-118%);transition:transform .45s cubic-bezier(.25,.8,.25,1)}
+  .topbar.show{transform:translateY(0)}
+  .topbar-in{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:11px}
+  .tb-seal{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;
+    font-family:var(--font-h);font-weight:600;font-size:13px;letter-spacing:.06em;color:#676f78;
+    background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;
+    border:1px solid transparent}
+  .tb-txt{flex:1;min-width:0}
+  .tb-txt b{display:block;font-family:var(--font-h);font-weight:600;font-size:15.5px;line-height:1.15;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tb-txt span{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);font-weight:600}
+  .tb-ring{position:relative;width:40px;height:40px;flex:none}
+  .tb-ring svg{width:40px;height:40px;transform:rotate(-90deg);overflow:visible}
+  .tb-ring circle{fill:none;stroke-width:2.6;stroke-linecap:round}
+  .tb-ring .tr-track{stroke:rgba(174,180,189,.44)}
+  .tb-ring .tr-fill{stroke:url(#srGrad);stroke-dasharray:110;stroke-dashoffset:110;transition:stroke-dashoffset .9s cubic-bezier(.25,.8,.25,1)}
+  .tb-ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-size:9px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+
+  /* selo online/offline */
+  .net{display:inline-flex;align-items:center;gap:6px;flex:none;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    padding:5px 10px;border-radius:999px;border:1px solid var(--silver-line);background:var(--surface);color:var(--ink-muted);transition:var(--ease)}
+  .net::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px var(--green-s)}
+  .net.off,.net.pending{color:var(--orange);border-color:rgba(169,114,10,.32);background:var(--orange-s)}
+  .net.off::before,.net.pending::before{background:var(--orange);box-shadow:0 0 0 3px var(--orange-s)}
+  .net.pending::before{animation:pulse 1.6s infinite}
+
+  /* ================= Cartões (receita .honor-card do convite) ================= */
+  .panel{
+    position:relative;background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;
+    box-shadow:var(--card-shadow),var(--halo);padding:30px 26px;margin-bottom:18px;
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    transition:background .4s ease,border-color .4s ease;
+  }
+  .panel::after{content:'';position:absolute;inset:9px;border:1px solid var(--card-inner);border-radius:12px;pointer-events:none}
+  .panel>*{position:relative}
+
+  /* botão de tema */
+  .panel>.theme-btn{position:absolute;top:17px;right:17px;width:38px;height:38px;border-radius:50%;z-index:4;
+    background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;
+    border:1px solid transparent;color:#676f78;cursor:pointer;display:grid;place-items:center;transition:var(--ease)}
+  .panel>.theme-btn:hover{transform:scale(1.07)}
+  .panel>.theme-btn:active{transform:scale(.93)}
+  .theme-btn svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.8;fill:none}
+
+  /* ---- cabeçalho ---- */
+  .head{text-align:center}
+  .seal-wrap{position:relative;width:74px;height:74px;margin:4px auto 16px}
+  .seal-ring{position:absolute;inset:0;width:74px;height:74px;transform:rotate(-90deg);overflow:visible}
+  .seal-ring circle{fill:none;stroke-width:2;stroke-linecap:round}
+  .sr-track{stroke:rgba(174,180,189,.44)}
+  .sr-fill{stroke:url(#srGrad);stroke-dasharray:213.6;stroke-dashoffset:213.6;transition:stroke-dashoffset 1s cubic-bezier(.25,.8,.25,1)}
+  #srGrad .s1{stop-color:#8d949d} #srGrad .s2{stop-color:#5f6771} #srGrad .s3{stop-color:#aeb4bd}
+  body.theme-dark #srGrad .s1{stop-color:#c8ced6}
+  body.theme-dark #srGrad .s2{stop-color:#eef1f5}
+  body.theme-dark #srGrad .s3{stop-color:#98a0aa}
+  .seal{position:absolute;inset:5px;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;
+    font-family:var(--font-h);font-weight:600;font-size:23px;letter-spacing:.08em;color:#676f78;
+    background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;
+    border:1px solid transparent;box-shadow:0 12px 28px rgba(0,0,0,.07),0 0 22px rgba(174,180,189,.14)}
+  body.theme-dark .seal,body.theme-dark .tb-seal{color:var(--silver-deep)}
+  .head h1{font-family:var(--font-h);font-weight:600;font-size:clamp(30px,8.6vw,40px);line-height:1;margin:0;color:var(--ink);letter-spacing:.01em}
+  .head .couple{font-family:var(--font-s);font-size:27px;line-height:1.25;color:var(--silver-dark);margin:9px 0 0}
+  .head .date{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-muted);margin:8px 0 0}
+  .kicker{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:#676f78;font-weight:600;margin:0 0 8px;text-align:center}
+  body.theme-dark .kicker{color:#98a0aa}
+  .panel-title{font-family:var(--font-h);font-weight:600;font-size:26px;line-height:1.15;margin:0;color:var(--ink)}
+  .scan-head .panel-title{text-align:center}
+  .hint{color:var(--ink-muted);font-size:13px;line-height:1.6;margin:8px 0 0;text-align:center}
+  .divider{width:84px;height:1px;background:var(--silver-line);margin:20px auto;border:0}
+
+  /* ---- aviso offline ---- */
+  .offline-bar{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:14px;font-size:12.5px;font-weight:500;line-height:1.4;
+    margin-bottom:16px;background:var(--orange-s);color:var(--orange);border:1px solid rgba(169,114,10,.28)}
+  .offline-bar svg{width:17px;height:17px;flex:none}
+  .offline-bar span{flex:1}
+  .ob-btn{flex:none;border:1px solid rgba(169,114,10,.42);background:transparent;color:var(--orange);border-radius:999px;
+    padding:6px 12px;font-size:11.5px;font-weight:600;font-family:inherit;cursor:pointer;transition:var(--ease)}
+  .ob-btn:hover{background:rgba(169,114,10,.1)}
+  .ob-btn:active{transform:scale(.95)}
+
+  /* ---- progresso ---- */
+  .prog-top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+  .prog-top .k{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;line-height:1.5}
+  .prog-top .v{font-family:var(--font-b);font-weight:700;font-size:30px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .prog-top .v i{font-style:normal;color:var(--silver-main);font-size:19px;margin:0 6px;font-weight:400;vertical-align:2px}
+  .prog-top .v span{font-size:20px;color:var(--silver-deep);font-weight:600}
+  .prog-top .rows{text-align:right;flex:none}
+  .prog-top .rows b{display:block;font-family:var(--font-b);font-weight:700;font-size:22px;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .bar{height:6px;border-radius:999px;background:rgba(174,180,189,.20);border:1px solid rgba(174,180,189,.38);overflow:hidden;margin:16px 0 12px}
+  .bar>span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#b9bec5,#8d949d 55%,#5f6771);transition:width .7s cubic-bezier(.25,.8,.25,1)}
+  .prog-sub{display:flex;align-items:center;justify-content:center;gap:9px;font-size:11.5px;color:var(--ink-muted);letter-spacing:.06em}
+  .prog-sub .d{width:3px;height:3px;border-radius:50%;background:var(--silver-main)}
+
+  /* ---- campos ---- */
+  .field{margin-bottom:15px}
+  .field:last-child{margin-bottom:0}
+  .label{display:block;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#676f78;margin:0 0 7px;font-weight:600}
+  body.theme-dark .label{color:#98a0aa}
+  .input{width:100%;background:var(--surface);border:1px solid var(--silver-line);border-radius:999px;color:var(--ink);
+    padding:14px 20px;font-size:15.5px;font-family:inherit;transition:var(--ease)}
+  .input::placeholder{color:var(--silver-main)}
+  .input:focus{outline:none;border-color:var(--silver-deep);box-shadow:0 0 0 4px rgba(174,180,189,.20)}
+  select.input{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:44px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23747b84' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 17px center;background-size:14px}
+  body.theme-dark select.input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a9b1bb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")}
+  .op-row{display:flex;gap:9px;align-items:stretch}
+  .op-row .input{flex:1;min-width:0;height:50px;padding:0 20px}
+  .op-row .btn{flex:none;height:50px;padding:0 20px}
+  .check{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:13px;cursor:pointer;user-select:none;margin:2px 0 18px}
+  .check input{width:17px;height:17px;accent-color:var(--silver-deep)}
+  .err{color:var(--red);font-size:13px;min-height:17px;margin:12px 0 0;text-align:center}
+
+  /* ---- botões (pill + borda metálica, como o convite) ---- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-b);
+    padding:13px 26px;border-radius:999px;font-weight:500;font-size:.9rem;cursor:pointer;letter-spacing:.01em;
+    border:1px solid transparent;transition:var(--ease);text-align:center;text-decoration:none}
+  .btn svg{width:17px;height:17px;flex:none}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .btn-primary{background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;
+    border:1px solid transparent;color:#1f2328;box-shadow:0 12px 28px rgba(55,62,70,.13),inset 0 1px 0 rgba(255,255,255,.6)}
+  .btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 16px 34px rgba(55,62,70,.18),inset 0 1px 0 rgba(255,255,255,.6)}
+  .btn-outline{background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;
+    border:1px solid transparent;color:#59616b;box-shadow:0 10px 24px rgba(0,0,0,.045)}
+  .btn-outline:hover:not(:disabled){transform:translateY(-2px);color:#2f343a}
+  .btn-ghost{background:transparent;color:var(--ink-muted);border-color:transparent}
+  .btn-ghost:hover:not(:disabled){color:var(--silver-dark)}
+  .btn.block{width:100%}
+  body.theme-dark .btn-primary{color:#eef1f5}
+  body.theme-dark .btn-outline{color:#c3cad3}
+  body.theme-dark .btn-outline:hover:not(:disabled){color:#f2f4f7}
+  .btn:active:not(:disabled){transform:translateY(0) scale(.975)}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .actions .btn{flex:1;min-width:140px}
+  /* Dentro dos pop-ups os botões empilham a toda a largura — rótulos longos
+     ("Permitir entrada mesmo assim") não caberiam lado a lado e quebravam linha. */
+  .modal-card .actions{flex-direction:column;gap:9px}
+  .modal-card .actions .btn{width:100%;flex:1 1 auto;min-width:0}
+
+  /* ================= Scanner ================= */
+  .scan-head{text-align:center;margin-bottom:18px}
+  .status{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink-muted);font-weight:500;margin-top:8px;letter-spacing:.04em}
+  .status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--silver-main);transition:var(--ease)}
+  .status.live{color:var(--green)}
+  .status.live::before{background:var(--green);box-shadow:0 0 0 3px var(--green-s);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 3px var(--green-s)}50%{box-shadow:0 0 0 6px rgba(26,158,111,.04)}}
+
+  /* `aspect-ratio` + `max-height` encolhe a largura para 270px; sem
+     `margin:auto` a caixa ficava encostada à esquerda dentro do painel. */
+  .reader-wrap{position:relative;border-radius:14px;overflow:hidden;background:var(--silver-shine);
+    border:1px solid var(--silver-line);aspect-ratio:1/1;max-height:270px;margin:0 auto;
+    display:flex;align-items:center;justify-content:center}
+  #reader{width:100%;height:100%}
+  #reader video{width:100%;height:100%;object-fit:cover;display:block}
+  .reader-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;color:var(--silver-main);text-align:center;padding:18px}
+  .reader-ph svg{width:34px;height:34px}
+  .reader-ph span{font-size:11.5px;max-width:250px;line-height:1.55;letter-spacing:.01em}
+  .scan-overlay{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s var(--ease)}
+  .scan-overlay.active{opacity:1}
+  .scan-overlay .frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:62%;height:62%}
+  .scan-overlay .c{position:absolute;width:24px;height:24px;border:2px solid #fff;border-radius:3px;filter:drop-shadow(0 1px 4px rgba(55,62,70,.5))}
+  .scan-overlay .c.tl{top:0;left:0;border-right:0;border-bottom:0}
+  .scan-overlay .c.tr{top:0;right:0;border-left:0;border-bottom:0}
+  .scan-overlay .c.bl{bottom:0;left:0;border-right:0;border-top:0}
+  .scan-overlay .c.br{bottom:0;right:0;border-left:0;border-top:0}
+  .scan-overlay .line{position:absolute;left:7%;right:7%;height:1.5px;border-radius:2px;background:linear-gradient(90deg,transparent,#1a9e6f,transparent);box-shadow:0 0 10px rgba(26,158,111,.6);animation:scanline 2.1s cubic-bezier(.25,.8,.25,1) infinite}
+  @keyframes scanline{0%{top:18%;opacity:0}12%{opacity:1}50%{top:82%;opacity:1}88%{opacity:.9}100%{top:18%;opacity:0}}
+
+  .mode{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding:13px 16px;
+    border:1px solid var(--silver-line);border-radius:14px;background:var(--surface)}
+  .mode .mt{font-size:13px;font-weight:600;color:var(--ink-soft)}
+  .mode .ms{font-size:11px;color:var(--ink-muted);margin-top:2px}
+  .switch{position:relative;width:44px;height:25px;flex:none}
+  .switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+  .switch i{position:absolute;inset:0;background:var(--silver-light);border:1px solid var(--silver-line);border-radius:999px;transition:var(--ease)}
+  .switch i::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px rgba(55,62,70,.3);transition:var(--ease)}
+  body.theme-dark .switch i::after{background:#c3cad3}
+  .switch input:checked+i{background:var(--green-s);border-color:rgba(26,158,111,.45)}
+  .switch input:checked+i::after{transform:translateX(19px);background:var(--green)}
+
+  .dock-hint{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--silver-main);font-size:11.5px;margin-top:18px;letter-spacing:.04em}
+  .dock-hint svg{width:13px;height:13px}
+
+  /* ---- resultados de pesquisa ---- */
+  .results{margin-top:9px;border:1px solid var(--silver-line);border-radius:14px;overflow:hidden;max-height:230px;overflow-y:auto;background:var(--surface)}
+  .results:empty{display:none}
+  .res-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid rgba(174,180,189,.28);cursor:pointer;transition:background .2s}
+  .res-item:last-child{border-bottom:0}
+  .res-item:hover,.res-item:active{background:var(--silver-shine)}
+  .res-item .rn{font-weight:600;font-size:14px;color:var(--ink)}
+  .res-item .rm{font-size:11px;color:var(--ink-muted);white-space:nowrap}
+
+  /* ================= Dock flutuante (padrão .fixed-ui-container) ================= */
+  /* Fica ATRÁS do conteúdo (z-index 0 < .page 1) para nunca tapar a pré-visualização da câmara. */
+  .dock-decor{position:fixed;left:50%;bottom:-6px;width:520px;height:250px;transform:translateX(-50%);
+    background-image:var(--decor-flower);background-repeat:no-repeat;background-position:center bottom;background-size:520px 250px;
+    opacity:.34;pointer-events:none;z-index:0}
+  .dock-decor.mirror{transform:translateX(-50%) scaleX(-1);opacity:.26}
+  .dock{position:fixed;bottom:calc(22px + var(--safe-bottom));left:50%;transform:translateX(-50%);z-index:100;
+    display:flex;flex-direction:row;align-items:stretch;gap:3px;background:rgba(255,255,255,.86);
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);padding:8px;border-radius:22px;
+    border:1px solid var(--silver-line);box-shadow:0 14px 34px rgba(55,62,70,.14);max-width:calc(100vw - 20px)}
+  body.theme-dark .dock{background:rgba(24,28,33,.88)}
+  .fab{min-width:56px;flex:1 1 0;border-radius:16px;cursor:pointer;position:relative;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:9px 4px 7px;
+    background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;
+    border:1px solid transparent;color:#676f78;transition:var(--ease);
+    box-shadow:0 10px 22px rgba(0,0,0,.06),0 0 18px rgba(174,180,189,.12)}
+  body.theme-dark .fab{color:#c3cad3}
+  .fab svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.8;fill:none}
+  .fab .fl{font-size:8.5px;font-weight:600;letter-spacing:.03em;line-height:1;opacity:.85;white-space:nowrap}
+  .fab:hover:not(:disabled){transform:translateY(-2px) scale(1.04)}
+  .fab:active:not(:disabled){transform:translateY(0) scale(.93)}
+  .fab:disabled{opacity:.4;cursor:not-allowed}
+  .fab.primary{background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,
+      linear-gradient(135deg,#8d949d,#4f5660,#b9bec5,#fff,#777e87) border-box;
+    box-shadow:0 14px 30px rgba(55,62,70,.18),0 0 22px rgba(174,180,189,.2)}
+  .fab.primary .fl{opacity:1;font-weight:700;color:var(--ink)}
+  .fab.active{background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,
+      linear-gradient(135deg,#1a9e6f,#7fd8b8,#1a9e6f) border-box;color:var(--green)}
+  .fab.on{background:var(--silver-metal);color:#1f2328}
+  .fab .dot{position:absolute;top:4px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--green);border:2px solid var(--surface);display:none}
+  .fab.hasdot .dot{display:block}
+
+  /* ================= Modais (pop-ups claros do convite) ================= */
+  .modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;
+    background:rgba(40,44,50,.42);-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+    opacity:0;visibility:hidden;transition:opacity .35s ease,visibility .35s ease}
+  .modal.open{opacity:1;visibility:visible}
+  .modal-card{position:relative;width:100%;max-width:440px;max-height:88vh;overflow-y:auto;
+    background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;
+    box-shadow:0 26px 90px rgba(19,24,31,.22),var(--halo);
+    padding:34px 26px 26px;transform:scale(.96) translateY(6px);transition:transform .4s cubic-bezier(.165,.84,.44,1);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .modal.open .modal-card{transform:scale(1) translateY(0)}
+  /* A lista ocupa o espaço restante do pop-up (sem scroll duplo: só a lista rola). */
+  .modal-card--list{max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+  .modal-card--list .modal-body{display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden}
+  /* só a lista encolhe; tudo o resto mantém a altura natural */
+  .modal-card--list .field,.modal-card--list .azbar,.modal-card--list .hint,
+  .modal-card--list .ov-row,.modal-card--list hr.divider{flex:none}
+  .modal-card::after{content:'';position:absolute;inset:9px;border:1px solid var(--card-inner);border-radius:12px;pointer-events:none}
+  .modal-card>*{position:relative}
+  .modal-x{position:absolute;top:17px;right:17px;width:34px;height:34px;border-radius:50%;border:1px solid var(--silver-line);
+    background:var(--surface);color:#676f78;font-size:19px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:var(--ease);z-index:3}
+  body.theme-dark .modal-x{color:#c3cad3}
+  .modal-x:hover{transform:scale(1.06);background:var(--silver-shine)}
+  .modal-x:active{transform:scale(.92)}
+  .modal-card h3{font-family:var(--font-h);font-weight:600;font-size:27px;line-height:1.1;margin:0;text-align:center;color:var(--ink)}
+  .modal-body{text-align:left}
+
+  /* ---- animação de sucesso ---- */
+  .confirm-flash{display:none;place-items:center;padding:4px 0 0}
+  #resultModal.is-success .confirm-flash{display:grid}
+  .cf-wrap{position:relative;width:96px;height:96px;display:grid;place-items:center}
+  .cf-halo{position:absolute;inset:-8px;border-radius:50%;background:radial-gradient(circle,var(--green-s) 0%,transparent 68%);opacity:0}
+  .cf-svg{width:96px;height:96px;position:relative;z-index:2}
+  .cf-c{fill:none;stroke:var(--green);stroke-width:2.4;stroke-dasharray:151;stroke-dashoffset:151}
+  .cf-k{fill:none;stroke:var(--green);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:36;stroke-dashoffset:36}
+  #resultModal.is-success .cf-c{animation:drawC .62s cubic-bezier(.25,.8,.25,1) forwards}
+  #resultModal.is-success .cf-k{animation:drawK .34s cubic-bezier(.25,.8,.25,1) .5s forwards}
+  #resultModal.is-success .cf-halo{animation:haloPulse 1.1s ease-out .32s forwards}
+  @keyframes drawC{to{stroke-dashoffset:0}}
+  @keyframes drawK{to{stroke-dashoffset:0}}
+  @keyframes haloPulse{0%{opacity:0;transform:scale(.55)}45%{opacity:1;transform:scale(1.1)}100%{opacity:.6;transform:scale(1)}}
+  #resultModal.is-success .cf-wrap{animation:popIn .5s cubic-bezier(.165,.84,.44,1)}
+  @keyframes popIn{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
+
+  /* ---- banner ---- */
+  .banner{display:flex;align-items:center;gap:11px;padding:13px 16px;border-radius:12px;font-weight:500;font-size:13.5px;line-height:1.4;margin:20px 0 0}
+  .banner svg{width:19px;height:19px;flex:none}
+  .banner.ok{background:var(--green-s);color:var(--green);border:1px solid rgba(26,158,111,.24)}
+  .banner.warn{background:var(--orange-s);color:var(--orange);border:1px solid rgba(169,114,10,.24)}
+  .banner.err{background:var(--red-s);color:var(--red);border:1px solid rgba(201,74,74,.24)}
+  .banner small{display:block;font-weight:400;font-size:11.5px;opacity:.85;margin-top:3px}
+  #resultModal.is-success .banner{margin-top:14px}
+
+  /* ---- convidado ---- */
+  .guest{margin:20px 0 0;text-align:center}
+  .guest .gnum{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-muted);font-weight:600}
+  .guest .gname{font-family:var(--font-h);font-weight:600;font-size:clamp(32px,9vw,42px);line-height:1.05;color:var(--ink);margin:7px 0 0;word-break:break-word}
+  .meta{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-top:20px;background:rgba(48,42,39,.12);border:1px solid rgba(48,42,39,.12);border-radius:12px;overflow:hidden}
+  .meta .mi{background:var(--surface);padding:12px 15px;text-align:left}
+  .meta .mi .k{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);font-weight:600}
+  .meta .mi .v{font-size:15.5px;font-weight:600;color:var(--ink);margin-top:4px;word-break:break-word}
+  .stepper{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;border:1px solid var(--silver-line);border-radius:12px;background:var(--surface);padding:11px 15px}
+  .stepper .sl{font-size:13px;color:var(--ink-soft);font-weight:600;text-align:left}
+  .stepper .sl b{display:block;font-size:9.5px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.16em;font-weight:600;margin-bottom:2px}
+  .stepper .ctl{display:flex;align-items:center;gap:10px}
+  .stepper button{width:40px;height:40px;border-radius:50%;border:1px solid var(--silver-line);background:var(--surface);color:var(--ink);font-size:20px;font-weight:500;cursor:pointer;line-height:1;transition:var(--ease)}
+  .stepper button:hover:not(:disabled){background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;border-color:transparent;color:#1f2328}
+  .stepper button:active:not(:disabled){transform:scale(.92)}
+  .stepper button:disabled{opacity:.35;cursor:not-allowed}
+  .stepper .qty{font-family:var(--font-h);font-size:26px;font-weight:700;min-width:32px;text-align:center;color:var(--ink);font-variant-numeric:tabular-nums}
+  .modal-card .actions{margin-top:20px}
+
+  /* ---- sessão ---- */
+  .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(48,42,39,.12);border:1px solid rgba(48,42,39,.12);border-radius:12px;overflow:hidden;margin-top:4px}
+  .sgrid .s{background:var(--surface);padding:16px 8px;text-align:center}
+  .sgrid .s .n{font-family:var(--font-b);font-weight:700;font-size:25px;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .sgrid .s .l{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-muted);margin-top:7px;font-weight:600}
+  .log-list{list-style:none;margin:0;padding:0;max-height:250px;overflow-y:auto}
+  .log-list li{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid rgba(174,180,189,.28)}
+  .log-list li:last-child{border-bottom:0}
+  .log-list .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--green);box-shadow:0 0 7px rgba(26,158,111,.45)}
+  .log-list .dot.pend{background:var(--orange);box-shadow:0 0 7px rgba(169,114,10,.45)}
+  .log-list .dot.exc{background:var(--red);box-shadow:0 0 7px rgba(201,74,74,.45)}
+  .log-list .ln{flex:1;min-width:0}
+  .log-list .ln b{display:block;font-weight:600;font-size:13.5px;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .log-list .ln b em{font-style:normal;color:var(--ink-muted);font-weight:400}
+  .log-list .ln small{display:block;margin-top:2px;font-size:11px;color:var(--ink-muted);line-height:1.45;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+  .log-list .undo{flex:none;width:28px;height:28px;border-radius:50%;border:1px solid var(--silver-line);
+    background:var(--surface);color:var(--ink-muted);cursor:pointer;display:grid;place-items:center;transition:var(--ease)}
+  .log-list .undo svg{width:13px;height:13px;stroke:currentColor;stroke-width:2.2;fill:none}
+  .log-list .undo:hover:not(:disabled){color:var(--red);border-color:rgba(201,74,74,.4);background:var(--red-s)}
+  .log-list .undo:active:not(:disabled){transform:scale(.9)}
+  .log-list .undo:disabled{opacity:.4;cursor:not-allowed}
+  .empty{text-align:center;color:var(--silver-main);padding:24px 0;font-size:12.5px;list-style:none}
+
+  /* ---- abas ---- */
+  .tabs{display:flex;gap:5px;background:var(--silver-shine);border:1px solid var(--silver-line);border-radius:999px;padding:4px;margin-top:4px}
+  .tab{flex:1;border:1px solid transparent;background:transparent;padding:9px 10px;border-radius:999px;font-family:inherit;
+    font-size:12px;font-weight:600;color:var(--ink-muted);cursor:pointer;transition:var(--ease);white-space:nowrap}
+  .tab:active{transform:scale(.97)}
+  .tab.active{background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;
+    color:var(--ink);box-shadow:0 6px 16px rgba(55,62,70,.10)}
+  body.theme-dark .tab.active{color:#f2f4f7}
+
+  /* ---- lista A–Z de convidados ---- */
+  .azbar{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:12px}
+  .az{min-width:21px;height:21px;padding:0 2px;border-radius:6px;border:1px solid var(--silver-line);background:var(--surface);
+    color:var(--ink-soft);font-size:9.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:var(--ease);line-height:1}
+  .az:hover:not(:disabled){background:var(--silver-shine);color:var(--ink)}
+  .az:active:not(:disabled){transform:scale(.9)}
+  .az.dis{opacity:.26;cursor:default}
+  .glist{margin-top:10px;border:1px solid var(--silver-line);border-radius:14px;background:var(--surface);
+    flex:1 1 auto;min-height:150px;overflow-y:auto}
+  .gl-letter{position:sticky;top:0;z-index:2;background:var(--surface);padding:9px 14px 7px;font-size:10px;font-weight:700;
+    letter-spacing:.2em;color:var(--ink-muted);border-bottom:1px solid var(--silver-line)}
+  .gl-row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;
+    border-bottom:1px solid rgba(174,180,189,.22);padding:11px 12px;cursor:pointer;font-family:inherit;transition:background .18s}
+  .gl-row:last-child{border-bottom:0}
+  .gl-row:hover,.gl-row:active{background:var(--silver-shine)}
+  .gl-av{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#676f78;
+    background:linear-gradient(var(--white-pure),var(--white-pure)) padding-box,var(--silver-metal) border-box;border:1px solid transparent}
+  body.theme-dark .gl-av{color:var(--silver-deep)}
+  .gl-info{flex:1;min-width:0}
+  .gl-info b{display:flex;align-items:center;gap:5px;font-size:13.5px;font-weight:600;color:var(--ink);min-width:0}
+  .gl-info b .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .gl-info em{display:block;font-style:normal;font-size:11px;color:var(--ink-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gl-row.in .gl-info b{color:var(--ink-muted)}
+  /* convidados que não confirmaram presença */
+  .gl-row.nc{opacity:.5}
+  .gl-row.nc:disabled{cursor:default}
+  .glist.allow-ov .gl-row.nc{opacity:.82;cursor:pointer}
+  .gl-tag{flex:none;display:inline-block;padding:1px 5px;border-radius:999px;font-size:8px;font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;background:var(--orange-s);color:var(--orange);
+    border:1px solid rgba(169,114,10,.3);white-space:nowrap}
+  .gl-tag.ok{background:var(--green-s);color:var(--green);border-color:rgba(26,158,111,.3)}
+  .ov-row{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--silver-line);
+    font-size:12px;line-height:1.45;color:var(--ink-muted);cursor:pointer;user-select:none}
+  .ov-row input{width:16px;height:16px;accent-color:var(--orange);flex:none;cursor:pointer}
+  .gl-st{flex:none;width:20px;height:20px;color:var(--green)}
+  .gl-st svg{width:18px;height:18px;stroke-width:2.6;stroke:currentColor;fill:none}
+
+  /* ---- toast (oculto por completo quando não está activo) ---- */
+  .toast{position:fixed;left:50%;bottom:calc(120px + var(--safe-bottom));z-index:300;
+    background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:var(--ink);
+    padding:13px 22px;border-radius:999px;font-size:13px;font-weight:500;box-shadow:0 16px 40px rgba(19,24,31,.16);
+    border:1px solid var(--silver-line);max-width:92vw;text-align:center;
+    opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,16px);
+    transition:opacity .3s cubic-bezier(.25,.8,.25,1),transform .3s cubic-bezier(.25,.8,.25,1),visibility .3s}
+  body.theme-dark .toast{background:rgba(30,35,41,.97)}
+  .toast.show{opacity:1;visibility:visible;transform:translate(-50%,0)}
+  .toast.ok{border-color:rgba(26,158,111,.4);color:var(--green)}
+  .toast.err{border-color:rgba(201,74,74,.4);color:var(--red)}
+
+  @media(max-width:400px){
+    .panel{padding:26px 20px}
+    .modal-card{padding:30px 20px 22px}
+    .dock{gap:2px;padding:7px;border-radius:20px}
+    .fab{min-width:48px;padding:8px 2px 6px;border-radius:14px}
+    .fab svg{width:18px;height:18px}
+    .fab .fl{font-size:8px}
+    .az{min-width:19px;height:19px;font-size:9px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  }
+</style>
+</head>
+<body>
+<div class="page-decor tr" aria-hidden="true"></div>
+<div class="page-decor bl" aria-hidden="true"></div>
+
+<!-- ================= CABEÇALHO FIXO (ao rolar) ================= -->
+<header class="topbar" id="topbar">
+  <div class="topbar-in">
+    <div class="tb-seal" id="tbMonogram">LA</div>
+    <div class="tb-txt">
+      <b id="tbTitle">Check-in</b>
+      <span id="tbSub">Louren &amp; Acácio</span>
+    </div>
+    <span class="net" id="netBadge">Online</span>
+    <div class="tb-ring">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle class="tr-track" cx="20" cy="20" r="17.5"/>
+        <circle class="tr-fill" id="tbRing" cx="20" cy="20" r="17.5"/>
+      </svg>
+      <span class="pct" id="tbPct">0%</span>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  <!-- AVISO OFFLINE / FILA DE SINCRONIZAÇÃO -->
+  <div class="offline-bar is-hidden" id="offlineBar" role="status" aria-live="polite">
+    <i data-feather="cloud-off"></i>
+    <span id="offlineTxt"></span>
+    <button type="button" class="ob-btn is-hidden" id="offlineSync">Sincronizar</button>
+  </div>
+
+  <!-- CABEÇALHO + PROGRESSO -->
+  <section class="panel">
+    <button type="button" class="theme-btn" id="themeBtn" aria-label="Alternar tema claro / escuro" title="Alternar tema"><i data-feather="moon"></i></button>
+    <div class="head">
+      <div class="seal-wrap">
+        <svg class="seal-ring" viewBox="0 0 74 74" aria-hidden="true">
+          <defs>
+            <linearGradient id="srGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop class="s1" offset="0%"/><stop class="s2" offset="50%"/><stop class="s3" offset="100%"/>
+            </linearGradient>
+          </defs>
+          <circle class="sr-track" cx="37" cy="37" r="34"/>
+          <circle class="sr-fill" id="sealRing" cx="37" cy="37" r="34"/>
+        </svg>
+        <div class="seal" id="sealMonogram">LA</div>
+      </div>
+      <p class="kicker">Recepção</p>
+      <h1>Check-in</h1>
+      <p class="couple" id="coupleLine">Louren &amp; Acácio</p>
+      <p class="date" id="eventDate">31 de outubro de 2026</p>
+    </div>
+    <div class="is-hidden" id="progressCard">
+      <hr class="divider">
+      <div class="prog-top">
+        <div>
+          <div class="k">Pessoas no salão</div>
+          <div class="v"><b id="statPeople">—</b><i>/</i><span id="statTotal">—</span></div>
+        </div>
+      </div>
+      <div class="bar"><span id="statBar"></span></div>
+      <div class="prog-sub">
+        <span id="statRowsLabel">0 de 0 entradas</span>
+        <span class="d"></span>
+        <span id="statPct">0% dos confirmados</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGIN -->
+  <section class="panel" id="loginCard">
+    <p class="kicker">Acesso restrito</p>
+    <h3 class="panel-title" style="text-align:center">Entrar no check-in</h3>
+    <p class="hint">Insira a senha da equipa e o nome de quem está à porta.</p>
+    <hr class="divider">
+    <div class="field">
+      <label class="label" for="operator">Operador</label>
+      <input class="input" id="operator" type="text" placeholder="Ex.: Ana · Recepção" autocomplete="name">
+    </div>
+    <div class="field">
+      <label class="label" for="pass">Senha de check-in</label>
+      <input class="input" id="pass" type="password" placeholder="Senha da equipa" autocomplete="current-password">
+    </div>
+    <label class="check"><input type="checkbox" id="remember" checked> Manter sessão neste dispositivo</label>
+    <button class="btn btn-primary block" id="enter"><i data-feather="arrow-right"></i> Entrar</button>
+    <p class="err" id="err"></p>
+  </section>
+
+  <!-- SCANNER -->
+  <section class="panel is-hidden" id="scannerCard">
+    <div class="scan-head">
+      <p class="kicker">Leitura</p>
+      <h3 class="panel-title">Scanner QR</h3>
+      <div class="status" id="scanStatusWrap"><span id="scanStatus">Câmara parada</span></div>
+    </div>
+
+    <div class="reader-wrap">
+      <div id="reader"></div>
+      <div class="reader-ph" id="readerPh">
+        <i data-feather="camera"></i>
+        <span>Aponte a câmara ao QR Code do convidado</span>
+      </div>
+      <div class="scan-overlay" id="scanOverlay">
+        <div class="frame">
+          <span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span>
+          <span class="line"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mode">
+      <div>
+        <div class="mt">Modo contínuo</div>
+        <div class="ms">Reinicia o scanner após cada entrada</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="continuous"><i></i></label>
+    </div>
+
+    <div class="dock-hint"><i data-feather="chevrons-down"></i> Controle a câmara nos botões flutuantes</div>
+  </section>
+</div>
+
+<!-- ================= DOCK FLUTUANTE ================= -->
+<div class="dock-decor mirror" aria-hidden="true"></div>
+<div class="dock-decor" aria-hidden="true"></div>
+<nav class="dock is-hidden" id="dock" aria-label="Acções de check-in">
+  <button class="fab primary" id="fabCamera" aria-label="Iniciar ou parar a câmara" title="Iniciar / parar câmara">
+    <span class="fi"><i data-feather="camera"></i></span><span class="fl">Câmara</span>
+  </button>
+  <button class="fab" id="fabTorch" aria-label="Lanterna" title="Lanterna" disabled>
+    <span class="fi"><i data-feather="zap"></i></span><span class="fl">Luz</span>
+  </button>
+  <button class="fab" id="fabFlip" aria-label="Trocar de câmara" title="Trocar câmara" disabled>
+    <span class="fi"><i data-feather="refresh-ccw"></i></span><span class="fl">Virar</span>
+  </button>
+  <button class="fab" id="fabSearch" aria-label="Lista e procura de convidados" title="Lista de convidados">
+    <span class="fi"><i data-feather="users"></i></span><span class="fl">Lista</span>
+  </button>
+  <button class="fab" id="fabSession" aria-label="Resumo e histórico" title="Resumo e histórico">
+    <span class="fi"><i data-feather="clipboard"></i></span><span class="fl">Sessão</span><span class="dot"></span>
+  </button>
+</nav>
+
+<!-- ================= MODAL · RESULTADO ================= -->
+<div class="modal" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+  <div class="modal-card">
+    <button class="modal-x" id="resultClose" aria-label="Fechar">&times;</button>
+    <p class="kicker">Validação</p>
+    <h3 id="resultTitle">Resultado</h3>
+    <div class="modal-body">
+      <div class="confirm-flash" id="confirmFlash" aria-hidden="true">
+        <div class="cf-wrap">
+          <span class="cf-halo"></span>
+          <svg class="cf-svg" viewBox="0 0 52 52">
+            <circle class="cf-c" cx="26" cy="26" r="24"/>
+            <path class="cf-k" d="M14 27l8 8 16-16"/>
+          </svg>
+        </div>
+      </div>
+      <div class="banner" id="banner"><i data-feather="user-check"></i><span>Resultado</span></div>
+      <div class="guest">
+        <div class="gnum" id="guestNumber"></div>
+        <h3 class="gname" id="guestName">—</h3>
+      </div>
+      <div class="meta">
+        <div class="mi"><div class="k">Mesa</div><div class="v" id="guestMesa">—</div></div>
+        <div class="mi"><div class="k">Confirmação</div><div class="v" id="guestConfirm">—</div></div>
+        <div class="mi"><div class="k">Autorizados</div><div class="v" id="guestMax">—</div></div>
+        <div class="mi"><div class="k">Check-in anterior</div><div class="v" id="guestPrev">—</div></div>
+      </div>
+      <div class="stepper" id="stepperWrap">
+        <div class="sl"><b>Pessoas a entrar</b><span id="stepperHint">1 de 1</span></div>
+        <div class="ctl">
+          <button type="button" id="minus" aria-label="Menos">&minus;</button>
+          <span class="qty" id="qty">1</span>
+          <button type="button" id="plus" aria-label="Mais">+</button>
+        </div>
+      </div>
+      <div class="actions" id="resultActions">
+        <button class="btn btn-primary" id="confirmBtn"><i data-feather="check-circle"></i> Confirmar entrada</button>
+        <button class="btn btn-outline" id="cancelBtn"><i data-feather="x"></i> Limpar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL · LISTA A–Z ================= -->
+<div class="modal" id="searchModal" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+  <div class="modal-card modal-card--list">
+    <button class="modal-x" id="searchClose" aria-label="Fechar">&times;</button>
+    <p class="kicker">Sem QR</p>
+    <h3 id="searchTitle">Lista de convidados</h3>
+    <div class="modal-body">
+      <hr class="divider">
+      <div class="field" style="margin-bottom:11px">
+        <label class="label" for="searchName">Procurar</label>
+        <input class="input" id="searchName" type="search" placeholder="Nome, mesa ou número…" autocomplete="off">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="label" for="filterBy">Filtrar por mesa ou categoria</label>
+        <select class="input" id="filterBy"><option value="">Todas as mesas e categorias</option></select>
+      </div>
+      <div class="azbar" id="azBar"></div>
+      <p class="hint" id="listMeta" style="margin-top:10px"></p>
+      <div class="glist" id="guestList"></div>
+      <label class="ov-row"><input type="checkbox" id="allowOverride"> Permitir entrada a convidados sem confirmação</label>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL · SESSÃO / HISTÓRICO ================= -->
+<div class="modal" id="sessionModal" role="dialog" aria-modal="true" aria-labelledby="sessionTitle">
+  <div class="modal-card">
+    <button class="modal-x" id="sessionClose" aria-label="Fechar">&times;</button>
+    <p class="kicker">Evento</p>
+    <h3 id="sessionTitle">Resumo e entradas</h3>
+    <div class="modal-body">
+      <hr class="divider">
+      <div class="sgrid">
+        <div class="s"><div class="n" id="mPeople">—</div><div class="l">No salão</div></div>
+        <div class="s"><div class="n" id="mRows">—</div><div class="l">Entradas</div></div>
+        <div class="s"><div class="n" id="mTotal">—</div><div class="l">Confirmados</div></div>
+      </div>
+      <p class="hint" id="sessMeta" style="margin-top:12px"></p>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn btn-outline" id="refreshStats"><i data-feather="refresh-cw"></i> Actualizar</button>
+      </div>
+      <div class="field" style="margin-top:16px">
+        <label class="label" for="operatorSwap">Operador actual</label>
+        <div class="op-row">
+          <input class="input" id="operatorSwap" type="text" placeholder="Nome do operador">
+          <button class="btn btn-outline" id="switchOperator"><i data-feather="user-check"></i> Trocar</button>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="tabs" id="sessionTabs">
+        <button type="button" class="tab active" data-tab="sess">Nesta sessão</button>
+        <button type="button" class="tab" data-tab="hist">Histórico do servidor</button>
+      </div>
+      <div class="tabpane" id="paneSess">
+        <ul class="log-list" id="logList"><li class="empty">Ainda sem entradas registadas.</li></ul>
+        <div class="actions" style="margin-top:14px">
+          <button class="btn btn-ghost" id="clearLog"><i data-feather="trash-2"></i> Limpar registos</button>
+        </div>
+      </div>
+      <div class="tabpane is-hidden" id="paneHist">
+        <p class="hint" id="histMeta" style="margin:14px 0 0"></p>
+        <ul class="log-list" id="histList"><li class="empty">A carregar…</li></ul>
+        <div class="field" style="margin-top:16px">
+          <label class="label" for="adminPass">Senha de administrador</label>
+          <input class="input" id="adminPass" type="password" placeholder="Só para anular entradas" autocomplete="off">
+        </div>
+        <div class="actions" style="margin-top:14px">
+          <button class="btn btn-outline" id="refreshHist"><i data-feather="refresh-cw"></i> Recarregar histórico</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  var EVENT = window.LIRANDZO_EVENT || {};
+  var SLUG = window.LIRANDZO_INVITE_SLUG || 'invite';
+  var PASS_KEY = 'lirandzoCheckinSession';
+  var OPERATOR_KEY = 'lirandzoCheckinOperator';
+  var LOG_KEY = 'lirandzoCheckinLog_' + SLUG;
+  var GUESTS_KEY = 'lirandzoCheckinGuests_' + SLUG;
+  var RSVP_KEY = 'lirandzoCheckinRsvps_' + SLUG;
+  var STATS_KEY = 'lirandzoCheckinStats_' + SLUG;
+  var QUEUE_KEY = 'lirandzoCheckinQueue_' + SLUG;
+  var HIST_KEY = 'lirandzoCheckinHistory_' + SLUG;
+  var THEME_KEY = 'lirandzoCheckinTheme';
+  var SESSION_MS = 12 * 60 * 60 * 1000;
+
+  var state = {
+    operator: '', guest: null, qty: 1,
+    scanner: null, scanning: false, torch: false, facing: 'environment',
+    continuous: false, lastToken: '', lastAt: 0, busy: false,
+    guests: [], guestsLoaded: false, log: [], history: [], queue: [],
+    stats: null, tab: 'sess', syncing: false,
+    confirmed: null, allowOverride: false,
+    filtersPainted: false, refreshTimer: null,
+    modalStack: [], scrollMemo: {}
+  };
+
+  /* ---------- helpers ---------- */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+  function norm(s) {
+    return String(s == null ? '' : s).trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+  function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+  /** Apresenta a mesa sem duplicar o prefixo: "Mesa dos noivos" não deve
+   *  aparecer como "Mesa Mesa dos noivos" quando o rótulo já diz "Mesa". */
+  function mesaText(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (!s || norm(s) === 'a definir') return 'A definir';
+    var stripped = s.replace(/^mesa\s*[:\-–—]?\s*/i, '').trim();
+    return stripped ? 'Mesa ' + stripped : s;
+  }
+  /** As categorias vêm da base de dados em inglês; mostramos em português. */
+  var CAT_LABEL = {
+    couple: 'Casal', single: 'Individual', individual: 'Individual',
+    group: 'Grupo', family: 'Família', familia: 'Família',
+    friends: 'Amigos', vip: 'VIP', child: 'Criança', kids: 'Crianças'
+  };
+  function catText(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (!s) return '';
+    return CAT_LABEL[norm(s)] || s;
+  }
+  function fmtTime(d) { try { return new Date(d).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
+  function fmtDateTime(d) { try { return new Date(d).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
+  function readJSON(key, fallback) {
+    try { var v = JSON.parse(localStorage.getItem(key) || 'null'); return v == null ? fallback : v; }
+    catch (e) { return fallback; }
+  }
+  function writeJSON(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch (e) { return false; }
+  }
+
+  /* ---------- ícones inline (mesmo padrão do convite: SVG, sem CDN) ---------- */
+  var ICONS = {
+    'camera': '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+    'camera-off': '<line x1="1" y1="1" x2="23" y2="23"/><path d="M21 21H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3m3-3h6l2 3h4a2 2 0 0 1 2 2v9.34m-7.72-2.06a4 4 0 1 1-5.56-5.56"/>',
+    'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    'refresh-ccw': '<polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>',
+    'refresh-cw': '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+    'search': '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    'users': '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    'clipboard': '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>',
+    'chevrons-down': '<polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/>',
+    'arrow-right': '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+    'user-check': '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>',
+    'alert-triangle': '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    'x-circle': '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+    'check-circle': '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    'check': '<polyline points="20 6 9 17 4 12"/>',
+    'x': '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+    'trash-2': '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>',
+    'loader': '<line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>',
+    'moon': '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+    'sun': '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>',
+    'cloud-off': '<path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0 4 15h9a5 5 0 0 0 1.7-.3"/><line x1="1" y1="1" x2="23" y2="23"/>',
+    'cloud-upload': '<polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>'
+  };
+  function svg(name) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+      'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
+  }
+  /** Substitui todos os placeholders <i data-feather="x"> por SVG inline. */
+  function paintIcons(root) {
+    var scope = root || document;
+    Array.prototype.forEach.call(scope.querySelectorAll('[data-feather]'), function (el) {
+      var name = el.getAttribute('data-feather');
+      var tmp = document.createElement('span');
+      tmp.innerHTML = svg(name);
+      var node = tmp.firstChild;
+      if (node && el.parentNode) el.parentNode.replaceChild(node, el);
+    });
+  }
+  /** Troca o ícone de um botão sem destruir o rótulo (FABs têm .fi + .fl). */
+  function setIcon(el, name) {
+    if (!el) return;
+    var holder = el.querySelector('.fi') || el;
+    holder.innerHTML = svg(name);
+  }
+
+  function toast(msg, kind) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (kind ? ' ' + kind : '');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.className = 'toast' + (kind ? ' ' + kind : ''); }, 2600);
+  }
+
+  var audioCtx = null;
+  /** O iOS/Safari só liberta som se o AudioContext nascer (ou for retomado)
+   *  dentro de um gesto do utilizador — por isso desbloqueamos no primeiro toque. */
+  function unlockAudio() {
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      audioCtx = audioCtx || new Ctx();
+      if (audioCtx.state === 'suspended' && audioCtx.resume) audioCtx.resume();
+    } catch (e) { /* silent */ }
+  }
+  function beep(kind) {
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      audioCtx = audioCtx || new Ctx();
+      if (audioCtx.state === 'suspended' && audioCtx.resume) audioCtx.resume();
+      var seq = kind === 'err' ? [220, 160] : kind === 'warn' ? [520, 420] : [660, 990];
+      seq.forEach(function (freq, i) {
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.value = freq;
+        var s = audioCtx.currentTime + i * 0.09;
+        g.gain.setValueAtTime(0.0001, s);
+        g.gain.exponentialRampToValueAtTime(0.2, s + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, s + 0.14);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(s); o.stop(s + 0.16);
+      });
+    } catch (e) { /* silent */ }
+  }
+  function vibrate(kind) {
+    if (!navigator.vibrate) return;
+    try { navigator.vibrate(kind === 'err' ? [90, 60, 90] : kind === 'warn' ? [60, 50, 60] : 60); } catch (e) { /* silent */ }
+  }
+  function extractToken(value) {
+    var v = String(value == null ? '' : value).trim();
+    if (!v) return '';
+    try {
+      var u = new URL(v, window.location.href);
+      var t = u.searchParams.get('t');
+      if (t) return t.trim();
+    } catch (e) { /* not a URL */ }
+    var m = v.match(/[?&]t=([^&\s]+)/);
+    if (m) return decodeURIComponent(m[1]).trim();
+    return v;
+  }
+
+  /* ---------- tema ---------- */
+  function applyTheme(dark) {
+    document.body.classList.toggle('theme-dark', !!dark);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', dark ? '#12151a' : '#ffffff');
+    setIcon($('themeBtn'), dark ? 'sun' : 'moon');
+    var b = $('themeBtn');
+    if (b) b.title = dark ? 'Mudar para tema claro' : 'Mudar para tema escuro';
+  }
+  function initTheme() {
+    var saved = localStorage.getItem(THEME_KEY);
+    var dark = saved === 'dark' || (saved == null && window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches);
+    applyTheme(dark);
+  }
+
+  /* ---------- modais (com memória de navegação) ----------
+     Os pop-ups empilham-se em vez de se substituírem. Abrir a "Validação" a
+     partir da "Lista de convidados" mantém a lista aberta por baixo, com a
+     posição de scroll intacta — ao fechar a validação volta-se exactamente ao
+     ponto onde o operador estava, nunca ao ecrã inicial.                 */
+  var MODAL_Z_BASE = 200;
+
+  /** Chave estável de um contentor com scroll (id, senão 1.ª classe). */
+  function scrollKey(el) {
+    if (el.id) return '#' + el.id;
+    var c = String(el.className || '').split(/\s+/)[0];
+    return c ? '.' + c : el.tagName;
+  }
+  /** Contentores que realmente rolam dentro do pop-up. */
+  function scrollablesIn(m) {
+    return Array.prototype.filter.call(m.querySelectorAll('*'), function (el) {
+      if (el.scrollHeight <= el.clientHeight + 4) return false;
+      var ov = getComputedStyle(el).overflowY;
+      return ov === 'auto' || ov === 'scroll';
+    });
+  }
+  function memoScroll(id) {
+    var m = $(id); if (!m) return;
+    var o = {};
+    scrollablesIn(m).forEach(function (el) { o[scrollKey(el)] = el.scrollTop; });
+    state.scrollMemo[id] = o;
+  }
+  function restoreScroll(id) {
+    var m = $(id), o = state.scrollMemo[id];
+    if (!m || !o) return;
+    scrollablesIn(m).forEach(function (el) {
+      var k = scrollKey(el);
+      if (o[k] != null) el.scrollTop = o[k];
+    });
+  }
+  /** Executa `paint` mantendo a posição de scroll do contentor que rola à
+   *  volta de `el`. Trocar o innerHTML faz o scrollTop voltar a 0 — sem isto
+   *  as listas de registos saltavam para o topo a cada actualização. */
+  function withScrollKept(el, paint) {
+    if (!el) return paint();
+    var box = el, prev = null;
+    while (box && box !== document.body) {
+      if (box.scrollHeight > box.clientHeight + 4) {
+        var ov = getComputedStyle(box).overflowY;
+        if (ov === 'auto' || ov === 'scroll') { prev = box; break; }
+      }
+      box = box.parentElement;
+    }
+    var top = prev ? prev.scrollTop : 0;
+    var out = paint();
+    if (prev) prev.scrollTop = top;
+    return out;
+  }
+  /** Reordena a profundidade visual: o último aberto fica sempre à frente. */
+  function paintStack() {
+    state.modalStack.forEach(function (id, i) {
+      var m = $(id);
+      if (m) m.style.zIndex = String(MODAL_Z_BASE + i * 4);
+    });
+  }
+  function openModal(id) {
+    var m = $(id); if (!m) return;
+    var i = state.modalStack.indexOf(id);
+    if (i > -1) state.modalStack.splice(i, 1);          // já aberto → sobe ao topo
+    // Guarda a posição do pop-up que fica por baixo antes de o tapar.
+    if (state.modalStack.length) {
+      memoScroll(state.modalStack[state.modalStack.length - 1]);
+      // Tira o foco do campo de baixo: no telemóvel o teclado continuava
+      // aberto por cima da validação que acabou de aparecer.
+      var act = document.activeElement;
+      if (act && act !== document.body && act.blur) act.blur();
+    }
+    state.modalStack.push(id);
+    m.classList.add('open');
+    paintStack();
+    document.body.classList.add('modal-open');
+  }
+  function closeModal(id) {
+    var m = $(id); if (!m) return;
+    var i = state.modalStack.indexOf(id);
+    if (i > -1) state.modalStack.splice(i, 1);
+    m.classList.remove('open');
+    m.style.zIndex = '';
+    if (state.modalStack.length) {
+      var prev = state.modalStack[state.modalStack.length - 1];
+      var p = $(prev);
+      if (p) p.classList.add('open');
+      paintStack();
+      restoreScroll(prev);
+      return;
+    }
+    document.body.classList.remove('modal-open');
+  }
+  /** Fecha apenas o pop-up que está à frente (Escape). */
+  function closeTopModal() {
+    if (state.modalStack.length) closeModal(state.modalStack[state.modalStack.length - 1]);
+  }
+  /** Há algum pop-up aberto? Usado para decidir se se retoma a câmara. */
+  function anyModalOpen() { return state.modalStack.length > 0; }
+
+  /* ---------- estado de rede / fila ---------- */
+  function isNetErr(e) {
+    if (!e) return false;
+    if (e.name === 'TypeError' || e.name === 'AbortError') return true;
+    var m = String(e.message || '').toLowerCase();
+    return m.indexOf('failed to fetch') > -1 || m.indexOf('networkerror') > -1 ||
+      m.indexOf('network request failed') > -1 || m.indexOf('load failed') > -1 ||
+      m.indexOf('timeout') > -1 || m.indexOf('offline') > -1;
+  }
+  function loadQueue() { state.queue = readJSON(QUEUE_KEY, []) || []; }
+  function saveQueue() { writeJSON(QUEUE_KEY, state.queue); }
+  function enqueue(g, qty, override) {
+    state.queue.push({
+      id: 'q' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+      action: 'checkin_guest',
+      token: g.token,
+      nome: g.name || g.nome,
+      guests: qty,
+      mesa: g.mesa || '',
+      operator: state.operator || 'Recepção',
+      timestamp: new Date().toISOString(),
+      exception: override ? 'presenca-nao-confirmada' : ''
+    });
+    saveQueue();
+    paintNet();
+  }
+  function paintNet() {
+    var on = navigator.onLine;
+    var q = state.queue.length;
+    var b = $('netBadge');
+    if (b) {
+      b.className = 'net' + (!on ? ' off' : (q ? ' pending' : ''));
+      b.textContent = !on ? 'Offline' : (q ? q + ' p/ sinc.' : 'Online');
+    }
+    var bar = $('offlineBar');
+    if (bar) {
+      var show = !on || q > 0;
+      bar.classList.toggle('is-hidden', !show);
+      if (show) {
+        $('offlineTxt').textContent = !on
+          ? 'Sem ligação. As entradas ficam guardadas e sincronizam sozinhas quando a rede voltar.'
+          : q + (q === 1 ? ' entrada por sincronizar…' : ' entradas por sincronizar…');
+        $('offlineSync').classList.toggle('is-hidden', !on || !q);
+      }
+    }
+    var sb = $('fabSession');
+    if (sb) sb.classList.toggle('hasdot', state.log.length > 0 || q > 0);
+  }
+  async function syncQueue(silent) {
+    if (state.syncing) return;
+    if (!state.queue.length) { paintNet(); return; }
+    if (!navigator.onLine) { if (!silent) toast('Sem ligação. Tente mais tarde.', 'err'); return; }
+    state.syncing = true;
+    var done = 0;
+    var pending = state.queue.slice();
+    for (var i = 0; i < pending.length; i++) {
+      var item = pending[i];
+      var payload = Object.assign({}, item);
+      delete payload.id;
+      try {
+        var res = await window.LirandzoAPI.post(payload);
+        if (!res || res.status === 'error') throw new Error((res && res.message) || 'erro');
+        state.queue = state.queue.filter(function (x) { return x.id !== item.id; });
+        saveQueue();
+        done++;
+      } catch (e) { break; }
+    }
+    state.syncing = false;
+    paintNet();
+    if (done > 0) {
+      toast(done + (done === 1 ? ' entrada sincronizada' : ' entradas sincronizadas'), 'ok');
+      beep('ok');
+      await loadStats();
+      await loadGuests(true);
+      await loadHistory(true);
+      renderLog();
+    } else if (!silent) {
+      toast('Não foi possível sincronizar agora.', 'err');
+    }
+  }
+
+  /* ---------- estatísticas ---------- */
+  function paintStats(d) {
+    if (!d) return;
+    var rows = Number(d.checkedIn || 0);
+    var people = Number(d.checkedPeople || 0);
+    // Só entra quem confirmou presença, logo o universo real é `confirmed`
+    // (pessoas confirmadas) e não `totalPeople` (todos os convidados).
+    var expected = Number(d.confirmed || 0);
+    var expectedRows = Number(d.confirmedRows || 0);
+    var total = expected > 0 ? expected : Number(d.totalPeople || 0);
+    var pct = total > 0 ? Math.round((people / total) * 100) : 0;
+    var set = function (id, v) { var el = $(id); if (el) el.textContent = v; };
+    set('statRows', rows); set('statPeople', people); set('statTotal', total);
+    set('statRowsLabel', rows + ' de ' + expectedRows + (expectedRows === 1 ? ' entrada' : ' entradas'));
+    set('statPct', pct + '% dos confirmados');
+    set('mPeople', people); set('mRows', rows); set('mTotal', expected);
+    var bar = $('statBar'); if (bar) bar.style.width = clamp(pct, 0, 100) + '%';
+    var ring = $('sealRing'); if (ring) ring.style.strokeDashoffset = String(213.6 * (1 - clamp(pct, 0, 100) / 100));
+    var tb = $('tbRing'); if (tb) tb.style.strokeDashoffset = String(110 * (1 - clamp(pct, 0, 100) / 100));
+    set('tbPct', pct + '%');
+    var sub = $('tbSub');
+    if (sub) sub.textContent = people + ' no salão · ' + rows + (rows === 1 ? ' entrada' : ' entradas');
+    var sm = $('sessMeta');
+    if (sm) {
+      sm.textContent = Number(d.guestsCount || 0) + ' convidados · ' + expectedRows +
+        ' confirmações · ' + expected + ' esperadas';
+    }
+  }
+  async function loadStats() {
+    try {
+      var res = await window.LirandzoAPI.get('stats', {});
+      var d = (res && (res.data || res)) || {};
+      if (!d.totalPeople && !d.checkedIn && state.stats) return paintStats(state.stats);
+      state.stats = d;
+      writeJSON(STATS_KEY, d);
+      paintStats(d);
+    } catch (e) {
+      if (state.stats) { paintStats(state.stats); return; }
+      var cached = readJSON(STATS_KEY, null);
+      if (cached) { state.stats = cached; paintStats(cached); }
+    }
+  }
+
+  /* ---------- lista de convidados (com cache offline) ---------- */
+  async function loadGuests(force) {
+    if (state.guestsLoaded && !force) return state.guests;
+    try {
+      var res = await window.LirandzoAPI.get('list_guests', {});
+      var arr = (res && (res.data || res)) || [];
+      if (Array.isArray(arr) && arr.length) {
+        state.guests = arr;
+        state.guestsLoaded = true;
+        state.filtersPainted = false;
+        writeJSON(GUESTS_KEY, arr);
+      }
+    } catch (e) {
+      if (!state.guests.length) {
+        var cached = readJSON(GUESTS_KEY, []) || [];
+        if (cached.length) {
+          state.guests = cached;
+          state.guestsLoaded = true;
+          toast('Lista carregada do cache offline.');
+        }
+      }
+    }
+    return state.guests;
+  }
+
+  /* ---------- confirmações de presença (RSVP) ----------
+   * Fonte autoritária: endpoint público `list_rsvps` (1 documento por convidado
+   * que confirmou). Fallback: campo `status` do convidado ("Confirmado (N)"),
+   * que o servidor escreve no momento do RSVP.                          */
+  function buildConfirmed(rows) {
+    var ids = {}, names = {};
+    (rows || []).forEach(function (r) {
+      if (r && r.guestId) ids[String(r.guestId)] = true;
+      var n = norm(r && r.nome);
+      if (n) names[n] = true;
+    });
+    state.confirmed = { ids: ids, names: names, loaded: (rows || []).length > 0 };
+    return state.confirmed;
+  }
+  async function loadConfirmed(force) {
+    if (state.confirmed && state.confirmed.loaded && !force) return state.confirmed;
+    try {
+      var res = await window.LirandzoAPI.get('list_rsvps', {});
+      var arr = (res && (res.data || res)) || [];
+      if (Array.isArray(arr)) {
+        writeJSON(RSVP_KEY, arr);
+        return buildConfirmed(arr);
+      }
+    } catch (e) { /* cai para o cache */ }
+    var cached = readJSON(RSVP_KEY, null);
+    if (Array.isArray(cached)) return buildConfirmed(cached);
+    state.confirmed = { ids: {}, names: {}, loaded: false };
+    return state.confirmed;
+  }
+  /** true se o convidado confirmou presença (RSVP). */
+  function isConfirmed(g) {
+    if (!g) return false;
+    var c = state.confirmed;
+    if (c && c.loaded) {
+      if (g.id && c.ids[String(g.id)]) return true;
+      return !!c.names[norm(g.name || g.nome)];
+    }
+    // Lista de RSVP indisponível → usa o estado gravado pelo servidor.
+    return /confirm/i.test(String(g.status || g.guestStatus || ''));
+  }
+
+  function letterOf(name) {
+    var s = norm(name).charAt(0).toUpperCase();
+    return /[A-Z]/.test(s) ? s : '#';
+  }
+  function guestRowHtml(g) {
+    var max = Number(g.maxGuests || g.maxGuestsTotal || 1) || 1;
+    var nm = g.name || g.nome || 'Convidado';
+    var initial = (String(nm).trim().charAt(0) || '?').toUpperCase();
+    var ok = isConfirmed(g);
+    var tag = ok
+      ? '<span class="gl-tag ok" title="Presença confirmada">Confirmado</span>'
+      : '<span class="gl-tag" title="Presença não confirmada — não pode fazer check-in">Pendente</span>';
+    // Sem confirmação a linha fica inerte — salvo se o operador activar a excepção.
+    var off = (!ok && !state.allowOverride) ? ' disabled' : '';
+    return '<button type="button" class="gl-row' + (g.checkedIn ? ' in' : '') + (ok ? '' : ' nc') + '"' + off +
+      ' data-token="' + esc(g.token || '') + '" data-name="' + esc(nm) + '">' +
+      '<span class="gl-av">' + esc(initial) + '</span>' +
+      '<span class="gl-info"><b><span class="nm">' + esc(nm) + '</span>' + tag + '</b><em>' +
+      esc(mesaText(g.mesa)) + ' · ' + max + ' pax' +
+      (g.number ? ' · #' + esc(g.number) : '') + '</em></span>' +
+      '<span class="gl-st">' + (g.checkedIn ? svg('check') : '') + '</span></button>';
+  }
+  function paintAZ(letters) {
+    var bar = $('azBar'); if (!bar) return;
+    var all = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat(['#']);
+    bar.innerHTML = all.map(function (L) {
+      var on = !!letters[L];
+      return '<button type="button" class="az' + (on ? '' : ' dis') + '" data-l="' + L + '"' +
+        (on ? '' : ' disabled') + '>' + L + '</button>';
+    }).join('');
+  }
+  /** Constrói a lista de filtros a partir das mesas e categorias reais. */
+  function paintFilters() {
+    var sel = $('filterBy'); if (!sel) return;
+    var cur = sel.value;
+    var mesas = {}, cats = {};
+    state.guests.forEach(function (g) {
+      var m = String(g.mesa || '').trim();
+      if (m && norm(m) !== 'a definir') mesas[m] = true;
+      var c = String(g.category || '').trim();
+      if (c) cats[c] = true;
+    });
+    var mList = Object.keys(mesas).sort(function (a, b) {
+      return (Number(a) || 0) - (Number(b) || 0) || a.localeCompare(b, 'pt');
+    });
+    var cList = Object.keys(cats).sort(function (a, b) { return a.localeCompare(b, 'pt'); });
+    var html = '<option value="">Todas as mesas e categorias</option>';
+    if (mList.length) {
+      html += '<optgroup label="Mesa">' + mList.map(function (m) {
+        return '<option value="mesa:' + esc(m) + '">' + esc(mesaText(m)) + '</option>';
+      }).join('') + '</optgroup>';
+    }
+    if (cList.length) {
+      html += '<optgroup label="Categoria">' + cList.map(function (c) {
+        return '<option value="cat:' + esc(c) + '">' + esc(catText(c)) + '</option>';
+      }).join('') + '</optgroup>';
+    }
+    sel.innerHTML = html;
+    // preserva a escolha anterior se a opção ainda existir (comparação directa,
+    // para não depender de selectores CSS com valores arbitrários)
+    var keep = false;
+    if (cur) {
+      Array.prototype.forEach.call(sel.options, function (o) { if (o.value === cur) keep = true; });
+    }
+    sel.value = keep ? cur : '';
+  }
+  function applyFilter(list) {
+    var sel = $('filterBy');
+    if (!sel || !sel.value) return list;
+    var v = sel.value;
+    if (v.indexOf('mesa:') === 0) {
+      var mv = v.slice(5);
+      return list.filter(function (g) { return String(g.mesa || '').trim() === mv; });
+    }
+    if (v.indexOf('cat:') === 0) {
+      var cv = v.slice(4);
+      return list.filter(function (g) { return String(g.category || '').trim() === cv; });
+    }
+    return list;
+  }
+
+  /** Desenha a lista A–Z.
+   *  `keepScroll` só é usado nas actualizações silenciosas (fim de um
+   *  check-in, auto-refresh): o pop-up está aberto por baixo da validação e
+   *  tem de continuar no mesmo sítio. Pesquisa e filtros repõem o topo. */
+  function renderGuestList(keepScroll) {
+    var box = $('guestList'); if (!box) return;
+    var keepTop = keepScroll ? box.scrollTop : 0;
+    box.classList.toggle('allow-ov', state.allowOverride);
+    if (!state.filtersPainted) { paintFilters(); state.filtersPainted = true; }
+    var q = norm($('searchName') ? $('searchName').value : '');
+    var all = state.guests.slice();
+    all.sort(function (a, b) {
+      return String(a.name || a.nome || '').localeCompare(String(b.name || b.nome || ''), 'pt', { sensitivity: 'base' });
+    });
+
+    // O filtro por mesa/categoria define o universo; a pesquisa refina-o.
+    var base = applyFilter(all);
+    var letters = {};
+    base.forEach(function (g) { letters[letterOf(g.name || g.nome)] = true; });
+    paintAZ(letters);
+
+    var okCount = base.filter(isConfirmed).length;
+    var meta = $('listMeta');
+    if (meta) {
+      if (!all.length) {
+        meta.textContent = 'Sem lista carregada. Verifique a ligação.';
+      } else {
+        var scope = base.length === all.length ? '' : ' (de ' + all.length + ')';
+        meta.textContent = base.length + ' convidados' + scope + ' · ' + okCount +
+          ' confirmados · ' + (base.length - okCount) + ' pendentes';
+      }
+    }
+
+    var list = q ? base.filter(function (g) {
+      return norm(g.name || g.nome).indexOf(q) > -1 ||
+        norm(g.mesa).indexOf(q) > -1 ||
+        String(g.number || '') === q;
+    }) : base;
+
+    if (!list.length) {
+      box.innerHTML = '<p class="empty">' + (q ? 'Sem resultados. Verifique o nome.' : 'Ainda sem convidados carregados.') + '</p>';
+      box.scrollTop = 0;
+      return;
+    }
+    var html = '', cur = '';
+    list.forEach(function (g) {
+      var L = letterOf(g.name || g.nome);
+      if (L !== cur) { cur = L; html += '<div class="gl-letter" id="gl-' + L + '">' + L + '</div>'; }
+      html += guestRowHtml(g);
+    });
+    box.innerHTML = html;
+    box.scrollTop = keepTop;
+  }
+
+  /* ---------- resultado ---------- */
+  function banner(tone, icon, text, sub) {
+    var b = $('banner');
+    b.className = 'banner ' + tone;
+    b.innerHTML = svg(icon) + '<span>' + esc(text) + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span>';
+  }
+  function selectGuest(g) {
+    if (!g) return;
+    var max = Number(g.maxGuests || g.maxGuestsTotal || g.guests || 1) || 1;
+    state.guest = g; state.qty = max;
+    var btn = $('confirmBtn');
+    $('resultModal').classList.remove('is-success');
+    btn.dataset.override = '';
+
+    var confirmed = isConfirmed(g);
+    $('guestNumber').textContent = (g.number ? '#' + g.number + ' · ' : '') + (catText(g.category) || 'Convidado');
+    $('guestName').textContent = g.name || g.nome || 'Convidado';
+    $('guestMesa').textContent = mesaText(g.mesa);
+    $('guestConfirm').textContent = confirmed ? 'Confirmada' : 'Não confirmada';
+    $('guestConfirm').style.color = confirmed ? '' : 'var(--orange)';
+    $('guestMax').textContent = max + (max === 1 ? ' pessoa' : ' pessoas');
+    $('guestPrev').textContent = g.checkedIn ? (fmtDateTime(g.checkedInAt) || 'Sim') : 'Nenhum';
+
+    if (g.checkedIn) {
+      banner('warn', 'alert-triangle', 'Já fez check-in', 'Este convidado já entrou no salão. Não é preciso registar de novo.');
+      setResultActions('done');
+    } else if (!confirmed) {
+      // Regra: só entra quem confirmou presença. A excepção exige toque deliberado.
+      banner('warn', 'alert-triangle', 'Presença não confirmada',
+        'Este convidado não respondeu ao convite. Só deve entrar em caso excepcional.');
+      btn.className = 'btn btn-outline';
+      btn.innerHTML = svg('alert-triangle') + ' Permitir entrada mesmo assim';
+      btn.disabled = false;
+      btn.dataset.override = '1';
+      updateQty();
+      setResultActions('checkin');
+    } else {
+      banner('ok', 'user-check', 'Convidado encontrado', 'Presença confirmada. Verifique os dados e confirme a entrada.');
+      btn.className = 'btn btn-primary';
+      btn.innerHTML = svg('check-circle') + ' Confirmar entrada';
+      btn.disabled = false;
+      updateQty();
+      setResultActions('checkin');
+    }
+    openModal('resultModal');
+    if (g.checkedIn || !confirmed) { beep('warn'); vibrate('warn'); }
+    else { beep('ok'); vibrate('ok'); }
+  }
+  /** Ajusta o rodapé do pop-up de resultado conforme o estado.
+   *  'checkin' → stepper + [Confirmar][Limpar]
+   *  'done'    → nada (convidado já entrou; fecha com o X)
+   *  'error'   → apenas [Limpar]                                        */
+  function setResultActions(mode) {
+    var actions = $('resultActions'), stepper = $('stepperWrap'), confirm = $('confirmBtn');
+    if (mode === 'done') {
+      actions.classList.add('is-hidden');
+      stepper.classList.add('is-hidden');
+      return;
+    }
+    actions.classList.remove('is-hidden');
+    if (mode === 'error') {
+      confirm.classList.add('is-hidden');
+      stepper.classList.add('is-hidden');
+      return;
+    }
+    confirm.classList.remove('is-hidden');
+    stepper.classList.remove('is-hidden');
+  }
+  function showError(msg) {
+    state.guest = null;
+    $('resultModal').classList.remove('is-success');
+    banner('err', 'x-circle', 'Atenção', msg);
+    $('guestNumber').textContent = '';
+    $('guestName').textContent = '—';
+    $('guestMesa').textContent = '—';
+    $('guestConfirm').textContent = '—';
+    $('guestConfirm').style.color = '';
+    $('guestMax').textContent = '—';
+    $('guestPrev').textContent = '—';
+    $('confirmBtn').disabled = true;
+    $('confirmBtn').dataset.override = '';
+    setResultActions('error');
+    openModal('resultModal');
+    beep('err'); vibrate('err');
+  }
+  function updateQty() {
+    var max = Number((state.guest && (state.guest.maxGuests || state.guest.maxGuestsTotal)) || 1) || 1;
+    state.qty = clamp(state.qty, 1, max);
+    $('qty').textContent = state.qty;
+    $('stepperHint').textContent = state.qty + ' de ' + max;
+    $('minus').disabled = state.qty <= 1;
+    $('plus').disabled = state.qty >= max;
+    $('stepperWrap').classList.remove('is-hidden');
+  }
+
+  /* ---------- validação ---------- */
+  function findLocalByToken(token) {
+    var t = String(token || '');
+    if (!t) return null;
+    return state.guests.find(function (g) { return String(g.token || '') === t || String(g.id || '') === t; }) || null;
+  }
+  async function processToken(raw) {
+    if (state.busy) return;
+    var token = extractToken(raw);
+    if (!token) { showError('Token vazio ou ilegível.'); return; }
+    state.busy = true;
+    setStatus('A validar…', false);
+    try {
+      await Promise.all([loadGuests(), loadConfirmed()]);
+      var local = findLocalByToken(token);
+      if (local) {
+        if (!local.token) local.token = token;
+        selectGuest(local);
+        return;
+      }
+      var res = await window.LirandzoAPI.get('get_guest', { token: token });
+      if (!res || res.status !== 'success') { showError('Convidado não encontrado para este código.'); return; }
+      var g = res.data || res;
+      if (!g.token) g.token = token;
+      selectGuest(g);
+    } catch (e) {
+      showError(navigator.onLine
+        ? 'Falha ao validar. Verifique a ligação à internet.'
+        : 'Sem ligação e convidado não está na lista guardada.');
+    } finally {
+      state.busy = false;
+      setStatus(state.scanning ? 'Câmara activa · aponte ao QR' : 'Câmara parada', state.scanning);
+    }
+  }
+
+  async function confirmCheckin() {
+    var g = state.guest;
+    if (!g) return;
+    var token = g.token;
+    if (!token) { toast('Token do convidado em falta.', 'err'); return; }
+    var btn = $('confirmBtn');
+    var override = btn.dataset.override === '1';
+    btn.disabled = true;
+    var original = btn.innerHTML;
+    btn.innerHTML = svg('loader') + ' A confirmar…';
+
+    var payload = {
+      action: 'checkin_guest', token: token, nome: g.name || g.nome,
+      guests: state.qty, mesa: g.mesa || '',
+      operator: state.operator || 'Recepção', timestamp: new Date().toISOString(),
+      exception: override ? 'presenca-nao-confirmada' : ''
+    };
+
+    function finishOk(offline) {
+      g.checkedIn = true; g.checkedInAt = new Date().toISOString();
+      if (offline) g.pendingSync = true;
+      addLog(g, state.qty, offline, override);
+      $('resultModal').classList.add('is-success');
+      if (override) { beep('warn'); vibrate('warn'); } else { beep('ok'); vibrate('ok'); }
+
+      if (offline) {
+        banner('warn', 'cloud-off', 'Guardado offline',
+          'Sem ligação. A entrada ficou na fila e sincroniza sozinha quando a rede voltar.');
+        toast('Entrada guardada offline · ' + (g.name || g.nome));
+      } else if (override) {
+        banner('warn', 'alert-triangle', 'Entrada excepcional registada',
+          fmtTime(g.checkedInAt) + ' · ' + state.qty + ' pessoa(s) · presença não confirmada');
+        toast('Entrada excepcional · ' + (g.name || g.nome), 'err');
+      } else {
+        banner('ok', 'check-circle', 'Entrada confirmada',
+          fmtTime(g.checkedInAt) + ' · ' + state.qty + ' pessoa(s) · ' + (state.operator || 'Recepção'));
+        toast('Entrada confirmada · ' + (g.name || g.nome), 'ok');
+      }
+      $('guestPrev').textContent = fmtDateTime(g.checkedInAt);
+      $('confirmBtn').className = 'btn btn-outline';
+      $('confirmBtn').disabled = true;
+      $('confirmBtn').innerHTML = svg('check') + (offline ? ' Na fila' : ' Registado');
+      $('confirmBtn').dataset.override = '';
+      setResultActions('done');
+      renderLog(); paintNet();
+      // A lista por baixo passa a mostrar a entrada já registada, sem perder
+      // a posição de scroll (keepScroll = true).
+      if (state.guests.length) renderGuestList(true);
+
+      if (state.continuous) {
+        setTimeout(function () {
+          closeModal('resultModal');
+          state.guest = null;
+          // Memória de navegação: se a lista ficou aberta por baixo, volta-se
+          // a ela; só se retoma a câmara quando o fluxo começou no scanner.
+          if (!anyModalOpen() && !state.scanning) startScan();
+        }, 1500);
+      }
+    }
+
+    try {
+      if (!navigator.onLine) throw new TypeError('Failed to fetch');
+      var res = await window.LirandzoAPI.post(payload);
+      if (!res || res.status === 'error') throw new Error((res && res.message) || 'Erro');
+      finishOk(false);
+      await loadStats();
+      loadHistory(true);
+    } catch (e) {
+      if (!navigator.onLine || isNetErr(e)) {
+        enqueue(g, state.qty, override);
+        finishOk(true);
+        return;
+      }
+      btn.disabled = false;
+      btn.innerHTML = original;
+      toast('Não foi possível confirmar. Tente novamente.', 'err');
+      beep('err'); vibrate('err');
+    }
+  }
+
+  /* ---------- registos da sessão ---------- */
+  function loadLog() {
+    state.log = readJSON(LOG_KEY, []) || [];
+    renderLog();
+  }
+  function addLog(g, qty, offline, override) {
+    state.log.unshift({
+      name: g.name || g.nome || 'Convidado', qty: qty,
+      at: new Date().toISOString(), mesa: g.mesa || '',
+      offline: !!offline, override: !!override
+    });
+    if (state.log.length > 80) state.log = state.log.slice(0, 80);
+    writeJSON(LOG_KEY, state.log);
+    renderLog();
+  }
+  function renderLog() {
+    var ul = $('logList');
+    if (!ul) return;
+    withScrollKept(ul, function () {
+      if (!state.log.length) {
+        ul.innerHTML = '<li class="empty">Ainda sem entradas registadas.</li>';
+        return;
+      }
+      ul.innerHTML = state.log.map(function (r) {
+        var dot = r.offline ? ' pend' : (r.override ? ' exc' : '');
+        return '<li><span class="dot' + dot + '"></span><span class="ln">' +
+          '<b>' + esc(r.name) + ' <em>· ' + (Number(r.qty) || 1) + ' pax</em></b>' +
+          '<small>' + esc(fmtTime(r.at)) +
+          (r.mesa ? ' · ' + esc(mesaText(r.mesa)) : '') +
+          (r.offline ? ' · por sincronizar' : '') +
+          (r.override ? ' · excepção' : '') + '</small></span></li>';
+      }).join('');
+    });
+    paintNet();
+  }
+
+  /* ---------- histórico do servidor ---------- */
+  async function loadHistory(force) {
+    if (state.history.length && !force) { renderHistory(); return; }
+    var ul = $('histList');
+    // "A carregar…" só quando ainda não há nada para mostrar. Numa recarga a
+    // lista antiga fica no sítio — substituí-la encolhia o pop-up e o scroll
+    // saltava para cima antes de os dados novos chegarem.
+    if (ul && !ul.querySelector('li:not(.empty)')) ul.innerHTML = '<li class="empty">A carregar…</li>';
+    try {
+      var res = await window.LirandzoAPI.get('list_checkins', {});
+      var arr = (res && (res.data || res)) || [];
+      if (Array.isArray(arr)) {
+        state.history = arr;
+        writeJSON(HIST_KEY, arr);
+      }
+    } catch (e) {
+      if (!state.history.length) state.history = readJSON(HIST_KEY, []) || [];
+    }
+    renderHistory();
+  }
+  function renderHistory() {
+    var ul = $('histList'); if (!ul) return;
+    var meta = $('histMeta');
+    withScrollKept(ul, function () {
+      if (!state.history.length) {
+        ul.innerHTML = '<li class="empty">Sem registos no servidor.</li>';
+        if (meta) meta.textContent = '';
+        return;
+      }
+      var people = state.history.reduce(function (s, r) { return s + (Number(r.guests) || 1); }, 0);
+      if (meta) meta.textContent = state.history.length + (state.history.length === 1 ? ' entrada' : ' entradas') +
+        ' · ' + people + (people === 1 ? ' pessoa' : ' pessoas') + ' no total';
+      ul.innerHTML = state.history.map(function (r) {
+        var id = String(r._id || '');
+        return '<li><span class="dot"></span><span class="ln">' +
+          '<b>' + esc(r.nome || 'Convidado') + ' <em>· ' + (Number(r.guests) || 1) + ' pax</em></b>' +
+          '<small>' + esc(fmtDateTime(r.timestamp)) +
+          (r.mesa ? ' · ' + esc(mesaText(r.mesa)) : '') +
+          (r.operator ? ' · ' + esc(r.operator) : '') + '</small></span>' +
+          (id ? '<button type="button" class="undo" data-id="' + esc(id) + '" data-nome="' +
+            esc(r.nome || 'Convidado') + '" title="Anular esta entrada" aria-label="Anular entrada">' +
+            svg('x') + '</button>' : '') +
+          '</li>';
+      }).join('');
+    });
+  }
+  /** Anula uma entrada no servidor. `restore_checkin` vive no /admin-api,
+   *  por isso exige a senha de administrador escrita pelo operador. */
+  async function undoCheckin(id, nome, btn) {
+    var passEl = $('adminPass');
+    var pass = passEl ? passEl.value.trim() : '';
+    if (!pass) {
+      toast('Escreva a senha de administrador para anular.', 'err');
+      if (passEl) passEl.focus();
+      return;
+    }
+    if (!window.confirm('Anular a entrada de ' + nome + '?\n\nO convidado volta a ficar pendente na entrada.')) return;
+    btn.disabled = true;
+    var base = String(window.LIRANDZO_API_BASE_URL || '').replace(/\/+$/, '');
+    try {
+      var res = await fetch(base + '/admin-api', {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json', 'X-Invite-Slug': SLUG },
+        body: JSON.stringify({ action: 'restore_checkin', id: id, password: pass, slug: SLUG })
+      });
+      var data = {};
+      try { data = await res.json(); } catch (e2) { /* resposta sem JSON */ }
+      if (!res.ok || data.status === 'error') throw new Error(data.message || ('Erro HTTP ' + res.status));
+      state.history = state.history.filter(function (r) { return String(r._id) !== String(id); });
+      writeJSON(HIST_KEY, state.history);
+      renderHistory();
+      toast('Entrada anulada · ' + nome, 'ok');
+      beep('warn');
+      await loadStats();
+      await loadGuests(true);
+      // A lista por baixo tem de reflectir a anulação sem perder a posição.
+      if (state.guests.length) renderGuestList(true);
+    } catch (e) {
+      btn.disabled = false;
+      toast('Não foi possível anular: ' + e.message, 'err');
+      beep('err'); vibrate('err');
+    }
+  }
+
+  /* ---------- abas ---------- */
+  function setTab(tab) {
+    state.tab = tab;
+    Array.prototype.forEach.call(document.querySelectorAll('#sessionTabs .tab'), function (t) {
+      t.classList.toggle('active', t.getAttribute('data-tab') === tab);
+    });
+    $('paneSess').classList.toggle('is-hidden', tab !== 'sess');
+    $('paneHist').classList.toggle('is-hidden', tab !== 'hist');
+    if (tab === 'hist') loadHistory(false);
+  }
+
+  /* ---------- scanner ---------- */
+  /** Garante a biblioteca de leitura QR: cópia local primeiro, CDN como reserva.
+   *  Sem isto o scanner ficaria inutilizável se a página abrisse sem rede. */
+  var qrLibPromise = null;
+  function ensureQrLib() {
+    if (window.Html5Qrcode) return Promise.resolve(true);
+    if (qrLibPromise) return qrLibPromise;
+    var urls = [
+      'assets/vendor/html5-qrcode.min.js',
+      'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js'
+    ];
+    qrLibPromise = new Promise(function (resolve) {
+      var i = 0;
+      (function next() {
+        if (window.Html5Qrcode) return resolve(true);
+        if (i >= urls.length) return resolve(false);
+        var s = document.createElement('script');
+        s.src = urls[i++];
+        s.onload = function () { if (window.Html5Qrcode) resolve(true); else next(); };
+        s.onerror = next;
+        document.head.appendChild(s);
+      })();
+    });
+    return qrLibPromise;
+  }
+  function setStatus(text, live) {
+    var el = $('scanStatus'); if (el) el.textContent = text;
+    var wrap = $('scanStatusWrap'); if (wrap) wrap.classList.toggle('live', !!live);
+  }
+  /** Garante que a pré-visualização da câmara (e o interruptor do modo
+   *  contínuo) ficam INTEIROS acima do dock flutuante. Sem isto o fundo da
+   *  caixa, o fundo do quadro de leitura e o próprio interruptor ficavam
+   *  escondidos atrás dos botões flutuantes. */
+  function revealScanner() {
+    var w = document.querySelector('.reader-wrap');
+    var alvo = document.querySelector('#scannerCard .mode') || w;
+    if (!alvo) return;
+    var dock = $('dock');
+    var limit = (dock && !dock.classList.contains('is-hidden'))
+      ? dock.getBoundingClientRect().top - 14
+      : window.innerHeight - 14;
+    var t = alvo.getBoundingClientRect();
+    if (t.bottom <= limit) return;                 // já está tudo visível
+    var delta = t.bottom - limit;
+    var maxUp = (w ? w.getBoundingClientRect().top : t.top) - 70;  // não subir para debaixo do cabeçalho
+    if (delta > maxUp) delta = maxUp;
+    if (delta > 2) window.scrollBy({ top: delta, behavior: 'smooth' });
+  }
+  function updateScanUI() {
+    var cam = $('fabCamera');
+    if (cam) {
+      cam.classList.toggle('active', state.scanning);
+      setIcon(cam, state.scanning ? 'camera-off' : 'camera');
+      var fl = cam.querySelector('.fl');
+      if (fl) fl.textContent = state.scanning ? 'Parar' : 'Câmara';
+      cam.title = state.scanning ? 'Parar câmara' : 'Iniciar câmara';
+    }
+    $('fabTorch').disabled = !state.scanning;
+    $('fabFlip').disabled = !state.scanning;
+    var ph = $('readerPh'); if (ph) ph.classList.toggle('is-hidden', state.scanning);
+    var ov = $('scanOverlay'); if (ov) ov.classList.toggle('active', state.scanning);
+    setStatus(state.scanning ? 'Câmara activa · aponte ao QR' : 'Câmara parada', state.scanning);
+  }
+  function qrboxFn() {
+    return function (vw, vh) { var s = Math.floor(Math.min(vw, vh) * 0.72); return { width: s, height: s }; };
+  }
+  function onDecoded(text) {
+    var token = extractToken(text), now = Date.now();
+    if (!token) return;
+    if (token === state.lastToken && now - state.lastAt < 4000) return;
+    state.lastToken = token; state.lastAt = now;
+    if (!state.continuous && state.scanning) { stopScan(); }
+    processToken(token);
+  }
+  async function startScan() {
+    if (state.scanning || state.scanner) return;
+    setStatus('A preparar a câmara…', false);
+    var libOk = await ensureQrLib();
+    if (!libOk) {
+      toast('Leitor QR indisponível. Use a lista de convidados.', 'err');
+      setStatus('Leitor indisponível', false);
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      toast('Este dispositivo não suporta câmara. Use a lista de convidados.', 'err');
+      setStatus('Câmara indisponível', false);
+      return;
+    }
+    var el = $('reader'); el.innerHTML = '';
+    state.scanner = new window.Html5Qrcode('reader', { verbose: false });
+    try {
+      await state.scanner.start(
+        { facingMode: state.facing },
+        { fps: 12, qrbox: qrboxFn(), aspectRatio: 1.0, disableFlip: true,
+          experimentalFeatures: { useBarCodeDetectorIfSupported: true } },
+        onDecoded,
+        function () { /* decode misses */ }
+      );
+      state.scanning = true; updateScanUI();
+      revealScanner();
+    } catch (e) {
+      state.scanner = null;
+      var msg = 'Não foi possível iniciar a câmara.';
+      var n = String((e && (e.name || e.message)) || '').toLowerCase();
+      if (n.indexOf('notallowed') > -1 || n.indexOf('permission') > -1) msg = 'Permissão de câmara negada. Autorize o acesso no navegador.';
+      else if (n.indexOf('notfound') > -1 || n.indexOf('no camera') > -1) msg = 'Nenhuma câmara encontrada. Use a lista de convidados.';
+      toast(msg, 'err'); setStatus('Câmara indisponível', false);
+    }
+  }
+  async function stopScan() {
+    var s = state.scanner;
+    state.scanner = null; state.scanning = false; state.torch = false;
+    var t = $('fabTorch'); if (t) t.classList.remove('on');
+    if (s) {
+      try { await s.stop(); } catch (e) { /* ignore */ }
+      try { s.clear(); } catch (e) { /* ignore */ }
+    }
+    updateScanUI();
+  }
+  async function toggleTorch() {
+    if (!state.scanner || !state.scanning) return;
+    state.torch = !state.torch;
+    try {
+      await state.scanner.applyVideoConstraints({ advanced: [{ torch: state.torch }] });
+      $('fabTorch').classList.toggle('on', state.torch);
+    } catch (e) { state.torch = false; toast('Lanterna não disponível nesta câmara.', 'err'); }
+  }
+  async function flipCamera() {
+    var was = state.scanning;
+    if (was) await stopScan();
+    state.facing = state.facing === 'environment' ? 'user' : 'environment';
+    if (was) startScan();
+  }
+
+  /* ---------- arranque ---------- */
+  /** Mantém o progresso fresco quando há mais do que um telemóvel na porta. */
+  function startAutoRefresh() {
+    if (state.refreshTimer) clearInterval(state.refreshTimer);
+    state.refreshTimer = setInterval(function () {
+      if (document.hidden || !navigator.onLine) return;
+      loadStats();
+      if (state.tab === 'hist') loadHistory(true);
+    }, 45000);
+  }
+  function enterApp() {
+    $('loginCard').classList.add('is-hidden');
+    $('progressCard').classList.remove('is-hidden');
+    $('scannerCard').classList.remove('is-hidden');
+    $('dock').classList.remove('is-hidden');
+    loadLog();
+    paintNet();
+    loadStats(); loadGuests(); loadConfirmed();
+    syncQueue(true);
+    var t = new URLSearchParams(location.search).get('t');
+    if (t) processToken(t);
+  }
+  function tryResume() {
+    var raw = localStorage.getItem(PASS_KEY);
+    if (!raw) return false;
+    var ts = Number(raw);
+    if (!ts || Date.now() - ts > SESSION_MS) { localStorage.removeItem(PASS_KEY); return false; }
+    state.operator = localStorage.getItem(OPERATOR_KEY) || 'Recepção';
+    enterApp();
+    return true;
+  }
+
+  function bind() {
+    if (EVENT.displayNames || EVENT.coupleNames) $('coupleLine').textContent = EVENT.displayNames || EVENT.coupleNames;
+    if (EVENT.eventDateLong) $('eventDate').textContent = EVENT.eventDateLong;
+    var mono = EVENT.monogram || '';
+    if (!mono) {
+      var names = String(EVENT.coupleNames || EVENT.displayNames || '').split(/[&,]/);
+      mono = names.map(function (n) { return (n.trim().charAt(0) || '').toUpperCase(); }).join('').slice(0, 3);
+    }
+    if (mono) { $('sealMonogram').textContent = mono; $('tbMonogram').textContent = mono; }
+    var couple = EVENT.displayNames || EVENT.coupleNames || 'Louren & Acácio';
+    $('tbSub').textContent = couple;
+
+    var savedOp = localStorage.getItem(OPERATOR_KEY);
+    if (savedOp) $('operator').value = savedOp;
+
+    $('enter').addEventListener('click', function () {
+      unlockAudio();  // gesto do utilizador: liberta o som no iOS
+      var expected = window.LIRANDZO_CHECKIN_PASSWORD || 'checkin2026';
+      if ($('pass').value.trim() !== expected) { $('err').textContent = 'Senha incorrecta.'; beep('err'); return; }
+      $('err').textContent = '';
+      state.operator = $('operator').value.trim() || 'Recepção';
+      try {
+        localStorage.setItem(OPERATOR_KEY, state.operator);
+        if ($('remember').checked) localStorage.setItem(PASS_KEY, String(Date.now()));
+        else localStorage.removeItem(PASS_KEY);
+      } catch (e) { /* ignore */ }
+      enterApp();
+    });
+    $('pass').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('enter').click(); });
+    $('operator').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('pass').focus(); });
+
+    // tema
+    $('themeBtn').addEventListener('click', function () {
+      var dark = !document.body.classList.contains('theme-dark');
+      applyTheme(dark);
+      try { localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light'); } catch (e) { /* ignore */ }
+    });
+
+    // Dock flutuante
+    $('fabCamera').addEventListener('click', function () { if (state.scanning) stopScan(); else startScan(); });
+    $('fabTorch').addEventListener('click', toggleTorch);
+    $('fabFlip').addEventListener('click', flipCamera);
+    $('fabSearch').addEventListener('click', function () {
+      openModal('searchModal');
+      renderGuestList();
+      if (!state.guestsLoaded || !state.confirmed) {
+        Promise.all([loadGuests(), loadConfirmed()]).then(renderGuestList);
+      }
+      setTimeout(function () { var i = $('searchName'); if (i) i.focus(); }, 220);
+    });
+    $('fabSession').addEventListener('click', function () {
+      // Memória de navegação: reabre no separador onde o operador estava
+      // (quem anda a anular entradas não quer voltar sempre a "Nesta sessão").
+      loadStats(); setTab(state.tab); openModal('sessionModal');
+    });
+
+    $('continuous').addEventListener('change', function () { state.continuous = $('continuous').checked; });
+    $('refreshStats').addEventListener('click', async function () {
+      await loadStats(); toast('Estatísticas actualizadas.');
+    });
+    $('refreshHist').addEventListener('click', function () { state.history = []; loadHistory(true); });
+    $('offlineSync').addEventListener('click', function () { syncQueue(false); });
+
+    // abas da sessão
+    Array.prototype.forEach.call(document.querySelectorAll('#sessionTabs .tab'), function (t) {
+      t.addEventListener('click', function () { setTab(t.getAttribute('data-tab')); });
+    });
+
+    // lista A–Z
+    var azBar = $('azBar');
+    if (azBar) azBar.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.az') : null;
+      if (!b || b.disabled) return;
+      var el = document.getElementById('gl-' + b.getAttribute('data-l'));
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    var glist = $('guestList');
+    if (glist) glist.addEventListener('click', function (e) {
+      var row = e.target.closest ? e.target.closest('.gl-row') : null;
+      if (!row) return;
+      var token = row.getAttribute('data-token');
+      var name = row.getAttribute('data-name');
+      var g = state.guests.find(function (x) { return String(x.token || '') === token; }) ||
+        state.guests.find(function (x) { return String(x.name || x.nome) === name; });
+      if (!g) return;
+      // A lista NÃO é fechada: fica por baixo da validação para que fechar a
+      // validação devolva o operador exactamente ao ponto onde estava.
+      selectGuest(g);
+    });
+    var searchTimer = null;
+    $('searchName').addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () { renderGuestList(); }, 140);
+    });
+
+    // excepção deliberada: só então os não confirmados ficam clicáveis
+    var ovBox = $('allowOverride');
+    if (ovBox) ovBox.addEventListener('change', function () {
+      state.allowOverride = ovBox.checked;
+      renderGuestList();
+      toast(ovBox.checked
+        ? 'Excepção activada · entradas sem confirmação ficam registadas.'
+        : 'Excepção desactivada · só entram convidados confirmados.');
+    });
+
+    // filtro por mesa / categoria
+    var fSel = $('filterBy');
+    if (fSel) fSel.addEventListener('change', function () {
+      renderGuestList();
+      var box = $('guestList'); if (box) box.scrollTop = 0;
+    });
+
+    // anular entrada (delegação no histórico do servidor)
+    var hist = $('histList');
+    if (hist) hist.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.undo') : null;
+      if (!b || b.disabled) return;
+      undoCheckin(b.getAttribute('data-id'), b.getAttribute('data-nome'), b);
+    });
+
+    // troca de operador (mudança de turno, sem terminar sessão)
+    var swapBtn = $('switchOperator');
+    if (swapBtn) swapBtn.addEventListener('click', function () {
+      var el = $('operatorSwap');
+      var name = el ? String(el.value).trim() : '';
+      if (!name) { toast('Escreva o nome de quem assume agora.', 'err'); if (el) el.focus(); return; }
+      state.operator = name;
+      try { localStorage.setItem(OPERATOR_KEY, name); } catch (e) { /* ignore */ }
+      if (el) el.value = '';
+      toast('Operador agora: ' + name, 'ok');
+    });
+    var swapInput = $('operatorSwap');
+    if (swapInput) swapInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); if (swapBtn) swapBtn.click(); }
+    });
+
+    $('minus').addEventListener('click', function () { state.qty -= 1; updateQty(); });
+    $('plus').addEventListener('click', function () { state.qty += 1; updateQty(); });
+    $('confirmBtn').addEventListener('click', confirmCheckin);
+    $('cancelBtn').addEventListener('click', function () {
+      state.guest = null;
+      closeModal('resultModal');
+      if (state.continuous && !anyModalOpen() && !state.scanning) startScan();
+    });
+    $('clearLog').addEventListener('click', function () {
+      state.log = [];
+      try { localStorage.removeItem(LOG_KEY); } catch (e) { /* ignore */ }
+      renderLog();
+    });
+
+    // Fechar modais — o X/backdrop fecha só o pop-up à frente; a lista que
+    // ficou por baixo reaparece no mesmo ponto (memória de navegação).
+    [['resultModal', 'resultClose'], ['searchModal', 'searchClose'], ['sessionModal', 'sessionClose']].forEach(function (pair) {
+      var m = $(pair[0]), x = $(pair[1]);
+      if (x) x.addEventListener('click', function () { closeModal(pair[0]); });
+      if (m) m.addEventListener('click', function (e) { if (e.target === m) closeModal(pair[0]); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      if (!state.modalStack.length) return;
+      e.preventDefault();
+      closeTopModal();
+    });
+
+    // rede
+    window.addEventListener('online', function () {
+      paintNet();
+      toast('Ligação restabelecida.', 'ok');
+      loadStats(); syncQueue(true); loadGuests(true); loadConfirmed(true);
+    });
+    window.addEventListener('offline', function () { paintNet(); });
+
+    // cabeçalho fixo ao rolar (com histerese para não oscilar)
+    var headPanel = document.querySelector('.page > .panel');
+    var tbOn = false, ticking = false;
+    function updateTopbar() {
+      var y = headPanel ? headPanel.getBoundingClientRect().bottom : 0;
+      if (!tbOn && y < -8) tbOn = true;
+      else if (tbOn && y > 66) tbOn = false;
+      $('topbar').classList.toggle('show', tbOn);
+      document.body.classList.toggle('topbar-on', tbOn);
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { updateTopbar(); ticking = false; });
+    }, { passive: true });
+    window.addEventListener('resize', updateTopbar, { passive: true });
+    updateTopbar();
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        if (state.scanning) stopScan();
+        return;
+      }
+      // Ao voltar à página, refresca — com vários telemóveis na porta o
+      // progresso local fica desactualizado.
+      if (navigator.onLine) {
+        loadStats();
+        if (state.tab === 'hist') loadHistory(true);
+      }
+    });
+
+    // som: o iOS só liberta áudio a partir de um gesto do utilizador
+    document.addEventListener('pointerdown', unlockAudio, { once: true, passive: true });
+
+    startAutoRefresh();
+  }
+
+  function init() {
+    initTheme();
+    loadQueue();
+    paintIcons();
+    bind();
+    paintNet();
+    if (!tryResume()) paintStats(readJSON(STATS_KEY, null));
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>
