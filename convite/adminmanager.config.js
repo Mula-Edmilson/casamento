@@ -47,6 +47,32 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
     document.body.appendChild(script);
   };
 
+  const loadUiV6 = () => {
+    if (!document.querySelector(`link[${MODULE_ATTR}="ui-v6-css"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'adminmanager-ui-v6.css';
+      link.setAttribute(MODULE_ATTR, 'ui-v6-css');
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector(`link[${MODULE_ATTR}="ui-v6-polish-css"]`)) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'adminmanager-ui-v6-polish.css';
+      link.setAttribute(MODULE_ATTR, 'ui-v6-polish-css');
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector(`script[${MODULE_ATTR}="ui-v6"]`)) {
+      const script = document.createElement('script');
+      script.src = 'adminmanager-ui-v6.js';
+      script.defer = true;
+      script.setAttribute(MODULE_ATTR, 'ui-v6');
+      document.body.appendChild(script);
+    }
+  };
+
   const loadBuilderExtras = () => {
     loadBuilderDetails();
     loadBuilderPreviewAssets();
@@ -65,6 +91,7 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
     const existing = document.querySelector(`script[${MODULE_ATTR}="builder-v2"]`);
     if (existing) {
       loadBuilderExtras();
+      loadUiV6();
       return;
     }
 
@@ -79,8 +106,10 @@ window.LIRANDZO_MANAGER_API_BASE = 'https://api-casamento-mj.onrender.com';
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadGiftManager, { once: true });
     document.addEventListener('DOMContentLoaded', loadBuilderV2, { once: true });
+    document.addEventListener('DOMContentLoaded', loadUiV6, { once: true });
   } else {
     loadGiftManager();
     loadBuilderV2();
+    loadUiV6();
   }
 })();
