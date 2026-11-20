@@ -264,7 +264,34 @@
         </div>
       </section>
 
-      <section class="section" id="githubPanel">
+      <section class="section" id="siteContentPanel" data-admin-only>
+        <div class="site-heading"><h1>Site Lirandzo</h1><a class="btn" href="../index.html" target="_blank" rel="noopener">Visitar site ↗</a></div>
+        <nav class="site-switch" aria-label="Conteúdos do site"><button type="button" aria-pressed="true" data-site-view="packages">Pacotes</button><button type="button" aria-pressed="false" data-site-view="blog">Blog</button><button type="button" aria-pressed="false" data-site-view="pages">Páginas</button></nav>
+        <p id="sitePublicationStatus" role="status" hidden></p><div id="siteCatalog" class="site-gallery" aria-live="polite"></div>
+        <div id="siteBlogCatalog" class="site-gallery" aria-live="polite" hidden></div>
+        <form id="sitePricesForm" hidden class="panel-card">
+          <div class="panel-head"><h2>Preços dos pacotes</h2></div>
+          <div class="panel-body">
+            <div id="sitePriceFields" class="form-grid"></div>
+            <div class="table-actions"><button class="btn" type="button" id="sitePricesLoad">Carregar preços</button><button class="btn primary" type="submit" disabled>Publicar preços</button></div>
+            <p id="sitePricesStatus" class="feedback hidden" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+        <section class="panel-card" id="sitePageEditor" hidden><div class="panel-head"><h2>Editar página</h2></div><div class="panel-body"><label class="field">Página<select id="sitePage"></select></label><p id="pageState" role="status"></p><div id="pageFields"></div><div class="table-actions"><button class="btn" id="pagePreview">Pré-visualizar</button><button class="btn primary" disabled id="pageSave">Publicar página</button></div><iframe sandbox="" title="Pré-visualização da página" id="pageFrame" hidden style="width:100%;height:65vh"></iframe></div></section>
+        <form id="siteArticleForm" hidden class="panel-card">
+          <div class="panel-head"><h2>Blog</h2></div>
+          <div class="panel-body">
+            <div class="field"><label for="siteArticleSelect">Artigo</label><select id="siteArticleSelect" disabled></select></div>
+            <div class="table-actions"><button class="btn" type="button" id="siteArticlesLoad">Carregar artigos</button><button class="btn" type="button" id="siteArticleOpen" disabled>Abrir artigo no editor</button></div>
+            <h3 id="siteArticleEditing" class="hidden"></h3>
+            <div id="siteArticleFields"></div>
+            <button class="btn primary" type="submit" disabled>Publicar artigo</button>
+            <p id="siteArticleStatus" class="feedback hidden" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+
+<section class="section" id="githubPanel">
         <div class="section-title"><div><h1>Ligação GitHub</h1><p>Estado da conexão usada para criar pastas dos clientes a partir dos templates.</p></div></div>
         <section class="panel-card"><div class="panel-head"><h2><i data-feather="git-branch"></i> Configuração</h2><button class="btn small" id="reloadGithubBtn" type="button" title="Actualizar estado do GitHub"><i data-feather="refresh-cw"></i> Actualizar</button></div><div class="panel-body"><div id="githubStatus" class="feedback">A carregar estado do GitHub...</div></div></section>
       </section>
@@ -298,7 +325,7 @@
 
   <script>
     const panels = [
-      { id:'dashboard', label:'Dashboard', icon:'layout' }, { id:'invites', label:'Convites', icon:'folder' }, { id:'clients', label:'Clientes', icon:'briefcase', adminOnly:true }, { id:'command', label:'Ficha', icon:'command' }, { id:'backups', label:'Backups', icon:'hard-drive', adminOnly:true }, { id:'archived', label:'Arquivados', icon:'archive' }, { id:'newInvite', label:'Novo cliente', icon:'plus-circle', adminOnly:true }, { id:'manage', label:'Gestão', icon:'settings' }, { id:'guests', label:'Convidados', icon:'users' }, { id:'github', label:'GitHub', icon:'git-branch' }
+      { id:'dashboard', label:'Dashboard', icon:'layout' }, { id:'invites', label:'Convites', icon:'folder' }, { id:'clients', label:'Clientes', icon:'briefcase', adminOnly:true }, { id:'command', label:'Ficha', icon:'command' }, { id:'backups', label:'Backups', icon:'hard-drive', adminOnly:true }, { id:'archived', label:'Arquivados', icon:'archive' }, { id:'newInvite', label:'Novo cliente', icon:'plus-circle', adminOnly:true }, { id:'manage', label:'Gestão', icon:'settings' }, { id:'guests', label:'Convidados', icon:'users' }, { id:'siteContent', label:'Site', icon:'globe', adminOnly:true }, { id:'github', label:'GitHub', icon:'git-branch' }
     ];
     const DEFAULT_API = window.LIRANDZO_MANAGER_API_BASE || localStorage.getItem('lirandzo_manager_api') || 'https://SEU-BACKEND-RENDER.onrender.com';
     let API_BASE = DEFAULT_API.replace(/\/+$/, '');
@@ -439,6 +466,7 @@
       window.scrollTo({ top: 0, behavior: options.instant ? 'auto' : 'smooth' });
       setTimeout(()=>{ document.body.classList.remove('navigating-soft'); hideRouteLoader(80); }, 280);
       iconRefresh();
+      if (id === 'siteContent') window.loadSiteContentPanel?.();
       if (id === 'manage') renderManageSelect();
       if (id === 'command') { renderCommandSelect(); if (commandSelectedId()) loadCommandCenter(); }
       if (id === 'clients') { renderClientInviteSelect(); loadClientsPage(); }
@@ -446,6 +474,7 @@
       if (id === 'guests') { renderGuestSelect(); loadGuestCrudList(); }
       if (id === 'archived') loadArchivedInvites();
     }
+    window.lirandzoAdminManagerRequest = api;
     function goBackPanel(){
       const previous = panelStack.pop() || 'dashboard';
       showPanel(previous, { push:false });
@@ -1509,6 +1538,10 @@ ${fmtDate(backup.createdAt)}`, confirmLabel:'Eliminar backup', variant:'danger',
     function init(){ detectMobileApp(); applyTheme(localStorage.getItem('lirandzo_manager_theme')||'dark'); buildNav(); bindEvents(); window.addEventListener('resize', detectMobileApp); window.addEventListener('orientationchange', () => setTimeout(detectMobileApp, 180)); token ? appView() : loginView(); iconRefresh(); }
     init();
   </script>
+  <script src="adminmanager-site-catalog.js"></script>
+  <script src="adminmanager-page-fields.js"></script>
+  <script src="adminmanager-page-editor.js"></script>
+  <script src="adminmanager-site-content.js"></script>
   <script src="adminmanager-operator.js"></script>
 </body>
 </html>

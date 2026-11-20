@@ -1234,6 +1234,7 @@ app.get('/manager/summary', requireManager, async (req, res) => {
     data: { totalInvites, published, draft, guests, rsvps, messages, contributions, activities }
   });
 });
+require('./site-content').mountSiteContent(app, { gh, requireAdmin, asyncRoute });
 app.get('/manager/github/status', requireManager, (req, res) => res.json({ status: 'success', data: { configured: githubReady(), owner: process.env.GITHUB_OWNER || '', repo: process.env.GITHUB_REPO || '', branch: process.env.GITHUB_BRANCH || '', invitesBasePath: getInvitesBasePath(), templates: { perola: getTemplatePath('perola'), esmeralda: getTemplatePath('esmeralda'), rubi: getTemplatePath('rubi') } } }));
 
 app.get('/manager/invites', requireManager, async (req, res) => {

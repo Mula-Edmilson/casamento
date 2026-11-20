@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lirandzo-gas-forms-v1';
+const CACHE_NAME = 'lirandzo-site-content-v2';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -29,6 +29,18 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== location.origin) return;
+  if (url.searchParams.has('verificar') || request.cache === 'no-store' ||
+      request.headers.has('Authorization') || url.pathname.startsWith('/manager/')) return;
+  if (request.mode === 'navigate' || /\.(html|js|css)$/.test(url.pathname)) {
+    event.respondWith(fetch(request, { cache: 'no-cache' }).then(async response => {
+      if (response.ok && !/no-store|private/i.test(response.headers.get('cache-control') || '')) {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(request, response.clone()).catch(() => {});
+      }
+      return response;
+    }).catch(async () => (await caches.match(request)) || Response.error()));
+    return;
+  }
   event.respondWith(
     caches.match(request).then(cached => cached || fetch(request).then(response => {
       const copy = response.clone();
